@@ -125,6 +125,34 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 @keyframes pulso{to{box-shadow:0 0 0 48px rgba(139,0,0,0), inset 0 4px 15px rgba(255,255,255,.1)}}
 .estadoSOS{display:none;padding:20px;border-radius:16px;background:#FFF3F5;border:1px solid #8B0000;color:#8B0000;text-align:center;font-weight:600;font-size:14px;line-height:1.6}
 
+/* BOTÓN FLOTANTE S.O.S (SIEMPRE A MANO) */
+.btn-flotante-sos {
+    position: fixed;
+    bottom: 25px;
+    right: 20px;
+    width: 75px;
+    height: 75px;
+    background: radial-gradient(circle at 30% 22%,#7A0010,#4A0008 80%);
+    border: 2px solid var(--oroMedio);
+    border-radius: 50%;
+    color: var(--oroClaro);
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 18px;
+    display: none; /* Se activa por JS solo si está registrada y no está en la vista SOS */
+    place-items: center;
+    box-shadow: 0 4px 15px rgba(139,0,0,.6);
+    z-index: 9999;
+    cursor: pointer;
+    text-shadow: 0 2px 4px rgba(0,0,0,.7);
+    animation: pulsoFlotante 2s infinite;
+}
+@keyframes pulsoFlotante {
+    0% { box-shadow: 0 0 0 0 rgba(139,0,0,.7); }
+    70% { box-shadow: 0 0 0 15px rgba(139,0,0,0); }
+    100% { box-shadow: 0 0 0 0 rgba(139,0,0,0); }
+}
+
 /* ACTA P4 · MARCO DOBLE · LUZ · Optimizada para impresión/PDF */
 .acta{background:#FFFFFF;color:#333;padding:25px;font-family:'Cormorant Garamond',serif;font-weight:600;position:relative;box-shadow:0 15px 50px rgba(0,0,0,.08);border: 1px solid #EEE;border-radius:8px;margin-bottom:20px;transition: transform 0.3s; page-break-inside: avoid; width:100%; box-sizing:border-box;}
 .acta:hover{transform: translateY(-2px); box-shadow:0 20px 60px rgba(0,0,0,.12);}
@@ -168,7 +196,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 @media print {
   @page { size: A4; margin: 10mm; }
   body { background: #fff !important; color: #000 !important; }
-  .btn, .footer-wrap, .noimp, .vista:not(.activa), header, .scroll-container { display: none !important; }
+  .btn, .footer-wrap, .noimp, .vista:not(.activa), header, .scroll-container, .btn-flotante-sos { display: none !important; }
   .vista { padding: 0 !important; max-width: 100% !important; display: block !important; }
   #panel { display: block !important; }
   #alertas { display: block !important; width: 100%; }
@@ -276,7 +304,9 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <button class="btn blanco" onclick="ir('login')">✦ YA TENGO LLAVE C4 ✦</button>
 </section>
 
-<section id="llave" class="vista" style="align-items:center;text-align:center"><h2 class="tit">✦ LLAVE MAESTRA C4 ✦</h2>
+<section id="llave" class="vista" style="align-items:center;text-align:center">
+ <button class="btn volver" onclick="ir('inicio')" style="align-self:flex-start; margin-bottom: 10px;">⟵ VOLVER AL INICIO</button>
+ <h2 class="tit">✦ LLAVE MAESTRA C4 ✦</h2>
  <div class="caja" style="width:100%"><div class="llave" id="lk">C4‑XXXX‑XXXX</div>
   <p style="font-weight:600;color:#555;margin-top:18px;font-size:15px; letter-spacing:1px;">ÚNICA · INTRANSFERIBLE · VÁLIDA JUDICIALMENTE</p>
   
@@ -288,10 +318,10 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
   <div style="display:flex;gap:12px;margin-top:25px;flex-wrap:wrap;justify-content:center">
    <button class="btn blanco" onclick="navigator.clipboard.writeText(document.getElementById('lk').textContent).then(()=>alert('Copiada correctamente'))">COPIAR</button>
    <button class="btn" onclick="navigator.share?.({text:document.getElementById('lk').textContent})">COMPARTIR</button>
-   <button class="btn blanco" onclick="print()">IMPRIMIR</button>
+   <!-- EL BOTÓN IMPRIMIR SE ELIMINÓ DE ACÁ Y QUEDÓ SOLO EN EL PANEL -->
   </div>
  </div>
- <button class="btn" onclick="ir('login')">✦ INGRESAR ✦</button>
+ <button class="btn" onclick="ir('login')">✦ INGRESAR AL PANEL ✦</button>
 </section>
 
 <section id="login" class="vista"><button class="btn volver" onclick="ir('pago')">⟵ VOLVER</button><h2 class="tit">ACCESO JUDICIAL</h2>
@@ -321,7 +351,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 
 <section id="panel" class="vista"><h2 class="tit" style="text-align:left;border-bottom:1px solid var(--oro);padding-bottom:10px;letter-spacing:5px">✦ CENTRO JUDICIAL P4 ✦</h2>
  <div style="display:flex;gap:12px;flex-wrap:wrap">
-  <button class="btn blanco" onclick="print()" style="flex:1 1 140px">PDF</button>
+  <button class="btn blanco" onclick="print()" style="flex:1 1 140px">IMPRIMIR ACTA</button>
   <button class="btn blanco" onclick="expJSON()" style="flex:1 1 140px">JSON</button>
   <button class="btn blanco" onclick="expTXT()" style="flex:1 1 140px">TXT</button>
   <button class="btn blanco" onclick="verificar()" style="flex:1 1 140px">VERIFICAR</button>
@@ -335,6 +365,10 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <div class="scroll-container"><div class="scroll-text">✦ NI UNA MENOS ARGENTINA 🇦🇷 niunamenosarg.com 🇦🇷 ACTA P4 🇦🇷 CADENA DE CUSTODIA 🇦🇷 LEY 26.485 🇦🇷 LEY 25.326 🇦🇷 CÓDIGO PROCESAL PENAL 🇦🇷 SHA‑256 + SHA‑3 + HMAC 🇦🇷 GPS 🇦🇷 AUDIO 🇦🇷 VIDEO 🇦🇷 FOTOS 🇦🇷 SENSORES 🇦🇷 CELDA 🇦🇷 WIFI 🇦🇷 MODO SIGILO 🇦🇷 PAGO INTELIGENTE IA 🇦🇷</div></div>
  <footer><strong>NI UNA MENOS · ENERGY 2026</strong><br>niunamenosarg.com · Custodia Judicial Forense · Marco legal estricto<br>© MMXXVI · Hecho en la República Argentina 🇦🇷</footer>
 </div>
+
+<!-- BOTÓN S.O.S FLOTANTE (BOTÓN SOFT) -->
+<div id="btnFlotanteSOS" class="btn-flotante-sos" onclick="irSOS()">S.O.S</div>
+
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -350,7 +384,18 @@ const WA_TOKEN = '557e951bd7a04f50bc5ae05ee7154bb962cdd82bc71d4f58bc';
 const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digit',day:'2-digit'},oH={timeZone:'America/Argentina/Buenos_Aires',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false};
 const LK=k=>!k?'':k.toUpperCase().replace(/[\u2011-\u2015]/g,'-').replace(/[^A-Z0-9\-]/g,'').trim();
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
-const ir=id=>{document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));document.getElementById(id).classList.add('activa');scrollTo({top:0,behavior:'smooth'})};
+
+// FUNCIÓN PARA NAVEGAR Y MOSTRAR/OCULTAR EL BOTÓN FLOTANTE S.O.S
+const ir=id=>{
+    document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
+    document.getElementById(id).classList.add('activa');
+    scrollTo({top:0,behavior:'smooth'});
+    
+    // Solo muestra el botón flotante si ya está registrada y NO está en la pantalla de S.O.S
+    const bf=document.getElementById('btnFlotanteSOS');
+    if(bf) bf.style.display = (localStorage.getItem('ok')==='1' && id!=='sos') ? 'grid' : 'none';
+};
+
 const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
 
 function leerVoz(){
@@ -708,7 +753,11 @@ addEventListener('DOMContentLoaded',()=>{
     if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = savedImei;
  }
  if(q.get('pago')==='aprobado'){pagoOk(IM(q.get('imei')||localStorage.getItem('imei')||''),q.get('plan')||'anual',q.get('llave'));history.replaceState({},'','/');return}
- if(localStorage.getItem('ok')==='1'){document.getElementById('zonaOk').style.display='block';chk()}
+ if(localStorage.getItem('ok')==='1'){
+    document.getElementById('zonaOk').style.display='block';
+    const bf=document.getElementById('btnFlotanteSOS');
+    if(bf) bf.style.display = 'grid'; // Asegura que se muestre al cargar si ya está registrada
+ }
  ir('inicio');
  if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026').catch(()=>{}));
  document.addEventListener('contextmenu',e=>e.preventDefault());
