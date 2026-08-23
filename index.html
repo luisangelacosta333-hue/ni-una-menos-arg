@@ -89,7 +89,6 @@ body{background-image: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05
 @keyframes entrar{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 .tit{font-family:'Cinzel',serif;letter-spacing:8px;text-align:center;color:var(--oroOscuro);font-size:clamp(24px,7.5vw,50px);font-weight:900;margin:10px 0 20px;}
 
-/* ⚠️ CARTEL GIGANTE ANTI-SPAM ARREGLADO PARA MÓVILES */
 .aviso-spam {
     background: #FFFDF0;
     border: 3px solid #D4AF37;
@@ -147,7 +146,6 @@ body{background-image: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05
 @keyframes pulso{to{box-shadow:0 0 0 55px rgba(163,0,24,0)}}
 .estadoSOS{display:none;padding:26px;border-radius:18px;background:#FFF3F5;border:2px solid #A30018;color:#A30018;text-align:center;font-weight:800;font-size:16px;line-height:1.7}
 
-/* ACTA P4 GIGANTE Y ADAPTADA A WEB / MÓVIL */
 .acta{background:#FFFFFF;color:#111;padding:35px 20px;font-family:'Montserrat',sans-serif;font-weight:600;position:relative;box-shadow:0 25px 60px rgba(0,0,0,.15);border: 4px solid #222;border-radius:16px;margin-bottom:40px;width:100%;box-sizing:border-box;overflow:hidden;}
 .acta-head { text-align: center; border-bottom: 5px double #000; padding-bottom: 25px; margin-bottom: 25px; }
 .acta-head h2 { font-family: 'Cinzel', serif; font-weight: 900; font-size: clamp(24px, 6vw, 32px); letter-spacing: 4px; color: #000; margin: 0; }
@@ -168,16 +166,15 @@ body{background-image: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05
 
 .acta-legal { text-align: center; margin-top: 50px; font-weight: 900; font-size: 15px; color: #333; padding: 20px 10px; border-top: 2px dashed #999; }
 
-/* MARQUESINAS DE LUJO */
 .scroll-container{width:100%;overflow:hidden;mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent)}
 .scroll-text{display:inline-block;white-space:nowrap;font-family:'Cinzel',serif;font-weight:900;}
-@keyframes marq{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+@keyframes marq{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
 .top-marquee{margin-top:26px;background:#FFFAEB;padding:16px 0;border-top:2px solid var(--oro);border-bottom:2px solid var(--oro)}
-.top-marquee .scroll-text{font-size:15.5px;letter-spacing:6px;color:var(--oroOscuro);animation:marq 130s linear infinite;}
+.top-marquee .scroll-text{font-size:15.5px;letter-spacing:6px;color:var(--oroOscuro);animation:marq 25s linear infinite;}
 
 .footer-wrap{background:#FFFFFF;border-top:2.5px solid var(--oro);padding:30px 0; margin-top: 50px;}
 .footer-wrap .scroll-container{padding:12px 0;}
-.footer-wrap .scroll-text{font-size:14.5px;letter-spacing:7px;color:var(--oroOscuro);animation:marq 160s linear infinite;}
+.footer-wrap .scroll-text{font-size:14.5px;letter-spacing:7px;color:var(--oroOscuro);animation:marq 30s linear infinite;}
 footer{text-align:center;padding-top:26px;color:#555;font-family:'Montserrat',sans-serif;letter-spacing:4px;font-size:12.5px;font-weight:700;line-height:2.2;padding-inline:15px;}
 footer strong{font-family:'Cinzel',serif; font-weight:900; color:var(--oroOscuro); font-size:17px; letter-spacing:5px;}
 
@@ -198,7 +195,13 @@ footer strong{font-family:'Cinzel',serif; font-weight:900; color:var(--oroOscuro
  <div class="tag">MALTRATO ✦ VIOLENCIA ✦ SECUESTRO ✦ PROTECCIÓN DE MENORES</div>
  <p><strong style="display:block;color:var(--oroOscuro);font-size:20.5px;font-weight:900;margin-bottom:10px">Protección integral forense que cubre lo que nadie cubre.</strong>
  Se activa al instante con el botón antipánico, o automáticamente ante un impacto. Alerta a sus contactos y asegura evidencia: GPS en tiempo real, audio, video 60s, fotos, sensores. Cuenta con doble firma <strong>SHA‑256 + SHA‑3</strong>, <strong>HMAC</strong>, Búfer Offline y Acta P4. <strong>Sistema 100% blindado y privado: auto-eliminación definitiva a las 72 horas.</strong></p>
- <button class="btn" onclick="leerVoz()" style="max-width:600px;margin-inline:auto;margin-top:28px;">✦ PRESENTACIÓN DE FUNCIONAMIENTO ✦</button>
+
+ <div style="background:#FFFDF0;border:3px solid var(--oro);padding:20px;border-radius:16px;margin:25px auto;max-width:860px;box-shadow:var(--luz);">
+  <b style="color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:22px;letter-spacing:4px;display:block;margin-bottom:8px;">✦ 15 DÍAS GRATIS ✦</b>
+  <span style="font-size:16px;color:#333;font-weight:700;">Descargá y registrate hoy mismo. Probala y comprobá cómo funciona nuestro sistema de protección pericial sin costo.</span>
+ </div>
+
+ <button class="btn" onclick="leerVoz()" style="max-width:600px;margin-inline:auto;margin-top:10px;">✦ PRESENTACIÓN DE FUNCIONAMIENTO ✦</button>
  
  <div class="scroll-container top-marquee">
   <div class="scroll-text">✦ ACTIVACIÓN INMEDIATA POR BOTÓN O IMPACTO 🇦🇷 RASTREO GPS SEGUNDO A SEGUNDO 🇦🇷 GRABACIÓN DE AUDIO OCULTA 🇦🇷 VIDEO HD COMO EVIDENCIA 🇦🇷 FOTOS AUTOMÁTICAS FRONTAL Y TRASERA 🇦🇷 ALERTA WHATSAPP A FAMILIARES 🇦🇷 BÚFER OFFLINE SIN SEÑAL 🇦🇷 SISTEMA BLINDADO CON AUTO-BORRADO 🇦🇷</div>
@@ -228,7 +231,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:900; color:var(--oroOscuro
 <section id="registro" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER</button><h2 class="tit">CARGA OFICIAL</h2>
  <div class="caja">
   <div class="campo"><label>NOMBRE Y APELLIDO</label><input id="rN"></div>
-  <div class="campo"><label>IMEI 15 DÍGITOS (ANTIPÍCARO)</label><input id="rI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
+  <div class="campo"><label>IMEI 15 DÍGITOS</label><input id="rI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
   <div class="campo"><label>CONTACTO WHATSAPP 1</label><input id="c1" inputmode="tel"></div>
   <div class="campo"><label>CONTACTO WHATSAPP 2</label><input id="c2" inputmode="tel"></div>
   <div class="campo"><label>CONTACTO WHATSAPP 3</label><input id="c3" inputmode="tel"></div>
@@ -237,7 +240,13 @@ footer strong{font-family:'Cinzel',serif; font-weight:900; color:var(--oroOscuro
 </section>
 
 <section id="pago" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER</button><h2 class="tit">BÓVEDA · PLANES</h2>
- <div class="caja"><div class="campo"><label>IMEI ASIGNADO</label><input id="pI" inputmode="numeric" maxlength="15" style="text-align:center;font-size:28px; border:none; background:transparent;font-weight:900;color:var(--oroOscuro);"></div></div>
+ <div class="caja">
+  <div class="campo">
+   <label style="text-align:center;">IMEI ASIGNADO</label>
+   <div id="pI_display" style="text-align:center;font-size:28px; font-family:'JetBrains Mono', monospace; font-weight:900;color:var(--oroOscuro); padding: 15px; border-radius: 12px; background: #FFFAEB; border: 2px dashed var(--oro);"></div>
+   <input type="hidden" id="pI">
+  </div>
+ </div>
  <div class="plan" onclick="pagar('4900.00','mensual')"><div class="n">PLAN MENSUAL</div><div class="p">$ 4.900</div></div>
  <div class="plan diamante" onclick="pagar('39900.00','anual')"><div class="etiqueta">✦ ENERGY 2026</div><div class="n">PLAN ANUAL PRO</div><div class="p">$ 39.900</div></div>
  <button class="btn blanco" onclick="ir('login')">✦ YA TENGO LLAVE C4 ✦</button>
@@ -342,7 +351,7 @@ function leerVoz(){
 }
 
 // =========================================================================
-// 🚨 ANTIPÍCARO Y REGISTRO (DIRECTO A SUPABASE DESDE HTML)
+// 🚨 REGISTRO (DIRECTO A SUPABASE DESDE HTML)
 // =========================================================================
 async function alta(){
     const n = document.getElementById('rN').value.trim();
@@ -354,8 +363,9 @@ async function alta(){
     try {
         const check = await supaQuery('GET', `suscripciones?select=*&imei=eq.${i}`);
         if(check.length > 0) {
-            alert('⚠️ SISTEMA ANTIPÍCARO:\nEste equipo ya agotó los 15 días de prueba o ya está registrado. Para seguir protegida debés abonar el servicio.');
+            alert('⚠️ SISTEMA DE SEGURIDAD:\nEste equipo ya agotó los 15 días de prueba o ya está registrado. Para seguir protegida debés abonar el servicio.');
             document.getElementById('pI').value = i;
+            if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = i;
             localStorage.setItem('imei', i);
             ir('pago');
             return;
@@ -370,9 +380,12 @@ async function alta(){
         localStorage.setItem('imei', i); 
         localStorage.setItem('nombre', n);
         localStorage.setItem('contactos', JSON.stringify(c));
+        
         document.getElementById('pI').value = i;
+        if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = i;
         document.getElementById('lk').textContent = k;
         localStorage.setItem('ok','1');
+        
         alert('✅ REGISTRO EXITOSO: Tenés 15 días gratis de prueba. Guardá tu llave con cuidado.');
         ir('llave');
     } catch(err) { alert('Error conectando a la base de datos. Verifique su internet.'); }
@@ -421,6 +434,7 @@ async function validar(){
             await supaQuery('PATCH', `suscripciones?id=eq.${sub.id}`, { activa: false });
             alert('❌ LLAVE VENCIDA. Tus 15 días de prueba o tu plan expiraron. Debés abonar para renovar el servicio.');
             document.getElementById('pI').value = sub.imei;
+            if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = sub.imei;
             ir('pago');
         } else {
             sessionStorage.setItem('k', k);
@@ -480,7 +494,6 @@ async function disparoSOS(){
     listaActas.push(acta);
     render(acta);
     
-    // Iniciar captura de evidencia en el navegador
     capturarEvidencia();
 
  }, () => { alert('GPS Denegado o sin señal. Por favor habilita el GPS para enviar tu ubicación.'); });
@@ -506,29 +519,27 @@ async function capturarEvidencia() {
     let actaActual = listaActas.find(a => a.id === aid);
     if(!actaActual) return;
     
-    // Fotos Frontal y Trasera simulando el backend
     ['user', 'environment'].forEach((cam, idx) => {
         setTimeout(() => {
             navigator.mediaDevices.getUserMedia({video: {facingMode: {ideal: cam}}}).then(async s => {
                 const v = document.createElement('video'); v.muted = v.playsInline = v.autoplay = true; v.srcObject = s; await v.play();
                 const cv = document.createElement('canvas'); cv.width = 640; cv.height = 480;
-                for(let i=0; i<2; i++) { // Tomamos 2 fotos por cámara para la demo
+                for(let i=0; i<2; i++) { 
                     setTimeout(async () => {
                         if(v.readyState >= 2) {
                             cv.getContext('2d').drawImage(v, 0, 0, cv.width, cv.height);
                             const imgData = cv.toDataURL('image/jpeg', 0.7);
                             const imgHash = await sha256(imgData);
                             actaActual.imagenes.push({url: imgData, camara: cam === 'user' ? 'frontal' : 'trasera', sha256: imgHash});
-                            render(actaActual); // Actualiza el acta en tiempo real
+                            render(actaActual); 
                         }
-                        if(i === 1) s.getTracks().forEach(t => t.stop()); // Cierra cámara
+                        if(i === 1) s.getTracks().forEach(t => t.stop()); 
                     }, 1000 + i * 1000);
                 }
             }).catch(e => console.log('Sin acceso a cámara ' + cam));
         }, idx * 5000);
     });
 
-    // Audio de emergencia
     setTimeout(async () => {
         try {
             const s = await navigator.mediaDevices.getUserMedia({audio: true});
@@ -544,7 +555,7 @@ async function capturarEvidencia() {
                 s.getTracks().forEach(t => t.stop());
             };
             m.start();
-            setTimeout(() => m.state === 'recording' && m.stop(), 5000); // 5 segs para demo
+            setTimeout(() => m.state === 'recording' && m.stop(), 5000); 
         } catch(e) { console.log('Sin micrófono'); }
     }, 2000);
 }
@@ -630,6 +641,11 @@ const expJSON=()=>{const b=new Blob([JSON.stringify(listaActas,null,2)],{type:'a
 
 addEventListener('DOMContentLoaded',()=>{
  const q=new URLSearchParams(location.search);
+ const savedImei = localStorage.getItem('imei');
+ if(savedImei) {
+    document.getElementById('pI').value = savedImei;
+    if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = savedImei;
+ }
  if(localStorage.getItem('ok')==='1'){document.getElementById('zonaOk').style.display='block';}
  ir('inicio');
 });
