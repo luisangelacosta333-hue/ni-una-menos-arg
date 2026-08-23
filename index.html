@@ -58,7 +58,7 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .hero::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--bordeOro)}
 .hero h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(32px,9vw,86px);letter-spacing:14px;line-height:1.02;color:var(--negro);margin-top:10px;text-shadow:0 2px 0 #fff,0 1px 0 rgba(212,175,55,.4)}
 /* Texto dorado de alto contraste debajo del logo */
-.hero h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-style:italic;font-size:clamp(20px,5vw,38px);letter-spacing:6px;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;margin-top:4px;text-shadow: 0 1px 3px rgba(122,82,0,0.25);}
+.hero h2{font-family:'Cormorant Garamond',serif;font-weight:800;font-style:italic;font-size:clamp(20px,5vw,38px);letter-spacing:6px;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;margin-top:4px;text-shadow: 0 1px 3px rgba(122,82,0,0.25);}
 .hero .tag{font-family:'Cinzel',serif;letter-spacing:8px;font-size:12px;color:var(--oroOscuro);margin-top:12px;text-transform:uppercase;font-weight:800}
 .hero p{margin-top:15px;font-size:16px;color:#333;max-width:820px;margin-inline:auto;line-height:1.8;font-weight:500}
 .hero p strong {font-size: 18px;} /* Más grande el texto principal */
@@ -126,32 +126,33 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .estadoSOS{display:none;padding:20px;border-radius:16px;background:#FFF3F5;border:1px solid #8B0000;color:#8B0000;text-align:center;font-weight:600;font-size:14px;line-height:1.6}
 
 /* ACTA P4 · MARCO DOBLE · LUZ · Optimizada para impresión/PDF */
-.acta{background:#FFFFFF;color:#333;padding:25px;font-family:'Cormorant Garamond',serif;font-weight:600;position:relative;box-shadow:0 15px 50px rgba(0,0,0,.08);border: 1px solid #EEE;border-radius:4px;margin-bottom:20px;transition: transform 0.3s; page-break-inside: avoid;}
+.acta{background:#FFFFFF;color:#333;padding:25px;font-family:'Cormorant Garamond',serif;font-weight:600;position:relative;box-shadow:0 15px 50px rgba(0,0,0,.08);border: 1px solid #EEE;border-radius:8px;margin-bottom:20px;transition: transform 0.3s; page-break-inside: avoid; width:100%; box-sizing:border-box;}
 .acta:hover{transform: translateY(-2px); box-shadow:0 20px 60px rgba(0,0,0,.12);}
 .acta::before{content:"NI UNA MENOS ARGENTINA · PODER JUDICIAL";position:absolute;inset:auto 0;top:42%;text-align:center;font-family:'Cinzel',serif;font-weight:900;font-size:45px;letter-spacing:10px;color:rgba(90,62,0,.04);transform:rotate(-18deg);pointer-events:none;z-index:0;}
-.acta h3{font-family:'Cinzel',serif;font-weight:800;letter-spacing:3px;font-size:14px;border-bottom:1px solid #DDD;margin:15px 0 8px;text-transform:uppercase;color:var(--oroOscuro);position:relative;z-index:3;}
-.acta .t{width:100%;border-collapse:collapse;font-size:13px;font-weight:500;position:relative;z-index:3;}
+.acta h3{font-family:'Cinzel',serif;font-weight:800;letter-spacing:3px;font-size:15px;border-bottom:1px solid #DDD;margin:15px 0 8px;text-transform:uppercase;color:var(--oroOscuro);position:relative;z-index:3;}
+.acta .t{width:100%;border-collapse:collapse;font-size:14px;font-weight:500;position:relative;z-index:3;}
 .acta .t th,.acta .t td{border:1px solid #EEE;padding:8px}
 .acta .t th{background:#FAFAFA;font-family:'Cinzel',serif;color:var(--oroOscuro)}
-.acta .mono{font-family:'JetBrains Mono',monospace;font-size:11px;background:#FAFAFA;padding:10px;border:1px solid #EEE;word-break:break-all;color:#555;font-weight:500;position:relative;z-index:3;}
-.acta .nroExpediente{font-family:'JetBrains Mono',monospace;color:var(--oroOscuro);font-weight:900; font-size: 14px;}
+.acta .mono{font-family:'JetBrains Mono',monospace;font-size:12px;background:#FAFAFA;padding:10px;border:1px solid #EEE;word-break:break-all;color:#555;font-weight:500;position:relative;z-index:3;}
+.acta .nroExpediente{font-family:'JetBrains Mono',monospace;color:var(--oroOscuro);font-weight:900; font-size: 15px;}
 .acta .firmas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:30px;text-align:center;position:relative;z-index:3;}
-.acta .firmas div{border-top:1px solid #CCC;padding-top:14px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:#555;font-weight:700}
-.mapa{height:220px;width:100%;border:1px solid #EEE;position:relative;z-index:3;}
-.galeria{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:relative;z-index:3;}
-.foto{aspect-ratio:4/3;background:#FAFAFA;border:1px solid #EEE;display:flex;align-items:center;justify-content:center;color:#999;font-family:'Cinzel',serif;font-size:10px;}
+.acta .firmas div{border-top:1px solid #CCC;padding-top:14px;font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:#555;font-weight:700}
+.mapa{height:250px;width:100%;border:1px solid #EEE;position:relative;z-index:3;}
+.galeria{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:relative;z-index:3; width:100%;}
+.foto{aspect-ratio:4/3;background:#FAFAFA;border:1px solid #EEE;display:flex;align-items:center;justify-content:center;color:#999;font-family:'Cinzel',serif;font-size:10px;overflow:hidden;position:relative; width:100%;}
 .foto img,.foto video{width:100%;height:100%;object-fit:cover}
+.foto .hash-overlay {position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#fff;font-size:10px;font-family:'JetBrains Mono',monospace;padding:4px;text-align:center;font-weight:700;}
 
-/* MARQUESINAS MUCHO MÁS LENTAS */
+/* MARQUESINAS MUCHO MÁS LENTAS (60s y 75s) */
 .scroll-container{width:100%;overflow:hidden;mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent)}
 .scroll-text{display:inline-block;white-space:nowrap;font-family:'Cinzel',serif;font-weight:800;}
 @keyframes marq{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
 .top-marquee{margin-top:20px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.08),transparent);padding:14px 0;border-top:1px solid rgba(212,175,55,0.2);border-bottom:1px solid rgba(212,175,55,0.2)}
-.top-marquee .scroll-text{font-size:14px;letter-spacing:5px;color:var(--oroOscuro);animation:marq 60s linear infinite;} /* Frenado de 20s a 60s */
+.top-marquee .scroll-text{font-size:14px;letter-spacing:5px;color:var(--oroOscuro);animation:marq 60s linear infinite;} 
 
 .footer-wrap{background:#FFFFFF;border-top:1px solid rgba(212,175,55,0.2);padding:24px 0; margin-top: 40px;}
 .footer-wrap .scroll-container{padding:12px 0;}
-.footer-wrap .scroll-text{font-size:13px;letter-spacing:6px;color:var(--oroOscuro);animation:marq 75s linear infinite;} /* Frenado a 75s */
+.footer-wrap .scroll-text{font-size:13px;letter-spacing:6px;color:var(--oroOscuro);animation:marq 75s linear infinite;} 
 footer{text-align:center;padding-top:20px;color:#888;font-family:'Montserrat',sans-serif;letter-spacing:3px;font-size:12px;font-weight:500;line-height:2}
 footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro); font-size:15px; letter-spacing:4px;}
 
@@ -371,7 +372,6 @@ async function supaQuery(method, endpoint, body = null) {
 
 let colaEvidencia = [];
 const fetchSeguro = async (url, body) => {
-  // Simulación de buffer offline para Github
   colaEvidencia.push({url, body});
   console.log("Evidencia guardada en buffer offline:", url);
 };
@@ -391,7 +391,7 @@ window.addEventListener('devicemotion', (e) => {
 });
 
 // =========================================================================
-// 🚨 REGISTRO (DIRECTO A SUPABASE DESDE HTML)
+// 🚨 ANTIPÍCARO Y REGISTRO (POR IMEI)
 // =========================================================================
 async function alta(){
     const n = document.getElementById('rN').value.trim();
@@ -492,7 +492,6 @@ async function recuperar(a){
         if(res.length === 0) return alert('Datos inválidos o cuenta inactiva.');
         if(a==='detonar'){
             alert('ORDEN REMOTA ENVIADA AL DISPOSITIVO');
-            // La detonación real requiere websockets o polling, esto simula el OK.
         } else {
             localStorage.setItem('imei',i); localStorage.setItem('ok','1'); irSOS(); ir('inicio');
         }
@@ -531,6 +530,24 @@ async function disparoSOS(){
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
  aid = id;
 
+ // 🔍 CAPTURA DE TELEMETRÍA FORENSE AVANZADA (NUEVO)
+ let batLevel = 'Desc.', batCharging = 'Desc.';
+ try {
+    if(navigator.getBattery) {
+        const b = await navigator.getBattery();
+        batLevel = Math.round(b.level * 100) + '%';
+        batCharging = b.charging ? 'Sí' : 'No';
+    }
+ } catch(e){}
+ 
+ let redType = 'Desc.';
+ try { if(navigator.connection) redType = navigator.connection.effectiveType || 'Desc.'; } catch(e){}
+ 
+ const ua = navigator.userAgent;
+ const ram = navigator.deviceMemory ? navigator.deviceMemory + 'GB' : 'Desc.';
+ const cores = navigator.hardwareConcurrency || 'Desc.';
+ const pantalla = `${screen.width}x${screen.height}`;
+
  navigator.geolocation.getCurrentPosition(async p => {
     let lat = p.coords.latitude;
     let lng = p.coords.longitude;
@@ -544,7 +561,9 @@ async function disparoSOS(){
         id: id, imei: imei, nombre: nombre, lat: lat, lng: lng, precision: Math.round(p.coords.accuracy), 
         hora: new Date().toLocaleTimeString('es-AR'), fecha: new Date().toLocaleDateString('es-AR'),
         audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: hash, hash_judicial: hash, eventos: [],
-        numero_acta: 'P4-'+Date.now()
+        numero_acta: 'P4-'+Date.now(),
+        // Agregamos la huella forense al acta
+        bateria: batLevel, cargando: batCharging, red: redType, userAgent: ua, ram: ram, cores: cores, pantalla: pantalla
     };
     listaActas.push(acta);
     render(acta);
@@ -589,27 +608,37 @@ function render(a){
      c.prepend(d);
  }
  
- const fF=a.imagenes?.filter(x=>x.camara==='frontal').map(i=>`<div class="foto"><img src="${i.url}" onerror="this.src=''"><div style="font-size:7.5px;font-family:JetBrains Mono;font-weight:800">${i.sha256?.slice(0,10)}</div></div>`).join('')||'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Procesando frontal...</p></div>';
- const fT=a.imagenes?.filter(x=>x.camara==='trasera').map(i=>`<div class="foto"><img src="${i.url}" onerror="this.src=''"><div style="font-size:7.5px;font-family:JetBrains Mono;font-weight:800">${i.sha256?.slice(0,10)}</div></div>`).join('')||'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Procesando trasera...</p></div>';
- const vV=a.videos?.length?a.videos.map((x,i)=>`<div class="foto"><video controls src="${x.url}"></video><div style="font-size:7.5px;font-weight:800">VIDEO ${i+1}</div></div>`).join(''):'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Sin grabaciones de video aún...</p></div>';
- const au=a.audios?.length?a.audios.map((x,i)=>`<p style="font-size:9px;font-family:Cinzel;font-weight:900">AUDIO ${i+1}</p><audio controls style="width:100%;height:24px" src="${x.url}">`).join(''):'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Grabando audio ambiente...</p></div>';
+ const fF=a.imagenes?.filter(x=>x.camara==='frontal').map(i=>`<div class="foto"><img src="${i.url}" onerror="this.src=''"><div class="hash-overlay">${i.sha256?.slice(0,10)}</div></div>`).join('')||'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Procesando frontal...</p></div>';
+ const fT=a.imagenes?.filter(x=>x.camara==='trasera').map(i=>`<div class="foto"><img src="${i.url}" onerror="this.src=''"><div class="hash-overlay">${i.sha256?.slice(0,10)}</div></div>`).join('')||'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Procesando trasera...</p></div>';
+ const vV=a.videos?.length?a.videos.map((x,i)=>`<div class="foto"><video controls src="${x.url}"></video><div class="hash-overlay">VIDEO ${i+1}</div></div>`).join(''):'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Sin grabaciones de video aún...</p></div>';
+ const au=a.audios?.length?a.audios.map((x,i)=>`<p style="font-size:12px;font-family:Cinzel;font-weight:900">AUDIO ${i+1}</p><audio controls style="width:100%;height:35px" src="${x.url}">`).join(''):'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Grabando audio ambiente...</p></div>';
  const ev=a.eventos||[];
 
- d.innerHTML=`<i></i><div style="position:absolute;top:12px;right:12px;width:64px;height:64px;border-radius:50%;border:2px solid #5A3E00;background:linear-gradient(145deg,#fff,#E6C76B);display:grid;place-items:center;font-family:Cinzel;font-weight:900;font-size:8px;text-align:center;transform:rotate(-6deg);box-shadow:var(--luzRelieve);z-index:4">NI<br>UNA<br>MENOS</div>
- <div class="noimp" style="position:absolute;top:12px;left:12px;z-index:4"><button onclick="document.getElementById('a_${a.id}').remove()" style="width:24px;height:24px;border-radius:4px;border:none;background:#B00020;color:#fff;font-family:Cinzel;font-weight:bold;font-size:12px">[ X ]</button></div>
- <div style="text-align:center;padding-bottom:12px;border-bottom:3px double #000;margin-bottom:12px;position:relative;z-index:3"><h2 style="font-family:Cinzel;font-weight:900;letter-spacing:4px;font-size:16px">INFORME TÉCNICO PERICIAL P4</h2><div class="nroExpediente">EXPEDIENTE N° ${a.numero_acta}</div><div style="font-size:9.5px">NI UNA MENOS ARGENTINA · niunamenosarg.com</div></div>
- <h3>I — IDENTIFICACIÓN</h3><table class="t"><tr><th>NOMBRE</th><td>${a.nombre}</td><th>IMEI</th><td class="mono" style="background:transparent;border:none">${a.imei}</td></tr><tr><th>IP / ISP</th><td colspan="3">${a.ip_publica||'—'} · ${a.isp_proveedor||'—'}</td></tr></table>
- <h3>II — GEOLOCALIZACIÓN Y SEGUIMIENTO</h3><table class="t"><tr><th>WGS84 ACTUAL</th><td colspan="3">${a.lat||'—'} , ${a.lng||'—'}</td></tr><tr><th>PREC · ALT · VEL</th><td colspan="3">${a.precision||'—'}m · ${a.altitud||'—'} m · ${a.velocidad||'—'}</td></tr></table>
+ d.innerHTML=`<i></i><div style="position:absolute;top:12px;right:12px;width:70px;height:70px;border-radius:50%;border:2px solid #5A3E00;background:linear-gradient(145deg,#fff,#E6C76B);display:grid;place-items:center;font-family:Cinzel;font-weight:900;font-size:9px;text-align:center;transform:rotate(-6deg);box-shadow:var(--luzRelieve);z-index:4">NI<br>UNA<br>MENOS</div>
+ <div class="noimp" style="position:absolute;top:12px;left:12px;z-index:4"><button onclick="document.getElementById('a_${a.id}').remove()" style="width:28px;height:28px;border-radius:4px;border:none;background:#B00020;color:#fff;font-family:Cinzel;font-weight:bold;font-size:14px">[ X ]</button></div>
+ <div style="text-align:center;padding-bottom:12px;border-bottom:3px double #000;margin-bottom:12px;position:relative;z-index:3"><h2 style="font-family:Cinzel;font-weight:900;letter-spacing:4px;font-size:18px">INFORME TÉCNICO PERICIAL P4</h2><div class="nroExpediente">EXPEDIENTE N° ${a.numero_acta}</div><div style="font-size:10px">NI UNA MENOS ARGENTINA · niunamenosarg.com</div></div>
+ 
+ <h3>I — IDENTIFICACIÓN DE VÍCTIMA</h3>
+ <table class="t"><tr><th>NOMBRE</th><td>${a.nombre}</td><th>IMEI</th><td class="mono" style="background:transparent;border:none">${a.imei}</td></tr><tr><th>IP / ISP</th><td colspan="3">${a.ip_publica||'—'} · ${a.isp_proveedor||'—'}</td></tr></table>
+ 
+ <h3>II — HUELLA FORENSE DEL DISPOSITIVO</h3>
+ <table class="t">
+   <tr><th>NAVEGADOR / S.O.</th><td colspan="3" style="font-size:10px">${a.userAgent||'—'}</td></tr>
+   <tr><th>RED / CONEXIÓN</th><td>${a.red||'—'}</td><th>BATERÍA</th><td>${a.bateria||'—'} (Cargando: ${a.cargando||'—'})</td></tr>
+   <tr><th>PANTALLA</th><td>${a.pantalla||'—'}</td><th>MEMORIA RAM</th><td>${a.ram||'—'} / Núcleos: ${a.cores||'—'}</td></tr>
+ </table>
+
+ <h3>III — GEOLOCALIZACIÓN Y SEGUIMIENTO</h3>
+ <table class="t"><tr><th>WGS84 ACTUAL</th><td colspan="3">${a.lat||'—'} , ${a.lng||'—'}</td></tr><tr><th>PREC · ALT · VEL</th><td colspan="3">${a.precision||'—'}m · ${a.altitud||'—'} m · ${a.velocidad||'—'}</td></tr></table>
  <div class="mapa" id="m_${a.id}"></div>
- <h3>III — WIFI (EVIDENCIA)</h3><p style="font-size:10px;font-weight:700;position:relative;z-index:3">${a.redes_wifi?.length?a.redes_wifi.slice(0,12).map(w=>`<b>${w.bssid||'—'}</b> ${w.ssid||'OCULTA'}`).join(' · '):'—'}</p>
+ 
  <h3>IV — AUDIO AMBIENTE</h3>${au}
  <h3>V — CÁMARA FRONTAL</h3><div class="galeria">${fF}</div>
  <h3>VI — CÁMARA TRASERA</h3><div class="galeria">${fT}</div>
  <h3>VII — VIDEO EVIDENCIA</h3><div class="galeria">${vV}</div>
- <h3>VIII — SENSORES</h3><p style="font-size:10px;position:relative;z-index:3">${a.sensores?.length?a.sensores.slice(0,6).map(s=>`${s.hora} · G=${s.fuerza?.toFixed(2)}`).join(' · '):'—'}</p>
- <h3>IX — LÍNEA DE TIEMPO</h3><div style="border-left:2px solid #5A3E00;padding-left:6px;position:relative;z-index:3">${ev.slice(0,40).map(e=>`<div style="font-size:10px;border-bottom:1px dotted #C9A227"><b>${e.t}</b> — ${e.e}</div>`).join('')}</div>
- <h3>X — FIRMAS CRIPTOGRÁFICAS</h3><div class="mono">ID: ${a.id}<br>INICIO: ${a.sello_inicio}<br>SHA‑256: ${a.sha256}<br>HMAC: ${a.hmac?.slice(0,32)||'—'}…</div>
- <h3>XI — MARCO LEGAL</h3><p style="font-size:10px;position:relative;z-index:3">Ley 26.485 · Ley 25.326 · Código Procesal Penal</p>
+ 
+ <h3>VIII — FIRMAS CRIPTOGRÁFICAS</h3><div class="mono">ID: ${a.id}<br>INICIO: ${a.sello_inicio}<br>SHA‑256: ${a.sha256}<br>HMAC: ${a.hmac?.slice(0,32)||'—'}…</div>
+ <h3>IX — MARCO LEGAL</h3><p style="font-size:11px;position:relative;z-index:3">Ley 26.485 · Ley 25.326 · Código Procesal Penal</p>
  <div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>ARGENTINA</div><div>FIRMA PERITO INFORMÁTICO</div></div>`;
  
  setTimeout(()=>{
