@@ -413,7 +413,7 @@ async function alta(){
     if(!n || !/^\d{15}$/.test(i)) return alert('Requiere Nombre completo y tu IMEI válido de 15 dígitos.');
     
     try {
-        const check = await supaQuery('GET', `suscripciones?select=*&imei=eq.${i}`);
+        const check = await supaQuery('GET', `c4_suscripciones?select=*&imei=eq.${i}`);
         if(check.length > 0) {
             alert('⚠️ SISTEMA DE SEGURIDAD:\nEste equipo ya agotó los 15 días de prueba o ya está registrado. Para seguir protegida debés abonar el servicio.');
             document.getElementById('pI').value = i;
@@ -427,7 +427,7 @@ async function alta(){
         let fechaVencimiento = new Date();
         fechaVencimiento.setDate(fechaVencimiento.getDate() + 15);
 
-        await supaQuery('POST', 'suscripciones', { imei: i, llave_acceso: k, tipo_plan: 'prueba_15', fecha_vencimiento: fechaVencimiento.toISOString(), activa: true });
+        await supaQuery('POST', 'c4_suscripciones', { imei: i, llave_acceso: k, tipo_plan: 'prueba_15', fecha_vencimiento: fechaVencimiento.toISOString(), activa: true });
 
         localStorage.setItem('imei', i); 
         localStorage.setItem('nombre', n);
@@ -458,9 +458,9 @@ async function pagar(monto, plan) {
         nuevaFecha.setMonth(nuevaFecha.getMonth() + meses);
 
         try {
-            await supaQuery('POST', 'suscripciones', { imei: i, llave_acceso: k, tipo_plan: plan, fecha_vencimiento: nuevaFecha.toISOString(), activa: true });
+            await supaQuery('POST', 'c4_suscripciones', { imei: i, llave_acceso: k, tipo_plan: plan, fecha_vencimiento: nuevaFecha.toISOString(), activa: true });
         } catch(errUpsert) {
-            await supaQuery('PATCH', `suscripciones?imei=eq.${i}`, { llave_acceso: k, tipo_plan: plan, fecha_vencimiento: nuevaFecha.toISOString(), activa: true });
+            await supaQuery('PATCH', `c4_suscripciones?imei=eq.${i}`, { llave_acceso: k, tipo_plan: plan, fecha_vencimiento: nuevaFecha.toISOString(), activa: true });
         }
         
         document.getElementById('lk').textContent = k;
@@ -475,12 +475,12 @@ async function validar(){
     const k = LK(document.getElementById('lkI').value);
     if(!k) return;
     try {
-        const res = await supaQuery('GET', `suscripciones?select=*&llave_acceso=eq.${k}`);
+        const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${k}`);
         if(res.length === 0) return alert('Acceso Denegado. La llave no existe.');
         
         const sub = res[0];
         if(new Date() > new Date(sub.fecha_vencimiento)) {
-            await supaQuery('PATCH', `suscripciones?id=eq.${sub.id}`, { activa: false });
+            await supaQuery('PATCH', `c4_suscripciones?id=eq.${sub.id}`, { activa: false });
             alert('❌ LLAVE VENCIDA. Tus 15 días de prueba o tu plan expiraron. Debés abonar para renovar el servicio.');
             document.getElementById('pI').value = sub.imei;
             if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = sub.imei;
@@ -500,7 +500,7 @@ async function recuperar(a){
     const i=IM(document.getElementById('rrI').value), k=LK(document.getElementById('rrL').value);
     if(!i||!k) return alert('Completar campos');
     try{
-        const res = await supaQuery('GET', `suscripciones?select=*&imei=eq.${i}&llave_acceso=eq.${k}&activa=eq.true`);
+        const res = await supaQuery('GET', `c4_suscripciones?select=*&imei=eq.${i}&llave_acceso=eq.${k}&activa=eq.true`);
         if(res.length === 0) return alert('Datos inválidos o cuenta inactiva.');
         if(a==='detonar'){
             alert('ORDEN REMOTA ENVIADA AL DISPOSITIVO');
@@ -584,19 +584,21 @@ async function disparoSOS(){
  }, () => { alert('GPS Denegado o sin señal. Capturando sin geolocalización.'); });
 }
 
+const parar=()=>{if(gps)navigator.geolocation.clearWatch(gps);if(la)clearInterval(la);if(lv)clearInterval(lv);if(l10)clearInterval(l10);document.getElementById('st').style.display='none'};
+
 async function pararConLlave(){
     const k = prompt('Ingrese su Llave Maestra para detener S.O.S y avisar que está a salvo');
     if(!k) return;
     
     const llaveLimpia = LK(k);
     try {
-        const res = await supaQuery('GET', `suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`);
+        const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`);
         if(res.length === 0) {
             alert('Llave incorrecta. Acceso Denegado.');
             return;
         }
 
-        document.getElementById('st').style.display = 'none';
+        parar(); // Corta GPS, cámara y micrófono
         
         const nombre = localStorage.getItem('nombre') || 'Usuaria';
         const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
@@ -623,6 +625,7 @@ async function pararConLlave(){
 
 async function salir(){
     if(confirm('¿Seguro que querés desvincular este dispositivo?')){
+        parar();
         localStorage.clear(); sessionStorage.clear(); location.reload();
     }
 }
