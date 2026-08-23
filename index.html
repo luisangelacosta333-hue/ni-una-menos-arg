@@ -279,6 +279,12 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 <section id="llave" class="vista" style="align-items:center;text-align:center"><h2 class="tit">✦ LLAVE MAESTRA C4 ✦</h2>
  <div class="caja" style="width:100%"><div class="llave" id="lk">C4‑XXXX‑XXXX</div>
   <p style="font-weight:600;color:#555;margin-top:18px;font-size:15px; letter-spacing:1px;">ÚNICA · INTRANSFERIBLE · VÁLIDA JUDICIALMENTE</p>
+  
+  <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-top:22px;text-align:left;box-shadow:var(--luz);">
+    <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">💡 INSTRUCCIÓN VITAL</b>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">El Botón S.O.S se dispara de inmediato. Si lo activás por accidente, <b>NO entres en pánico</b>. Simplemente tocá "Detener con Llave" e ingresá tu Llave Maestra. El sistema avisará automáticamente a tus familiares que estás a salvo.</span>
+  </div>
+
   <div style="display:flex;gap:12px;margin-top:25px;flex-wrap:wrap;justify-content:center">
    <button class="btn blanco" onclick="navigator.clipboard.writeText(document.getElementById('lk').textContent).then(()=>alert('Copiada correctamente'))">COPIAR</button>
    <button class="btn" onclick="navigator.share?.({text:document.getElementById('lk').textContent})">COMPARTIR</button>
@@ -295,7 +301,12 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 
 <section id="sos" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ ATRÁS</button><h2 class="tit">PROTECCIÓN ACTIVA</h2>
  <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" onclick="disparoSOS()">S.O.S</button></div>
- <div class="estadoSOS" id="st">✦ EVIDENCIA ACTIVADA Y ALERTAS ENVIADAS ✦<br>GPS SEGUNDO A SEGUNDO · AUDIO · VIDEO · FOTOS · SENSORES · CELDA · WIFI · CADENA<br><br><span style="font-size:12px;color:#888;font-weight:400;">(Búfer Offline activo: la evidencia se resguarda sin señal)</span><br><br><button onclick="pararConLlave()" style="padding:14px 28px;border-radius:50px;border:1px solid #8B0000;background:transparent;color:#8B0000;font-weight:700;letter-spacing:2px; font-family:'Cinzel', serif; cursor:pointer;">DETENER CON LLAVE</button></div>
+ <div class="estadoSOS" id="st">✦ EVIDENCIA ACTIVADA Y ALERTAS ENVIADAS ✦<br>GPS SEGUNDO A SEGUNDO · AUDIO · VIDEO · FOTOS · SENSORES · CELDA · WIFI · CADENA<br><br><span style="font-size:12px;color:#888;font-weight:400;">(Búfer Offline activo: la evidencia se resguarda sin señal)</span><br><br>
+   <div style="background:#FFE79B;color:#5A3E00;padding:10px;border-radius:8px;font-weight:700;margin-bottom:12px;font-size:12px;line-height:1.4;">
+    ⚠️ ¿FUE UNA ACTIVACIÓN ACCIDENTAL?<br>No te preocupes. Tocá abajo y poné tu Llave Maestra para avisar a tus contactos que estás a salvo.
+   </div>
+   <button onclick="pararConLlave()" style="padding:14px 28px;border-radius:50px;border:1px solid #8B0000;background:transparent;color:#8B0000;font-weight:700;letter-spacing:2px; font-family:'Cinzel', serif; cursor:pointer;">DETENER CON LLAVE</button>
+ </div>
  <button class="btn rubi" onclick="salir()" style="margin-top:25px">DESVINCULAR SISTEMA</button>
 </section>
 
@@ -553,7 +564,7 @@ async function disparoSOS(){
     let lat = p.coords.latitude;
     let lng = p.coords.longitude;
     
-    document.getElementById('st').innerHTML = "✦ EVIDENCIA ACTIVADA Y ALERTAS ENVIADAS ✦<br>GPS SEGUNDO A SEGUNDO · AUDIO · VIDEO · FOTOS · SENSORES · CELDA · WIFI · CADENA<br><br><span style='font-size:12px;color:#888;font-weight:700;'>(Búfer Offline activo: la evidencia se resguarda sin señal)</span><br><br><button onclick='pararConLlave()' style='padding:14px 28px;border-radius:50px;border:1px solid #8B0000;background:transparent;color:#8B0000;font-weight:900;letter-spacing:3px; font-family:`Cinzel`, serif; cursor:pointer;'>DETENER CON LLAVE</button>";
+    document.getElementById('st').innerHTML = "✦ EVIDENCIA ACTIVADA Y ALERTAS ENVIADAS ✦<br>GPS SEGUNDO A SEGUNDO · AUDIO · VIDEO · FOTOS · SENSORES · CELDA · WIFI · CADENA<br><br><span style='font-size:12px;color:#888;font-weight:700;'>(Búfer Offline activo: la evidencia se resguarda sin señal)</span><br><br><div style='background:#FFE79B;color:#5A3E00;padding:10px;border-radius:8px;font-weight:700;margin-bottom:12px;font-size:12px;line-height:1.4;'>⚠️ ¿FUE UNA ACTIVACIÓN ACCIDENTAL?<br>No te preocupes. Tocá abajo y poné tu Llave Maestra para avisar a tus contactos que estás a salvo.</div><button onclick='pararConLlave()' style='padding:14px 28px;border-radius:50px;border:1px solid #8B0000;background:transparent;color:#8B0000;font-weight:900;letter-spacing:3px; font-family:`Cinzel`, serif; cursor:pointer;'>DETENER CON LLAVE</button>";
     
     whatsappFrontend(contactos, nombre, lat, lng, id);
     
@@ -573,13 +584,43 @@ async function disparoSOS(){
  }, () => { alert('GPS Denegado o sin señal. Capturando sin geolocalización.'); });
 }
 
-function pararConLlave(){
-    const k = prompt('Ingrese su Llave Maestra para detener S.O.S');
-    if(k && k.trim() !== '') {
+async function pararConLlave(){
+    const k = prompt('Ingrese su Llave Maestra para detener S.O.S y avisar que está a salvo');
+    if(!k) return;
+    
+    const llaveLimpia = LK(k);
+    try {
+        const res = await supaQuery('GET', `suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`);
+        if(res.length === 0) {
+            alert('Llave incorrecta. Acceso Denegado.');
+            return;
+        }
+
         document.getElementById('st').style.display = 'none';
-        alert('SISTEMA DETENIDO Y EVIDENCIA ASEGURADA.');
+        
+        const nombre = localStorage.getItem('nombre') || 'Usuaria';
+        const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
+        
+        if (WA_INSTANCE && WA_TOKEN && contactos.length > 0) {
+            const mensajeSeguro = `✅ *AVISO DE SEGURIDAD - C4 NI UNA MENOS* ✅\n\nLa alerta anterior de *${nombre}* fue desactivada mediante su Llave Maestra de seguridad. Se trató de una activación accidental.\n\n👍 *Ella se encuentra a salvo y bien.*`;
+            for (const numero of contactos) {
+                try {
+                    let cel = String(numero).replace(/\D/g, '');
+                    if (cel.startsWith('54') && cel.length === 12) cel = '549' + cel.slice(2);
+                    await fetch(`https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chatId: `${cel}@c.us`, message: mensajeSeguro })
+                    });
+                } catch (e) {}
+            }
+        }
+
+        alert('✅ Sistema detenido con éxito. Se ha notificado a tus contactos que te encuentras a salvo.');
+    } catch(e) {
+        alert('Error al validar la llave con la base de datos.');
     }
 }
+
 async function salir(){
     if(confirm('¿Seguro que querés desvincular este dispositivo?')){
         localStorage.clear(); sessionStorage.clear(); location.reload();
