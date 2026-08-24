@@ -456,7 +456,7 @@ const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
 
 function leerVoz(){
  speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al software Energy Argentina dos mil veintiséis. Presentamos Ni Una Menos. Desarrollamos este sistema porque hacía falta tecnología forense de verdad. Se activa al instante con el botón antipánico, por comando de voz o automáticamente ante un impacto. Alerta a tus contactos y asegura evidencia con GPS en tiempo real, audio continuo y fotos. Sistema 100% blindado y privado.`);
+ const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, mediante el comando de voz secreta gritando ayuda, automáticamente ante un impacto o caída fuerte, o si se agota el modo trayecto al viajar. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. En segundo plano y de manera indetectable, el sistema asegura tu evidencia grabando audio de manera continua, tomando múltiples fotografías con ambas cámaras, y rastreando tu ubicación por GPS segundo a segundo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema cien por ciento blindado y privado.`);
  u.lang='es-AR';u.rate=.92;u.pitch=1;u.volume=1;
  speechSynthesis.speak(u);
 }
@@ -541,7 +541,7 @@ async function cancelarTrayecto() {
 }
 
 // =========================================================================
-// 🗣️ ACTIVACIÓN POR VOZ SECRETA (SILENCIOSO)
+// 🗣️ ACTIVACIÓN POR VOZ SECRETA (SILENCIOSO - "HOT MIC")
 // =========================================================================
 let recognition = null;
 let vozActiva = false;
@@ -576,6 +576,7 @@ async function toggleVoz() {
             return;
         }
         
+        // TRUCO "HOT MIC": Mantiene una línea abierta para evitar que Android apague y prenda el sistema (eso hace el Bip)
         if (!window.silentMicStream) {
             try { window.silentMicStream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch(e) {}
         }
@@ -615,7 +616,7 @@ async function toggleVoz() {
         
         recognition.onend = function() {
             if(vozActiva) {
-                setTimeout(() => { if(vozActiva) recognition.start(); }, 1000);
+                setTimeout(() => { if(vozActiva) recognition.start(); }, 500);
             }
         };
         
@@ -698,8 +699,6 @@ async function cargarActasLocales() {
 }
 
 let sosActivo = false;
-let mediaStream = null;
-let mediaRecorder = null;
 
 function toggleSOS() {
     if(sosActivo) {
@@ -881,50 +880,8 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
 // -------------------------------------------------------------------------
-// 📸 CAPTURA AVANZADA: FOTO TRASERA + FOTO FRONTAL + AUDIO CONTINUO (30s)
+// 📸 CAPTURA MÁXIMA DE EVIDENCIA (CICLO CONTINUO Y MÚLTIPLES FOTOS)
 // -------------------------------------------------------------------------
-async function capturarEvidencia() {
-    let actaActual = listaActas.find(a => a.id === aid);
-    if(!actaActual) return;
-
-    try {
-        const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const audioRecorder = new MediaRecorder(audioStream);
-        const audioChunks = [];
-        audioRecorder.ondataavailable = e => audioChunks.push(e.data);
-        audioRecorder.onstop = async () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-            if(actaActual) {
-                if(!actaActual.audios) actaActual.audios = [];
-                actaActual.audios.push(audioBlob);
-                await guardarActas();
-                
-                let currentImei = localStorage.getItem('imei');
-                if (actaActual.imei === currentImei) {
-                    render(actaActual);
-                }
-            }
-        };
-        audioRecorder.start();
-        setTimeout(() => {
-            if(audioRecorder && audioRecorder.state === 'recording') audioRecorder.stop();
-            audioStream.getTracks().forEach(t => t.stop());
-        }, 30000); 
-    } catch(e) { console.error("Micrófono bloqueado:", e); }
-
-    try {
-        let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } });
-        await tomarFotoSilenciosa(vFront, actaActual, 'frontal');
-        vFront.getTracks().forEach(t => t.stop());
-        
-        let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
-        await tomarFotoSilenciosa(vBack, actaActual, 'trasera');
-        vBack.getTracks().forEach(t => t.stop());
-    } catch(e) {
-        console.error("Error al capturar cámaras:", e);
-    }
-}
-
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
         const v = document.createElement('video');
@@ -952,6 +909,58 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
         };
         v.onerror = () => resolve();
     });
+}
+
+// ESTA FUNCIÓN SE REPITE SIN PARAR MIENTRAS EL SOS ESTÉ ACTIVO
+async function loopEvidencia(acta) {
+    if(!sosActivo || !acta) return;
+
+    // 1. Grabar 30 segundos de Audio
+    try {
+        const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const audioRecorder = new MediaRecorder(audioStream);
+        const audioChunks = [];
+        audioRecorder.ondataavailable = e => audioChunks.push(e.data);
+        audioRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            if(!acta.audios) acta.audios = [];
+            acta.audios.push(audioBlob);
+            await guardarActas();
+            
+            let currentImei = localStorage.getItem('imei');
+            if (acta.imei === currentImei) render(acta);
+        };
+        audioRecorder.start();
+        
+        // Esperamos 30 segundos antes de frenar el audio
+        await new Promise(resolve => setTimeout(resolve, 30000));
+        
+        if(audioRecorder.state === 'recording') audioRecorder.stop();
+        audioStream.getTracks().forEach(t => t.stop());
+    } catch(e) { console.error("Micrófono bloqueado para evidencia:", e); }
+
+    if(!sosActivo) return;
+
+    // 2. Foto Frontal
+    try {
+        let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } });
+        await tomarFotoSilenciosa(vFront, acta, 'frontal');
+        vFront.getTracks().forEach(t => t.stop());
+    } catch(e) { console.error("Error Frontal:", e); }
+
+    if(!sosActivo) return;
+
+    // 3. Foto Trasera
+    try {
+        let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
+        await tomarFotoSilenciosa(vBack, acta, 'trasera');
+        vBack.getTracks().forEach(t => t.stop());
+    } catch(e) { console.error("Error Trasera:", e); }
+
+    // 4. Volver a empezar el ciclo si sigue en emergencia
+    if(sosActivo) {
+        setTimeout(() => loopEvidencia(acta), 1000); 
+    }
 }
 
 async function disparoSOS(){
@@ -1017,7 +1026,8 @@ async function disparoSOS(){
      render(acta);
  }
 
- capturarEvidencia();
+ // Dispara el loop infinito de evidencia
+ loopEvidencia(acta);
 
  navigator.geolocation.getCurrentPosition(p => {
     let lat = p.coords.latitude;
@@ -1036,8 +1046,8 @@ async function disparoSOS(){
 
 let sh_last_x, sh_last_y, sh_last_z;
 let sh_lastUpdate = 0;
-// SENSIBILIDAD AJUSTADA A 6500
-const SHAKE_THRESHOLD = 6500; 
+// SENSIBILIDAD AJUSTADA A 6000
+const SHAKE_THRESHOLD = 6000; 
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
@@ -1085,8 +1095,6 @@ const parar = () => {
     if(la) clearInterval(la); if(lv) clearInterval(lv); if(l10) clearInterval(l10);
     document.getElementById('st').style.display='none';
     document.body.style.backgroundColor = '#FFFFFF';
-    if(mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
-    if(mediaStream) mediaStream.getTracks().forEach(t => t.stop());
 };
 
 async function pararConLlave(){
@@ -1156,7 +1164,7 @@ function render(a){
                 <p style="font-family:'Cinzel',serif; font-size:12px; font-weight:800; color:#8B0000; margin-bottom:8px;">🎙️ EVIDENCIA DE AUDIO AMBIENTAL ${i+1}</p>
                 <audio controls src="${url}" style="width:100%;"></audio>
             </div>`;
- }).join('') : '<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Grabando audio oculto (30 seg)...</p></div>';
+ }).join('') : '<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Grabando audios ocultos continuos...</p></div>';
 
  const fT = a.imagenes?.length ? a.imagenes.map(i=>`
     <div class="foto" style="padding:10px; width:100%;">
@@ -1164,7 +1172,7 @@ function render(a){
         <img src="${i.url}" style="width:100%; height:auto; border-radius:8px;" onerror="this.src=''">
         <div class="hash-overlay">HASH: ${i.sha256?.slice(0,15)}...</div>
     </div>
- `).join('') : '<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Capturando fotografías silenciadas...</p></div>';
+ `).join('') : '<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Capturando ciclo fotográfico de emergencia...</p></div>';
 
  let mapLink = (a.lat !== 'Buscando...') ? `<a href="https://maps.google.com/?q=${a.lat},${a.lng}" target="_blank" style="display:block; background:var(--oro); color:#fff; text-align:center; padding:15px; border-radius:8px; font-weight:900; font-family:'Cinzel',serif; text-decoration:none; margin-top:15px; margin-bottom: 15px; box-shadow:0 4px 10px rgba(0,0,0,0.3); font-size: 16px;">📍 ABRIR UBICACIÓN EN GOOGLE MAPS</a>` : '';
 
@@ -1187,8 +1195,8 @@ function render(a){
  <div class="mapa" id="m_${a.id}"></div>
  ${mapLink}
  
- <h3>IV — EVIDENCIA DE AUDIO AMBIENTAL</h3><div class="galeria">${aA}</div>
- <h3>V — EXTRACCIÓN FOTOGRÁFICA GIGANTE (DELANTERA Y TRASERA)</h3><div class="galeria">${fT}</div>
+ <h3>IV — EVIDENCIA DE AUDIO AMBIENTAL CONTINUO</h3><div class="galeria">${aA}</div>
+ <h3>V — EXTRACCIÓN FOTOGRÁFICA GIGANTE (MÚLTIPLE)</h3><div class="galeria">${fT}</div>
  
  <h3>VI — FIRMAS CRIPTOGRÁFICAS</h3><div class="mono">ID: ${a.id}<br>INICIO: ${a.sello_inicio}<br>SHA‑256: ${a.sha256}<br>HMAC: ${a.hmac?.slice(0,32)||'—'}…</div>
  <h3>VII — MARCO LEGAL</h3><p style="font-size:11px;position:relative;z-index:3">Ley 26.485 · Ley 25.326 · Código Procesal Penal</p>
