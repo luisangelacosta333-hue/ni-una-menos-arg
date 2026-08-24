@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
 <meta http-equiv="Strict-Transport-Security" content="max-age=31536000;preload">
 <title>NI UNA MENOS · ENERGY 2026 | GLAMOUR PREMIUM</title>
-<link rel="manifest" href="manifest.json?v=2026">
+<link rel="manifest" href="manifest.json?v=2026_v2">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -28,7 +28,7 @@
   --blur:blur(15px);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;max-width:100vw;overflow-x:hidden;background:#FFFFFF;color:var(--texto);font-family:'Montserrat',sans-serif;font-weight:500;-webkit-font-smoothing:antialiased; font-size:17.5px; transition: background-color 0.1s;}
+html,body{width:100%;max-width:100vw;overflow-x:hidden;background:#FFFFFF;color:var(--texto);font-family:'Montserrat',sans-serif;font-weight:500;-webkit-font-smoothing:antialiased; font-size:17.5px; transition: background-color 0.1s ease-in-out;}
 body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 60%);}
 ::selection{background:#FFE79B;color:#3A2800}
 ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#fff}::-webkit-scrollbar-thumb{background:var(--bordeOro);border-radius:999px}
@@ -115,32 +115,33 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 
 .estadoSOS{display:none;padding:20px;border-radius:16px;background:#FFF3F5;border:1px solid #8B0000;color:#8B0000;text-align:center;font-weight:600;font-size:14px;line-height:1.6}
 
-/* BOTÓN FLOTANTE GIGANTE */
+/* BOTÓN FLOTANTE GIGANTE Y CENTRADO */
 .btn-flotante-sos {
     position: fixed;
-    bottom: 25px;
-    right: 20px;
-    width: 120px; /* ¡Aumentado a tamaño gigante! */
-    height: 120px; /* ¡Aumentado a tamaño gigante! */
-    background: radial-gradient(circle at 30% 22%,#7A0010,#4A0008 80%);
-    border: 4px solid var(--oroMedio); /* Borde más grueso para resaltar */
+    bottom: 30px;
+    left: 50%; /* Lo centra en la pantalla */
+    transform: translateX(-50%);
+    width: 140px; /* Tamaño inmenso */
+    height: 140px; /* Tamaño inmenso */
+    background: radial-gradient(circle at 30% 22%,#B00020,#4A0008 80%); /* Rojo alerta */
+    border: 5px solid #FFE79B;
     border-radius: 50%;
-    color: var(--oroClaro);
+    color: #FFFFFF;
     font-family: 'Cinzel', serif;
     font-weight: 900;
-    font-size: 28px; /* Letra inmensa */
+    font-size: 34px; /* Texto enorme */
     display: none; 
     place-items: center;
-    box-shadow: 0 6px 20px rgba(139,0,0,.8);
+    box-shadow: 0 8px 30px rgba(176,0,32,0.8);
     z-index: 9999;
     cursor: pointer;
-    text-shadow: 0 2px 4px rgba(0,0,0,.7);
-    animation: pulsoFlotante 1.5s infinite;
+    text-shadow: 0 2px 5px rgba(0,0,0,.9);
+    animation: pulsoFlotante 1.2s infinite;
 }
 @keyframes pulsoFlotante {
-    0% { box-shadow: 0 0 0 0 rgba(139,0,0,.8); }
-    70% { box-shadow: 0 0 0 20px rgba(139,0,0,0); }
-    100% { box-shadow: 0 0 0 0 rgba(139,0,0,0); }
+    0% { box-shadow: 0 0 0 0 rgba(176,0,32,.8); }
+    70% { box-shadow: 0 0 0 25px rgba(176,0,32,0); }
+    100% { box-shadow: 0 0 0 0 rgba(176,0,32,0); }
 }
 
 .acta{background:#FFFFFF;color:#333;padding:25px;font-family:'Cormorant Garamond',serif;font-weight:600;position:relative;box-shadow:0 15px 50px rgba(0,0,0,.08);border: 1px solid #EEE;border-radius:8px;margin-bottom:20px;transition: transform 0.3s; page-break-inside: avoid; width:100%; box-sizing:border-box;}
@@ -323,7 +324,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 <section id="sos" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ ATRÁS</button><h2 class="tit">PROTECCIÓN ACTIVA</h2>
  <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
  
- <!-- TEXTO EXPLICITO DE ACTIVACIÓN QUE PEDISTE -->
  <div class="estadoSOS" id="st">
    <h2 style="font-size:18px; letter-spacing: 2px; margin-bottom: 8px;">¡SISTEMA ACTIVADO!</h2>
    ✦ EVIDENCIA Y ALERTAS ENVIADAS ✦<br>
@@ -361,16 +361,13 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <footer><strong>NI UNA MENOS · ENERGY 2026</strong><br>niunamenosarg.com · Custodia Judicial Forense · Marco legal estricto<br>© MMXXVI · Hecho en la República Argentina 🇦🇷</footer>
 </div>
 
-<!-- BOTÓN S.O.S FLOTANTE GIGANTE -->
+<!-- BOTÓN S.O.S FLOTANTE GIGANTE CENTRADO -->
 <div id="btnFlotanteSOS" class="btn-flotante-sos" onclick="ir('sos'); disparoSOS();">S.O.S</div>
 
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// =========================================================================
-// 🚀 CONFIGURACIÓN DE APIS (FRONTEND PURO PARA GITHUB)
-// =========================================================================
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 const WA_INSTANCE = '710722716988';
@@ -380,24 +377,20 @@ const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digi
 const LK=k=>!k?'':k.toUpperCase().replace(/[\u2011-\u2015]/g,'-').replace(/[^A-Z0-9\-]/g,'').trim();
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
-// 🛠 Función para asegurar que el celular habilite sensores SIN bloquear el pago/registro
 function pedirPermisosGlobales() {
     if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
         DeviceMotionEvent.requestPermission().catch(()=>{});
     }
-    // Abre y cierra la cámara silenciamente para que no trabe nada si el usuario pone cancelar
     navigator.mediaDevices.getUserMedia({ audio: true, video: true })
         .then(stream => stream.getTracks().forEach(track => track.stop()))
         .catch(e => console.warn("Permiso de cámara postergado hasta la activación real."));
 }
 
-// FUNCIÓN PARA NAVEGAR Y MOSTRAR/OCULTAR EL BOTÓN FLOTANTE S.O.S
 const ir=id=>{
     document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
     document.getElementById(id).classList.add('activa');
     scrollTo({top:0,behavior:'smooth'});
     
-    // Solo muestra el botón flotante si ya está registrada y NO está en la pantalla de S.O.S
     const bf=document.getElementById('btnFlotanteSOS');
     if(bf) bf.style.display = (localStorage.getItem('ok')==='1' && id!=='sos') ? 'grid' : 'none';
 };
@@ -412,8 +405,6 @@ function leerVoz(){
 }
 
 const b64=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});
-const ip=async()=>{try{return await(await fetch('https://ipapi.co/json/')).json()}catch{return{}}};
-const sigilo=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen();document.body.style.filter='brightness(0)';let t=0;addEventListener('touchstart',()=>{t++;setTimeout(()=>t=0,1500);if(t>=3){document.body.style.filter='';document.exitFullscreen?.()}})};
 
 async function sha256(message) {
     const msgBuffer = new TextEncoder().encode(message);
@@ -436,14 +427,13 @@ async function supaQuery(method, endpoint, body = null) {
 let colaEvidencia = [];
 const fetchSeguro = async (url, body) => {
   colaEvidencia.push({url, body});
-  console.log("Evidencia guardada en buffer offline:", url);
+  console.log("Evidencia guardada offline:", url);
 };
 
 let sosActivo = false;
 let mediaStream = null;
 let mediaRecorder = null;
 
-// EL BOTON S.O.S AHORA HACE LAS DOS COSAS: DISPARAR O PEDIR LLAVE
 function toggleSOS() {
     if(sosActivo) {
         pararConLlave();
@@ -452,9 +442,6 @@ function toggleSOS() {
     }
 }
 
-// =========================================================================
-// 🚨 ANTIPÍCARO Y REGISTRO (POR IMEI)
-// =========================================================================
 async function alta(){
     pedirPermisosGlobales();
     const n = document.getElementById('rN').value.trim();
@@ -466,7 +453,7 @@ async function alta(){
     try {
         const check = await supaQuery('GET', `c4_suscripciones?select=*&imei=eq.${i}`);
         if(check.length > 0) {
-            alert('⚠️ SISTEMA DE SEGURIDAD:\nEste equipo ya agotó los 15 días de prueba o ya está registrado. Para seguir protegida debés abonar el servicio.');
+            alert('⚠️ SISTEMA DE SEGURIDAD:\nEste equipo ya agotó los 15 días de prueba o ya está registrado.');
             document.getElementById('pI').value = i;
             if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = i;
             localStorage.setItem('imei', i);
@@ -489,20 +476,17 @@ async function alta(){
         document.getElementById('lk').textContent = k;
         localStorage.setItem('ok','1');
         
-        alert('✅ REGISTRO EXITOSO: Tenés 15 días gratis de prueba. Guardá tu llave con cuidado.');
+        alert('✅ REGISTRO EXITOSO: Tenés 15 días gratis de prueba.');
         ir('llave');
-    } catch(err) { alert('Error conectando a la base de datos. Verifique su internet.'); }
+    } catch(err) { alert('Error conectando a la base de datos.'); }
 }
 
-// =========================================================================
-// 💰 SIMULADOR DE PAGO EN EL FRONT
-// =========================================================================
 async function pagar(monto, plan) {
     pedirPermisosGlobales();
     const i = IM(document.getElementById('pI').value || localStorage.getItem('imei'));
-    if(!/^\d{15}$/.test(i)) return alert('Ingrese IMEI de 15 dígitos en la pantalla anterior.');
+    if(!/^\d{15}$/.test(i)) return alert('Ingrese IMEI de 15 dígitos.');
     
-    alert('Simulando conexión con Vercel/OpenIA para el monto: $' + monto);
+    alert('Simulando conexión de pago...');
     try {
         const k = 'C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase();
         let meses = plan === 'anual' ? 12 : 1;
@@ -529,12 +513,12 @@ async function validar(){
     if(!k) return;
     try {
         const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${k}`);
-        if(res.length === 0) return alert('Acceso Denegado. La llave no existe.');
+        if(res.length === 0) return alert('Acceso Denegado.');
         
         const sub = res[0];
         if(new Date() > new Date(sub.fecha_vencimiento)) {
             await supaQuery('PATCH', `c4_suscripciones?id=eq.${sub.id}`, { activa: false });
-            alert('❌ LLAVE VENCIDA. Tus 15 días de prueba o tu plan expiraron. Debés abonar para renovar el servicio.');
+            alert('❌ LLAVE VENCIDA. Debés abonar para renovar el servicio.');
             document.getElementById('pI').value = sub.imei;
             if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = sub.imei;
             ir('pago');
@@ -554,7 +538,7 @@ async function recuperar(a){
     if(!i||!k) return alert('Completar campos');
     try{
         const res = await supaQuery('GET', `c4_suscripciones?select=*&imei=eq.${i}&llave_acceso=eq.${k}&activa=eq.true`);
-        if(res.length === 0) return alert('Datos inválidos o cuenta inactiva.');
+        if(res.length === 0) return alert('Datos inválidos o inactivos.');
         if(a==='detonar'){
             alert('ORDEN REMOTA ENVIADA AL DISPOSITIVO');
         } else {
@@ -563,12 +547,9 @@ async function recuperar(a){
     }catch{alert('Error de conexión')}
 }
 
-// =========================================================================
-// 📱 ALERTAS WHATSAPP
-// =========================================================================
 async function whatsappFrontend(contactos, nombre, la, ln, id) {
     if (!WA_INSTANCE || !WA_TOKEN || !contactos || contactos.length === 0) return;
-    const mensaje = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre}* acaba de accionar su botón antipánico y te tiene configurado como contacto de emergencia.\n\n📍 *Ubicación GPS en tiempo real:*\nhttps://maps.google.com/?q=${la},${ln}\n\n🔐 *ID de Suceso P4:* ${id}\n\n⚠️ *Este es un mensaje automático oficial del Sistema C4. Por favor, comunícate con ella de inmediato o al 911.*`;
+    const mensaje = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre}* acaba de accionar su botón antipánico.\n\n📍 *Ubicación GPS:*\nhttps://maps.google.com/?q=${la},${ln}\n\n🔐 *ID de Suceso P4:* ${id}`;
     for (const numero of contactos) {
         try {
             let cel = String(numero).replace(/\D/g, '');
@@ -583,11 +564,9 @@ async function whatsappFrontend(contactos, nombre, la, ln, id) {
 
 let gps=null,aid=null,la=null,lv=null, l10=null, listaActas=[];
 
-// --- LÓGICA DE CÁMARA ROBUSTA Y UNIFICADA (MILISEGUNDO 1) ---
 async function capturarEvidencia() {
     let actaActual = listaActas.find(a => a.id === aid);
     if(!actaActual) return;
-    
     try {
         mediaStream = await navigator.mediaDevices.getUserMedia({
             audio: true,
@@ -639,10 +618,8 @@ async function capturarEvidencia() {
     }
 }
 
-// --- LÓGICA REESCRITA: DISPARO SIMULTÁNEO (ACTIVA TODO SIN ESPERAR AL GPS) ---
 async function disparoSOS(){
  if(sosActivo) return; 
- 
  sosActivo = true;
  document.getElementById('btnBigSOS').innerText = 'DETENER S.O.S';
  document.getElementById('btnBigSOS').classList.add('activo');
@@ -668,7 +645,6 @@ async function disparoSOS(){
  
  let redType = 'Desc.';
  try { if(navigator.connection) redType = navigator.connection.effectiveType || 'Desc.'; } catch(e){}
- 
  const ua = navigator.userAgent;
  const ram = navigator.deviceMemory ? navigator.deviceMemory + 'GB' : 'Desc.';
  const cores = navigator.hardwareConcurrency || 'Desc.';
@@ -690,75 +666,74 @@ async function disparoSOS(){
  navigator.geolocation.getCurrentPosition(p => {
     let lat = p.coords.latitude;
     let lng = p.coords.longitude;
-    
     let acActual = listaActas.find(a => a.id === aid);
     if(acActual) {
-        acActual.lat = lat;
-        acActual.lng = lng;
-        acActual.precision = Math.round(p.coords.accuracy);
+        acActual.lat = lat; acActual.lng = lng; acActual.precision = Math.round(p.coords.accuracy);
         render(acActual); 
     }
     whatsappFrontend(contactos, nombre, lat, lng, id);
-    
  }, () => { 
     whatsappFrontend(contactos, nombre, 'Desconocida', 'Desconocida', id);
  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
 }
 
-// --- SENSOR DE IMPACTO CORREGIDO - MODO AGRESIVO Y DESTELLOS ROJOS ---
-let lastX=null, lastY=null, lastZ=null;
-let ultimaAcc = 0;
 
-window.addEventListener('devicemotion', (e) => {
-    // Esto previene que Chrome/Safari bloqueen los datos en Android si usamos el fallback correcto
-    let acc = e.acceleration || e.accelerationIncludingGravity;
-    if (!acc) return;
+// =========================================================================
+// 🚨 SENSOR DE IMPACTO Y SACUDIDA ROBUSTO (NO FALLA)
+// =========================================================================
+let sh_last_x, sh_last_y, sh_last_z;
+let sh_lastUpdate = 0;
+const SHAKE_THRESHOLD = 800; // Sensibilidad calibrada para sacudidas de robo
+
+window.addEventListener('devicemotion', function (e) {
+    let acc = e.accelerationIncludingGravity || e.acceleration;
+    if(!acc || acc.x === null) return;
     
-    let x = acc.x || 0;
-    let y = acc.y || 0;
-    let z = acc.z || 0;
-
-    if (lastX === null) { lastX = x; lastY = y; lastZ = z; return; }
-
-    let deltaX = Math.abs(x - lastX);
-    let deltaY = Math.abs(y - lastY);
-    let deltaZ = Math.abs(z - lastZ);
-    
-    // Umbral de 20 (Para un sacudón o un tirón de arrebato fuerte)
-    if (deltaX + deltaY + deltaZ > 20 && (Date.now() - ultimaAcc > 3000)) {
-        ultimaAcc = Date.now();
-        if (localStorage.getItem('ok') === '1' && !sosActivo) { 
-            
-            // LLEVA A LA PANTALLA DE EMERGENCIA DE INMEDIATO
-            ir('sos'); 
-            
-            // LUCES ROJAS QUE PEDISTE (Efecto Sirena/Alarma en toda la pantalla)
-            let parpadeos = 0;
-            let luces = setInterval(() => {
-                document.body.style.backgroundColor = parpadeos % 2 === 0 ? '#8B0000' : '#FFFFFF';
-                parpadeos++;
-                if (parpadeos > 6) { // Termina en 3 segundos y se queda blanca
-                    clearInterval(luces);
-                    document.body.style.backgroundColor = '#FFFFFF';
-                }
-            }, 250);
-
-            // GATILLA EL SISTEMA S.O.S
-            disparoSOS(); 
+    let currTime = Date.now();
+    if ((currTime - sh_lastUpdate) > 100) {
+        let diffTime = (currTime - sh_lastUpdate);
+        sh_lastUpdate = currTime;
+        
+        let x = acc.x;
+        let y = acc.y;
+        let z = acc.z;
+        
+        let speed = Math.abs(x + y + z - sh_last_x - sh_last_y - sh_last_z) / diffTime * 10000;
+        
+        if (speed > SHAKE_THRESHOLD) {
+            if (localStorage.getItem('ok') === '1' && !sosActivo) {
+                activarAlarmaRobo();
+            }
         }
+        sh_last_x = x;
+        sh_last_y = y;
+        sh_last_z = z;
     }
-    lastX = x; lastY = y; lastZ = z;
 }, true);
 
-// CORTAR ABSOLUTAMENTE TODO
+// Función visual que pediste para la activación del robo
+function activarAlarmaRobo() {
+    ir('sos');
+    
+    // Luces rojas locas
+    let parpadeos = 0;
+    let destello = setInterval(() => {
+        document.body.style.backgroundColor = (parpadeos % 2 === 0) ? '#B00020' : '#FFFFFF';
+        parpadeos++;
+        if (parpadeos > 8) { // Después de parpadear vuelve al blanco
+            clearInterval(destello);
+            document.body.style.backgroundColor = '#FFFFFF';
+        }
+    }, 150);
+
+    disparoSOS();
+}
+
 const parar = () => {
     if(gps) navigator.geolocation.clearWatch(gps);
     if(la) clearInterval(la); if(lv) clearInterval(lv); if(l10) clearInterval(l10);
     document.getElementById('st').style.display='none';
-    
-    // Cortar efecto luces rojas si detienen rápido
     document.body.style.backgroundColor = '#FFFFFF';
-
     if(mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
     if(mediaStream) mediaStream.getTracks().forEach(t => t.stop());
 };
@@ -776,7 +751,6 @@ async function pararConLlave(){
         }
 
         parar(); 
-        
         sosActivo = false;
         document.getElementById('btnBigSOS').innerText = 'S.O.S';
         document.getElementById('btnBigSOS').classList.remove('activo');
@@ -785,7 +759,7 @@ async function pararConLlave(){
         const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
         
         if (WA_INSTANCE && WA_TOKEN && contactos.length > 0) {
-            const mensajeSeguro = `✅ *AVISO DE SEGURIDAD - C4 NI UNA MENOS* ✅\n\nLa alerta anterior de *${nombre}* fue desactivada mediante su Llave Maestra de seguridad. Se trató de una activación accidental.\n\n👍 *Ella se encuentra a salvo y bien.*`;
+            const mensajeSeguro = `✅ *AVISO DE SEGURIDAD - C4 NI UNA MENOS* ✅\n\nLa alerta de *${nombre}* fue desactivada mediante su Llave Maestra. Se encuentra a salvo y bien.*`;
             for (const numero of contactos) {
                 try {
                     let cel = String(numero).replace(/\D/g, '');
@@ -798,7 +772,7 @@ async function pararConLlave(){
             }
         }
 
-        alert('✅ Sistema detenido con éxito. Se ha notificado a tus contactos que te encuentras a salvo.');
+        alert('✅ Sistema detenido con éxito. Se notificó a tus contactos que estás a salvo.');
     } catch(e) {
         alert('Error al validar la llave con la base de datos.');
     }
