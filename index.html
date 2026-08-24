@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
 <meta http-equiv="Strict-Transport-Security" content="max-age=31536000;preload">
 <title>NI UNA MENOS · ENERGY 2026 | GLAMOUR PREMIUM</title>
-<link rel="manifest" href="manifest.json?v=2026_v6">
+<link rel="manifest" href="manifest.json?v=2026_v8">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -155,11 +155,13 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .acta .nroExpediente{font-family:'JetBrains Mono',monospace;color:var(--oroOscuro);font-weight:900; font-size: 15px;}
 .acta .firmas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:30px;text-align:center;position:relative;z-index:3;}
 .acta .firmas div{border-top:1px solid #CCC;padding-top:14px;font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:#555;font-weight:700}
-.mapa{height:250px;width:100%;border:1px solid #EEE;position:relative;z-index:3;}
-.galeria{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:relative;z-index:3; width:100%;}
-.foto{aspect-ratio:4/3;background:#FAFAFA;border:1px solid #EEE;display:flex;align-items:center;justify-content:center;color:#999;font-family:'Cinzel',serif;font-size:10px;overflow:hidden;position:relative; width:100%;}
-.foto img,.foto video{width:100%;height:100%;object-fit:cover}
-.foto .hash-overlay {position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#fff;font-size:10px;font-family:'JetBrains Mono',monospace;padding:4px;text-align:center;font-weight:700;}
+.mapa{height:250px;width:100%;border:1px solid #EEE;position:relative;z-index:3; border-radius:8px;}
+
+/* FOTOS Y VIDEOS GIGANTES (1 COLUMNA, 100% ANCHO) */
+.galeria{display:flex;flex-direction:column;gap:20px;position:relative;z-index:3; width:100%;}
+.foto{background:#FAFAFA;border:1px solid #EEE;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#999;font-family:'Cinzel',serif;font-size:10px;overflow:hidden;position:relative; width:100%; padding:10px; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.05);}
+.foto img,.foto video{width:100%;height:auto;object-fit:contain;border-radius:8px;}
+.foto .hash-overlay {position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.8);color:#fff;font-size:13px;font-family:'JetBrains Mono',monospace;padding:8px;text-align:center;font-weight:700;}
 
 .scroll-container{width:100%;overflow:hidden;mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent)}
 .scroll-text{display:inline-block;white-space:nowrap;font-family:'Cinzel',serif;font-weight:800;}
@@ -180,6 +182,22 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 .info-bloque p{font-size:15px;line-height:1.8;color:#555;font-weight:500}
 .ley{display:inline-block;padding:5px 12px;margin:4px;border-radius:999px;border:1px solid var(--oroMedio);color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;font-weight:700;background:#FFFCF2}
 @media(max-width:640px){.grid2{grid-template-columns:1fr}}
+
+@media print {
+  @page { size: A4; margin: 10mm; }
+  body { background: #fff !important; color: #000 !important; }
+  .btn, .footer-wrap, .noimp, .vista:not(.activa), header, .scroll-container, .btn-flotante-sos { display: none !important; }
+  .vista { padding: 0 !important; max-width: 100% !important; display: block !important; }
+  #panel { display: block !important; }
+  #alertas { display: block !important; width: 100%; }
+  .acta { 
+    position: relative !important; left: auto !important; top: auto !important; width: 100% !important; border: none !important; box-shadow: none !important; page-break-inside: avoid; page-break-after: always; margin: 0 0 20px 0 !important;
+  }
+  .acta h3, .acta th, .acta td, .acta div { color: #000 !important; -webkit-text-fill-color: #000 !important; }
+  .acta::after { border-color: #000 !important; }
+  .acta .t th { background: #eee !important; }
+  .acta .mono { background: #fff !important; border-color: #000 !important; }
+}
 </style></head><body>
 
 <div class="app">
@@ -255,7 +273,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <div class="caja">
   <div class="campo"><label>NOMBRE Y APELLIDO</label><input id="rN"></div>
   <div class="campo"><label>IMEI 15 DÍGITOS</label><input id="rI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
-  <div class="campo"><label>CONTACTO WHATSAPP 1</label><input id="c1" inputmode="tel"></div>
+  <div class="campo"><label>CONTACTO WHATSAPP 1</label><input id="c1" inputmode="tel" placeholder="Ej: 381 60 92..."></div>
   <div class="campo"><label>CONTACTO WHATSAPP 2</label><input id="c2" inputmode="tel"></div>
   <div class="campo"><label>CONTACTO WHATSAPP 3</label><input id="c3" inputmode="tel"></div>
   <button class="btn" onclick="alta()">✦ OBTENER 15 DÍAS GRATIS ✦</button>
@@ -316,8 +334,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
     ⚠️ ¿FUE UNA ACTIVACIÓN ACCIDENTAL?<br>Tocá el botón "DETENER S.O.S" e ingresá tu Llave Maestra.
    </div>
  </div>
- 
- <button class="btn rubi" onclick="salir()" style="margin-top:25px">DESVINCULAR SISTEMA</button>
 </section>
 
 <section id="recuperar" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER</button><h2 class="tit">RECUPERACIÓN Y REMOTO</h2>
@@ -332,15 +348,12 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 <section id="panel" class="vista"><h2 class="tit" style="text-align:left;border-bottom:1px solid var(--oro);padding-bottom:10px;letter-spacing:5px">✦ CENTRO JUDICIAL P4 ✦</h2>
  <div style="display:flex;gap:12px;flex-wrap:wrap">
   <button class="btn" onclick="print()" style="flex:1 1 100%">✦ IMPRIMIR ACTA JUDICIAL (PDF) ✦</button>
-  
-  <!-- BOTONES DE DESCARGA ARREGLADOS -->
   <button class="btn blanco" onclick="expJSON()" style="flex:1 1 100%; border-color:#333; color:#333;">⬇ DESCARGAR EVIDENCIA (JSON)</button>
   <button class="btn blanco" onclick="expTXT()" style="flex:1 1 100%; border-color:#333; color:#333;">⬇ DESCARGAR TEXTO (TXT)</button>
-  
   <button class="btn blanco" onclick="verificar()" style="flex:1 1 100%; margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
  </div>
  <div id="alertas"><div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div></div>
- <button class="btn blanco" onclick="cerrar()">CERRAR SESIÓN</button>
+ <button class="btn blanco" onclick="cerrar()" style="margin-top:20px">CERRAR SESIÓN</button>
 </section>
 </main>
 
@@ -365,7 +378,6 @@ const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digi
 const LK=k=>!k?'':k.toUpperCase().replace(/[\u2011-\u2015]/g,'-').replace(/[^A-Z0-9\-]/g,'').trim();
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
-// Lógica nueva: Pide todos los permisos SILENCIOSAMENTE *después* del pago/registro para no entorpecer el robo.
 async function pedirPermisosGlobalesYGPS() {
     alert("⚠️ CONFIGURACIÓN DE SEGURIDAD ⚠️\nA continuación el sistema te pedirá acceso al GPS, Cámara y Micrófono. Es OBLIGATORIO que pongas 'Permitir' en todo para que funcione ante un robo.");
     if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
@@ -408,21 +420,22 @@ function leerVoz(){
  speechSynthesis.speak(u);
 }
 
-// MODO SIGILO TOTALMENTE NEGRO
+// MODO SIGILO 100% NEGRO (FUNCIONA EN TODOS LOS CELULARES)
 const sigilo = () => {
-    let s = document.getElementById('pantalla-sigilo');
-    if(!s) {
-        s = document.createElement('div');
-        s.id = 'pantalla-sigilo';
-        s.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:999999;';
-        document.body.appendChild(s);
-        let t = 0;
-        s.addEventListener('touchstart', () => {
-            t++; setTimeout(() => t=0, 1500);
-            if(t >= 3) s.remove();
-        });
-        alert("⚠️ MODO SIGILO ACTIVADO ⚠️\nLa pantalla se pondrá totalmente negra (parecerá apagada). Para salir y volver al menú, tocá cualquier parte de la pantalla 3 VECES RÁPIDO.");
-    }
+    try { document.documentElement.requestFullscreen(); } catch(e){}
+    let s = document.createElement('div');
+    s.id = 'pantalla-sigilo';
+    s.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999999;display:flex;align-items:center;justify-content:center;';
+    document.body.appendChild(s);
+    let t = 0;
+    s.addEventListener('touchstart', () => {
+        t++; setTimeout(() => t=0, 1000);
+        if(t >= 3) {
+            try{ document.exitFullscreen(); }catch(e){}
+            s.remove();
+        }
+    });
+    alert("⚠️ MODO SIGILO ACTIVADO ⚠️\nLa pantalla se pondrá totalmente negra (parecerá apagada). Para salir y volver al menú, tocá la pantalla 3 VECES RÁPIDAS.");
 };
 
 const b64=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});
@@ -445,25 +458,42 @@ async function supaQuery(method, endpoint, body = null) {
     return res.json();
 }
 
-let colaEvidencia = [];
-const fetchSeguro = async (url, body) => {
-  colaEvidencia.push({url, body});
-};
+// =========================================================================
+// 💾 BASE DE DATOS INTERNA PARA GUARDAR VIDEOS GIGANTES (INDEXEDDB)
+// =========================================================================
+const initDB = () => new Promise((resolve) => {
+    let req = indexedDB.open('C4_DB', 2);
+    req.onupgradeneeded = e => {
+        if(!e.target.result.objectStoreNames.contains('actas')) {
+            e.target.result.createObjectStore('actas', {keyPath: 'id'});
+        }
+    };
+    req.onsuccess = e => resolve(e.target.result);
+});
+
+let listaActas = [];
+
+async function guardarActas() {
+    let db = await initDB();
+    let tx = db.transaction('actas', 'readwrite');
+    let store = tx.objectStore('actas');
+    listaActas.forEach(a => store.put(a));
+}
+
+async function cargarActasLocales() {
+    let db = await initDB();
+    return new Promise(resolve => {
+        let req = db.transaction('actas', 'readonly').objectStore('actas').getAll();
+        req.onsuccess = e => {
+            listaActas = e.target.result || [];
+            resolve();
+        };
+    });
+}
 
 let sosActivo = false;
 let mediaStream = null;
 let mediaRecorder = null;
-
-// PERSISTENCIA DE ACTAS EN LOCALSTORAGE PARA QUE NO SE PIERDAN AL RECARGAR
-let listaActas = JSON.parse(localStorage.getItem('actas_c4') || '[]');
-function guardarActas() {
-    try {
-        localStorage.setItem('actas_c4', JSON.stringify(listaActas));
-    } catch(e) {
-        let actasLigeras = listaActas.map(a => ({...a, videos: [], imagenes: []}));
-        localStorage.setItem('actas_c4', JSON.stringify(actasLigeras));
-    }
-}
 
 function toggleSOS() {
     if(sosActivo) {
@@ -598,7 +628,7 @@ async function whatsappFrontend(contactos, nombre, la, ln, id, tipo = 'alerta') 
             // ALERTAR SI GREEN API RECHAZA EL MENSAJE
             if(!res.ok || data.status === "error" || data.error) {
                 console.error("Fallo GreenAPI:", data);
-                alert(`❌ ERROR DE WHATSAPP (GREEN API)\nGreen API rechazó el mensaje al número ${cel}.\n\nSi estás usando la versión gratuita (DEVELOPER), solo podés enviarte mensajes a tu propio número autorizado.`);
+                alert(`❌ ERROR DE WHATSAPP (GREEN API)\nGreen API rechazó el mensaje al número ${cel}.\n\n⚠️ IMPORTANTE: Estás usando la versión Developer. Green API SOLO permite enviar mensajes al número exacto que autorizaste en su consola. Si tu número es ${cel}, andá a Green API y fijate si lo guardaron CON o SIN el '9' (ej: 54381... en vez de 549381...). Tienen que ser EXACTAMENTE iguales.`);
             }
         } catch (e) { 
             console.error("Error de Red WP:", e); 
@@ -622,11 +652,9 @@ async function capturarEvidencia() {
         mediaRecorder.ondataavailable = e => chunks.push(e.data);
         mediaRecorder.onstop = async () => {
             const blob = new Blob(chunks, { type: 'video/webm' });
-            fetchSeguro('/api/sos-video', { videoBase64: await b64(blob) });
             if(actaActual) {
-                let vUrl = URL.createObjectURL(blob);
-                actaActual.videos.push({url: vUrl, sha256: 'hash-calculado'});
-                guardarActas();
+                actaActual.videos.push(blob);
+                await guardarActas();
                 render(actaActual);
             }
         };
@@ -635,7 +663,7 @@ async function capturarEvidencia() {
         setTimeout(() => {
             if(mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
             if(mediaStream) mediaStream.getTracks().forEach(t => t.stop());
-        }, 60000);
+        }, 15000);
 
         const v = document.createElement('video');
         v.muted = true; v.playsInline = true; v.autoplay = true;
@@ -649,8 +677,7 @@ async function capturarEvidencia() {
             setTimeout(() => {
                 if(v.readyState >= 2) {
                     cv.getContext('2d').drawImage(v, 0, 0, cv.width, cv.height);
-                    let b64Img = cv.toDataURL('image/jpeg', 0.8);
-                    fetchSeguro('/api/sos-imagen', { imagenBase64: b64Img, camara: 'trasera' });
+                    let b64Img = cv.toDataURL('image/jpeg', 0.5);
                     if(actaActual) {
                         actaActual.imagenes.push({url: b64Img, camara: 'trasera', sha256: 'hash-auto'});
                         guardarActas();
@@ -671,6 +698,10 @@ async function disparoSOS(){
  document.getElementById('btnBigSOS').classList.add('activo');
  document.getElementById('st').style.display='block';
  
+ if ("vibrate" in navigator) {
+    navigator.vibrate([1000, 500, 1000, 500, 1000, 500, 2000]); // VIBRACIÓN FUERTE DE ALARMA
+ }
+
  speechSynthesis.cancel();
  try{if('wakeLock'in navigator)await navigator.wakeLock.request('screen')}catch{}
  
@@ -708,7 +739,7 @@ async function disparoSOS(){
      bateria: batLevel, cargando: batCharging, red: redType, userAgent: ua, ram: ram, cores: cores, pantalla: pantalla
  };
  listaActas.push(acta);
- guardarActas();
+ await guardarActas();
  render(acta);
 
  capturarEvidencia();
@@ -732,8 +763,8 @@ async function disparoSOS(){
 
 let sh_last_x, sh_last_y, sh_last_z;
 let sh_lastUpdate = 0;
-// SENSIBILIDAD EXACTA PEDIDA
-const SHAKE_THRESHOLD = 3000; 
+// SENSIBILIDAD EN 3500 EXACTA 
+const SHAKE_THRESHOLD = 3500; 
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
@@ -763,6 +794,7 @@ window.addEventListener('devicemotion', function (e) {
 
 function activarAlarmaRobo() {
     ir('sos');
+    if ("vibrate" in navigator) navigator.vibrate([500, 200, 500, 200, 1000]); // VIBRACIÓN
     let parpadeos = 0;
     let destello = setInterval(() => {
         document.body.style.backgroundColor = (parpadeos % 2 === 0) ? '#B00020' : '#FFFFFF';
@@ -809,8 +841,6 @@ async function pararConLlave(){
         whatsappFrontend(contactos, nombre, null, null, null, 'seguro');
 
         alert('✅ Sistema detenido con éxito. Volviendo a la pantalla principal.');
-        
-        // VUELVE A LA PANTALLA DE INICIO COMO PEDISTE
         ir('inicio');
     } catch(e) {
         alert('Error al validar la llave con la base de datos.');
@@ -848,9 +878,17 @@ function render(a){
  }
  
  const fF='<div class="ev-caja" style="text-align:center;padding:10px;color:#888;font-size:12px">Cámara Frontal desactivada por seguridad del sistema</div>';
- const fT=a.imagenes?.filter(x=>x.camara==='trasera').map(i=>`<div class="foto"><img src="${i.url}" onerror="this.src=''"><div class="hash-overlay">${i.sha256?.slice(0,10)}</div></div>`).join('')||'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Procesando evidencia trasera...</p></div>';
- const vV=a.videos?.length?a.videos.map((x,i)=>`<div class="foto"><video controls src="${x.url}"></video><div class="hash-overlay">VIDEO Y AUDIO ${i+1}</div></div>`).join(''):'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Sin grabaciones de video aún...</p></div>';
+ const fT=a.imagenes?.filter(x=>x.camara==='trasera').map(i=>`<div class="foto" style="padding:5px; width:100%;"><img src="${i.url}" style="width:100%; height:auto; border-radius:8px;" onerror="this.src=''"><div class="hash-overlay">${i.sha256?.slice(0,10)}</div></div>`).join('')||'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Procesando evidencia trasera...</p></div>';
+ 
+ const vV=a.videos?.length?a.videos.map((blob,i)=>{
+    let url = blob instanceof Blob ? URL.createObjectURL(blob) : (blob.url || '');
+    return `<div class="foto" style="padding:5px; width:100%;"><video controls playsinline preload="metadata" src="${url}" style="width:100%; height:auto; border-radius:8px;"></video><div class="hash-overlay">AUDIO Y VIDEO INTEGRADO ${i+1}</div></div>`;
+ }).join(''):'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Grabando audio y video oculto...</p></div>';
+ 
  const ev=a.eventos||[];
+
+ // BOTÓN DE GPS GIGANTE
+ let mapLink = (a.lat !== 'Buscando...') ? `<a href="https://maps.google.com/?q=${a.lat},${a.lng}" target="_blank" style="display:block; background:var(--oro); color:#fff; text-align:center; padding:15px; border-radius:8px; font-weight:900; font-family:'Cinzel',serif; text-decoration:none; margin-top:15px; margin-bottom: 15px; box-shadow:0 4px 10px rgba(0,0,0,0.3); font-size: 16px;">📍 ABRIR UBICACIÓN EN GOOGLE MAPS</a>` : '';
 
  d.innerHTML=`<i></i><div style="position:absolute;top:12px;right:12px;width:70px;height:70px;border-radius:50%;border:2px solid #5A3E00;background:linear-gradient(145deg,#fff,#E6C76B);display:grid;place-items:center;font-family:Cinzel;font-weight:900;font-size:9px;text-align:center;transform:rotate(-6deg);box-shadow:var(--luzRelieve);z-index:4">NI<br>UNA<br>MENOS</div>
  <div class="noimp" style="position:absolute;top:12px;left:12px;z-index:4"><button onclick="document.getElementById('a_${a.id}').remove()" style="width:28px;height:28px;border-radius:4px;border:none;background:#B00020;color:#fff;font-family:Cinzel;font-weight:bold;font-size:14px">[ X ]</button></div>
@@ -869,6 +907,7 @@ function render(a){
  <h3>III — GEOLOCALIZACIÓN Y SEGUIMIENTO</h3>
  <table class="t"><tr><th>WGS84 ACTUAL</th><td colspan="3">${a.lat||'—'} , ${a.lng||'—'}</td></tr><tr><th>PREC · ALT · VEL</th><td colspan="3">${a.precision||'—'}m · ${a.altitud||'—'} m · ${a.velocidad||'—'}</td></tr></table>
  <div class="mapa" id="m_${a.id}"></div>
+ ${mapLink}
  
  <h3>IV — VIDEO Y AUDIO AMBIENTE CONTINUO</h3><div class="galeria">${vV}</div>
  <h3>V — EXTRACCIÓN FOTOGRÁFICA</h3><div class="galeria">${fT}</div>
@@ -888,7 +927,6 @@ function render(a){
 
 function renderActasLocales() { listaActas.forEach(render); }
 
-// FUNCIONES DE DESCARGA ARREGLADAS
 const expJSON=()=>{
     if(listaActas.length === 0) return alert('No hay actas registradas para descargar.');
     const b=new Blob([JSON.stringify(listaActas,null,2)],{type:'application/json'});
@@ -906,8 +944,9 @@ const expTXT=()=>{
 
 const verificar=async()=>{alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales válidas\nLeyes: 26.485 · 25.326 · Código Procesal Penal')};
 
-addEventListener('DOMContentLoaded',()=>{
- renderActasLocales(); // CARGA LAS ACTAS GUARDADAS SIEMPRE
+addEventListener('DOMContentLoaded', async ()=>{
+ await cargarActasLocales(); 
+ renderActasLocales(); 
  const q=new URLSearchParams(location.search);
  const savedImei = localStorage.getItem('imei');
  if(savedImei) {
@@ -920,7 +959,7 @@ addEventListener('DOMContentLoaded',()=>{
     if(bf) bf.style.display = 'grid'; 
  }
  ir('inicio');
- if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v6').catch(()=>{}));
+ if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v8').catch(()=>{}));
  document.addEventListener('contextmenu',e=>e.preventDefault());
 });
 </script></body></html>
