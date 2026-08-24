@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
 <meta http-equiv="Strict-Transport-Security" content="max-age=31536000;preload">
 <title>NI UNA MENOS · ENERGY 2026 | GLAMOUR PREMIUM</title>
-<link rel="manifest" href="manifest.json?v=2026_v5">
+<link rel="manifest" href="manifest.json?v=2026_v6">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -115,7 +115,7 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 
 .estadoSOS{display:none;padding:20px;border-radius:16px;background:#FFF3F5;border:1px solid #8B0000;color:#8B0000;text-align:center;font-weight:600;font-size:14px;line-height:1.6}
 
-/* BOTÓN FLOTANTE GIGANTE Y CENTRADO */
+/* BOTÓN FLOTANTE GIGANTE Y CENTRADO EN INICIO */
 .btn-flotante-sos {
     position: fixed;
     bottom: 30px;
@@ -331,7 +331,12 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 
 <section id="panel" class="vista"><h2 class="tit" style="text-align:left;border-bottom:1px solid var(--oro);padding-bottom:10px;letter-spacing:5px">✦ CENTRO JUDICIAL P4 ✦</h2>
  <div style="display:flex;gap:12px;flex-wrap:wrap">
-  <button class="btn" onclick="print()" style="flex:1 1 100%">✦ IMPRIMIR ACTA JUDICIAL ✦</button>
+  <button class="btn" onclick="print()" style="flex:1 1 100%">✦ IMPRIMIR ACTA JUDICIAL (PDF) ✦</button>
+  
+  <!-- BOTONES DE DESCARGA ARREGLADOS -->
+  <button class="btn blanco" onclick="expJSON()" style="flex:1 1 100%; border-color:#333; color:#333;">⬇ DESCARGAR EVIDENCIA (JSON)</button>
+  <button class="btn blanco" onclick="expTXT()" style="flex:1 1 100%; border-color:#333; color:#333;">⬇ DESCARGAR TEXTO (TXT)</button>
+  
   <button class="btn blanco" onclick="verificar()" style="flex:1 1 100%; margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
  </div>
  <div id="alertas"><div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div></div>
@@ -344,7 +349,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <footer><strong>NI UNA MENOS · ENERGY 2026</strong><br>niunamenosarg.com · Custodia Judicial Forense · Marco legal estricto<br>© MMXXVI · Hecho en la República Argentina 🇦🇷</footer>
 </div>
 
-<!-- BOTÓN S.O.S FLOTANTE GIGANTE CENTRADO -->
+<!-- BOTÓN S.O.S FLOTANTE GIGANTE SIEMPRE EN INICIO -->
 <div id="btnFlotanteSOS" class="btn-flotante-sos" onclick="ir('sos'); disparoSOS();">S.O.S</div>
 
 </div>
@@ -362,7 +367,7 @@ const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
 // Lógica nueva: Pide todos los permisos SILENCIOSAMENTE *después* del pago/registro para no entorpecer el robo.
 async function pedirPermisosGlobalesYGPS() {
-    alert("⚠️ CONFIGURACIÓN DE SEGURIDAD ⚠️\nA continuación el sistema te pedirá acceso al GPS, Cámara y Micrófono. Es OBLIGATORIO que pongas 'Permitir' para que la evidencia funcione en un robo.");
+    alert("⚠️ CONFIGURACIÓN DE SEGURIDAD ⚠️\nA continuación el sistema te pedirá acceso al GPS, Cámara y Micrófono. Es OBLIGATORIO que pongas 'Permitir' en todo para que funcione ante un robo.");
     if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
         DeviceMotionEvent.requestPermission().catch(()=>{});
     }
@@ -372,19 +377,26 @@ async function pedirPermisosGlobalesYGPS() {
     } catch(e) {}
     
     navigator.geolocation.getCurrentPosition(
-        () => alert("✅ GPS y Sensores vinculados correctamente. Tu sistema está blindado."),
+        () => alert("✅ Sensores vinculados correctamente. Tu sistema está blindado."),
         () => alert("❌ RECHAZASTE EL GPS. El sistema no podrá enviar tu ubicación en una emergencia."),
         {enableHighAccuracy: true}
     );
 }
 
+// BOTON ROJO SIEMPRE EN INICIO
 const ir=id=>{
     document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
     document.getElementById(id).classList.add('activa');
     scrollTo({top:0,behavior:'smooth'});
     
     const bf=document.getElementById('btnFlotanteSOS');
-    if(bf) bf.style.display = (localStorage.getItem('ok')==='1' && id!=='sos') ? 'grid' : 'none';
+    if(bf) {
+        if(localStorage.getItem('ok')==='1' && id !== 'sos') {
+            bf.style.display = 'grid'; 
+        } else {
+            bf.style.display = 'none';
+        }
+    }
 };
 
 const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
@@ -395,6 +407,23 @@ function leerVoz(){
  u.lang='es-AR';u.rate=.92;u.pitch=1;u.volume=1;
  speechSynthesis.speak(u);
 }
+
+// MODO SIGILO TOTALMENTE NEGRO
+const sigilo = () => {
+    let s = document.getElementById('pantalla-sigilo');
+    if(!s) {
+        s = document.createElement('div');
+        s.id = 'pantalla-sigilo';
+        s.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:999999;';
+        document.body.appendChild(s);
+        let t = 0;
+        s.addEventListener('touchstart', () => {
+            t++; setTimeout(() => t=0, 1500);
+            if(t >= 3) s.remove();
+        });
+        alert("⚠️ MODO SIGILO ACTIVADO ⚠️\nLa pantalla se pondrá totalmente negra (parecerá apagada). Para salir y volver al menú, tocá cualquier parte de la pantalla 3 VECES RÁPIDO.");
+    }
+};
 
 const b64=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});
 
@@ -419,7 +448,6 @@ async function supaQuery(method, endpoint, body = null) {
 let colaEvidencia = [];
 const fetchSeguro = async (url, body) => {
   colaEvidencia.push({url, body});
-  console.log("Evidencia guardada offline:", url);
 };
 
 let sosActivo = false;
@@ -534,29 +562,15 @@ async function validar(){
 
 const cerrar=()=>{sessionStorage.clear();location.reload()};
 
-async function recuperar(a){
-    const i=IM(document.getElementById('rrI').value), k=LK(document.getElementById('rrL').value);
-    if(!i||!k) return alert('Completar campos');
-    try{
-        const res = await supaQuery('GET', `c4_suscripciones?select=*&imei=eq.${i}&llave_acceso=eq.${k}&activa=eq.true`);
-        if(res.length === 0) return alert('Datos inválidos o inactivos.');
-        if(a==='detonar'){
-            alert('ORDEN REMOTA ENVIADA AL DISPOSITIVO');
-        } else {
-            localStorage.setItem('imei',i); localStorage.setItem('ok','1'); irSOS(); ir('inicio');
-        }
-    }catch{alert('Error de conexión')}
-}
-
 // -------------------------------------------------------------------------
-// 🔥 LÓGICA DE WHATSAPP BLINDADA PARA NÚMEROS DE ARGENTINA
+// 🔥 LÓGICA DE WHATSAPP CON ALERTA DE ERROR SI FALLA GREEN API
 // -------------------------------------------------------------------------
 function formatArg(num) {
     let c = String(num).replace(/\D/g, '');
     if (c.startsWith('549')) return c;
     if (c.startsWith('54')) return '549' + c.substring(2);
     if (c.startsWith('0')) c = c.substring(1);
-    c = c.replace(/^(11|2\d{2}|3\d{2})15(\d+)$/, '$1$2'); // Limpia el 15 molesto
+    c = c.replace(/^(11|2\d{2}|3\d{2})15(\d+)$/, '$1$2'); // Limpia el 15
     return '549' + c;
 }
 
@@ -575,11 +589,20 @@ async function whatsappFrontend(contactos, nombre, la, ln, id, tipo = 'alerta') 
     for (const numero of contactos) {
         try {
             let cel = formatArg(numero);
-            await fetch(`https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`, {
+            let res = await fetch(`https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
             });
-        } catch (e) { console.error("Error WP:", e); }
+            let data = await res.json();
+            
+            // ALERTAR SI GREEN API RECHAZA EL MENSAJE
+            if(!res.ok || data.status === "error" || data.error) {
+                console.error("Fallo GreenAPI:", data);
+                alert(`❌ ERROR DE WHATSAPP (GREEN API)\nGreen API rechazó el mensaje al número ${cel}.\n\nSi estás usando la versión gratuita (DEVELOPER), solo podés enviarte mensajes a tu propio número autorizado.`);
+            }
+        } catch (e) { 
+            console.error("Error de Red WP:", e); 
+        }
     }
 }
 
@@ -657,7 +680,7 @@ async function disparoSOS(){
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
  aid = id;
 
- // 💥 DISPARO INSTANTÁNEO A WHATSAPP:
+ // 💥 DISPARO INSTANTÁNEO A WHATSAPP (SIN ESPERAR EL GPS):
  whatsappFrontend(contactos, nombre, null, null, id, 'alerta');
 
  let batLevel = 'Desc.', batCharging = 'Desc.';
@@ -709,7 +732,8 @@ async function disparoSOS(){
 
 let sh_last_x, sh_last_y, sh_last_z;
 let sh_lastUpdate = 0;
-const SHAKE_THRESHOLD = 2500; 
+// SENSIBILIDAD EXACTA PEDIDA
+const SHAKE_THRESHOLD = 3000; 
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
@@ -784,7 +808,10 @@ async function pararConLlave(){
         const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
         whatsappFrontend(contactos, nombre, null, null, null, 'seguro');
 
-        alert('✅ Sistema detenido con éxito. Se notificó a tus contactos que estás a salvo.');
+        alert('✅ Sistema detenido con éxito. Volviendo a la pantalla principal.');
+        
+        // VUELVE A LA PANTALLA DE INICIO COMO PEDISTE
+        ir('inicio');
     } catch(e) {
         alert('Error al validar la llave con la base de datos.');
     }
@@ -860,12 +887,27 @@ function render(a){
 }
 
 function renderActasLocales() { listaActas.forEach(render); }
-const expJSON=()=>{const b=new Blob([JSON.stringify(listaActas,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='ACTA_P4_'+Date.now()+'.json';a.click();};
-const expTXT=()=>{const t=listaActas.map(a=>`ACTA ${a.numero_acta}\nNOMBRE ${a.nombre}\nIMEI ${a.imei}\nGPS ${a.lat},${a.lng}\nSHA256 ${a.sha256}\nHMAC ${a.hmac}\n`).join('\n---\n');const b=new Blob([t],{type:'text/plain'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='ACTA_P4_'+Date.now()+'.txt';a.click();};
+
+// FUNCIONES DE DESCARGA ARREGLADAS
+const expJSON=()=>{
+    if(listaActas.length === 0) return alert('No hay actas registradas para descargar.');
+    const b=new Blob([JSON.stringify(listaActas,null,2)],{type:'application/json'});
+    const u=URL.createObjectURL(b);
+    const a=document.createElement('a');a.href=u;a.download='ACTA_P4_'+Date.now()+'.json';a.click();
+};
+
+const expTXT=()=>{
+    if(listaActas.length === 0) return alert('No hay actas registradas para descargar.');
+    const t=listaActas.map(a=>`ACTA ${a.numero_acta}\nNOMBRE ${a.nombre}\nIMEI ${a.imei}\nGPS ${a.lat},${a.lng}\nSHA256 ${a.sha256}\n`).join('\n---\n');
+    const b=new Blob([t],{type:'text/plain'});
+    const u=URL.createObjectURL(b);
+    const a=document.createElement('a');a.href=u;a.download='ACTA_P4_'+Date.now()+'.txt';a.click();
+};
+
 const verificar=async()=>{alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales válidas\nLeyes: 26.485 · 25.326 · Código Procesal Penal')};
 
 addEventListener('DOMContentLoaded',()=>{
- renderActasLocales(); // CARGA LAS ACTAS GUARDADAS
+ renderActasLocales(); // CARGA LAS ACTAS GUARDADAS SIEMPRE
  const q=new URLSearchParams(location.search);
  const savedImei = localStorage.getItem('imei');
  if(savedImei) {
@@ -878,7 +920,7 @@ addEventListener('DOMContentLoaded',()=>{
     if(bf) bf.style.display = 'grid'; 
  }
  ir('inicio');
- if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v5').catch(()=>{}));
+ if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v6').catch(()=>{}));
  document.addEventListener('contextmenu',e=>e.preventDefault());
 });
 </script></body></html>
