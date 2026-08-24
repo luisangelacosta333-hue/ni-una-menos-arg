@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
 <meta http-equiv="Strict-Transport-Security" content="max-age=31536000;preload">
 <title>NI UNA MENOS · ENERGY 2026 | GLAMOUR PREMIUM</title>
-<link rel="manifest" href="manifest.json?v=2026_v2">
+<link rel="manifest" href="manifest.json?v=2026_v4">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -379,6 +379,7 @@ const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
 // Lógica nueva: Pide todos los permisos SILENCIOSAMENTE *después* del pago/registro para no entorpecer el robo.
 async function pedirPermisosGlobalesYGPS() {
+    alert("⚠️ CONFIGURACIÓN DE SEGURIDAD ⚠️\nA continuación el sistema te pedirá acceso al GPS, Cámara y Micrófono. Es OBLIGATORIO que pongas 'Permitir' para que la evidencia funcione en un robo.");
     if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
         DeviceMotionEvent.requestPermission().catch(()=>{});
     }
@@ -388,7 +389,11 @@ async function pedirPermisosGlobalesYGPS() {
     } catch(e) {}
     
     // Activa el GPS para dejarlo en caché sin mostrar el proceso en pantalla de emergencia
-    navigator.geolocation.getCurrentPosition(()=>{}, ()=>{}, {enableHighAccuracy: true});
+    navigator.geolocation.getCurrentPosition(
+        () => alert("✅ GPS y Sensores vinculados correctamente. Tu sistema está blindado."),
+        () => alert("❌ RECHAZASTE EL GPS. El sistema no podrá enviar tu ubicación en una emergencia."),
+        {enableHighAccuracy: true}
+    );
 }
 
 const ir=id=>{
@@ -439,6 +444,18 @@ let sosActivo = false;
 let mediaStream = null;
 let mediaRecorder = null;
 
+// PERSISTENCIA DE ACTAS EN LOCALSTORAGE PARA QUE NO SE PIERDAN AL RECARGAR
+let listaActas = JSON.parse(localStorage.getItem('actas_c4') || '[]');
+function guardarActas() {
+    try {
+        localStorage.setItem('actas_c4', JSON.stringify(listaActas));
+    } catch(e) {
+        // Si se llena la memoria por los videos, guardamos solo el texto
+        let actasLigeras = listaActas.map(a => ({...a, videos: [], imagenes: []}));
+        localStorage.setItem('actas_c4', JSON.stringify(actasLigeras));
+    }
+}
+
 function toggleSOS() {
     if(sosActivo) {
         pararConLlave();
@@ -480,8 +497,7 @@ async function alta(){
         document.getElementById('lk').textContent = k;
         localStorage.setItem('ok','1');
         
-        alert('✅ REGISTRO EXITOSO: Tenés 15 días gratis de prueba. El sistema configurará tu GPS ahora.');
-        pedirPermisosGlobalesYGPS(); // SE PIDE DESPUÉS DE REGISTRARSE
+        pedirPermisosGlobalesYGPS(); 
         ir('llave');
     } catch(err) { alert('Error conectando a la base de datos.'); }
 }
@@ -506,8 +522,8 @@ async function pagar(monto, plan) {
         document.getElementById('lk').textContent = k;
         localStorage.setItem('ok', '1');
         localStorage.setItem('imei', i);
-        alert('✅ PAGO ACREDITADO. El sistema configurará tu GPS ahora.');
-        pedirPermisosGlobalesYGPS(); // SE PIDE DESPUÉS DEL PAGO
+        
+        pedirPermisosGlobalesYGPS();
         ir('llave');
     } catch(err) { alert('Error al acreditar el pago.'); }
 }
@@ -575,7 +591,7 @@ async function whatsappFrontend(contactos, nombre, la, ln, id) {
     }
 }
 
-let gps=null,aid=null,la=null,lv=null, l10=null, listaActas=[];
+let gps=null,aid=null,la=null,lv=null, l10=null;
 
 async function capturarEvidencia() {
     let actaActual = listaActas.find(a => a.id === aid);
@@ -595,6 +611,7 @@ async function capturarEvidencia() {
             if(actaActual) {
                 let vUrl = URL.createObjectURL(blob);
                 actaActual.videos.push({url: vUrl, sha256: 'hash-calculado'});
+                guardarActas();
                 render(actaActual);
             }
         };
@@ -621,6 +638,7 @@ async function capturarEvidencia() {
                     fetchSeguro('/api/sos-imagen', { imagenBase64: b64Img, camara: 'trasera' });
                     if(actaActual) {
                         actaActual.imagenes.push({url: b64Img, camara: 'trasera', sha256: 'hash-auto'});
+                        guardarActas();
                         render(actaActual);
                     }
                 }
@@ -672,6 +690,7 @@ async function disparoSOS(){
      bateria: batLevel, cargando: batCharging, red: redType, userAgent: ua, ram: ram, cores: cores, pantalla: pantalla
  };
  listaActas.push(acta);
+ guardarActas();
  render(acta);
 
  capturarEvidencia();
@@ -682,6 +701,7 @@ async function disparoSOS(){
     let acActual = listaActas.find(a => a.id === aid);
     if(acActual) {
         acActual.lat = lat; acActual.lng = lng; acActual.precision = Math.round(p.coords.accuracy);
+        guardarActas();
         render(acActual); 
     }
     whatsappFrontend(contactos, nombre, lat, lng, id);
@@ -693,7 +713,8 @@ async function disparoSOS(){
 
 let sh_last_x, sh_last_y, sh_last_z;
 let sh_lastUpdate = 0;
-const SHAKE_THRESHOLD = 800; // Sensibilidad calibrada
+// SENSIBILIDAD MENOR: Se aumentó de 800 a 2500 para que requiera un golpe fuerte
+const SHAKE_THRESHOLD = 2500; 
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
@@ -880,7 +901,7 @@ addEventListener('DOMContentLoaded',()=>{
     if(bf) bf.style.display = 'grid'; 
  }
  ir('inicio');
- if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v2').catch(()=>{}));
+ if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v4').catch(()=>{}));
  document.addEventListener('contextmenu',e=>e.preventDefault());
 });
 </script></body></html>
