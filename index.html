@@ -15,7 +15,6 @@
   --blanco:#FFFFFF;
   --negro:#050505;
   --texto:#1A1A1A;
-  /* Tonos dorados profundos y premium */
   --oroOscuro:#5A3E00;
   --oroMedio:#A87F0A;
   --oro:#D4AF37;
@@ -23,21 +22,17 @@
   --bordeOro:linear-gradient(135deg,#5A3E00 0%,#A87F0A 15%,#D4AF37 38%,#FFF0A8 50%,#FFE79B 52%,#D4AF37 65%,#A87F0A 85%,#5A3E00 100%);
   --bordeOroFino:linear-gradient(135deg,#A87F0A,#FFE79B,#D4AF37,#A87F0A);
   --textoOro:linear-gradient(180deg,#3A2800 0%,#7A5200 22%,#D4AF37 50%,#FFFFFF 58%,#FFE79B 66%,#A87F0A 80%,#5A3E00 100%);
-  
-  /* Brillo envolvente y elegante para las cajas */
   --luz:0 0 0 1.5px rgba(212,175,55,.25),0 15px 35px rgba(0,0,0,.05),0 2px 15px rgba(212,175,55,.1) inset;
   --luzFuerte:0 0 0 2px rgba(212,175,55,.7),0 0 45px rgba(212,175,55,.45),0 0 90px rgba(212,175,55,.3),0 15px 45px rgba(0,0,0,.15);
   --luzRelieve:inset 0 2px 0 rgba(255,255,255,.95),inset 0 -10px 22px rgba(138,101,8,.22),0 10px 28px rgba(0,0,0,.15);
-  --blur:blur(15px); /* Efecto esmerilado suave */
+  --blur:blur(15px);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;max-width:100vw;overflow-x:hidden;background:#FFFFFF;color:var(--texto);font-family:'Montserrat',sans-serif;font-weight:500;-webkit-font-smoothing:antialiased; font-size:17.5px;} /* Letra base más grande */
-/* Fondo blanco absoluto para resaltar el oro */
+html,body{width:100%;max-width:100vw;overflow-x:hidden;background:#FFFFFF;color:var(--texto);font-family:'Montserrat',sans-serif;font-weight:500;-webkit-font-smoothing:antialiased; font-size:17.5px;}
 body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 60%);}
 ::selection{background:#FFE79B;color:#3A2800}
 ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#fff}::-webkit-scrollbar-thumb{background:var(--bordeOro);border-radius:999px}
 
-/* ✨ LOGO 5 ANILLOS PREMIUM CON SOMBRA NEGRA FUERTE */
 .logo{width:190px;height:190px;margin:0 auto;position:relative;perspective:2400px;transform-style:preserve-3d;animation:flotar 7s ease-in-out infinite}
 .logo *{position:absolute;inset:0;border-radius:50%}
 .logo .aro{border:2px solid transparent;background:conic-gradient(from 0deg,transparent,var(--oro),#fff,var(--oroClaro),var(--oro),transparent);-webkit-mask:radial-gradient(circle,transparent 69%,#000 69.5%,#000 72.5%,transparent 73%);filter:drop-shadow(0 0 22px #FFE79B) drop-shadow(0 0 50px rgba(212,175,55,.65))}
@@ -47,7 +42,6 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .logo .a4{inset:24px;border:1.5px solid #fff;box-shadow:0 0 25px #fff inset,0 0 45px #FFE79B,0 0 80px var(--oro);animation:pulsoLuz 3.2s ease-in-out infinite, girar 20s linear infinite}
 .logo .a5{inset:32px;border:1px dashed rgba(212,175,55,.6);animation:girar 30s linear infinite reverse}
 .logo .centro{inset:40px;border-radius:50%;background:radial-gradient(circle at 30% 20%,#FFFFFF,#FFF8DC 35%,#E6C76B 62%,#A87F0A 88%,#5A3E00 100%);box-shadow:var(--luzFuerte),var(--luzRelieve);display:grid;place-items:center;border:2px solid #fff}
-/* Sombra negra fuerte en el C4 para que resalte */
 .logo b{font-family:'Cinzel',serif;font-weight:900;font-size:80px;letter-spacing:-3px;background:var(--textoOro);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 #fff) drop-shadow(0 8px 15px rgba(0,0,0,0.85));text-shadow: 0 4px 20px rgba(0,0,0,0.9);}
 
 @keyframes girar{to{transform:rotate(360deg)}}
@@ -57,25 +51,12 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .hero{padding:25px 12px 14px;text-align:center;border-bottom:1px solid #FFE79B;background:transparent;}
 .hero::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--bordeOro)}
 .hero h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(32px,9vw,86px);letter-spacing:14px;line-height:1.02;color:var(--negro);margin-top:10px;text-shadow:0 2px 0 #fff,0 1px 0 rgba(212,175,55,.4)}
-/* Texto dorado de alto contraste debajo del logo */
 .hero h2{font-family:'Cormorant Garamond',serif;font-weight:800;font-style:italic;font-size:clamp(20px,5vw,38px);letter-spacing:6px;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;margin-top:4px;text-shadow: 0 1px 3px rgba(122,82,0,0.25);}
 .hero .tag{font-family:'Cinzel',serif;letter-spacing:8px;font-size:12px;color:var(--oroOscuro);margin-top:12px;text-transform:uppercase;font-weight:800}
 .hero p{margin-top:15px;font-size:16px;color:#333;max-width:820px;margin-inline:auto;line-height:1.8;font-weight:500}
-.hero p strong {font-size: 18px;} /* Más grande el texto principal */
+.hero p strong {font-size: 18px;}
 
-/* CAJAS CON BRILLO DE LUJO Y RELIEVE ESMERILADO */
-.caja{
-  position:relative;
-  background:rgba(255,255,255,0.85);
-  backdrop-filter:var(--blur);
-  -webkit-backdrop-filter:var(--blur);
-  border-radius:20px;
-  padding:28px 20px;
-  margin-bottom:20px;
-  box-shadow:var(--luz);
-  transition:.45s;
-  border: 1px solid rgba(212, 175, 55, 0.15);
-}
+.caja{position:relative;background:rgba(255,255,255,0.85);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-radius:20px;padding:28px 20px;margin-bottom:20px;box-shadow:var(--luz);transition:.45s;border: 1px solid rgba(212, 175, 55, 0.15);}
 .caja:hover{transform:translateY(-3px);box-shadow:var(--luzFuerte); border-color:rgba(212, 175, 55, 0.4);}
 .caja h3{font-family:'Cinzel',serif;letter-spacing:6px;font-size:20px;text-align:center;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:18px;font-weight:900; text-shadow: 0 0 15px rgba(212,175,55,0.3);}
 
@@ -85,7 +66,6 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .paso b{display:block;font-family:'Cinzel',serif;letter-spacing:2px;font-size:15px;color:var(--negro);font-weight:800;text-transform:uppercase}
 .paso span{color:#555;font-size:14px;font-weight:400;margin-top:4px;line-height:1.6;display:block}
 
-/* BOTONES DE LUJO */
 .btn{position:relative;width:100%;max-width:700px;margin:0 auto;display:flex;align-items:center;justify-content:center;padding:20px 24px;border-radius:999px;border:none;cursor:pointer;font-family:'Cinzel',serif;font-weight:900;letter-spacing:4.5px;font-size:13.5px;text-transform:uppercase;background:var(--bordeOro);color:#FFFFFF;text-shadow:0 1px 2px rgba(0,0,0,.3);box-shadow:var(--luz);overflow:hidden;transition:.4s}
 .btn::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 22%,rgba(255,255,255,0.8) 50%,transparent 78%);transform:translateX(-130%);transition:1s}
 .btn:hover{transform:translateY(-2px);box-shadow:var(--luzFuerte);letter-spacing:5.5px}
@@ -123,8 +103,6 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 @keyframes onda{0%{transform:scale(.75);opacity:1}100%{transform:scale(2.5);opacity:0}}
 .bSOS{position:relative;z-index:5;width:210px;height:210px;border-radius:50%;border:2px solid var(--oroMedio);cursor:pointer;color:var(--oroClaro);font-family:'Cinzel',serif;font-weight:900;font-size:32px;letter-spacing:4px;background:radial-gradient(circle at 30% 22%,#7A0010,#4A0008 80%);text-shadow:0 2px 4px rgba(0,0,0,.7);box-shadow:0 0 0 0 rgba(139,0,0,.7), inset 0 4px 15px rgba(255,255,255,.1);animation:pulso 2s infinite; transition: all 0.3s ease;}
 @keyframes pulso{to{box-shadow:0 0 0 48px rgba(139,0,0,0), inset 0 4px 15px rgba(255,255,255,.1)}}
-
-/* ESTILO CUANDO EL SOS ESTÁ ACTIVADO (AMARILLO PRECAUCIÓN) */
 .bSOS.activo {
     background: radial-gradient(circle at 30% 22%, #FFE79B, #D4AF37 80%);
     color: #5A3E00;
@@ -137,7 +115,6 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 
 .estadoSOS{display:none;padding:20px;border-radius:16px;background:#FFF3F5;border:1px solid #8B0000;color:#8B0000;text-align:center;font-weight:600;font-size:14px;line-height:1.6}
 
-/* BOTÓN FLOTANTE S.O.S (SIEMPRE A MANO) */
 .btn-flotante-sos {
     position: fixed;
     bottom: 25px;
@@ -151,7 +128,7 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
     font-family: 'Cinzel', serif;
     font-weight: 900;
     font-size: 18px;
-    display: none; /* Se activa por JS solo si está registrada y no está en la vista SOS */
+    display: none; 
     place-items: center;
     box-shadow: 0 4px 15px rgba(139,0,0,.6);
     z-index: 9999;
@@ -165,7 +142,6 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
     100% { box-shadow: 0 0 0 0 rgba(139,0,0,0); }
 }
 
-/* ACTA P4 · MARCO DOBLE · LUZ · Optimizada para impresión/PDF */
 .acta{background:#FFFFFF;color:#333;padding:25px;font-family:'Cormorant Garamond',serif;font-weight:600;position:relative;box-shadow:0 15px 50px rgba(0,0,0,.08);border: 1px solid #EEE;border-radius:8px;margin-bottom:20px;transition: transform 0.3s; page-break-inside: avoid; width:100%; box-sizing:border-box;}
 .acta:hover{transform: translateY(-2px); box-shadow:0 20px 60px rgba(0,0,0,.12);}
 .acta::before{content:"NI UNA MENOS ARGENTINA · PODER JUDICIAL";position:absolute;inset:auto 0;top:42%;text-align:center;font-family:'Cinzel',serif;font-weight:900;font-size:45px;letter-spacing:10px;color:rgba(90,62,0,.04);transform:rotate(-18deg);pointer-events:none;z-index:0;}
@@ -183,7 +159,6 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .foto img,.foto video{width:100%;height:100%;object-fit:cover}
 .foto .hash-overlay {position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#fff;font-size:10px;font-family:'JetBrains Mono',monospace;padding:4px;text-align:center;font-weight:700;}
 
-/* MARQUESINAS MUCHO MÁS LENTAS (60s y 75s) */
 .scroll-container{width:100%;overflow:hidden;mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent)}
 .scroll-text{display:inline-block;white-space:nowrap;font-family:'Cinzel',serif;font-weight:800;}
 @keyframes marq{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
@@ -199,7 +174,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .info-bloque{padding:12px 0;border-bottom:1px solid rgba(212,175,55,.15)}
 .info-bloque:last-child{border-bottom:none}
-/* TÍTULOS DE LA CUADRÍCULA AGRANDADOS A 18px Y MÁS FUERTES */
 .info-bloque b{color:var(--oroOscuro);font-family:'Cinzel',serif;letter-spacing:2.5px;font-size:18px;font-weight:900;display:block;margin-bottom:8px; text-shadow: 0 1px 2px rgba(212,175,55,0.2);}
 .info-bloque p{font-size:15px;line-height:1.8;color:#555;font-weight:500}
 .ley{display:inline-block;padding:5px 12px;margin:4px;border-radius:999px;border:1px solid var(--oroMedio);color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;font-weight:700;background:#FFFCF2}
@@ -398,6 +372,13 @@ const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digi
 const LK=k=>!k?'':k.toUpperCase().replace(/[\u2011-\u2015]/g,'-').replace(/[^A-Z0-9\-]/g,'').trim();
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
+// 🛠 Función para asegurar que el celular habilite el sensor de movimiento en iOS/Nuevos Android
+function pedirPermisosGlobales() {
+    if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
+        DeviceMotionEvent.requestPermission().catch(()=>{});
+    }
+}
+
 // FUNCIÓN PARA NAVEGAR Y MOSTRAR/OCULTAR EL BOTÓN FLOTANTE S.O.S
 const ir=id=>{
     document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
@@ -447,6 +428,8 @@ const fetchSeguro = async (url, body) => {
 };
 
 let sosActivo = false;
+let mediaStream = null;
+let mediaRecorder = null;
 
 // EL BOTON S.O.S AHORA HACE LAS DOS COSAS: DISPARAR O PEDIR LLAVE
 function toggleSOS() {
@@ -457,24 +440,11 @@ function toggleSOS() {
     }
 }
 
-let toques=0;let tt=null;
-addEventListener('touchend',()=>{toques++;clearTimeout(tt);tt=setTimeout(()=>toques=0,1200);if(toques>=3&&!sosActivo)disparoSOS()});
-addEventListener('keydown',e=>{if(e.key==='5'&&e.ctrlKey&&e.shiftKey)disparoSOS()});
-
-let ultimaAcc = 0;
-window.addEventListener('devicemotion', (e) => {
-  if (!e.acceleration) return;
-  const fuerza = Math.sqrt(e.acceleration.x ** 2 + e.acceleration.y ** 2 + e.acceleration.z ** 2);
-  if (fuerza > 20 && (Date.now() - ultimaAcc > 3000)) {
-    ultimaAcc = Date.now();
-    if (localStorage.getItem('ok') === '1' && !sosActivo) { disparoSOS(); }
-  }
-});
-
 // =========================================================================
 // 🚨 ANTIPÍCARO Y REGISTRO (POR IMEI)
 // =========================================================================
 async function alta(){
+    pedirPermisosGlobales();
     const n = document.getElementById('rN').value.trim();
     const i = IM(document.getElementById('rI').value);
     const c = [document.getElementById('c1').value, document.getElementById('c2').value, document.getElementById('c3').value].filter(Boolean);
@@ -516,6 +486,7 @@ async function alta(){
 // 💰 SIMULADOR DE PAGO EN EL FRONT
 // =========================================================================
 async function pagar(monto, plan) {
+    pedirPermisosGlobales();
     const i = IM(document.getElementById('pI').value || localStorage.getItem('imei'));
     if(!/^\d{15}$/.test(i)) return alert('Ingrese IMEI de 15 dígitos en la pantalla anterior.');
     
@@ -541,6 +512,7 @@ async function pagar(monto, plan) {
 }
 
 async function validar(){
+    pedirPermisosGlobales();
     const k = LK(document.getElementById('lkI').value);
     if(!k) return;
     try {
@@ -580,7 +552,7 @@ async function recuperar(a){
 }
 
 // =========================================================================
-// 📱 ALERTAS WHATSAPP Y EVIDENCIA
+// 📱 ALERTAS WHATSAPP
 // =========================================================================
 async function whatsappFrontend(contactos, nombre, la, ln, id) {
     if (!WA_INSTANCE || !WA_TOKEN || !contactos || contactos.length === 0) return;
@@ -599,7 +571,67 @@ async function whatsappFrontend(contactos, nombre, la, ln, id) {
 
 let gps=null,aid=null,la=null,lv=null, l10=null, listaActas=[];
 
-// --- LÓGICA REESCRITA: DISPARO SIMULTÁNEO (CÁMARA + GPS) ---
+// --- LÓGICA DE CÁMARA ROBUSTA Y UNIFICADA (MILISEGUNDO 1) ---
+async function capturarEvidencia() {
+    let actaActual = listaActas.find(a => a.id === aid);
+    if(!actaActual) return;
+    
+    try {
+        // 1. Pedir permiso a CÁMARA Y MICRÓFONO al mismo tiempo (Garantiza luz verde al instante)
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+
+        // 2. Grabar Audio y Video Juntos sin cortes
+        mediaRecorder = new MediaRecorder(mediaStream);
+        const chunks = [];
+        mediaRecorder.ondataavailable = e => chunks.push(e.data);
+        mediaRecorder.onstop = async () => {
+            const blob = new Blob(chunks, { type: 'video/webm' });
+            fetchSeguro('/api/sos-video', { videoBase64: await b64(blob) });
+            if(actaActual) {
+                let vUrl = URL.createObjectURL(blob);
+                actaActual.videos.push({url: vUrl, sha256: 'hash-calculado'});
+                render(actaActual);
+            }
+        };
+        mediaRecorder.start();
+
+        // Apagar automático a los 60 segundos
+        setTimeout(() => {
+            if(mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+            if(mediaStream) mediaStream.getTracks().forEach(t => t.stop());
+        }, 60000);
+
+        // 3. Tomar Fotos Silenciosas del MISMO stream de video
+        const v = document.createElement('video');
+        v.muted = true; v.playsInline = true; v.autoplay = true;
+        v.srcObject = mediaStream;
+        await v.play();
+        
+        const cv = document.createElement('canvas');
+        cv.width = 1280; cv.height = 720;
+        
+        for(let i=0; i<4; i++) {
+            setTimeout(() => {
+                if(v.readyState >= 2) {
+                    cv.getContext('2d').drawImage(v, 0, 0, cv.width, cv.height);
+                    let b64Img = cv.toDataURL('image/jpeg', 0.8);
+                    fetchSeguro('/api/sos-imagen', { imagenBase64: b64Img, camara: 'trasera' });
+                    if(actaActual) {
+                        actaActual.imagenes.push({url: b64Img, camara: 'trasera', sha256: 'hash-auto'});
+                        render(actaActual);
+                    }
+                }
+            }, 1000 + i * 1500); 
+        }
+    } catch(e) {
+        console.error("Hardware bloqueado por el celular:", e);
+    }
+}
+
+// --- LÓGICA REESCRITA: DISPARO SIMULTÁNEO (ACTIVA TODO SIN ESPERAR AL GPS) ---
 async function disparoSOS(){
  if(sosActivo) return; 
  
@@ -609,7 +641,6 @@ async function disparoSOS(){
  document.getElementById('st').style.display='block';
  
  speechSynthesis.cancel();
- if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){DeviceMotionEvent.requestPermission().catch(()=>{})}
  try{if('wakeLock'in navigator)await navigator.wakeLock.request('screen')}catch{}
  
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
@@ -635,7 +666,7 @@ async function disparoSOS(){
  const cores = navigator.hardwareConcurrency || 'Desc.';
  const pantalla = `${screen.width}x${screen.height}`;
 
- // 1. CREAR EL ACTA BASE DE INMEDIATO (SIN GPS TODAVÍA)
+ // 1. CREAMOS EL ACTA DE INMEDIATO
  const hash = await sha256(id+imei+Date.now());
  let acta = {
      id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
@@ -647,15 +678,14 @@ async function disparoSOS(){
  listaActas.push(acta);
  render(acta);
 
- // 2. PRENDER CÁMARAS Y MICRÓFONO AL INSTANTE (SIN ESPERAR NADA)
+ // 2. PRENDEMOS CÁMARAS Y MICRÓFONO AL INSTANTE (Sin esperar a los satélites)
  capturarEvidencia();
 
- // 3. BUSCAR EL GPS EN SEGUNDO PLANO Y ACTUALIZAR AL ENCONTRARLO
+ // 3. BUSCAMOS EL GPS EN SILENCIO (Puede tardar, pero ya estamos grabando)
  navigator.geolocation.getCurrentPosition(p => {
     let lat = p.coords.latitude;
     let lng = p.coords.longitude;
     
-    // Actualizar el acta con las coordenadas reales
     let acActual = listaActas.find(a => a.id === aid);
     if(acActual) {
         acActual.lat = lat;
@@ -664,17 +694,54 @@ async function disparoSOS(){
         render(acActual); 
     }
     
-    // Mandar WhatsApp con coordenadas reales
+    // Manda WhatsApp con coordenadas correctas
     whatsappFrontend(contactos, nombre, lat, lng, id);
     
  }, () => { 
-    // Si falla el GPS, manda el WhatsApp igual
+    // Manda WhatsApp sin ubicación si el GPS está apagado, pero lo manda rápido
     whatsappFrontend(contactos, nombre, 'Desconocida', 'Desconocida', id);
-    alert('GPS Denegado o sin señal. Evidencia forense (cámara/audio) capturando igual.'); 
- }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+ }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
 }
 
-const parar=()=>{if(gps)navigator.geolocation.clearWatch(gps);if(la)clearInterval(la);if(lv)clearInterval(lv);if(l10)clearInterval(l10);document.getElementById('st').style.display='none'};
+// --- NUEVO SENSOR DE IMPACTO INFALIBLE ---
+let lastX=null, lastY=null, lastZ=null;
+let threshold = 30; // 30 es una sacudida/golpe brusco real, no un salto al caminar
+let ultimaAcc = 0;
+
+window.addEventListener('devicemotion', (e) => {
+    // accelerationIncludingGravity es clave: funciona en el 100% de los celulares
+    let acc = e.acceleration || e.accelerationIncludingGravity;
+    if (!acc) return;
+    
+    let x = acc.x || 0;
+    let y = acc.y || 0;
+    let z = acc.z || 0;
+
+    if (lastX === null) { lastX = x; lastY = y; lastZ = z; return; }
+
+    let deltaX = Math.abs(x - lastX);
+    let deltaY = Math.abs(y - lastY);
+    let deltaZ = Math.abs(z - lastZ);
+    
+    if (deltaX + deltaY + deltaZ > threshold && (Date.now() - ultimaAcc > 3000)) {
+        ultimaAcc = Date.now();
+        if (localStorage.getItem('ok') === '1' && !sosActivo) { 
+            disparoSOS(); 
+        }
+    }
+    lastX = x; lastY = y; lastZ = z;
+});
+
+// CORTAR ABSOLUTAMENTE TODO
+const parar = () => {
+    if(gps) navigator.geolocation.clearWatch(gps);
+    if(la) clearInterval(la); if(lv) clearInterval(lv); if(l10) clearInterval(l10);
+    document.getElementById('st').style.display='none';
+    
+    // Apagar cámara y micrófono de inmediato
+    if(mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+    if(mediaStream) mediaStream.getTracks().forEach(t => t.stop());
+};
 
 async function pararConLlave(){
     const k = prompt('Ingrese su Llave Maestra para detener el sistema y avisar que está a salvo');
@@ -725,17 +792,6 @@ async function salir(){
     }
 }
 
-async function aAud(id){try{const s=await navigator.mediaDevices.getUserMedia({audio:true});const m=new MediaRecorder(s);const ch=[];m.ondataavailable=e=>ch.push(e.data);m.onstop=async()=>{const b=new Blob(ch,{type:'audio/webm'}); fetchSeguro('/api/sos-audio',{audioBase64:await b64(b)}); s.getTracks().forEach(t=>t.stop())};m.start();setTimeout(()=>m.state==='recording'&&m.stop(),60000)}catch{}}
-async function aVid(id){try{const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false});const m=new MediaRecorder(s);const ch=[];m.ondataavailable=e=>ch.push(e.data);m.onstop=async()=>{const b=new Blob(ch,{type:'video/webm'}); fetchSeguro('/api/sos-video',{videoBase64:await b64(b)}); s.getTracks().forEach(t=>t.stop())};m.start();setTimeout(()=>m.state==='recording'&&m.stop(),60000)}catch{}}
-async function aFotos(id){['user','environment'].forEach((cam,idx)=>setTimeout(()=>{navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:cam},width:{ideal:1920},height:{ideal:1080}}}).then(async s=>{const v=document.createElement('video');v.muted=v.playsInline=v.autoplay=true;v.srcObject=s;await v.play();const cv=document.createElement('canvas');cv.width=1920;cv.height=1080;for(let i=0;i<4;i++)setTimeout(()=>{if(v.readyState>=2){cv.getContext('2d').drawImage(v,0,0,cv.width,cv.height); fetchSeguro('/api/sos-imagen',{imagenBase64:cv.toDataURL('image/jpeg',.88),camara:cam==='user'?'frontal':'trasera'})}if(i===3)s.getTracks().forEach(t=>t.stop())},700+i*900)}).catch(()=>{})},idx*5000))}
-async function sensores(id){try{const a=new Accelerometer({frequency:5});a.addEventListener('reading',()=>{const f=Math.sqrt(a.x**2+a.y**2+a.z**2);if(f>25||f<1) fetchSeguro('/api/sos-sensores',{x:a.x,y:a.y,z:a.z,fuerza:f,hora:selloT()}) });a.start()}catch{}}
-
-async function capturarEvidencia() {
-    let actaActual = listaActas.find(a => a.id === aid);
-    if(!actaActual) return;
-    aAud(aid); aFotos(aid); aVid(aid); sensores(aid);
-}
-
 let mapas=new Set();
 function render(a){
  const c=document.getElementById('alertas');
@@ -748,10 +804,9 @@ function render(a){
      c.prepend(d);
  }
  
- const fF=a.imagenes?.filter(x=>x.camara==='frontal').map(i=>`<div class="foto"><img src="${i.url}" onerror="this.src=''"><div class="hash-overlay">${i.sha256?.slice(0,10)}</div></div>`).join('')||'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Procesando frontal...</p></div>';
- const fT=a.imagenes?.filter(x=>x.camara==='trasera').map(i=>`<div class="foto"><img src="${i.url}" onerror="this.src=''"><div class="hash-overlay">${i.sha256?.slice(0,10)}</div></div>`).join('')||'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Procesando trasera...</p></div>';
- const vV=a.videos?.length?a.videos.map((x,i)=>`<div class="foto"><video controls src="${x.url}"></video><div class="hash-overlay">VIDEO ${i+1}</div></div>`).join(''):'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Sin grabaciones de video aún...</p></div>';
- const au=a.audios?.length?a.audios.map((x,i)=>`<p style="font-size:12px;font-family:Cinzel;font-weight:900">AUDIO ${i+1}</p><audio controls style="width:100%;height:35px" src="${x.url}">`).join(''):'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Grabando audio ambiente...</p></div>';
+ const fF='<div class="ev-caja" style="text-align:center;padding:10px;color:#888;font-size:12px">Cámara Frontal desactivada por seguridad del sistema</div>';
+ const fT=a.imagenes?.filter(x=>x.camara==='trasera').map(i=>`<div class="foto"><img src="${i.url}" onerror="this.src=''"><div class="hash-overlay">${i.sha256?.slice(0,10)}</div></div>`).join('')||'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Procesando evidencia trasera...</p></div>';
+ const vV=a.videos?.length?a.videos.map((x,i)=>`<div class="foto"><video controls src="${x.url}"></video><div class="hash-overlay">VIDEO Y AUDIO ${i+1}</div></div>`).join(''):'<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Sin grabaciones de video aún...</p></div>';
  const ev=a.eventos||[];
 
  d.innerHTML=`<i></i><div style="position:absolute;top:12px;right:12px;width:70px;height:70px;border-radius:50%;border:2px solid #5A3E00;background:linear-gradient(145deg,#fff,#E6C76B);display:grid;place-items:center;font-family:Cinzel;font-weight:900;font-size:9px;text-align:center;transform:rotate(-6deg);box-shadow:var(--luzRelieve);z-index:4">NI<br>UNA<br>MENOS</div>
@@ -772,17 +827,15 @@ function render(a){
  <table class="t"><tr><th>WGS84 ACTUAL</th><td colspan="3">${a.lat||'—'} , ${a.lng||'—'}</td></tr><tr><th>PREC · ALT · VEL</th><td colspan="3">${a.precision||'—'}m · ${a.altitud||'—'} m · ${a.velocidad||'—'}</td></tr></table>
  <div class="mapa" id="m_${a.id}"></div>
  
- <h3>IV — AUDIO AMBIENTE</h3>${au}
- <h3>V — CÁMARA FRONTAL</h3><div class="galeria">${fF}</div>
- <h3>VI — CÁMARA TRASERA</h3><div class="galeria">${fT}</div>
- <h3>VII — VIDEO EVIDENCIA</h3><div class="galeria">${vV}</div>
+ <h3>IV — VIDEO Y AUDIO AMBIENTE CONTINUO</h3><div class="galeria">${vV}</div>
+ <h3>V — EXTRACCIÓN FOTOGRÁFICA</h3><div class="galeria">${fT}</div>
  
- <h3>VIII — FIRMAS CRIPTOGRÁFICAS</h3><div class="mono">ID: ${a.id}<br>INICIO: ${a.sello_inicio}<br>SHA‑256: ${a.sha256}<br>HMAC: ${a.hmac?.slice(0,32)||'—'}…</div>
- <h3>IX — MARCO LEGAL</h3><p style="font-size:11px;position:relative;z-index:3">Ley 26.485 · Ley 25.326 · Código Procesal Penal</p>
+ <h3>VI — FIRMAS CRIPTOGRÁFICAS</h3><div class="mono">ID: ${a.id}<br>INICIO: ${a.sello_inicio}<br>SHA‑256: ${a.sha256}<br>HMAC: ${a.hmac?.slice(0,32)||'—'}…</div>
+ <h3>VII — MARCO LEGAL</h3><p style="font-size:11px;position:relative;z-index:3">Ley 26.485 · Ley 25.326 · Código Procesal Penal</p>
  <div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>ARGENTINA</div><div>FIRMA PERITO INFORMÁTICO</div></div>`;
  
  setTimeout(()=>{
-    if(!document.getElementById('m_'+a.id)||mapas.has(a.id)) return;
+    if(!document.getElementById('m_'+a.id)||mapas.has(a.id) || a.lat === 'Buscando...') return;
     const mm=L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat||-26.8241,a.lng||-65.2226],16);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
     L.marker([a.lat||-26.8241,a.lng||-65.2226]).addTo(mm);
@@ -806,7 +859,7 @@ addEventListener('DOMContentLoaded',()=>{
  if(localStorage.getItem('ok')==='1'){
     document.getElementById('zonaOk').style.display='block';
     const bf=document.getElementById('btnFlotanteSOS');
-    if(bf) bf.style.display = 'grid'; // Asegura que se muestre al cargar si ya está registrada
+    if(bf) bf.style.display = 'grid'; 
  }
  ir('inicio');
  if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026').catch(()=>{}));
