@@ -226,7 +226,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
    <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás registrada en el sistema.<br>Si sentís miedo o sospechás que corrés peligro, activá el botón manualmente aquí:</p>
    <button class="btn rubi" onclick="irSOS()">✦ INGRESAR AL BOTÓN ANTIPÁNICO ✦</button>
    
-   <!-- TEMPORIZADOR Y VOZ BLINDADOS CON CONTRASEÑA -->
    <div style="margin-top: 25px; display:flex; flex-direction:column; gap:15px;">
        
        <div style="background:#FFFFFF; border:1.5px solid var(--oro); padding:20px; border-radius:12px; box-shadow:var(--luz);">
@@ -364,7 +363,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 
 <section id="panel" class="vista"><h2 class="tit" style="text-align:left;border-bottom:1px solid var(--oro);padding-bottom:10px;letter-spacing:5px">✦ CENTRO JUDICIAL P4 ✦</h2>
  <div style="display:flex;gap:12px;flex-wrap:wrap">
-  <button class="btn" onclick="print()" style="flex:1 1 100%">✦ IMPRIMIR ACTA JUDICIAL (PDF) ✦</button>
+  <button class="btn" onclick="window.print()" style="flex:1 1 100%">✦ IMPRIMIR ACTA JUDICIAL (PDF) ✦</button>
   <button class="btn blanco" onclick="expTXT()" style="flex:1 1 100%; border-color:#333; color:#333;">⬇ DESCARGAR TEXTO (TXT)</button>
   <button class="btn blanco" onclick="verificar()" style="flex:1 1 100%; margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
  </div>
@@ -416,7 +415,6 @@ window.addEventListener('appinstalled', () => {
     if(installBtn) installBtn.style.display = 'none';
     alert("¡Ni Una Menos instalada correctamente!");
 });
-// =========================================================================
 
 // VARIABLE DE MAPAS
 let mapas = {};
@@ -462,7 +460,7 @@ function leerVoz(){
 }
 
 // =========================================================================
-// ⏱️ TEMPORIZADOR MODO TRAYECTO (AHORA CON CANDADO DE SEGURIDAD)
+// ⏱️ TEMPORIZADOR MODO TRAYECTO 
 // =========================================================================
 let trayectoInterval = null;
 let finTrayecto = 0;
@@ -541,7 +539,7 @@ async function cancelarTrayecto() {
 }
 
 // =========================================================================
-// 🗣️ ACTIVACIÓN POR VOZ SECRETA (AHORA CON CANDADO DE SEGURIDAD)
+// 🗣️ ACTIVACIÓN POR VOZ SECRETA 
 // =========================================================================
 let recognition = null;
 let vozActiva = false;
@@ -586,7 +584,6 @@ async function toggleVoz() {
         
         recognition.onresult = function(event) {
             let ultimaFrase = event.results[event.results.length - 1][0].transcript.toLowerCase();
-            console.log("Escuchado:", ultimaFrase);
             
             if(ultimaFrase.includes("ayuda sistema") || ultimaFrase.includes("auxilio") || ultimaFrase.includes("ayuda c4")) {
                 recognition.stop();
@@ -616,7 +613,6 @@ async function toggleVoz() {
 }
 
 
-// MODO SIGILO 100% NEGRO 
 const sigilo = () => {
     try { document.documentElement.requestFullscreen(); } catch(e){}
     let s = document.createElement('div');
@@ -710,17 +706,15 @@ async function alta(){
     
     if(!n || !/^\d{15}$/.test(i) || !w) return alert('Requiere Nombre completo, IMEI válido de 15 dígitos y tu número de WhatsApp.');
     
-    let waLimpio = w.replace(/\D/g, ''); // Solo números
+    let waLimpio = w.replace(/\D/g, ''); 
 
     try {
-        // VERIFICACIÓN ANTIPÍCARO POR WHATSAPP
         const checkWA = await supaQuery('GET', `c4_suscripciones?select=*&whatsapp=eq.${waLimpio}`);
         if(checkWA && checkWA.length > 0) {
             alert('🛑 ¡SISTEMA ANTI-PÍCARO ACTIVADO!\nEste número de WhatsApp ya se encuentra registrado en la base de datos y utilizó sus días gratuitos.\n\nPor protocolo de seguridad judicial, no se puede volver a registrar el mismo celular.');
             return;
         }
 
-        // VERIFICACIÓN ANTIPÍCARO POR IMEI
         const checkImei = await supaQuery('GET', `c4_suscripciones?select=*&imei=eq.${i}`);
         if(checkImei && checkImei.length > 0) {
             alert('⚠️ SISTEMA DE SEGURIDAD:\nEste equipo (IMEI) ya agotó los 15 días de prueba o ya está registrado.');
@@ -805,18 +799,24 @@ async function validar(){
 
 const cerrar=()=>{sessionStorage.clear();location.reload()};
 
+// =========================================================================
+// 🔥 CONEXIÓN A GREEN API POR FETCH EN SEGUNDO PLANO
+// =========================================================================
+const WA_INSTANCE = '710722716988';
+const WA_TOKEN = '557e951bd7a04f50bc5ae05ee7154bb962cdd82bc71d4f58bc';
+
 function formatArg(num) {
     let c = String(num).replace(/\D/g, '');
     if (c.startsWith('549')) return c;
     if (c.startsWith('54')) return '549' + c.substring(2);
     if (c.startsWith('0')) c = c.substring(1);
-    c = c.replace(/^(11|2\d{2}|3\d{2})15(\d+)$/, '$1$2'); // Limpia el 15
+    c = c.replace(/^(11|2\d{2}|3\d{2})15(\d+)$/, '$1$2'); 
     return '549' + c;
 }
 
-function abrirWhatsAppCelular(contactos, nombre, la, ln, id, tipo = 'alerta') {
+async function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     if (!contactos || contactos.length === 0) return;
-    
+
     let msg = "";
     if (tipo === 'alerta') {
         msg = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre}* acaba de accionar su botón antipánico.\n\n📍 *Ubicación GPS:* Rastrando coordenadas exactas en este momento...\n\n🔐 *ID P4:* ${id}`;
@@ -826,19 +826,33 @@ function abrirWhatsAppCelular(contactos, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ *AVISO DE SEGURIDAD - C4* ✅\n\nLa alerta de *${nombre}* fue desactivada con su Llave Maestra. Se encuentra a salvo.`;
     }
 
-    let primerContacto = formatArg(contactos[0]);
-    let urlApp = `https://api.whatsapp.com/send?phone=${primerContacto}&text=${encodeURIComponent(msg)}`;
-    
-    let a = document.createElement('a');
-    a.href = urlApp;
-    a.target = '_blank';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    for (let numero of contactos) {
+        try {
+            let cel = formatArg(numero);
+            let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
+            
+            let res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
+            });
+            
+            let data = await res.json();
+            
+            if (!res.ok || data.status === "error" || data.error) {
+                console.error("Fallo GreenAPI:", data);
+            }
+        } catch (e) {
+            console.error("Error de Red WP:", e);
+        }
+    }
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
+// -------------------------------------------------------------------------
+// 📸 CAPTURA AVANZADA: FOTO TRASERA + FOTO FRONTAL + AUDIO CONTINUO (30s)
+// -------------------------------------------------------------------------
 async function capturarEvidencia() {
     let actaActual = listaActas.find(a => a.id === aid);
     if(!actaActual) return;
@@ -922,7 +936,7 @@ async function disparoSOS(){
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
  aid = id;
 
- abrirWhatsAppCelular(contactos, nombre, null, null, id, 'alerta');
+ enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
 
  let batLevel = 'Desc.', batCharging = 'Desc.';
  try {
@@ -970,9 +984,9 @@ async function disparoSOS(){
         guardarActas();
         render(acActual); 
     }
-    abrirWhatsAppCelular(contactos, nombre, lat, lng, id, 'gps');
+    enviarWhatsAppOculto(contactos, nombre, lat, lng, id, 'gps');
  }, () => { 
-    abrirWhatsAppCelular(contactos, nombre, 'Desconocida', 'Desconocida', id, 'gps');
+    enviarWhatsAppOculto(contactos, nombre, 'Desconocida', 'Desconocida', id, 'gps');
  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
 }
 
@@ -1049,7 +1063,7 @@ async function pararConLlave(){
         
         const nombre = localStorage.getItem('nombre') || 'Usuaria';
         const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
-        abrirWhatsAppCelular(contactos, nombre, null, null, null, 'seguro');
+        enviarWhatsAppOculto(contactos, nombre, null, null, null, 'seguro');
 
         alert('✅ Sistema detenido con éxito. Volviendo a la pantalla principal.');
         ir('inicio');
