@@ -28,7 +28,7 @@
   --blur:blur(15px);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;max-width:100vw;overflow-x:hidden;background:#FFFFFF;color:var(--texto);font-family:'Montserrat',sans-serif;font-weight:500;-webkit-font-smoothing:antialiased; font-size:17.5px;}
+html,body{width:100%;max-width:100vw;overflow-x:hidden;background:#FFFFFF;color:var(--texto);font-family:'Montserrat',sans-serif;font-weight:500;-webkit-font-smoothing:antialiased; font-size:17.5px; transition: background-color 0.1s;}
 body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 60%);}
 ::selection{background:#FFE79B;color:#3A2800}
 ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#fff}::-webkit-scrollbar-thumb{background:var(--bordeOro);border-radius:999px}
@@ -115,31 +115,31 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 
 .estadoSOS{display:none;padding:20px;border-radius:16px;background:#FFF3F5;border:1px solid #8B0000;color:#8B0000;text-align:center;font-weight:600;font-size:14px;line-height:1.6}
 
-/* BOTÓN MÁS GRANDE */
+/* BOTÓN FLOTANTE GIGANTE */
 .btn-flotante-sos {
     position: fixed;
     bottom: 25px;
     right: 20px;
-    width: 100px;
-    height: 100px;
+    width: 120px; /* ¡Aumentado a tamaño gigante! */
+    height: 120px; /* ¡Aumentado a tamaño gigante! */
     background: radial-gradient(circle at 30% 22%,#7A0010,#4A0008 80%);
-    border: 2px solid var(--oroMedio);
+    border: 4px solid var(--oroMedio); /* Borde más grueso para resaltar */
     border-radius: 50%;
     color: var(--oroClaro);
     font-family: 'Cinzel', serif;
     font-weight: 900;
-    font-size: 24px;
+    font-size: 28px; /* Letra inmensa */
     display: none; 
     place-items: center;
-    box-shadow: 0 4px 15px rgba(139,0,0,.6);
+    box-shadow: 0 6px 20px rgba(139,0,0,.8);
     z-index: 9999;
     cursor: pointer;
     text-shadow: 0 2px 4px rgba(0,0,0,.7);
-    animation: pulsoFlotante 2s infinite;
+    animation: pulsoFlotante 1.5s infinite;
 }
 @keyframes pulsoFlotante {
-    0% { box-shadow: 0 0 0 0 rgba(139,0,0,.7); }
-    70% { box-shadow: 0 0 0 15px rgba(139,0,0,0); }
+    0% { box-shadow: 0 0 0 0 rgba(139,0,0,.8); }
+    70% { box-shadow: 0 0 0 20px rgba(139,0,0,0); }
     100% { box-shadow: 0 0 0 0 rgba(139,0,0,0); }
 }
 
@@ -302,7 +302,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
     <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">El Botón S.O.S se dispara de inmediato. Si lo activás por accidente, <b>NO entres en pánico</b>. Simplemente tocá "Detener con Llave" e ingresá tu Llave Maestra. El sistema avisará automáticamente a tus familiares que estás a salvo.</span>
   </div>
 
-  <!-- CARTEL DE AGENDAR WHATSAPP -->
   <div style="background:#FFFCF2;border:1px solid #D4AF37;padding:16px;border-radius:12px;margin-top:12px;text-align:left;box-shadow:var(--luz);">
     <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">⚠️ OBLIGATORIO: AGENDAR NÚMERO</b>
     <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Para recibir la evidencia, alertas y asegurar que WhatsApp no bloquee el sistema, <b>es obligatorio que agendes este número en tus contactos ahora mismo: 381 60 92 676</b>.</span>
@@ -324,8 +323,10 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 <section id="sos" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ ATRÁS</button><h2 class="tit">PROTECCIÓN ACTIVA</h2>
  <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
  
+ <!-- TEXTO EXPLICITO DE ACTIVACIÓN QUE PEDISTE -->
  <div class="estadoSOS" id="st">
-   ✦ EVIDENCIA ACTIVADA Y ALERTAS ENVIADAS ✦<br>
+   <h2 style="font-size:18px; letter-spacing: 2px; margin-bottom: 8px;">¡SISTEMA ACTIVADO!</h2>
+   ✦ EVIDENCIA Y ALERTAS ENVIADAS ✦<br>
    GPS SEGUNDO A SEGUNDO · AUDIO · VIDEO · FOTOS · SENSORES · CELDA · WIFI · CADENA<br><br>
    <span style="font-size:12px;color:#888;font-weight:400;">(Búfer Offline activo: la evidencia se resguarda sin señal)</span><br><br>
    <div style="background:#FFE79B;color:#5A3E00;padding:10px;border-radius:8px;font-weight:700;margin-top:12px;font-size:12px;line-height:1.4;">
@@ -379,19 +380,15 @@ const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digi
 const LK=k=>!k?'':k.toUpperCase().replace(/[\u2011-\u2015]/g,'-').replace(/[^A-Z0-9\-]/g,'').trim();
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
-// 🛠 Función para asegurar que el celular habilite sensores y PIDA CÁMARA ANTICIPADA
-async function pedirPermisosGlobales() {
+// 🛠 Función para asegurar que el celular habilite sensores SIN bloquear el pago/registro
+function pedirPermisosGlobales() {
     if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
         DeviceMotionEvent.requestPermission().catch(()=>{});
     }
-    
-    // Abre y cierra la cámara rapidísimo para que el navegador guarde el permiso antes de la emergencia
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-        stream.getTracks().forEach(track => track.stop());
-    } catch(e) {
-        console.warn("Permiso de cámara pendiente o denegado por ahora.");
-    }
+    // Abre y cierra la cámara silenciamente para que no trabe nada si el usuario pone cancelar
+    navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+        .then(stream => stream.getTracks().forEach(track => track.stop()))
+        .catch(e => console.warn("Permiso de cámara postergado hasta la activación real."));
 }
 
 // FUNCIÓN PARA NAVEGAR Y MOSTRAR/OCULTAR EL BOTÓN FLOTANTE S.O.S
@@ -409,7 +406,7 @@ const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
 
 function leerVoz(){
  speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al software Energy Argentina dos mil veintiséis. Presentamos Ni Una Menos. Desarrollamos este sistema porque hacía falta tecnología forense de verdad. Se activa de inmediato pulsando el botón antipánico o de forma automática si el teléfono detecta un impacto. Al activarse, envía una alerta por WhatsApp a tus contactos y comienza a recolectar evidencia de forma silenciosa: toma cuatro fotografías con la cámara delantera y cuatro con la cámara trasera, graba audio ambiente durante sesenta segundos y captura un video de sesenta segundos en alta definición. Al mismo tiempo, el rastreo G P S en tiempo real traza la ruta segundo a segundo. Si no hay señal, el Búfer Offline guarda todo y lo sube al recuperar conexión; y si el teléfono se detiene, fuerza un reporte cada diez minutos para que la policía sepa el domicilio exacto. Se acabaron los robos y los secuestros. Todo queda archivado para tu denuncia en un Acta P cuatro sellada con el I M E I del equipo, aplicando estrictamente la Ley veintiséis punto cuatrocientos ochenta y cinco, Ley veinticinco punto trescientos veintiséis, y el Código Procesal Penal. Es un sistema blindado de alta tecnología: todo es absolutamente privado. Solo vos podés abrir el acta con tu llave criptográfica única. Y para tu máxima seguridad, si no realizás ninguna acción, toda la información se elimina de forma definitiva e irrecuperable a las setenta y dos horas. No queda absolutamente nada grabado en nuestro sistema. Tecnología que cuida y te defiende.`);
+ const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al software Energy Argentina dos mil veintiséis. Presentamos Ni Una Menos. Desarrollamos este sistema porque hacía falta tecnología forense de verdad.`);
  u.lang='es-AR';u.rate=.92;u.pitch=1;u.volume=1;
  speechSynthesis.speak(u);
 }
@@ -459,7 +456,7 @@ function toggleSOS() {
 // 🚨 ANTIPÍCARO Y REGISTRO (POR IMEI)
 // =========================================================================
 async function alta(){
-    await pedirPermisosGlobales();
+    pedirPermisosGlobales();
     const n = document.getElementById('rN').value.trim();
     const i = IM(document.getElementById('rI').value);
     const c = [document.getElementById('c1').value, document.getElementById('c2').value, document.getElementById('c3').value].filter(Boolean);
@@ -501,7 +498,7 @@ async function alta(){
 // 💰 SIMULADOR DE PAGO EN EL FRONT
 // =========================================================================
 async function pagar(monto, plan) {
-    await pedirPermisosGlobales();
+    pedirPermisosGlobales();
     const i = IM(document.getElementById('pI').value || localStorage.getItem('imei'));
     if(!/^\d{15}$/.test(i)) return alert('Ingrese IMEI de 15 dígitos en la pantalla anterior.');
     
@@ -527,7 +524,7 @@ async function pagar(monto, plan) {
 }
 
 async function validar(){
-    await pedirPermisosGlobales();
+    pedirPermisosGlobales();
     const k = LK(document.getElementById('lkI').value);
     if(!k) return;
     try {
@@ -592,13 +589,11 @@ async function capturarEvidencia() {
     if(!actaActual) return;
     
     try {
-        // 1. Pedir permiso a CÁMARA Y MICRÓFONO al mismo tiempo (Garantiza luz verde al instante)
         mediaStream = await navigator.mediaDevices.getUserMedia({
             audio: true,
             video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
         });
 
-        // 2. Grabar Audio y Video Juntos sin cortes
         mediaRecorder = new MediaRecorder(mediaStream);
         const chunks = [];
         mediaRecorder.ondataavailable = e => chunks.push(e.data);
@@ -613,13 +608,11 @@ async function capturarEvidencia() {
         };
         mediaRecorder.start();
 
-        // Apagar automático a los 60 segundos
         setTimeout(() => {
             if(mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
             if(mediaStream) mediaStream.getTracks().forEach(t => t.stop());
         }, 60000);
 
-        // 3. Tomar Fotos Silenciosas del MISMO stream de video
         const v = document.createElement('video');
         v.muted = true; v.playsInline = true; v.autoplay = true;
         v.srcObject = mediaStream;
@@ -681,7 +674,6 @@ async function disparoSOS(){
  const cores = navigator.hardwareConcurrency || 'Desc.';
  const pantalla = `${screen.width}x${screen.height}`;
 
- // 1. CREAMOS EL ACTA DE INMEDIATO
  const hash = await sha256(id+imei+Date.now());
  let acta = {
      id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
@@ -693,10 +685,8 @@ async function disparoSOS(){
  listaActas.push(acta);
  render(acta);
 
- // 2. PRENDEMOS CÁMARAS Y MICRÓFONO AL INSTANTE (Sin esperar a los satélites)
  capturarEvidencia();
 
- // 3. BUSCAMOS EL GPS EN SILENCIO (Puede tardar, pero ya estamos grabando)
  navigator.geolocation.getCurrentPosition(p => {
     let lat = p.coords.latitude;
     let lng = p.coords.longitude;
@@ -708,22 +698,19 @@ async function disparoSOS(){
         acActual.precision = Math.round(p.coords.accuracy);
         render(acActual); 
     }
-    
-    // Manda WhatsApp con coordenadas correctas
     whatsappFrontend(contactos, nombre, lat, lng, id);
     
  }, () => { 
-    // Manda WhatsApp sin ubicación si el GPS está apagado, pero lo manda rápido
     whatsappFrontend(contactos, nombre, 'Desconocida', 'Desconocida', id);
  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
 }
 
-// --- SENSOR DE IMPACTO CORREGIDO (SENSIBILIDAD A 15) ---
+// --- SENSOR DE IMPACTO CORREGIDO - MODO AGRESIVO Y DESTELLOS ROJOS ---
 let lastX=null, lastY=null, lastZ=null;
-let threshold = 15; // ¡BAJADO A 15! Cualquier sacudida o tirón brusco lo dispara.
 let ultimaAcc = 0;
 
 window.addEventListener('devicemotion', (e) => {
+    // Esto previene que Chrome/Safari bloqueen los datos en Android si usamos el fallback correcto
     let acc = e.acceleration || e.accelerationIncludingGravity;
     if (!acc) return;
     
@@ -737,14 +724,31 @@ window.addEventListener('devicemotion', (e) => {
     let deltaY = Math.abs(y - lastY);
     let deltaZ = Math.abs(z - lastZ);
     
-    if (deltaX + deltaY + deltaZ > threshold && (Date.now() - ultimaAcc > 3000)) {
+    // Umbral de 20 (Para un sacudón o un tirón de arrebato fuerte)
+    if (deltaX + deltaY + deltaZ > 20 && (Date.now() - ultimaAcc > 3000)) {
         ultimaAcc = Date.now();
         if (localStorage.getItem('ok') === '1' && !sosActivo) { 
+            
+            // LLEVA A LA PANTALLA DE EMERGENCIA DE INMEDIATO
+            ir('sos'); 
+            
+            // LUCES ROJAS QUE PEDISTE (Efecto Sirena/Alarma en toda la pantalla)
+            let parpadeos = 0;
+            let luces = setInterval(() => {
+                document.body.style.backgroundColor = parpadeos % 2 === 0 ? '#8B0000' : '#FFFFFF';
+                parpadeos++;
+                if (parpadeos > 6) { // Termina en 3 segundos y se queda blanca
+                    clearInterval(luces);
+                    document.body.style.backgroundColor = '#FFFFFF';
+                }
+            }, 250);
+
+            // GATILLA EL SISTEMA S.O.S
             disparoSOS(); 
         }
     }
     lastX = x; lastY = y; lastZ = z;
-});
+}, true);
 
 // CORTAR ABSOLUTAMENTE TODO
 const parar = () => {
@@ -752,7 +756,9 @@ const parar = () => {
     if(la) clearInterval(la); if(lv) clearInterval(lv); if(l10) clearInterval(l10);
     document.getElementById('st').style.display='none';
     
-    // Apagar cámara y micrófono de inmediato
+    // Cortar efecto luces rojas si detienen rápido
+    document.body.style.backgroundColor = '#FFFFFF';
+
     if(mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
     if(mediaStream) mediaStream.getTracks().forEach(t => t.stop());
 };
@@ -769,9 +775,8 @@ async function pararConLlave(){
             return;
         }
 
-        parar(); // Corta GPS, cámara y micrófono
+        parar(); 
         
-        // VOLVEMOS EL BOTON A LA NORMALIDAD
         sosActivo = false;
         document.getElementById('btnBigSOS').innerText = 'S.O.S';
         document.getElementById('btnBigSOS').classList.remove('activo');
