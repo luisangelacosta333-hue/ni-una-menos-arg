@@ -123,6 +123,7 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 @keyframes onda{0%{transform:scale(.75);opacity:1}100%{transform:scale(2.5);opacity:0}}
 .bSOS{position:relative;z-index:5;width:210px;height:210px;border-radius:50%;border:2px solid var(--oroMedio);cursor:pointer;color:var(--oroClaro);font-family:'Cinzel',serif;font-weight:900;font-size:32px;letter-spacing:4px;background:radial-gradient(circle at 30% 22%,#7A0010,#4A0008 80%);text-shadow:0 2px 4px rgba(0,0,0,.7);box-shadow:0 0 0 0 rgba(139,0,0,.7), inset 0 4px 15px rgba(255,255,255,.1);animation:pulso 2s infinite; transition: all 0.3s ease;}
 @keyframes pulso{to{box-shadow:0 0 0 48px rgba(139,0,0,0), inset 0 4px 15px rgba(255,255,255,.1)}}
+
 /* ESTILO CUANDO EL SOS ESTÁ ACTIVADO (AMARILLO PRECAUCIÓN) */
 .bSOS.activo {
     background: radial-gradient(circle at 30% 22%, #FFE79B, #D4AF37 80%);
@@ -597,8 +598,10 @@ async function whatsappFrontend(contactos, nombre, la, ln, id) {
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null, listaActas=[];
+
+// --- LÓGICA REESCRITA: DISPARO SIMULTÁNEO (CÁMARA + GPS) ---
 async function disparoSOS(){
- if(sosActivo) return; // Si ya se disparó, no hace nada
+ if(sosActivo) return; 
  
  sosActivo = true;
  document.getElementById('btnBigSOS').innerText = 'DETENER S.O.S';
@@ -615,7 +618,6 @@ async function disparoSOS(){
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
  aid = id;
 
- // 🔍 CAPTURA DE TELEMETRÍA FORENSE AVANZADA
  let batLevel = 'Desc.', batCharging = 'Desc.';
  try {
     if(navigator.getBattery) {
@@ -633,25 +635,43 @@ async function disparoSOS(){
  const cores = navigator.hardwareConcurrency || 'Desc.';
  const pantalla = `${screen.width}x${screen.height}`;
 
- navigator.geolocation.getCurrentPosition(async p => {
+ // 1. CREAR EL ACTA BASE DE INMEDIATO (SIN GPS TODAVÍA)
+ const hash = await sha256(id+imei+Date.now());
+ let acta = {
+     id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
+     hora: new Date().toLocaleTimeString('es-AR'), fecha: new Date().toLocaleDateString('es-AR'),
+     audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: hash, hash_judicial: hash, eventos: [],
+     numero_acta: 'P4-'+Date.now(),
+     bateria: batLevel, cargando: batCharging, red: redType, userAgent: ua, ram: ram, cores: cores, pantalla: pantalla
+ };
+ listaActas.push(acta);
+ render(acta);
+
+ // 2. PRENDER CÁMARAS Y MICRÓFONO AL INSTANTE (SIN ESPERAR NADA)
+ capturarEvidencia();
+
+ // 3. BUSCAR EL GPS EN SEGUNDO PLANO Y ACTUALIZAR AL ENCONTRARLO
+ navigator.geolocation.getCurrentPosition(p => {
     let lat = p.coords.latitude;
     let lng = p.coords.longitude;
     
+    // Actualizar el acta con las coordenadas reales
+    let acActual = listaActas.find(a => a.id === aid);
+    if(acActual) {
+        acActual.lat = lat;
+        acActual.lng = lng;
+        acActual.precision = Math.round(p.coords.accuracy);
+        render(acActual); 
+    }
+    
+    // Mandar WhatsApp con coordenadas reales
     whatsappFrontend(contactos, nombre, lat, lng, id);
     
-    const hash = await sha256(id+imei+Date.now());
-    let acta = {
-        id: id, imei: imei, nombre: nombre, lat: lat, lng: lng, precision: Math.round(p.coords.accuracy), 
-        hora: new Date().toLocaleTimeString('es-AR'), fecha: new Date().toLocaleDateString('es-AR'),
-        audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: hash, hash_judicial: hash, eventos: [],
-        numero_acta: 'P4-'+Date.now(),
-        bateria: batLevel, cargando: batCharging, red: redType, userAgent: ua, ram: ram, cores: cores, pantalla: pantalla
-    };
-    listaActas.push(acta);
-    render(acta);
-    capturarEvidencia();
-
- }, () => { alert('GPS Denegado o sin señal. Capturando sin geolocalización.'); });
+ }, () => { 
+    // Si falla el GPS, manda el WhatsApp igual
+    whatsappFrontend(contactos, nombre, 'Desconocida', 'Desconocida', id);
+    alert('GPS Denegado o sin señal. Evidencia forense (cámara/audio) capturando igual.'); 
+ }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
 }
 
 const parar=()=>{if(gps)navigator.geolocation.clearWatch(gps);if(la)clearInterval(la);if(lv)clearInterval(lv);if(l10)clearInterval(l10);document.getElementById('st').style.display='none'};
