@@ -115,19 +115,20 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 
 .estadoSOS{display:none;padding:20px;border-radius:16px;background:#FFF3F5;border:1px solid #8B0000;color:#8B0000;text-align:center;font-weight:600;font-size:14px;line-height:1.6}
 
+/* BOTÓN FLOTANTE S.O.S AGRANDADO */
 .btn-flotante-sos {
     position: fixed;
     bottom: 25px;
     right: 20px;
-    width: 75px;
-    height: 75px;
+    width: 90px;
+    height: 90px;
     background: radial-gradient(circle at 30% 22%,#7A0010,#4A0008 80%);
     border: 2px solid var(--oroMedio);
     border-radius: 50%;
     color: var(--oroClaro);
     font-family: 'Cinzel', serif;
     font-weight: 900;
-    font-size: 18px;
+    font-size: 20px;
     display: none; 
     place-items: center;
     box-shadow: 0 4px 15px rgba(139,0,0,.6);
@@ -138,7 +139,7 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 }
 @keyframes pulsoFlotante {
     0% { box-shadow: 0 0 0 0 rgba(139,0,0,.7); }
-    70% { box-shadow: 0 0 0 15px rgba(139,0,0,0); }
+    70% { box-shadow: 0 0 0 20px rgba(139,0,0,0); }
     100% { box-shadow: 0 0 0 0 rgba(139,0,0,0); }
 }
 
@@ -268,6 +269,12 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 
 <section id="registro" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER</button><h2 class="tit">CARGA OFICIAL</h2>
  <div class="caja">
+  
+  <!-- AVISO URGENTE WHATSAPP -->
+  <div style="background:#FFE79B;color:#5A3E00;padding:14px;border-radius:8px;font-weight:700;margin-bottom:18px;font-size:13px; border: 1px solid #D4AF37; text-align:center;">
+    ⚠️ IMPORTANTE: Agendá ahora nuestro número oficial <b>381 60 92 676</b> como "Sistema C4" en tus contactos para asegurar que las alertas lleguen sin bloqueos.
+  </div>
+
   <div class="campo"><label>NOMBRE Y APELLIDO</label><input id="rN"></div>
   <div class="campo"><label>IMEI 15 DÍGITOS</label><input id="rI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
   <div class="campo"><label>CONTACTO WHATSAPP 1</label><input id="c1" inputmode="tel"></div>
@@ -298,7 +305,12 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
   
   <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-top:22px;text-align:left;box-shadow:var(--luz);">
     <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">💡 INSTRUCCIÓN VITAL</b>
-    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">El Botón S.O.S se dispara de inmediato. Si lo activás por accidente, <b>NO entres en pánico</b>. Simplemente tocá "Detener con Llave" e ingresá tu Llave Maestra. El sistema avisará automáticamente a tus familiares que estás a salvo.</span>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">El Botón S.O.S se dispara de inmediato por toque o impacto. Si lo activás por accidente, <b>NO entres en pánico</b>. Simplemente tocá "Detener S.O.S" e ingresá tu Llave Maestra. El sistema avisará automáticamente a tus familiares que estás a salvo.</span>
+  </div>
+
+  <!-- RECORDATORIO WHATSAPP -->
+  <div style="background:#FFE79B;color:#5A3E00;padding:14px;border-radius:8px;font-weight:700;margin-top:15px;font-size:13px; border: 1px solid #D4AF37; text-align:center;">
+    ⚠️ Recordá tener agendado el <b>381 60 92 676</b> (Sistema C4) para recibir las alertas.
   </div>
 
   <div style="display:flex;gap:12px;margin-top:25px;flex-wrap:wrap;justify-content:center">
@@ -319,7 +331,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  
  <div class="estadoSOS" id="st">
    ✦ EVIDENCIA ACTIVADA Y ALERTAS ENVIADAS ✦<br>
-   GPS SEGUNDO A SEGUNDO · AUDIO · VIDEO · FOTOS · SENSORES · CELDA · WIFI · CADENA<br><br>
+   CÁMARAS · MICRÓFONO · GPS SEGUNDO A SEGUNDO · SENSORES · CELDA · CADENA P4<br><br>
    <span style="font-size:12px;color:#888;font-weight:400;">(Búfer Offline activo: la evidencia se resguarda sin señal)</span><br><br>
    <div style="background:#FFE79B;color:#5A3E00;padding:10px;border-radius:8px;font-weight:700;margin-top:12px;font-size:12px;line-height:1.4;">
     ⚠️ ¿FUE UNA ACTIVACIÓN ACCIDENTAL?<br>No te preocupes. Tocá el botón amarillo "DETENER S.O.S" de arriba e ingresá tu Llave Maestra para avisar a tus contactos que estás a salvo.
@@ -372,10 +384,17 @@ const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digi
 const LK=k=>!k?'':k.toUpperCase().replace(/[\u2011-\u2015]/g,'-').replace(/[^A-Z0-9\-]/g,'').trim();
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
-// 🛠 Función para asegurar que el celular habilite el sensor de movimiento en iOS/Nuevos Android
-function pedirPermisosGlobales() {
-    if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
-        DeviceMotionEvent.requestPermission().catch(()=>{});
+// 🛠 SOLUCIÓN DEFINITIVA: Pedir todos los permisos de hardware obligatoriamente en el "Click"
+async function solicitarPermisos() {
+    try {
+        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+            await DeviceMotionEvent.requestPermission();
+        }
+        // Fuerza el cartelito de "Permitir cámara y micrófono"
+        const s = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment' } });
+        s.getTracks().forEach(t => t.stop()); // Lo apagamos al instante, solo queríamos el permiso
+    } catch(e) {
+        console.log("Permiso omitido o denegado por el usuario.");
     }
 }
 
@@ -444,7 +463,7 @@ function toggleSOS() {
 // 🚨 ANTIPÍCARO Y REGISTRO (POR IMEI)
 // =========================================================================
 async function alta(){
-    pedirPermisosGlobales();
+    await solicitarPermisos(); // Pide permisos en el click
     const n = document.getElementById('rN').value.trim();
     const i = IM(document.getElementById('rI').value);
     const c = [document.getElementById('c1').value, document.getElementById('c2').value, document.getElementById('c3').value].filter(Boolean);
@@ -486,7 +505,7 @@ async function alta(){
 // 💰 SIMULADOR DE PAGO EN EL FRONT
 // =========================================================================
 async function pagar(monto, plan) {
-    pedirPermisosGlobales();
+    await solicitarPermisos(); // Pide permisos en el click
     const i = IM(document.getElementById('pI').value || localStorage.getItem('imei'));
     if(!/^\d{15}$/.test(i)) return alert('Ingrese IMEI de 15 dígitos en la pantalla anterior.');
     
@@ -512,7 +531,7 @@ async function pagar(monto, plan) {
 }
 
 async function validar(){
-    pedirPermisosGlobales();
+    await solicitarPermisos(); // Pide permisos en el click
     const k = LK(document.getElementById('lkI').value);
     if(!k) return;
     try {
@@ -577,13 +596,12 @@ async function capturarEvidencia() {
     if(!actaActual) return;
     
     try {
-        // 1. Pedir permiso a CÁMARA Y MICRÓFONO al mismo tiempo (Garantiza luz verde al instante)
+        // Pedimos video y audio al mismo tiempo, arranca la luz verde
         mediaStream = await navigator.mediaDevices.getUserMedia({
             audio: true,
             video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
         });
 
-        // 2. Grabar Audio y Video Juntos sin cortes
         mediaRecorder = new MediaRecorder(mediaStream);
         const chunks = [];
         mediaRecorder.ondataavailable = e => chunks.push(e.data);
@@ -598,13 +616,11 @@ async function capturarEvidencia() {
         };
         mediaRecorder.start();
 
-        // Apagar automático a los 60 segundos
         setTimeout(() => {
             if(mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
             if(mediaStream) mediaStream.getTracks().forEach(t => t.stop());
         }, 60000);
 
-        // 3. Tomar Fotos Silenciosas del MISMO stream de video
         const v = document.createElement('video');
         v.muted = true; v.playsInline = true; v.autoplay = true;
         v.srcObject = mediaStream;
@@ -627,11 +643,11 @@ async function capturarEvidencia() {
             }, 1000 + i * 1500); 
         }
     } catch(e) {
-        console.error("Hardware bloqueado por el celular:", e);
+        console.error("Hardware de cámara bloqueado:", e);
     }
 }
 
-// --- LÓGICA REESCRITA: DISPARO SIMULTÁNEO (ACTIVA TODO SIN ESPERAR AL GPS) ---
+// --- DISPARO SIMULTÁNEO ---
 async function disparoSOS(){
  if(sosActivo) return; 
  
@@ -666,7 +682,6 @@ async function disparoSOS(){
  const cores = navigator.hardwareConcurrency || 'Desc.';
  const pantalla = `${screen.width}x${screen.height}`;
 
- // 1. CREAMOS EL ACTA DE INMEDIATO
  const hash = await sha256(id+imei+Date.now());
  let acta = {
      id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
@@ -678,10 +693,10 @@ async function disparoSOS(){
  listaActas.push(acta);
  render(acta);
 
- // 2. PRENDEMOS CÁMARAS Y MICRÓFONO AL INSTANTE (Sin esperar a los satélites)
+ // ARRANCA CÁMARA Y AUDIO AL INSTANTE
  capturarEvidencia();
 
- // 3. BUSCAMOS EL GPS EN SILENCIO (Puede tardar, pero ya estamos grabando)
+ // BUSCA GPS DE FONDO
  navigator.geolocation.getCurrentPosition(p => {
     let lat = p.coords.latitude;
     let lng = p.coords.longitude;
@@ -693,23 +708,19 @@ async function disparoSOS(){
         acActual.precision = Math.round(p.coords.accuracy);
         render(acActual); 
     }
-    
-    // Manda WhatsApp con coordenadas correctas
     whatsappFrontend(contactos, nombre, lat, lng, id);
     
  }, () => { 
-    // Manda WhatsApp sin ubicación si el GPS está apagado, pero lo manda rápido
     whatsappFrontend(contactos, nombre, 'Desconocida', 'Desconocida', id);
  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
 }
 
-// --- NUEVO SENSOR DE IMPACTO INFALIBLE ---
+// --- SENSOR DE IMPACTO CORREGIDO Y SENSIBLE ---
 let lastX=null, lastY=null, lastZ=null;
-let threshold = 30; // 30 es una sacudida/golpe brusco real, no un salto al caminar
+let threshold = 15; // ¡BAJADO A 15! Para que reaccione más rápido a sacudidas.
 let ultimaAcc = 0;
 
 window.addEventListener('devicemotion', (e) => {
-    // accelerationIncludingGravity es clave: funciona en el 100% de los celulares
     let acc = e.acceleration || e.accelerationIncludingGravity;
     if (!acc) return;
     
@@ -738,7 +749,6 @@ const parar = () => {
     if(la) clearInterval(la); if(lv) clearInterval(lv); if(l10) clearInterval(l10);
     document.getElementById('st').style.display='none';
     
-    // Apagar cámara y micrófono de inmediato
     if(mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
     if(mediaStream) mediaStream.getTracks().forEach(t => t.stop());
 };
@@ -755,9 +765,8 @@ async function pararConLlave(){
             return;
         }
 
-        parar(); // Corta GPS, cámara y micrófono
+        parar(); 
         
-        // VOLVEMOS EL BOTON A LA NORMALIDAD
         sosActivo = false;
         document.getElementById('btnBigSOS').innerText = 'S.O.S';
         document.getElementById('btnBigSOS').classList.remove('activo');
