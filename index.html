@@ -462,7 +462,7 @@ function leerVoz(){
 }
 
 // =========================================================================
-// ⏱️ TEMPORIZADOR MODO TRAYECTO
+// ⏱️ TEMPORIZADOR MODO TRAYECTO (AHORA CON CANDADO DE SEGURIDAD Y DISEÑO ARREGLADO)
 // =========================================================================
 let trayectoInterval = null;
 let finTrayecto = 0;
@@ -541,7 +541,7 @@ async function cancelarTrayecto() {
 }
 
 // =========================================================================
-// 🗣️ ACTIVACIÓN POR VOZ SECRETA
+// 🗣️ ACTIVACIÓN POR VOZ SECRETA (OPTIMIZADO Y SILENCIADO)
 // =========================================================================
 let recognition = null;
 let vozActiva = false;
@@ -566,17 +566,26 @@ async function toggleVoz() {
         if(vozActiva) {
             vozActiva = false;
             if(recognition) recognition.stop();
+            if(window.silentMicStream) {
+                window.silentMicStream.getTracks().forEach(t => t.stop());
+                window.silentMicStream = null;
+            }
             btnVoz.innerText = "🎙️ ACTIVAR RECONOCIMIENTO DE VOZ";
             btnVoz.style.background = "var(--oroMedio)";
             alert("✅ Reconocimiento de voz desactivado.");
             return;
         }
         
+        // TRUCO DE MICROFONO CALIENTE PARA MUTEAR EL BIP DE ANDROID
+        if (!window.silentMicStream) {
+            try { window.silentMicStream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch(e) {}
+        }
+
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         recognition = new SpeechRecognition();
         
         recognition.continuous = true;
-        recognition.interimResults = true; 
+        recognition.interimResults = false; // Reducido para evitar múltiples reinicios
         recognition.lang = 'es-AR';
         
         recognition.onstart = function() {
@@ -591,6 +600,7 @@ async function toggleVoz() {
             if(ultimaFrase.includes("ayuda sistema") || ultimaFrase.includes("auxilio") || ultimaFrase.includes("ayuda c4")) {
                 recognition.stop();
                 vozActiva = false;
+                if(window.silentMicStream) { window.silentMicStream.getTracks().forEach(t => t.stop()); window.silentMicStream = null; }
                 btnVoz.innerText = "🎙️ ACTIVAR RECONOCIMIENTO DE VOZ";
                 btnVoz.style.background = "var(--oroMedio)";
                 
@@ -611,7 +621,7 @@ async function toggleVoz() {
         };
         
         recognition.start();
-        alert("✅ Reconocimiento de voz activado.\n\nEl celular está escuchando en segundo plano. (Aclaración: Por motivos de seguridad de Android/Google, el micrófono puede emitir un ligero sonido para indicar que sigue activo).");
+        alert("✅ Reconocimiento de voz activado en modo silencioso.\n\n(Aclaración: Por motivos de seguridad de Android/Google, el micrófono mostrará un ícono verde en la parte superior para indicar que sigue activo, pero los sonidos molestos han sido suprimidos).");
     } catch(e) {
         alert("Error al validar la llave con el servidor.");
     }
@@ -1031,7 +1041,8 @@ async function disparoSOS(){
 
 let sh_last_x, sh_last_y, sh_last_z;
 let sh_lastUpdate = 0;
-const SHAKE_THRESHOLD = 9000; 
+// SENSIBILIDAD AJUSTADA A 7000
+const SHAKE_THRESHOLD = 7000; 
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
@@ -1198,6 +1209,8 @@ function render(a){
     } catch(e){}
  }, 250);
 }
+
+function renderActasLocales() { listaActas.forEach(render); }
 
 const expTXT=()=>{
     let currentImei = localStorage.getItem('imei');
