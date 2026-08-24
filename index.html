@@ -231,11 +231,13 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
        <div style="background:#FFFFFF; border:1.5px solid var(--oro); padding:20px; border-radius:12px; box-shadow:var(--luz);">
            <h4 style="font-family:'Cinzel'; color:var(--oroOscuro); font-size:16px; margin-bottom:10px; letter-spacing:2px; font-weight:800;">⏱️ MODO TRAYECTO (TEMPORIZADOR)</h4>
            <p style="font-size:13px; margin-bottom:15px; color:#555; line-height:1.5;">Ideal para taxis o caminar sola. Si el tiempo llega a cero y no pusiste tu clave, el S.O.S se dispara solo.</p>
-           <div style="display:flex; gap:10px;">
-               <input type="number" id="minTrayecto" placeholder="Minutos (ej: 15)" style="flex:1; padding:12px; border-radius:8px; border:1px solid #ccc; font-weight:bold; font-size:15px;" inputmode="numeric">
-               <button id="btnTrayectoAccion" class="btn" style="width:auto; padding:12px 20px; font-size:12px; letter-spacing:2px;" onclick="iniciarTrayecto()">INICIAR</button>
+           
+           <div style="display:flex; flex-direction:column; gap:12px;">
+               <input type="number" id="minTrayecto" placeholder="Minutos (ej: 15)" style="width:100%; padding:14px; border-radius:12px; border:1px solid #D4AF37; font-weight:bold; font-size:15px; text-align:center; box-sizing:border-box;" inputmode="numeric">
+               <button id="btnTrayectoAccion" class="btn" style="width:100%; padding:14px 20px; font-size:13px; letter-spacing:2px;" onclick="iniciarTrayecto()">INICIAR TRAYECTO</button>
            </div>
-           <div id="trayectoEstado" style="display:none; font-weight:900; color:#8B0000; font-size:18px; margin-top:15px; text-align:center;">Tiempo para reportarte: <span id="trayectoTiempo">--:--</span></div>
+           
+           <div id="trayectoEstado" style="display:none; font-weight:900; color:#8B0000; font-size:18px; margin-top:15px; text-align:center;">Tiempo para reportarte:<br><span id="trayectoTiempo" style="font-size:24px;">--:--</span></div>
        </div>
 
        <div style="background:#FFFFFF; border:1.5px solid var(--oro); padding:20px; border-radius:12px; box-shadow:var(--luz);">
@@ -460,7 +462,7 @@ function leerVoz(){
 }
 
 // =========================================================================
-// ⏱️ TEMPORIZADOR MODO TRAYECTO 
+// ⏱️ TEMPORIZADOR MODO TRAYECTO
 // =========================================================================
 let trayectoInterval = null;
 let finTrayecto = 0;
@@ -528,7 +530,7 @@ async function cancelarTrayecto() {
         document.getElementById('trayectoEstado').style.display = 'none';
         
         let btnAccion = document.getElementById('btnTrayectoAccion');
-        btnAccion.innerText = "INICIAR";
+        btnAccion.innerText = "INICIAR TRAYECTO";
         btnAccion.style.background = "var(--bordeOro)";
         btnAccion.onclick = iniciarTrayecto;
         
@@ -539,7 +541,7 @@ async function cancelarTrayecto() {
 }
 
 // =========================================================================
-// 🗣️ ACTIVACIÓN POR VOZ SECRETA 
+// 🗣️ ACTIVACIÓN POR VOZ SECRETA
 // =========================================================================
 let recognition = null;
 let vozActiva = false;
@@ -572,8 +574,9 @@ async function toggleVoz() {
         
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         recognition = new SpeechRecognition();
+        
         recognition.continuous = true;
-        recognition.interimResults = false;
+        recognition.interimResults = true; 
         recognition.lang = 'es-AR';
         
         recognition.onstart = function() {
@@ -597,16 +600,18 @@ async function toggleVoz() {
         
         recognition.onerror = function(event) {
             if(vozActiva && event.error !== 'not-allowed') {
-                setTimeout(() => recognition.start(), 1000); 
+                setTimeout(() => { if(vozActiva) recognition.start(); }, 1500); 
             }
         };
         
         recognition.onend = function() {
-            if(vozActiva) recognition.start(); 
+            if(vozActiva) {
+                setTimeout(() => { if(vozActiva) recognition.start(); }, 500);
+            }
         };
         
         recognition.start();
-        alert("✅ Reconocimiento de voz activado. El celular está escuchando en segundo plano.");
+        alert("✅ Reconocimiento de voz activado.\n\nEl celular está escuchando en segundo plano. (Aclaración: Por motivos de seguridad de Android/Google, el micrófono puede emitir un ligero sonido para indicar que sigue activo).");
     } catch(e) {
         alert("Error al validar la llave con el servidor.");
     }
@@ -790,18 +795,41 @@ async function validar(){
             ir('pago');
         } else {
             sessionStorage.setItem('k', k);
+            localStorage.setItem('imei', sub.imei);
+            
+            // Re-hidratar los contactos si ingresan en otro dispositivo
+            const checkWA = await supaQuery('GET', `c4_suscripciones?select=whatsapp&imei=eq.${sub.imei}`);
+            if(checkWA && checkWA.length > 0 && checkWA[0].whatsapp) {
+                // Al entrar con una llave en otro cel, por seguridad intentamos recuperar la config básica
+                // NOTA: Como la BD actual solo tiene 1 teléfono, armamos un contacto de emergencia dummy con su propio número
+                localStorage.setItem('contactos', JSON.stringify([checkWA[0].whatsapp]));
+            }
+
             alert('✅ LLAVE VÁLIDA. Ingresando al sistema judicial...');
             ir('panel');
-            renderActasLocales();
+            
+            // Limpia pantalla y carga solo las actas de esta llave (IMEI)
+            const c = document.getElementById('alertas');
+            c.innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:\'Cormorant Garamond\',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div>';
+            
+            let actasFiltradas = listaActas.filter(a => a.imei === sub.imei);
+            if (actasFiltradas.length > 0) {
+                c.innerHTML = ''; 
+                actasFiltradas.forEach(render);
+            }
         }
     } catch(e) { alert('Error validando la llave.'); }
 }
 
-const cerrar=()=>{sessionStorage.clear();location.reload()};
+const cerrar=()=>{
+    localStorage.removeItem('imei'); 
+    sessionStorage.clear();
+    location.reload();
+};
 
-// =========================================================================
+// -------------------------------------------------------------------------
 // 🔥 CONEXIÓN A GREEN API POR FETCH EN SEGUNDO PLANO
-// =========================================================================
+// -------------------------------------------------------------------------
 const WA_INSTANCE = '710722716988';
 const WA_TOKEN = '557e951bd7a04f50bc5ae05ee7154bb962cdd82bc71d4f58bc';
 
@@ -814,9 +842,9 @@ function formatArg(num) {
     return '549' + c;
 }
 
-async function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
+function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     if (!contactos || contactos.length === 0) return;
-
+    
     let msg = "";
     if (tipo === 'alerta') {
         msg = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre}* acaba de accionar su botón antipánico.\n\n📍 *Ubicación GPS:* Rastrando coordenadas exactas en este momento...\n\n🔐 *ID P4:* ${id}`;
@@ -831,17 +859,14 @@ async function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alert
             let cel = formatArg(numero);
             let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
             
-            let res = await fetch(url, {
+            fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-            });
+            }).then(res => res.json()).then(data => {
+                if (data.status === "error" || data.error) console.error("Fallo GreenAPI:", data);
+            }).catch(e => console.error("Error Fetch WP:", e));
             
-            let data = await res.json();
-            
-            if (!res.ok || data.status === "error" || data.error) {
-                console.error("Fallo GreenAPI:", data);
-            }
         } catch (e) {
             console.error("Error de Red WP:", e);
         }
@@ -868,7 +893,11 @@ async function capturarEvidencia() {
                 if(!actaActual.audios) actaActual.audios = [];
                 actaActual.audios.push(audioBlob);
                 await guardarActas();
-                render(actaActual);
+                
+                let currentImei = localStorage.getItem('imei');
+                if (actaActual.imei === currentImei) {
+                    render(actaActual);
+                }
             }
         };
         audioRecorder.start();
@@ -907,7 +936,11 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
                     if(!acta.imagenes) acta.imagenes = [];
                     acta.imagenes.push({url: b64Img, camara: tipo, sha256: 'HASH-'+Date.now()});
                     guardarActas();
-                    render(acta);
+                    
+                    let currentImei = localStorage.getItem('imei');
+                    if (acta.imei === currentImei) {
+                        render(acta);
+                    }
                 }
                 resolve();
             }, 800); 
@@ -971,7 +1004,13 @@ async function disparoSOS(){
  };
  listaActas.push(acta);
  await guardarActas();
- render(acta);
+ 
+ let currentImei = localStorage.getItem('imei');
+ if (acta.imei === currentImei) {
+     const c = document.getElementById('alertas');
+     if(c.innerHTML.includes('calma')) c.innerHTML='';
+     render(acta);
+ }
 
  capturarEvidencia();
 
@@ -982,7 +1021,7 @@ async function disparoSOS(){
     if(acActual) {
         acActual.lat = lat; acActual.lng = lng; acActual.precision = Math.round(p.coords.accuracy);
         guardarActas();
-        render(acActual); 
+        if (acActual.imei === localStorage.getItem('imei')) render(acActual); 
     }
     enviarWhatsAppOculto(contactos, nombre, lat, lng, id, 'gps');
  }, () => { 
@@ -992,7 +1031,7 @@ async function disparoSOS(){
 
 let sh_last_x, sh_last_y, sh_last_z;
 let sh_lastUpdate = 0;
-const SHAKE_THRESHOLD = 10000; 
+const SHAKE_THRESHOLD = 9000; 
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
@@ -1097,7 +1136,6 @@ function render(a){
      d = document.createElement('div');
      d.className='acta';
      d.id='a_'+a.id;
-     if(c.innerHTML.includes('calma')) c.innerHTML='';
      c.prepend(d);
  }
  
@@ -1161,15 +1199,16 @@ function render(a){
  }, 250);
 }
 
-function renderActasLocales() { listaActas.forEach(render); }
-
 const expTXT=()=>{
-    if(listaActas.length === 0) return alert('No hay actas registradas para descargar.');
+    let currentImei = localStorage.getItem('imei');
+    let actasParaExportar = listaActas.filter(a => a.imei === currentImei);
+    
+    if(actasParaExportar.length === 0) return alert('No hay actas registradas para descargar.');
     let t = "=================================================\n";
     t += " NI UNA MENOS ARGENTINA - CADENA DE CUSTODIA P4\n";
     t += "=================================================\n\n";
     
-    listaActas.forEach(a => {
+    actasParaExportar.forEach(a => {
         t += `[ EXPEDIENTE N° ${a.numero_acta} ]\n`;
         t += `FECHA Y HORA DE ALERTA: ${a.fecha} ${a.hora}\n`;
         t += `NOMBRE DE LA VÍCTIMA: ${a.nombre}\n`;
@@ -1190,8 +1229,6 @@ const verificar=async()=>{alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales
 
 addEventListener('DOMContentLoaded', async ()=>{
  await cargarActasLocales(); 
- renderActasLocales(); 
- const q=new URLSearchParams(location.search);
  const savedImei = localStorage.getItem('imei');
  if(savedImei) {
     document.getElementById('pI').value = savedImei;
