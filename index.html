@@ -226,7 +226,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
    <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás registrada en el sistema.<br>Si sentís miedo o sospechás que corrés peligro, activá el botón manualmente aquí:</p>
    <button class="btn rubi" onclick="irSOS()">✦ INGRESAR AL BOTÓN ANTIPÁNICO ✦</button>
    
-   <!-- TEMPORIZADOR Y VOZ (NUEVAS FUNCIONES) -->
+   <!-- TEMPORIZADOR Y VOZ BLINDADOS CON CONTRASEÑA -->
    <div style="margin-top: 25px; display:flex; flex-direction:column; gap:15px;">
        
        <div style="background:#FFFFFF; border:1.5px solid var(--oro); padding:20px; border-radius:12px; box-shadow:var(--luz);">
@@ -452,41 +452,56 @@ function leerVoz(){
 }
 
 // =========================================================================
-// ⏱️ TEMPORIZADOR MODO TRAYECTO
+// ⏱️ TEMPORIZADOR MODO TRAYECTO (AHORA CON CANDADO DE SEGURIDAD)
 // =========================================================================
 let trayectoInterval = null;
 let finTrayecto = 0;
 
-function iniciarTrayecto() {
+async function iniciarTrayecto() {
     let input = document.getElementById('minTrayecto');
     let m = parseInt(input.value);
     
     if(isNaN(m) || m <= 0) return alert("Por favor ingresá una cantidad de minutos válida (ej: 15).");
     
-    finTrayecto = Date.now() + m * 60000;
-    input.style.display = 'none';
-    document.getElementById('trayectoEstado').style.display = 'block';
+    let p = prompt("🔒 SEGURIDAD: Ingresá tu Llave Maestra C4 para autorizar el Trayecto:");
+    if(!p) return;
     
-    if(trayectoInterval) clearInterval(trayectoInterval);
-    
-    trayectoInterval = setInterval(() => {
-        let diff = finTrayecto - Date.now();
-        if(diff <= 0) {
-            clearInterval(trayectoInterval);
-            document.getElementById('trayectoEstado').innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S...";
-            irSOS();
-            disparoSOS();
-        } else {
-            let min = Math.floor(diff / 60000);
-            let sec = Math.floor((diff % 60000) / 1000);
-            document.getElementById('trayectoTiempo').innerText = `${min}:${sec.toString().padStart(2,'0')}`;
+    const llaveLimpia = LK(p);
+    try {
+        const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`);
+        if(res.length === 0) {
+            return alert('❌ LLAVE INCORRECTA. Acceso denegado.');
         }
-    }, 1000);
+        
+        finTrayecto = Date.now() + m * 60000;
+        input.style.display = 'none';
+        document.getElementById('trayectoEstado').style.display = 'block';
+        
+        if(trayectoInterval) clearInterval(trayectoInterval);
+        
+        trayectoInterval = setInterval(() => {
+            let diff = finTrayecto - Date.now();
+            if(diff <= 0) {
+                clearInterval(trayectoInterval);
+                document.getElementById('trayectoEstado').innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S...";
+                irSOS();
+                disparoSOS();
+            } else {
+                let min = Math.floor(diff / 60000);
+                let sec = Math.floor((diff % 60000) / 1000);
+                document.getElementById('trayectoTiempo').innerText = `${min}:${sec.toString().padStart(2,'0')}`;
+            }
+        }, 1000);
 
-    let btnAccion = document.getElementById('btnTrayectoAccion');
-    btnAccion.innerText = "CANCELAR TRAYECTO";
-    btnAccion.style.background = "#8B0000";
-    btnAccion.onclick = cancelarTrayecto;
+        let btnAccion = document.getElementById('btnTrayectoAccion');
+        btnAccion.innerText = "CANCELAR TRAYECTO";
+        btnAccion.style.background = "#8B0000";
+        btnAccion.onclick = cancelarTrayecto;
+        
+        alert("✅ Temporizador iniciado con éxito.");
+    } catch(e) {
+        alert("Error al validar la llave con el servidor.");
+    }
 }
 
 async function cancelarTrayecto() {
@@ -516,63 +531,78 @@ async function cancelarTrayecto() {
 }
 
 // =========================================================================
-// 🗣️ ACTIVACIÓN POR VOZ SECRETA
+// 🗣️ ACTIVACIÓN POR VOZ SECRETA (AHORA CON CANDADO DE SEGURIDAD)
 // =========================================================================
 let recognition = null;
 let vozActiva = false;
 
-function toggleVoz() {
+async function toggleVoz() {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         return alert("Tu navegador o teléfono no soporta el reconocimiento de voz en segundo plano.");
     }
     
-    let btnVoz = document.getElementById('btnVoz');
+    let p = prompt("🔒 SEGURIDAD: Ingresá tu Llave Maestra C4 para autorizar el comando de voz:");
+    if(!p) return;
+    
+    const llaveLimpia = LK(p);
+    try {
+        const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`);
+        if(res.length === 0) {
+            return alert('❌ LLAVE INCORRECTA. Acceso denegado.');
+        }
 
-    if(vozActiva) {
-        vozActiva = false;
-        if(recognition) recognition.stop();
-        btnVoz.innerText = "🎙️ ACTIVAR RECONOCIMIENTO DE VOZ";
-        btnVoz.style.background = "var(--oroMedio)";
-        return;
-    }
-    
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = false;
-    recognition.lang = 'es-AR';
-    
-    recognition.onstart = function() {
-        vozActiva = true;
-        btnVoz.innerText = "ESCUCHANDO... (TOCAR PARA APAGAR)";
-        btnVoz.style.background = "#8B0000";
-    };
-    
-    recognition.onresult = function(event) {
-        let ultimaFrase = event.results[event.results.length - 1][0].transcript.toLowerCase();
-        console.log("Escuchado:", ultimaFrase);
-        
-        if(ultimaFrase.includes("ayuda sistema") || ultimaFrase.includes("auxilio") || ultimaFrase.includes("ayuda c4")) {
-            recognition.stop();
+        let btnVoz = document.getElementById('btnVoz');
+
+        if(vozActiva) {
             vozActiva = false;
+            if(recognition) recognition.stop();
             btnVoz.innerText = "🎙️ ACTIVAR RECONOCIMIENTO DE VOZ";
             btnVoz.style.background = "var(--oroMedio)";
+            alert("✅ Reconocimiento de voz desactivado.");
+            return;
+        }
+        
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = false;
+        recognition.lang = 'es-AR';
+        
+        recognition.onstart = function() {
+            vozActiva = true;
+            btnVoz.innerText = "ESCUCHANDO... (TOCAR PARA APAGAR)";
+            btnVoz.style.background = "#8B0000";
+        };
+        
+        recognition.onresult = function(event) {
+            let ultimaFrase = event.results[event.results.length - 1][0].transcript.toLowerCase();
+            console.log("Escuchado:", ultimaFrase);
             
-            activarAlarmaRobo();
-        }
-    };
-    
-    recognition.onerror = function(event) {
-        if(vozActiva && event.error !== 'not-allowed') {
-            setTimeout(() => recognition.start(), 1000); 
-        }
-    };
-    
-    recognition.onend = function() {
-        if(vozActiva) recognition.start(); 
-    };
-    
-    recognition.start();
+            if(ultimaFrase.includes("ayuda sistema") || ultimaFrase.includes("auxilio") || ultimaFrase.includes("ayuda c4")) {
+                recognition.stop();
+                vozActiva = false;
+                btnVoz.innerText = "🎙️ ACTIVAR RECONOCIMIENTO DE VOZ";
+                btnVoz.style.background = "var(--oroMedio)";
+                
+                activarAlarmaRobo();
+            }
+        };
+        
+        recognition.onerror = function(event) {
+            if(vozActiva && event.error !== 'not-allowed') {
+                setTimeout(() => recognition.start(), 1000); 
+            }
+        };
+        
+        recognition.onend = function() {
+            if(vozActiva) recognition.start(); 
+        };
+        
+        recognition.start();
+        alert("✅ Reconocimiento de voz activado. El celular está escuchando en segundo plano.");
+    } catch(e) {
+        alert("Error al validar la llave con el servidor.");
+    }
 }
 
 
