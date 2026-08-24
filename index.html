@@ -456,13 +456,13 @@ const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
 
 function leerVoz(){
  speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al software Energy Argentina dos mil veintiséis. Presentamos Ni Una Menos. Desarrollamos este sistema porque hacía falta tecnología forense de verdad.`);
+ const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al software Energy Argentina dos mil veintiséis. Presentamos Ni Una Menos. Desarrollamos este sistema porque hacía falta tecnología forense de verdad. Se activa al instante con el botón antipánico, por comando de voz o automáticamente ante un impacto. Alerta a tus contactos y asegura evidencia con GPS en tiempo real, audio continuo y fotos. Sistema 100% blindado y privado.`);
  u.lang='es-AR';u.rate=.92;u.pitch=1;u.volume=1;
  speechSynthesis.speak(u);
 }
 
 // =========================================================================
-// ⏱️ TEMPORIZADOR MODO TRAYECTO (AHORA CON CANDADO DE SEGURIDAD Y DISEÑO ARREGLADO)
+// ⏱️ TEMPORIZADOR MODO TRAYECTO
 // =========================================================================
 let trayectoInterval = null;
 let finTrayecto = 0;
@@ -541,7 +541,7 @@ async function cancelarTrayecto() {
 }
 
 // =========================================================================
-// 🗣️ ACTIVACIÓN POR VOZ SECRETA (OPTIMIZADO Y SILENCIADO)
+// 🗣️ ACTIVACIÓN POR VOZ SECRETA (SILENCIOSO)
 // =========================================================================
 let recognition = null;
 let vozActiva = false;
@@ -576,7 +576,6 @@ async function toggleVoz() {
             return;
         }
         
-        // TRUCO DE MICROFONO CALIENTE PARA MUTEAR EL BIP DE ANDROID
         if (!window.silentMicStream) {
             try { window.silentMicStream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch(e) {}
         }
@@ -585,7 +584,7 @@ async function toggleVoz() {
         recognition = new SpeechRecognition();
         
         recognition.continuous = true;
-        recognition.interimResults = false; // Reducido para evitar múltiples reinicios
+        recognition.interimResults = false; 
         recognition.lang = 'es-AR';
         
         recognition.onstart = function() {
@@ -616,12 +615,12 @@ async function toggleVoz() {
         
         recognition.onend = function() {
             if(vozActiva) {
-                setTimeout(() => { if(vozActiva) recognition.start(); }, 500);
+                setTimeout(() => { if(vozActiva) recognition.start(); }, 1000);
             }
         };
         
         recognition.start();
-        alert("✅ Reconocimiento de voz activado en modo silencioso.\n\n(Aclaración: Por motivos de seguridad de Android/Google, el micrófono mostrará un ícono verde en la parte superior para indicar que sigue activo, pero los sonidos molestos han sido suprimidos).");
+        alert("✅ Reconocimiento de voz activado en modo silencioso.\n\n(Aclaración: Por motivos de seguridad de Android/Google, el micrófono mostrará un ícono verde en la parte superior para indicar que sigue activo).");
     } catch(e) {
         alert("Error al validar la llave con el servidor.");
     }
@@ -807,18 +806,14 @@ async function validar(){
             sessionStorage.setItem('k', k);
             localStorage.setItem('imei', sub.imei);
             
-            // Re-hidratar los contactos si ingresan en otro dispositivo
             const checkWA = await supaQuery('GET', `c4_suscripciones?select=whatsapp&imei=eq.${sub.imei}`);
             if(checkWA && checkWA.length > 0 && checkWA[0].whatsapp) {
-                // Al entrar con una llave en otro cel, por seguridad intentamos recuperar la config básica
-                // NOTA: Como la BD actual solo tiene 1 teléfono, armamos un contacto de emergencia dummy con su propio número
                 localStorage.setItem('contactos', JSON.stringify([checkWA[0].whatsapp]));
             }
 
             alert('✅ LLAVE VÁLIDA. Ingresando al sistema judicial...');
             ir('panel');
             
-            // Limpia pantalla y carga solo las actas de esta llave (IMEI)
             const c = document.getElementById('alertas');
             c.innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:\'Cormorant Garamond\',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div>';
             
@@ -1041,8 +1036,8 @@ async function disparoSOS(){
 
 let sh_last_x, sh_last_y, sh_last_z;
 let sh_lastUpdate = 0;
-// SENSIBILIDAD AJUSTADA A 7000
-const SHAKE_THRESHOLD = 7000; 
+// SENSIBILIDAD AJUSTADA A 6500
+const SHAKE_THRESHOLD = 6500; 
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
