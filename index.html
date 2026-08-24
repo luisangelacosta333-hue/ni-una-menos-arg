@@ -121,8 +121,19 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .onda{position:absolute;width:270px;height:270px;border-radius:50%;background:radial-gradient(circle,rgba(139,0,0,.45),transparent 75%);animation:onda 2.2s infinite}
 .onda.d2{animation-delay:.7s}.onda.d3{animation-delay:1.4s}
 @keyframes onda{0%{transform:scale(.75);opacity:1}100%{transform:scale(2.5);opacity:0}}
-.bSOS{position:relative;z-index:5;width:210px;height:210px;border-radius:50%;border:2px solid var(--oroMedio);cursor:pointer;color:var(--oroClaro);font-family:'Cinzel',serif;font-weight:900;font-size:32px;letter-spacing:4px;background:radial-gradient(circle at 30% 22%,#7A0010,#4A0008 80%);text-shadow:0 2px 4px rgba(0,0,0,.7);box-shadow:0 0 0 0 rgba(139,0,0,.7), inset 0 4px 15px rgba(255,255,255,.1);animation:pulso 2s infinite}
+.bSOS{position:relative;z-index:5;width:210px;height:210px;border-radius:50%;border:2px solid var(--oroMedio);cursor:pointer;color:var(--oroClaro);font-family:'Cinzel',serif;font-weight:900;font-size:32px;letter-spacing:4px;background:radial-gradient(circle at 30% 22%,#7A0010,#4A0008 80%);text-shadow:0 2px 4px rgba(0,0,0,.7);box-shadow:0 0 0 0 rgba(139,0,0,.7), inset 0 4px 15px rgba(255,255,255,.1);animation:pulso 2s infinite; transition: all 0.3s ease;}
 @keyframes pulso{to{box-shadow:0 0 0 48px rgba(139,0,0,0), inset 0 4px 15px rgba(255,255,255,.1)}}
+/* ESTILO CUANDO EL SOS ESTÁ ACTIVADO (AMARILLO PRECAUCIÓN) */
+.bSOS.activo {
+    background: radial-gradient(circle at 30% 22%, #FFE79B, #D4AF37 80%);
+    color: #5A3E00;
+    border-color: #5A3E00;
+    text-shadow: none;
+    font-size: 20px;
+    animation: none;
+    box-shadow: 0 4px 15px rgba(212,175,55,.4), inset 0 4px 15px rgba(255,255,255,.4);
+}
+
 .estadoSOS{display:none;padding:20px;border-radius:16px;background:#FFF3F5;border:1px solid #8B0000;color:#8B0000;text-align:center;font-weight:600;font-size:14px;line-height:1.6}
 
 /* BOTÓN FLOTANTE S.O.S (SIEMPRE A MANO) */
@@ -318,7 +329,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
   <div style="display:flex;gap:12px;margin-top:25px;flex-wrap:wrap;justify-content:center">
    <button class="btn blanco" onclick="navigator.clipboard.writeText(document.getElementById('lk').textContent).then(()=>alert('Copiada correctamente'))">COPIAR</button>
    <button class="btn" onclick="navigator.share?.({text:document.getElementById('lk').textContent})">COMPARTIR</button>
-   <!-- EL BOTÓN IMPRIMIR SE ELIMINÓ DE ACÁ Y QUEDÓ SOLO EN EL PANEL -->
   </div>
  </div>
  <button class="btn" onclick="ir('login')">✦ INGRESAR AL PANEL ✦</button>
@@ -330,13 +340,17 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 
 <section id="sos" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ ATRÁS</button><h2 class="tit">PROTECCIÓN ACTIVA</h2>
- <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" onclick="disparoSOS()">S.O.S</button></div>
- <div class="estadoSOS" id="st">✦ EVIDENCIA ACTIVADA Y ALERTAS ENVIADAS ✦<br>GPS SEGUNDO A SEGUNDO · AUDIO · VIDEO · FOTOS · SENSORES · CELDA · WIFI · CADENA<br><br><span style="font-size:12px;color:#888;font-weight:400;">(Búfer Offline activo: la evidencia se resguarda sin señal)</span><br><br>
-   <div style="background:#FFE79B;color:#5A3E00;padding:10px;border-radius:8px;font-weight:700;margin-bottom:12px;font-size:12px;line-height:1.4;">
-    ⚠️ ¿FUE UNA ACTIVACIÓN ACCIDENTAL?<br>No te preocupes. Tocá abajo y poné tu Llave Maestra para avisar a tus contactos que estás a salvo.
+ <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
+ 
+ <div class="estadoSOS" id="st">
+   ✦ EVIDENCIA ACTIVADA Y ALERTAS ENVIADAS ✦<br>
+   GPS SEGUNDO A SEGUNDO · AUDIO · VIDEO · FOTOS · SENSORES · CELDA · WIFI · CADENA<br><br>
+   <span style="font-size:12px;color:#888;font-weight:400;">(Búfer Offline activo: la evidencia se resguarda sin señal)</span><br><br>
+   <div style="background:#FFE79B;color:#5A3E00;padding:10px;border-radius:8px;font-weight:700;margin-top:12px;font-size:12px;line-height:1.4;">
+    ⚠️ ¿FUE UNA ACTIVACIÓN ACCIDENTAL?<br>No te preocupes. Tocá el botón amarillo "DETENER S.O.S" de arriba e ingresá tu Llave Maestra para avisar a tus contactos que estás a salvo.
    </div>
-   <button onclick="pararConLlave()" style="padding:14px 28px;border-radius:50px;border:1px solid #8B0000;background:transparent;color:#8B0000;font-weight:700;letter-spacing:2px; font-family:'Cinzel', serif; cursor:pointer;">DETENER CON LLAVE</button>
  </div>
+ 
  <button class="btn rubi" onclick="salir()" style="margin-top:25px">DESVINCULAR SISTEMA</button>
 </section>
 
@@ -351,10 +365,8 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 
 <section id="panel" class="vista"><h2 class="tit" style="text-align:left;border-bottom:1px solid var(--oro);padding-bottom:10px;letter-spacing:5px">✦ CENTRO JUDICIAL P4 ✦</h2>
  <div style="display:flex;gap:12px;flex-wrap:wrap">
-  <button class="btn blanco" onclick="print()" style="flex:1 1 140px">IMPRIMIR ACTA</button>
-  <button class="btn blanco" onclick="expJSON()" style="flex:1 1 140px">JSON</button>
-  <button class="btn blanco" onclick="expTXT()" style="flex:1 1 140px">TXT</button>
-  <button class="btn blanco" onclick="verificar()" style="flex:1 1 140px">VERIFICAR</button>
+  <button class="btn" onclick="print()" style="flex:1 1 100%">✦ IMPRIMIR ACTA JUDICIAL ✦</button>
+  <button class="btn blanco" onclick="verificar()" style="flex:1 1 100%; margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
  </div>
  <div id="alertas"><div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div></div>
  <button class="btn blanco" onclick="cerrar()">CERRAR SESIÓN</button>
@@ -367,7 +379,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </div>
 
 <!-- BOTÓN S.O.S FLOTANTE (BOTÓN SOFT) -->
-<div id="btnFlotanteSOS" class="btn-flotante-sos" onclick="irSOS()">S.O.S</div>
+<div id="btnFlotanteSOS" class="btn-flotante-sos" onclick="ir('sos'); disparoSOS();">S.O.S</div>
 
 </div>
 
@@ -433,8 +445,19 @@ const fetchSeguro = async (url, body) => {
   console.log("Evidencia guardada en buffer offline:", url);
 };
 
+let sosActivo = false;
+
+// EL BOTON S.O.S AHORA HACE LAS DOS COSAS: DISPARAR O PEDIR LLAVE
+function toggleSOS() {
+    if(sosActivo) {
+        pararConLlave();
+    } else {
+        disparoSOS();
+    }
+}
+
 let toques=0;let tt=null;
-addEventListener('touchend',()=>{toques++;clearTimeout(tt);tt=setTimeout(()=>toques=0,1200);if(toques>=3&&document.getElementById('st').style.display!=='block')disparoSOS()});
+addEventListener('touchend',()=>{toques++;clearTimeout(tt);tt=setTimeout(()=>toques=0,1200);if(toques>=3&&!sosActivo)disparoSOS()});
 addEventListener('keydown',e=>{if(e.key==='5'&&e.ctrlKey&&e.shiftKey)disparoSOS()});
 
 let ultimaAcc = 0;
@@ -443,7 +466,7 @@ window.addEventListener('devicemotion', (e) => {
   const fuerza = Math.sqrt(e.acceleration.x ** 2 + e.acceleration.y ** 2 + e.acceleration.z ** 2);
   if (fuerza > 20 && (Date.now() - ultimaAcc > 3000)) {
     ultimaAcc = Date.now();
-    if (localStorage.getItem('ok') === '1' && document.getElementById('st').style.display !== 'block') { disparoSOS(); }
+    if (localStorage.getItem('ok') === '1' && !sosActivo) { disparoSOS(); }
   }
 });
 
@@ -575,9 +598,14 @@ async function whatsappFrontend(contactos, nombre, la, ln, id) {
 
 let gps=null,aid=null,la=null,lv=null, l10=null, listaActas=[];
 async function disparoSOS(){
- if(document.getElementById('st').style.display==='block')return;
- speechSynthesis.cancel();
+ if(sosActivo) return; // Si ya se disparó, no hace nada
+ 
+ sosActivo = true;
+ document.getElementById('btnBigSOS').innerText = 'DETENER S.O.S';
+ document.getElementById('btnBigSOS').classList.add('activo');
  document.getElementById('st').style.display='block';
+ 
+ speechSynthesis.cancel();
  if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){DeviceMotionEvent.requestPermission().catch(()=>{})}
  try{if('wakeLock'in navigator)await navigator.wakeLock.request('screen')}catch{}
  
@@ -587,7 +615,7 @@ async function disparoSOS(){
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
  aid = id;
 
- // 🔍 CAPTURA DE TELEMETRÍA FORENSE AVANZADA (NUEVO)
+ // 🔍 CAPTURA DE TELEMETRÍA FORENSE AVANZADA
  let batLevel = 'Desc.', batCharging = 'Desc.';
  try {
     if(navigator.getBattery) {
@@ -609,8 +637,6 @@ async function disparoSOS(){
     let lat = p.coords.latitude;
     let lng = p.coords.longitude;
     
-    document.getElementById('st').innerHTML = "✦ EVIDENCIA ACTIVADA Y ALERTAS ENVIADAS ✦<br>GPS SEGUNDO A SEGUNDO · AUDIO · VIDEO · FOTOS · SENSORES · CELDA · WIFI · CADENA<br><br><span style='font-size:12px;color:#888;font-weight:700;'>(Búfer Offline activo: la evidencia se resguarda sin señal)</span><br><br><div style='background:#FFE79B;color:#5A3E00;padding:10px;border-radius:8px;font-weight:700;margin-bottom:12px;font-size:12px;line-height:1.4;'>⚠️ ¿FUE UNA ACTIVACIÓN ACCIDENTAL?<br>No te preocupes. Tocá abajo y poné tu Llave Maestra para avisar a tus contactos que estás a salvo.</div><button onclick='pararConLlave()' style='padding:14px 28px;border-radius:50px;border:1px solid #8B0000;background:transparent;color:#8B0000;font-weight:900;letter-spacing:3px; font-family:`Cinzel`, serif; cursor:pointer;'>DETENER CON LLAVE</button>";
-    
     whatsappFrontend(contactos, nombre, lat, lng, id);
     
     const hash = await sha256(id+imei+Date.now());
@@ -619,7 +645,6 @@ async function disparoSOS(){
         hora: new Date().toLocaleTimeString('es-AR'), fecha: new Date().toLocaleDateString('es-AR'),
         audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: hash, hash_judicial: hash, eventos: [],
         numero_acta: 'P4-'+Date.now(),
-        // Agregamos la huella forense al acta
         bateria: batLevel, cargando: batCharging, red: redType, userAgent: ua, ram: ram, cores: cores, pantalla: pantalla
     };
     listaActas.push(acta);
@@ -632,7 +657,7 @@ async function disparoSOS(){
 const parar=()=>{if(gps)navigator.geolocation.clearWatch(gps);if(la)clearInterval(la);if(lv)clearInterval(lv);if(l10)clearInterval(l10);document.getElementById('st').style.display='none'};
 
 async function pararConLlave(){
-    const k = prompt('Ingrese su Llave Maestra para detener S.O.S y avisar que está a salvo');
+    const k = prompt('Ingrese su Llave Maestra para detener el sistema y avisar que está a salvo');
     if(!k) return;
     
     const llaveLimpia = LK(k);
@@ -644,6 +669,11 @@ async function pararConLlave(){
         }
 
         parar(); // Corta GPS, cámara y micrófono
+        
+        // VOLVEMOS EL BOTON A LA NORMALIDAD
+        sosActivo = false;
+        document.getElementById('btnBigSOS').innerText = 'S.O.S';
+        document.getElementById('btnBigSOS').classList.remove('activo');
         
         const nombre = localStorage.getItem('nombre') || 'Usuaria';
         const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
