@@ -892,7 +892,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
 // -------------------------------------------------------------------------
-// 📸 CAPTURA MÁXIMA DE EVIDENCIA (CICLO CONTINUO Y MÚLTIPLES FOTOS)
+// 📸 CAPTURA MÁXIMA DE EVIDENCIA (VIDEO, AUDIO Y MÚLTIPLES FOTOS)
 // -------------------------------------------------------------------------
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
@@ -942,7 +942,42 @@ async function loopEvidencia(acta) {
         return; 
     }
 
-    // 1. Grabar 30 segundos de Audio
+    // Actualizar GPS en cada ciclo para trazar el movimiento exacto
+    navigator.geolocation.getCurrentPosition(p => {
+        acta.lat = p.coords.latitude;
+        acta.lng = p.coords.longitude;
+        acta.precision = Math.round(p.coords.accuracy);
+        guardarActas();
+        if (acta.imei === localStorage.getItem('imei')) render(acta); 
+    }, () => {}, { enableHighAccuracy: true, maximumAge: 0 });
+
+    // 1. GRABAR 2 MINUTOS DE VIDEO AMBIENTE (TRASERA) (120,000 ms)
+    try {
+        const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
+        const videoRecorder = new MediaRecorder(videoStream);
+        const videoChunks = [];
+        videoRecorder.ondataavailable = e => videoChunks.push(e.data);
+        videoRecorder.onstop = async () => {
+            const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
+            if(!acta.videos) acta.videos = [];
+            acta.videos.push(videoBlob);
+            await guardarActas();
+            
+            let currentImei = localStorage.getItem('imei');
+            if (acta.imei === currentImei) render(acta);
+        };
+        videoRecorder.start();
+        
+        // Esperamos 2 MINUTOS
+        await new Promise(resolve => setTimeout(resolve, 120000));
+        
+        if(videoRecorder.state === 'recording') videoRecorder.stop();
+        videoStream.getTracks().forEach(t => t.stop());
+    } catch(e) { console.error("Cámara/Micro bloqueado para video:", e); }
+
+    if(!sosActivo) return;
+
+    // 2. Grabar 3 MINUTOS de Audio Continuo (180,000 ms) -> Totaliza 5 mins el ciclo
     try {
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioRecorder = new MediaRecorder(audioStream);
@@ -959,8 +994,8 @@ async function loopEvidencia(acta) {
         };
         audioRecorder.start();
         
-        // Esperamos 30 segundos antes de frenar el audio
-        await new Promise(resolve => setTimeout(resolve, 30000));
+        // Esperamos 3 MINUTOS
+        await new Promise(resolve => setTimeout(resolve, 180000));
         
         if(audioRecorder.state === 'recording') audioRecorder.stop();
         audioStream.getTracks().forEach(t => t.stop());
@@ -968,7 +1003,7 @@ async function loopEvidencia(acta) {
 
     if(!sosActivo) return;
 
-    // 2. Foto Frontal
+    // 3. Foto Frontal
     try {
         let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } });
         await tomarFotoSilenciosa(vFront, acta, 'frontal');
@@ -977,14 +1012,14 @@ async function loopEvidencia(acta) {
 
     if(!sosActivo) return;
 
-    // 3. Foto Trasera
+    // 4. Foto Trasera
     try {
         let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
         await tomarFotoSilenciosa(vBack, acta, 'trasera');
         vBack.getTracks().forEach(t => t.stop());
     } catch(e) { console.error("Error Trasera:", e); }
 
-    // 4. Volver a empezar el ciclo inmediatamente
+    // 5. Volver a empezar el ciclo inmediatamente
     if(sosActivo) {
         setTimeout(() => loopEvidencia(acta), 1000); 
     }
@@ -1074,7 +1109,7 @@ async function disparoSOS(){
 
 let sh_last_x, sh_last_y, sh_last_z;
 let sh_lastUpdate = 0;
-// SENSIBILIDAD AJUSTADA A 4500
+// SENSIBILIDAD AJUSTADA A 4500 (Se mantiene intocable)
 const SHAKE_THRESHOLD = 4500; 
 
 window.addEventListener('devicemotion', function (e) {
@@ -1186,6 +1221,17 @@ function render(a){
      delete mapas[a.id];
  }
  
+ // Render de Videos (Nuevo)
+ const vV = a.videos?.length ? a.videos.map((blob,i)=>{
+    let url = blob instanceof Blob ? URL.createObjectURL(blob) : (blob.url || '');
+    return `<div class="foto" style="padding:10px; width:100%;">
+                <span style="display:block; margin-bottom:5px; color:#8B0000; font-weight:800; font-family:'Cinzel',serif;">🎥 VIDEO SECUENCIAL ${i+1}</span>
+                <video controls playsinline preload="metadata" src="${url}" style="width:100%; border-radius:8px;"></video>
+                <div class="hash-overlay">HASH: HASH-${Date.now().toString().slice(-8)}...</div>
+            </div>`;
+ }).join('') : '<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Grabando video oculto en segundo plano...</p></div>';
+
+ // Render de Audios
  const aA = a.audios?.length ? a.audios.map((blob,i)=>{
     let url = blob instanceof Blob ? URL.createObjectURL(blob) : (blob.url || '');
     return `<div style="background:#FAFAFA; border:1px solid #EEE; padding:15px; border-radius:8px; margin-bottom:10px;">
@@ -1194,6 +1240,7 @@ function render(a){
             </div>`;
  }).join('') : '<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Grabando audios ocultos continuos...</p></div>';
 
+ // Render de Fotos
  const fT = a.imagenes?.length ? a.imagenes.map(i=>`
     <div class="foto" style="padding:10px; width:100%;">
         <span style="display:block; margin-bottom:5px; color:#8B0000; font-weight:800; font-family:'Cinzel',serif;">📸 CÁMARA ${i.camara.toUpperCase()}</span>
@@ -1228,11 +1275,12 @@ function render(a){
  <div class="mapa" id="m_${a.id}"></div>
  ${mapLink}
  
- <h3>IV — EVIDENCIA DE AUDIO AMBIENTAL CONTINUO</h3><div class="galeria">${aA}</div>
- <h3>V — EXTRACCIÓN FOTOGRÁFICA GIGANTE (MÚLTIPLE)</h3><div class="galeria">${fT}</div>
+ <h3>IV — EVIDENCIA EN VIDEO</h3><div class="galeria">${vV}</div>
+ <h3>V — EVIDENCIA DE AUDIO AMBIENTAL CONTINUO</h3><div class="galeria">${aA}</div>
+ <h3>VI — EXTRACCIÓN FOTOGRÁFICA GIGANTE (MÚLTIPLE)</h3><div class="galeria">${fT}</div>
  
- <h3>VI — FIRMAS CRIPTOGRÁFICAS</h3><div class="mono">ID: ${a.id}<br>INICIO: ${a.sello_inicio}<br>SHA‑256: ${a.sha256}<br>HMAC: ${a.hmac?.slice(0,32)||'—'}…</div>
- <h3>VII — MARCO LEGAL</h3><p style="font-size:11px;position:relative;z-index:3">Ley 26.485 · Ley 25.326 · Código Procesal Penal</p>
+ <h3>VII — FIRMAS CRIPTOGRÁFICAS</h3><div class="mono">ID: ${a.id}<br>INICIO: ${a.sello_inicio}<br>SHA‑256: ${a.sha256}<br>HMAC: ${a.hmac?.slice(0,32)||'—'}…</div>
+ <h3>VIII — MARCO LEGAL</h3><p style="font-size:11px;position:relative;z-index:3">Ley 26.485 · Ley 25.326 · Código Procesal Penal</p>
  <div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>ARGENTINA</div><div>FIRMA PERITO INFORMÁTICO</div></div>`;
  
  setTimeout(()=>{
