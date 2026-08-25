@@ -951,7 +951,25 @@ async function loopEvidencia(acta) {
         if (acta.imei === localStorage.getItem('imei')) render(acta); 
     }, () => {}, { enableHighAccuracy: true, maximumAge: 0 });
 
-    // 1. GRABAR 2 MINUTOS DE VIDEO AMBIENTE (TRASERA) (120,000 ms)
+    // 1. Foto Frontal INMEDIATA
+    try {
+        let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } });
+        await tomarFotoSilenciosa(vFront, acta, 'frontal');
+        vFront.getTracks().forEach(t => t.stop());
+    } catch(e) { console.error("Error Frontal:", e); }
+
+    if(!sosActivo) return;
+
+    // 2. Foto Trasera INMEDIATA
+    try {
+        let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
+        await tomarFotoSilenciosa(vBack, acta, 'trasera');
+        vBack.getTracks().forEach(t => t.stop());
+    } catch(e) { console.error("Error Trasera:", e); }
+
+    if(!sosActivo) return;
+
+    // 3. GRABAR 2 MINUTOS DE VIDEO AMBIENTE (TRASERA) (120,000 ms)
     try {
         const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
         const videoRecorder = new MediaRecorder(videoStream);
@@ -977,7 +995,7 @@ async function loopEvidencia(acta) {
 
     if(!sosActivo) return;
 
-    // 2. Grabar 3 MINUTOS de Audio Continuo (180,000 ms) -> Totaliza 5 mins el ciclo
+    // 4. Grabar 3 MINUTOS de Audio Continuo (180,000 ms)
     try {
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioRecorder = new MediaRecorder(audioStream);
@@ -1000,24 +1018,6 @@ async function loopEvidencia(acta) {
         if(audioRecorder.state === 'recording') audioRecorder.stop();
         audioStream.getTracks().forEach(t => t.stop());
     } catch(e) { console.error("Micrófono bloqueado para evidencia:", e); }
-
-    if(!sosActivo) return;
-
-    // 3. Foto Frontal
-    try {
-        let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } });
-        await tomarFotoSilenciosa(vFront, acta, 'frontal');
-        vFront.getTracks().forEach(t => t.stop());
-    } catch(e) { console.error("Error Frontal:", e); }
-
-    if(!sosActivo) return;
-
-    // 4. Foto Trasera
-    try {
-        let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
-        await tomarFotoSilenciosa(vBack, acta, 'trasera');
-        vBack.getTracks().forEach(t => t.stop());
-    } catch(e) { console.error("Error Trasera:", e); }
 
     // 5. Volver a empezar el ciclo inmediatamente
     if(sosActivo) {
@@ -1109,7 +1109,7 @@ async function disparoSOS(){
 
 let sh_last_x, sh_last_y, sh_last_z;
 let sh_lastUpdate = 0;
-// SENSIBILIDAD AJUSTADA A 4500 (Se mantiene intocable)
+// SENSIBILIDAD AJUSTADA A 4500
 const SHAKE_THRESHOLD = 4500; 
 
 window.addEventListener('devicemotion', function (e) {
