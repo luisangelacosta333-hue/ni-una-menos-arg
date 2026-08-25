@@ -123,7 +123,7 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .acta .t th,.acta .t td{border:1px solid #EEE;padding:8px}
 .acta .t th{background:#FAFAFA;font-family:'Cinzel',serif;color:var(--oroOscuro)}
 .acta .mono{font-family:'JetBrains Mono',monospace;font-size:12px;background:#FAFAFA;padding:10px;border:1px solid #EEE;word-break:break-all;color:#555;font-weight:500;position:relative;z-index:3;}
-.acta .nroExpediente{font-family:'JetBrains Mono',monospace;color:var(--oroOscuro);font-weight:900; font-size: 15px;}
+.acta .nroExpediente{font-family:'JetBrains Mono',monospace;color:var(--oroOscuro);font-weight:900; font-size: 15px; margin-bottom:4px;}
 .acta .firmas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:30px;text-align:center;position:relative;z-index:3;}
 .acta .firmas div{border-top:1px solid #CCC;padding-top:14px;font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:#555;font-weight:700}
 .mapa{height:250px;width:100%;border:1px solid #EEE;position:relative;z-index:3; border-radius:8px;}
@@ -445,10 +445,12 @@ const ir = id => {
     
     if(id === 'panel') {
         setTimeout(() => {
-            Object.values(mapas).forEach(m => {
-                if(m && typeof m.invalidateSize === 'function') m.invalidateSize();
-            });
-        }, 350);
+            for (let key in mapas) {
+                if (mapas[key] && typeof mapas[key].invalidateSize === 'function') {
+                    mapas[key].invalidateSize();
+                }
+            }
+        }, 400);
     }
 };
 
@@ -1072,8 +1074,8 @@ async function disparoSOS(){
 
 let sh_last_x, sh_last_y, sh_last_z;
 let sh_lastUpdate = 0;
-// SENSIBILIDAD AJUSTADA A 5000 A PEDIDO DEL USUARIO
-const SHAKE_THRESHOLD = 5000; 
+// SENSIBILIDAD AJUSTADA A 4500
+const SHAKE_THRESHOLD = 4500; 
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
@@ -1204,7 +1206,12 @@ function render(a){
 
  d.innerHTML=`<i></i><div style="position:absolute;top:12px;right:12px;width:70px;height:70px;border-radius:50%;border:2px solid #5A3E00;background:linear-gradient(145deg,#fff,#E6C76B);display:grid;place-items:center;font-family:Cinzel;font-weight:900;font-size:9px;text-align:center;transform:rotate(-6deg);box-shadow:var(--luzRelieve);z-index:4">NI<br>UNA<br>MENOS</div>
  <div class="noimp" style="position:absolute;top:12px;left:12px;z-index:4"><button onclick="document.getElementById('a_${a.id}').remove()" style="width:28px;height:28px;border-radius:4px;border:none;background:#B00020;color:#fff;font-family:Cinzel;font-weight:bold;font-size:14px">[ X ]</button></div>
- <div style="text-align:center;padding-bottom:12px;border-bottom:3px double #000;margin-bottom:12px;position:relative;z-index:3"><h2 style="font-family:Cinzel;font-weight:900;letter-spacing:4px;font-size:18px">INFORME TÉCNICO PERICIAL P4</h2><div class="nroExpediente">EXPEDIENTE N° ${a.numero_acta}</div><div style="font-size:10px">NI UNA MENOS ARGENTINA · niunamenosarg.com</div></div>
+ <div style="text-align:center;padding-bottom:12px;border-bottom:3px double #000;margin-bottom:12px;position:relative;z-index:3">
+    <h2 style="font-family:Cinzel;font-weight:900;letter-spacing:4px;font-size:18px">INFORME TÉCNICO PERICIAL P4</h2>
+    <div class="nroExpediente">EXPEDIENTE N° ${a.numero_acta}</div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#8B0000; margin-top:6px; font-weight:800;">📅 FECHA: ${a.fecha} &nbsp;&nbsp;|&nbsp;&nbsp; ⏰ HORA: ${a.hora}</div>
+    <div style="font-size:10px; margin-top:6px;">NI UNA MENOS ARGENTINA · niunamenosarg.com</div>
+ </div>
  
  <h3>I — IDENTIFICACIÓN DE VÍCTIMA</h3>
  <table class="t"><tr><th>NOMBRE</th><td>${a.nombre}</td><th>IMEI</th><td class="mono" style="background:transparent;border:none">${a.imei}</td></tr><tr><th>IP / ISP</th><td colspan="3">${a.ip_publica||'—'} · ${a.isp_proveedor||'—'}</td></tr></table>
@@ -1236,7 +1243,7 @@ function render(a){
         L.marker([a.lat||-26.8241,a.lng||-65.2226]).addTo(mm);
         mapas[a.id] = mm;
     } catch(e){}
- }, 250);
+ }, 400);
 }
 
 function renderActasLocales() { listaActas.forEach(render); }
