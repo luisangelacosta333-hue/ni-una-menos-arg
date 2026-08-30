@@ -499,12 +499,12 @@ async function iniciarTrayecto() {
         
         try { if ('wakeLock' in navigator) wakeLockTrayecto = await navigator.wakeLock.request('screen'); } catch (e) {}
         
-        // CORRECCIÓN: Guardamos el tiempo final en la memoria permanente del teléfono
+        // Guardamos el tiempo final en la memoria permanente del teléfono
         let fin = Date.now() + m * 60000;
         localStorage.setItem('finTrayecto_C4', fin);
         
         arrancarRelojTrayecto();
-        alert("✅ Temporizador iniciado con éxito. Podés navegar por la aplicación, el reloj seguirá activo.");
+        alert("✅ Temporizador iniciado con éxito. Podés navegar por la aplicación o apagar la pantalla, el reloj seguirá activo de forma nativa.");
     } catch(e) {
         alert("Error al validar la llave con el servidor.");
     }
@@ -514,8 +514,11 @@ function arrancarRelojTrayecto() {
     let fin = parseInt(localStorage.getItem('finTrayecto_C4'));
     if(!fin) return;
 
-    document.getElementById('minTrayecto').style.display = 'none';
-    document.getElementById('trayectoEstado').style.display = 'block';
+    let input = document.getElementById('minTrayecto');
+    if(input) input.style.display = 'none';
+    
+    let estadoUI = document.getElementById('trayectoEstado');
+    if(estadoUI) estadoUI.style.display = 'block';
 
     let btnAccion = document.getElementById('btnTrayectoAccion');
     if(btnAccion) {
@@ -596,7 +599,7 @@ async function cancelarTrayecto() {
     }
 }
 
-// CORRECCIÓN: Si el navegador suspende la pestaña, esto fuerza la verificación al despertar el celular
+// PROTECCIÓN EXTRA: Si el navegador suspende la pestaña, esto fuerza la verificación al despertar el celular
 document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === 'visible') {
         verificarTrayecto();
@@ -777,7 +780,7 @@ function toggleSOS(motivo = 'Botón Antipánico manual') {
     if(sosActivo) {
         pararConLlave();
     } else {
-        disparoSOS(motivo, false);
+        disparoSOS(motivo, false); // El botón manual siempre hace ruido y avisa
     }
 }
 
@@ -905,7 +908,7 @@ const cerrar=()=>{
 };
 
 // =========================================================================
-// 🔥 CONEXIÓN A GREEN API POR FETCH EN SEGUNDO PLANO
+// 🔥 CONEXIÓN A GREEN API POR FETCH EN SEGUNDO PLANO (SIN KEEPALIVE QUE BLOQUEA)
 // =========================================================================
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e37fd7bb454b7ad23a7f74a3398';
@@ -936,12 +939,12 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', mo
             let cel = formatArg(numero);
             let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
             
+            // CORRECCIÓN: Quitamos el "keepalive: true" porque Chrome lo cancela por seguridad (CORS Preflight)
             fetch(url, {
                 method: 'POST',
-                keepalive: true, 
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-            }).then(res => res.json()).catch(e => { console.error("Error envío WA:", e) });
+            }).catch(e => { console.error("Error envío WA:", e) });
         } catch (e) {}
     }
 }
@@ -949,34 +952,49 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', mo
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
 // =========================================================================
-// 📸 CAPTURA MÁXIMA DE EVIDENCIA
+// 📸 CAPTURA MÁXIMA DE EVIDENCIA (CON TIMEOUT ANTICUELGUE)
 // =========================================================================
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
+        let resuelto = false;
+        
+        // CORRECCIÓN: Si el navegador congela la cámara porque la pantalla está apagada, abortamos la foto en 2.5 seg y seguimos grabando el audio/video.
+        let timeout = setTimeout(() => { 
+            if(!resuelto) { resuelto=true; resolve(); } 
+        }, 2500); 
+
         const v = document.createElement('video');
         v.muted = true; v.playsInline = true; v.autoplay = true;
         v.srcObject = stream;
+        
         v.onloadeddata = async () => {
-            await v.play();
+            try { await v.play(); } catch(e){} // No bloqueamos si falla
             setTimeout(() => { 
-                const cv = document.createElement('canvas');
-                cv.width = v.videoWidth || 1280; cv.height = v.videoHeight || 720;
-                cv.getContext('2d').drawImage(v, 0, 0, cv.width, cv.height);
-                let b64Img = cv.toDataURL('image/jpeg', 0.8);
-                if(acta) {
-                    if(!acta.imagenes) acta.imagenes = [];
-                    acta.imagenes.push({url: b64Img, camara: tipo, sha256: 'HASH-'+Date.now()});
-                    guardarActas();
-                    
-                    let currentImei = localStorage.getItem('imei');
-                    if (acta.imei === currentImei) {
-                        render(acta);
+                if(resuelto) return;
+                try {
+                    const cv = document.createElement('canvas');
+                    cv.width = v.videoWidth || 1280; cv.height = v.videoHeight || 720;
+                    cv.getContext('2d').drawImage(v, 0, 0, cv.width, cv.height);
+                    let b64Img = cv.toDataURL('image/jpeg', 0.8);
+                    if(acta) {
+                        if(!acta.imagenes) acta.imagenes = [];
+                        acta.imagenes.push({url: b64Img, camara: tipo, sha256: 'HASH-'+Date.now()});
+                        guardarActas();
+                        
+                        let currentImei = localStorage.getItem('imei');
+                        if (acta.imei === currentImei) {
+                            render(acta);
+                        }
                     }
-                }
+                } catch(err){}
+                resuelto = true;
+                clearTimeout(timeout);
                 resolve();
             }, 800); 
         };
-        v.onerror = () => resolve();
+        v.onerror = () => { 
+            if(!resuelto) { resuelto = true; clearTimeout(timeout); resolve(); } 
+        };
     });
 }
 
@@ -1009,7 +1027,7 @@ async function loopEvidencia(acta) {
         vBack.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
-    let promesaVideo = (async () => {
+    let promesaVideo = new Promise(async (resolve) => {
         try {
             const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
             const videoRecorder = new MediaRecorder(videoStream);
@@ -1022,15 +1040,17 @@ async function loopEvidencia(acta) {
                 await guardarActas();
                 let currentImei = localStorage.getItem('imei');
                 if (acta.imei === currentImei) render(acta);
+                resolve();
             };
             videoRecorder.start();
-            await new Promise(resolve => setTimeout(resolve, 15000));
-            if(videoRecorder.state === 'recording') videoRecorder.stop();
-            videoStream.getTracks().forEach(t => t.stop());
-        } catch(e) {}
-    })();
+            setTimeout(() => {
+                if(videoRecorder.state === 'recording') videoRecorder.stop();
+                videoStream.getTracks().forEach(t => t.stop());
+            }, 15000);
+        } catch(e) { resolve(); } // Si el celular bloquea el video, resolvemos para no colgar el ciclo
+    });
 
-    let promesaAudio = (async () => {
+    let promesaAudio = new Promise(async (resolve) => {
         try {
             const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             const audioRecorder = new MediaRecorder(audioStream);
@@ -1043,18 +1063,21 @@ async function loopEvidencia(acta) {
                 await guardarActas();
                 let currentImei = localStorage.getItem('imei');
                 if (acta.imei === currentImei) render(acta);
+                resolve();
             };
             audioRecorder.start();
-            await new Promise(resolve => setTimeout(resolve, 15000));
-            if(audioRecorder.state === 'recording') audioRecorder.stop();
-            audioStream.getTracks().forEach(t => t.stop());
-        } catch(e) {}
-    })();
+            setTimeout(() => {
+                if(audioRecorder.state === 'recording') audioRecorder.stop();
+                audioStream.getTracks().forEach(t => t.stop());
+            }, 15000);
+        } catch(e) { resolve(); } // Resolucion rápida en caso de bloqueo del OS
+    });
 
     await Promise.all([promesaVideo, promesaAudio]);
 
     if(sosActivo) {
-        setTimeout(() => loopEvidencia(acta), 1000); 
+        // Pausa de 2 segundos antes de volver a empezar para no saturar si los permisos fallan
+        setTimeout(() => loopEvidencia(acta), 2000); 
     }
 }
 
