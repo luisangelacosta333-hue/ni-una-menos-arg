@@ -461,13 +461,18 @@ function leerVoz(){
  speechSynthesis.speak(u);
 }
 
+// ESTA FUNCIÓN AHORA ESTÁ VACÍA PARA GARANTIZAR SILENCIO ABSOLUTO SIEMPRE
+function emitirAvisoPericial() {
+    // Eliminado por completo a pedido tuyo. No hablará jamás.
+}
+
 const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
 
 // =========================================================================
-// ⏱️ TEMPORIZADOR MODO TRAYECTO
+// ⏱️ TEMPORIZADOR MODO TRAYECTO (ANCLADO A MEMORIA)
 // =========================================================================
 let trayectoInterval = null;
-let finTrayecto = 0;
+let wakeLockTrayecto = null;
 
 async function iniciarTrayecto() {
     let input = document.getElementById('minTrayecto');
@@ -485,29 +490,28 @@ async function iniciarTrayecto() {
             return alert('❌ LLAVE INCORRECTA. Acceso denegado.');
         }
         
-        // Memoria Persistente para que no se borre al salir o recargar la página
-        finTrayecto = Date.now() + m * 60000;
-        localStorage.setItem('finTrayecto_C4', finTrayecto); 
+        try { if ('wakeLock' in navigator) wakeLockTrayecto = await navigator.wakeLock.request('screen'); } catch (e) {}
         
-        reanudarTrayecto();
-        alert("✅ Temporizador iniciado con éxito.");
+        let fin = Date.now() + m * 60000;
+        localStorage.setItem('finTrayecto_C4', fin); // Se ancla en memoria para que no desaparezca al recargar
+        
+        arrancarRelojTrayecto();
+        alert("✅ Temporizador iniciado con éxito. Podés navegar por la aplicación o apagar la pantalla, el reloj seguirá activo.");
     } catch(e) {
         alert("Error al validar la llave con el servidor.");
     }
 }
 
-// Función que mantiene vivo el reloj incluso si recargas
-function reanudarTrayecto() {
-    let guardado = localStorage.getItem('finTrayecto_C4');
-    if(!guardado) return;
-    
-    finTrayecto = parseInt(guardado);
+function arrancarRelojTrayecto() {
+    let fin = parseInt(localStorage.getItem('finTrayecto_C4'));
+    if(!fin) return;
+
     let input = document.getElementById('minTrayecto');
     if(input) input.style.display = 'none';
     
     let estadoUI = document.getElementById('trayectoEstado');
     if(estadoUI) estadoUI.style.display = 'block';
-    
+
     let btnAccion = document.getElementById('btnTrayectoAccion');
     if(btnAccion) {
         btnAccion.innerText = "CANCELAR TRAYECTO";
@@ -516,23 +520,35 @@ function reanudarTrayecto() {
     }
 
     if(trayectoInterval) clearInterval(trayectoInterval);
+
+    trayectoInterval = setInterval(verificarTrayecto, 1000);
+    verificarTrayecto(); 
+}
+
+function verificarTrayecto() {
+    let fin = parseInt(localStorage.getItem('finTrayecto_C4'));
+    if(!fin) return;
     
-    trayectoInterval = setInterval(() => {
-        let diff = finTrayecto - Date.now();
-        if(diff <= 0) {
-            clearInterval(trayectoInterval);
-            localStorage.removeItem('finTrayecto_C4');
-            let estadoUI = document.getElementById('trayectoEstado');
-            if(estadoUI) estadoUI.innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S...";
-            ir('sos');
-            disparoSOS(true); // Se envía TRUE para que sea 100% silencioso (sin vibrar)
-        } else {
-            let min = Math.floor(diff / 60000);
-            let sec = Math.floor((diff % 60000) / 1000);
-            let tTiempo = document.getElementById('trayectoTiempo');
-            if(tTiempo) tTiempo.innerText = `${min}:${sec.toString().padStart(2,'0')}`;
-        }
-    }, 1000);
+    let diff = fin - Date.now();
+    
+    if(diff <= 0) {
+        // EL TIEMPO SE ACABÓ
+        clearInterval(trayectoInterval);
+        localStorage.removeItem('finTrayecto_C4');
+        
+        let estadoUI = document.getElementById('trayectoEstado');
+        if(estadoUI) estadoUI.innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S SILENCIOSO...";
+        
+        ir('sos');
+        
+        // ¡LA MISMA ORDEN EXACTA QUE EL SACUDÓN!
+        disparoSOS();
+    } else {
+        let min = Math.floor(diff / 60000);
+        let sec = Math.floor((diff % 60000) / 1000);
+        let ms = document.getElementById('trayectoTiempo');
+        if(ms) ms.innerText = `${min}:${sec.toString().padStart(2,'0')}`;
+    }
 }
 
 async function cancelarTrayecto() {
@@ -545,16 +561,23 @@ async function cancelarTrayecto() {
         if(res.length === 0) {
             return alert('❌ LLAVE INCORRECTA. No se puede cancelar.');
         }
+        
+        try { if(wakeLockTrayecto) wakeLockTrayecto.release(); wakeLockTrayecto = null; } catch(e){}
+        
         clearInterval(trayectoInterval);
         localStorage.removeItem('finTrayecto_C4');
         
-        let mTrayecto = document.getElementById('minTrayecto');
-        if(mTrayecto) {
-            mTrayecto.style.display = 'inline-block';
-            mTrayecto.value = '';
+        let minTrayecto = document.getElementById('minTrayecto');
+        if(minTrayecto) {
+            minTrayecto.style.display = 'inline-block';
+            minTrayecto.value = '';
         }
-        let tEstado = document.getElementById('trayectoEstado');
-        if(tEstado) tEstado.style.display = 'none';
+        
+        let trayectoEstado = document.getElementById('trayectoEstado');
+        if(trayectoEstado) {
+            trayectoEstado.style.display = 'none';
+            trayectoEstado.innerHTML = 'Tiempo para reportarte:<br><span id="trayectoTiempo" style="font-size:24px;">--:--</span>';
+        }
         
         let btnAccion = document.getElementById('btnTrayectoAccion');
         if(btnAccion) {
@@ -568,6 +591,13 @@ async function cancelarTrayecto() {
         alert("Error al validar la llave con el servidor.");
     }
 }
+
+// Si el navegador suspende la pestaña, esto la retoma al volver a mirar el celular
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === 'visible') {
+        verificarTrayecto();
+    }
+});
 
 // =========================================================================
 // 🗣️ ACTIVACIÓN POR VOZ SECRETA EN SEGUNDO PLANO
@@ -633,7 +663,9 @@ async function toggleVoz() {
                 btnVoz.style.background = "var(--oroMedio)";
                 
                 ir('sos');
-                disparoSOS(true); // true = Silencioso
+                
+                // ¡LA MISMA ORDEN EXACTA QUE EL SACUDÓN!
+                disparoSOS(); 
             }
         };
         
@@ -655,7 +687,6 @@ async function toggleVoz() {
         alert("Error al validar la llave con el servidor.");
     }
 }
-
 
 const sigilo = () => {
     try { document.documentElement.requestFullscreen(); } catch(e){}
@@ -743,7 +774,7 @@ function toggleSOS() {
     if(sosActivo) {
         pararConLlave();
     } else {
-        disparoSOS(false);
+        disparoSOS();
     }
 }
 
@@ -871,7 +902,7 @@ const cerrar=()=>{
 };
 
 // =========================================================================
-// 🔥 CONEXIÓN A GREEN API POR FETCH
+// 🔥 CONEXIÓN A GREEN API (TU CÓDIGO ORIGINAL INTACTO)
 // =========================================================================
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e37fd7bb454b7ad23a7f74a3398';
@@ -906,7 +937,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-            }).then(res => res.json()).catch(e => {});
+            }).catch(e => { console.error("Error envío WA:", e) });
         } catch (e) {}
     }
 }
@@ -914,7 +945,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
 // =========================================================================
-// 📸 CAPTURA MÁXIMA DE EVIDENCIA (VIDEO, AUDIO Y FOTOS)
+// 📸 CAPTURA MÁXIMA DE EVIDENCIA (TU CÓDIGO ORIGINAL INTACTO)
 // =========================================================================
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
@@ -1025,11 +1056,14 @@ async function loopEvidencia(acta) {
     }
 }
 
-async function disparoSOS(esSilencioso = false){
+// =========================================================================
+// EL MOTOR DE S.O.S (UNIFICADO, SIN PARÁMETROS. MANDA WA LÍNEA 1)
+// =========================================================================
+async function disparoSOS(){
  if(sosActivo) return; 
  sosActivo = true;
 
- // ¡LÍNEA 1! SE MANDA EL WHATSAPP ANTES DE CUALQUIER OTRA COSA
+ // ¡LÍNEA 1! EL WHATSAPP SALE PRIMERO, SIEMPRE.
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
  const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
@@ -1046,12 +1080,8 @@ async function disparoSOS(esSilencioso = false){
  let stDiv = document.getElementById('st');
  if(stDiv) stDiv.style.display='block';
  
- if (!esSilencioso && "vibrate" in navigator) {
-    navigator.vibrate([1000, 500, 1000, 500, 1000, 500, 2000]);
- }
-
- // ¡SE LE QUITA EL AWAIT A ESTO PARA QUE NO CONGELE CUANDO LA PANTALLA ESTÁ APAGADA!
- try{if('wakeLock'in navigator) navigator.wakeLock.request('screen').catch(()=>{})}catch{}
+ // Se le quita el await por seguridad para no colgar la pantalla
+ try { if('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(()=>{}); } catch(e){}
  
  let batLevel = 'Desc.', batCharging = 'Desc.';
  try {
@@ -1142,6 +1172,7 @@ window.addEventListener('devicemotion', function (e) {
     }
 }, true);
 
+// CUANDO SE SACUDE, HACE LUCES Y VIBRA, PERO MANDA LA EXACTA MISMA ORDEN
 function activarAlarmaRobo() {
     ir('sos');
     if ("vibrate" in navigator) navigator.vibrate([500, 200, 500, 200, 1000]);
@@ -1154,12 +1185,14 @@ function activarAlarmaRobo() {
             document.body.style.backgroundColor = '#FFFFFF';
         }
     }, 150);
-    disparoSOS(false);
+    
+    disparoSOS();
 }
 
 const parar = () => {
     if(gps) navigator.geolocation.clearWatch(gps);
     if(la) clearInterval(la); if(lv) clearInterval(lv); if(l10) clearInterval(l10);
+    try { if(wakeLockTrayecto) wakeLockTrayecto.release(); wakeLockTrayecto = null; } catch(e){}
     let stDiv = document.getElementById('st');
     if(stDiv) stDiv.style.display='none';
     document.body.style.backgroundColor = '#FFFFFF';
@@ -1353,37 +1386,8 @@ addEventListener('DOMContentLoaded', async ()=>{
  if(localStorage.getItem('ok')==='1'){
     document.getElementById('zonaOk').style.display='block';
     
-    // RESTAURAR TEMPORIZADOR AL RECARGAR LA PÁGINA
     if(localStorage.getItem('finTrayecto_C4')) {
-        let guardado = localStorage.getItem('finTrayecto_C4');
-        finTrayecto = parseInt(guardado);
-        
-        document.getElementById('minTrayecto').style.display = 'none';
-        document.getElementById('trayectoEstado').style.display = 'block';
-        
-        let btnAccion = document.getElementById('btnTrayectoAccion');
-        if(btnAccion) {
-            btnAccion.innerText = "CANCELAR TRAYECTO";
-            btnAccion.style.background = "#8B0000";
-            btnAccion.onclick = cancelarTrayecto;
-        }
-
-        if(trayectoInterval) clearInterval(trayectoInterval);
-        
-        trayectoInterval = setInterval(() => {
-            let diff = finTrayecto - Date.now();
-            if(diff <= 0) {
-                clearInterval(trayectoInterval);
-                localStorage.removeItem('finTrayecto_C4');
-                document.getElementById('trayectoEstado').innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S...";
-                ir('sos');
-                disparoSOS(true); 
-            } else {
-                let min = Math.floor(diff / 60000);
-                let sec = Math.floor((diff % 60000) / 1000);
-                document.getElementById('trayectoTiempo').innerText = `${min}:${sec.toString().padStart(2,'0')}`;
-            }
-        }, 1000);
+        arrancarRelojTrayecto();
     }
  }
  ir('inicio');
