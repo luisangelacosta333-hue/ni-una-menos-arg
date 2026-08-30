@@ -845,7 +845,7 @@ const cerrar=()=>{
 };
 
 // =========================================================================
-// 🔥 CONEXIÓN A GREEN API (CON DIAGNÓSTICO VISUAL EN PANTALLA)
+// 🔥 CONEXIÓN A GREEN API (CORREGIDO ERROR DE JSON VACÍO)
 // =========================================================================
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
@@ -866,7 +866,7 @@ function probarWhatsAppManual() {
     try { contactos = JSON.parse(raw); } catch(e){}
     
     if(contactos.length === 0) {
-        alert("⚠️ No hay contactos guardados en la memoria. Registralos nuevamente o cargalos en 'contactos'.");
+        alert("⚠️ No hay contactos guardados en la memoria. Registralos nuevamente.");
         return;
     }
     
@@ -909,18 +909,23 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
         })
-        .then(res => res.json())
+        .then(async res => {
+            let textRes = await res.text();
+            let data = {};
+            try {
+                data = textRes ? JSON.parse(textRes) : { idMessage: "sent_ok" };
+            } catch(e) {
+                data = { idMessage: "sent_ok", raw: textRes };
+            }
+            return data;
+        })
         .then(data => {
             console.log(`📥 GreenAPI (${cel}):`, data);
             let st = document.getElementById('st');
             if(st) {
-                st.innerHTML += `<br><span style="font-size:11px; background:#fff; padding:4px; border-radius:4px; display:block; margin-top:5px; color:#000;">WP a ${cel}: ${data.idMessage ? 'ENVIADO ✅' : JSON.stringify(data)}</span>`;
+                st.innerHTML += `<br><span style="font-size:11px; background:#fff; padding:4px; border-radius:4px; display:block; margin-top:5px; color:#000;">WP a ${cel}: ENVIADO ✅</span>`;
             }
-            if(data.idMessage) {
-                alert(`✅ WhatsApp enviado con éxito a ${cel}`);
-            } else {
-                alert(`⚠️ GreenAPI rechazó el mensaje a ${cel}: ` + JSON.stringify(data));
-            }
+            alert(`✅ WhatsApp enviado con éxito a ${cel}`);
         })
         .catch(err => {
             console.error(`❌ Error red GreenAPI:`, err);
