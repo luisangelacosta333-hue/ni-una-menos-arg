@@ -454,8 +454,6 @@ const ir = id => {
     }
 }
 
-const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
-
 function leerVoz(){
  speechSynthesis.cancel();
  const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, mediante el comando de voz secreta gritando ayuda, automáticamente ante un impacto o caída fuerte, o si se agota el modo trayecto al viajar. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. En segundo plano y de manera indetectable, el sistema asegura tu evidencia grabando audio de manera continua, tomando múltiples fotografías con ambas cámaras, y rastreando tu ubicación por GPS segundo a segundo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema cien por ciento blindado y privado. Además, si no realizás una denuncia oficial, a las setenta y dos horas se elimina y destruye automáticamente toda la evidencia para garantizar tu privacidad total.`);
@@ -463,8 +461,22 @@ function leerVoz(){
  speechSynthesis.speak(u);
 }
 
+function emitirAvisoPericial() {
+    try {
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance("Atención. Herramienta principal activada. El sistema está grabando video de forma oculta para asegurar la mayor información pericial, para atrapar a los delincuentes y para brindar una mayor protección a las víctimas.");
+        u.lang = 'es-AR';
+        u.rate = 0.95;
+        u.pitch = 1;
+        u.volume = 1;
+        speechSynthesis.speak(u);
+    } catch(e) {}
+}
+
+const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
+
 // =========================================================================
-// ⏱️ TEMPORIZADOR MODO TRAYECTO (CORREGIDO PARA DISPARAR EVIDENCIA)
+// ⏱️ TEMPORIZADOR MODO TRAYECTO
 // =========================================================================
 let trayectoInterval = null;
 let finTrayecto = 0;
@@ -543,7 +555,7 @@ async function cancelarTrayecto() {
 }
 
 // =========================================================================
-// 🗣️ ACTIVACIÓN POR VOZ SECRETA EN SEGUNDO PLANO (PANTALLA OSCURA)
+// 🗣️ ACTIVACIÓN POR VOZ SECRETA EN SEGUNDO PLANO
 // =========================================================================
 let recognition = null;
 let vozActiva = false;
@@ -874,11 +886,13 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
             let cel = formatArg(numero);
             let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
             
+            // keepalive:true previene que el navegador cancele el envío si la app está en segundo plano
             fetch(url, {
                 method: 'POST',
+                keepalive: true, 
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-            }).then(res => res.json()).catch(e => {});
+            }).then(res => res.json()).catch(e => { console.error("Error envío WA:", e) });
         } catch (e) {}
     }
 }
@@ -886,7 +900,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
 // =========================================================================
-// 📸 CAPTURA MÁXIMA DE EVIDENCIA (VIDEO, AUDIO Y FOTOS)
+// 📸 CAPTURA MÁXIMA DE EVIDENCIA (VIDEO, AUDIO Y FOTOS - SIMULTÁNEO)
 // =========================================================================
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
@@ -940,57 +954,56 @@ async function loopEvidencia(acta) {
         vFront.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
-    if(!sosActivo) return;
-
     try {
         let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
         await tomarFotoSilenciosa(vBack, acta, 'trasera');
         vBack.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
-    if(!sosActivo) return;
+    // Grabación simultánea en clips de 15 segundos para no perder evidencia si se interrumpe.
+    let promesaVideo = (async () => {
+        try {
+            const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
+            const videoRecorder = new MediaRecorder(videoStream);
+            const videoChunks = [];
+            videoRecorder.ondataavailable = e => videoChunks.push(e.data);
+            videoRecorder.onstop = async () => {
+                const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
+                if(!acta.videos) acta.videos = [];
+                acta.videos.push(videoBlob);
+                await guardarActas();
+                let currentImei = localStorage.getItem('imei');
+                if (acta.imei === currentImei) render(acta);
+            };
+            videoRecorder.start();
+            await new Promise(resolve => setTimeout(resolve, 15000));
+            if(videoRecorder.state === 'recording') videoRecorder.stop();
+            videoStream.getTracks().forEach(t => t.stop());
+        } catch(e) {}
+    })();
 
-    try {
-        const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
-        const videoRecorder = new MediaRecorder(videoStream);
-        const videoChunks = [];
-        videoRecorder.ondataavailable = e => videoChunks.push(e.data);
-        videoRecorder.onstop = async () => {
-            const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
-            if(!acta.videos) acta.videos = [];
-            acta.videos.push(videoBlob);
-            await guardarActas();
-            
-            let currentImei = localStorage.getItem('imei');
-            if (acta.imei === currentImei) render(acta);
-        };
-        videoRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 120000));
-        if(videoRecorder.state === 'recording') videoRecorder.stop();
-        videoStream.getTracks().forEach(t => t.stop());
-    } catch(e) {}
+    let promesaAudio = (async () => {
+        try {
+            const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const audioRecorder = new MediaRecorder(audioStream);
+            const audioChunks = [];
+            audioRecorder.ondataavailable = e => audioChunks.push(e.data);
+            audioRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                if(!acta.audios) acta.audios = [];
+                acta.audios.push(audioBlob);
+                await guardarActas();
+                let currentImei = localStorage.getItem('imei');
+                if (acta.imei === currentImei) render(acta);
+            };
+            audioRecorder.start();
+            await new Promise(resolve => setTimeout(resolve, 15000));
+            if(audioRecorder.state === 'recording') audioRecorder.stop();
+            audioStream.getTracks().forEach(t => t.stop());
+        } catch(e) {}
+    })();
 
-    if(!sosActivo) return;
-
-    try {
-        const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const audioRecorder = new MediaRecorder(audioStream);
-        const audioChunks = [];
-        audioRecorder.ondataavailable = e => audioChunks.push(e.data);
-        audioRecorder.onstop = async () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-            if(!acta.audios) acta.audios = [];
-            acta.audios.push(audioBlob);
-            await guardarActas();
-            
-            let currentImei = localStorage.getItem('imei');
-            if (acta.imei === currentImei) render(acta);
-        };
-        audioRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 180000));
-        if(audioRecorder.state === 'recording') audioRecorder.stop();
-        audioStream.getTracks().forEach(t => t.stop());
-    } catch(e) {}
+    await Promise.all([promesaVideo, promesaAudio]);
 
     if(sosActivo) {
         setTimeout(() => loopEvidencia(acta), 1000); 
@@ -1000,6 +1013,8 @@ async function loopEvidencia(acta) {
 async function disparoSOS(){
  if(sosActivo) return; 
  sosActivo = true;
+ 
+ emitirAvisoPericial();
  
  let btnSos = document.getElementById('btnBigSOS');
  if(btnSos) {
@@ -1013,7 +1028,8 @@ async function disparoSOS(){
     navigator.vibrate([1000, 500, 1000, 500, 1000, 500, 2000]);
  }
 
- try{if('wakeLock'in navigator)await navigator.wakeLock.request('screen')}catch{}
+ // Corrección fundamental: El try-catch ya no bloquea con el await si el usuario no tocó la pantalla.
+ try { if('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(()=>{}); } catch(e){}
  
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
