@@ -697,7 +697,6 @@ async function cargarActasLocales() {
         req.onsuccess = e => {
             let actas = e.target.result || [];
             let ahora = Date.now();
-            // LIMPIEZA LOCAL A LAS 24 HORAS PARA NO LLENAR LA MEMORIA DEL CELULAR
             listaActas = actas.filter(a => {
                 if (a.sello_ms && (ahora - a.sello_ms > 86400000)) {
                     db.transaction('actas', 'readwrite').objectStore('actas').delete(a.id);
@@ -747,7 +746,9 @@ async function alta(){
     const n = document.getElementById('rN').value.trim();
     const i = IM(document.getElementById('rI').value);
     const w = document.getElementById('rW').value.trim();
-    const c = [document.getElementById('cF1').value.trim(), document.getElementById('cF2').value.trim()].filter(Boolean);
+    const c1 = document.getElementById('cF1').value.trim();
+    const c2 = document.getElementById('cF2').value.trim();
+    const c = [c1, c2].filter(Boolean);
     
     if(!n || !/^\d{15}$/.test(i) || !w) return alert('Requiere Nombre completo, IMEI válido de 15 dígitos y tu número de WhatsApp.');
     
@@ -756,7 +757,7 @@ async function alta(){
     try {
         const checkWA = await supaQuery('GET', `c4_suscripciones?select=*&whatsapp=eq.${waLimpio}`);
         if(checkWA && checkWA.length > 0) {
-            alert('🛑 ¡SISTEMA ANTI-PÍCARO ACTIVADO!\nEste número de WhatsApp ya se encuentra registrado en la base de datos y utilizó sus días gratuitos.\n\nPor protocolo de seguridad judicial, no se puede volver a registrar el mismo celular.');
+            alert('🛑 ¡SISTEMA ANTI-PÍCARO ACTIVADO!\nEste número de WhatsApp ya se encuentra registrado en la base de datos y utilizó sus días gratuitos.');
             return;
         }
 
@@ -780,7 +781,7 @@ async function alta(){
         localStorage.setItem('nombre', n);
         localStorage.setItem('mi_wa', waLimpio);
         localStorage.setItem('contactos', JSON.stringify(c));
-        localStorage.setItem('contactos_' + i, JSON.stringify(c)); // Respaldo permanente por IMEI
+        localStorage.setItem('contactos_' + i, JSON.stringify(c)); // Respaldo estricto por IMEI
         
         document.getElementById('pI').value = i;
         if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = i;
@@ -839,7 +840,6 @@ async function validar(){
             localStorage.setItem('imei', sub.imei);
             localStorage.setItem('ok', '1');
 
-            // Recupera contactos respaldados por IMEI si estaban guardados
             let cRespaldo = localStorage.getItem('contactos_' + sub.imei);
             if (cRespaldo) {
                 localStorage.setItem('contactos', cRespaldo);
@@ -867,7 +867,7 @@ const cerrar=()=>{
 };
 
 // -------------------------------------------------------------------------
-// 🔥 CONEXIÓN A GREEN API (INSTANCIA Y TOKEN OFICIALES)
+// 🔥 CONEXIÓN A GREEN API (CON CONSOLE.LOGS DE DIAGNÓSTICO)
 // -------------------------------------------------------------------------
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
@@ -881,9 +881,9 @@ function formatArg(num) {
     return '549' + c;
 }
 
-// FUNCIÓN BLINDADA: RECUPERA Y ENVÍA A LOS CONTACTOS SIN FALLAR NUNCA
 function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
-    // Si no hay contactos en parámetro, busca en localStorage y respaldos
+    console.log("🔍 [DEBUG] Contactos recibidos en enviarWhatsAppOculto:", contactos);
+    
     if (!contactos || contactos.length === 0) {
         try {
             const imeiActual = localStorage.getItem('imei');
@@ -893,12 +893,15 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         }
     }
     
-    // Respaldo absoluto de seguridad por si la lista está completamente vacía
+    // Si sigue vacío, usamos el número por defecto o de prueba
     if (!contactos || contactos.length === 0) {
         const miWa = localStorage.getItem('mi_wa');
         contactos = miWa ? [miWa] : ['3816092676'];
+        console.warn("⚠️ [ATENCIÓN] No había contactos guardados. Usando respaldo:", contactos);
     }
-    
+
+    console.log("📡 [DEBUG] Lista final de contactos a notificar:", contactos);
+
     let msg = "";
     if (tipo === 'alerta') {
         msg = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre || 'Usuaria'}* acaba de accionar su botón antipánico.\n\n📍 *Ubicación GPS:* Rastrando coordenadas exactas en este momento...\n\n🔐 *ID P4:* ${id}`;
@@ -910,26 +913,23 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
 
     for (let numero of contactos) {
         if(!numero) continue;
-        try {
-            let cel = formatArg(numero);
-            let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
-            
-            console.log(`📤 Enviando WhatsApp a ${cel}...`);
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log(`📥 Respuesta GreenAPI para ${cel}:`, data);
-                if (data.status === "error" || data.error) console.error("❌ Fallo GreenAPI:", data);
-            })
-            .catch(e => console.error("❌ Error de red al conectar con GreenAPI:", e));
-            
-        } catch (e) {
-            console.error("❌ Error procesando el número:", e);
-        }
+        let cel = formatArg(numero);
+        let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
+        
+        console.log(`📤 [GREEN-API] Disparando fetch a GreenAPI para chatId: ${cel}@c.us`);
+        
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(`📥 [GREEN-API RESPUESTA EXITOSA para ${cel}]:`, data);
+        })
+        .catch(err => {
+            console.error(`❌ [GREEN-API ERROR de RED para ${cel}]:`, err);
+        });
     }
 }
 
@@ -967,7 +967,6 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
     });
 }
 
-// ESTA FUNCIÓN SE REPITE SIN PARAR MIENTRAS EL SOS ESTÉ ACTIVO, HASTA LAS 24HS
 async function loopEvidencia(acta) {
     if(!sosActivo || !acta) return;
 
@@ -1071,7 +1070,6 @@ async function disparoSOS(){
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
  
- // Recuperación robusta de contactos
  let contactos = [];
  try {
      contactos = JSON.parse(localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imei) || '[]');
@@ -1082,7 +1080,7 @@ async function disparoSOS(){
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
  aid = id;
 
- // ENVÍA EL WHATSAPP INMEDIATO A LOS FAMILIARES REGISTRADOS
+ // ENVÍA EL WHATSAPP INMEDIATO
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
 
  let batLevel = 'Desc.', batCharging = 'Desc.';
