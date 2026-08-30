@@ -372,11 +372,12 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <div id="alertas"><div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div></div>
  <button class="btn blanco" onclick="cerrar()" style="margin-top:20px">CERRAR SESIÓN</button>
 </section>
+
 </main>
 
 <div class="footer-wrap">
  <div class="scroll-container"><div class="scroll-text">✦ NI UNA MENOS ARGENTINA 🇦🇷 niunamenosarg.com 🇦🇷 ACTA P4 🇦🇷 CADENA DE CUSTODIA 🇦🇷 LEY 26.485 🇦🇷 LEY 25.326 🇦🇷 CÓDIGO PROCESAL PENAL 🇦🇷 SHA‑256 + SHA‑3 + HMAC 🇦🇷 GPS 🇦🇷 AUDIO CONTINUO 🇦🇷 FOTOS GIGANTES 🇦🇷 SENSORES Y ANTENAS 🇦🇷 MODO SIGILO 🇦🇷 PAGO INTELIGENTE IA 🇦🇷</div></div>
- <footer><strong>NI UNA MENOS · ENERGY 2026</strong><br>niunamenosarg.com· Custodia Judicial Forense · Marco legal estricto<br>© MMXXVI · Hecho en la República Argentina 🇦🇷</footer>
+ <footer><strong>NI UNA MENOS · ENERGY 2026</strong><br>niunamenosarg.com · Custodia Judicial Forense · Marco legal estricto<br>© MMXXVI · Hecho en la República Argentina 🇦🇷</footer>
 </div>
 
 </div>
@@ -696,6 +697,7 @@ async function cargarActasLocales() {
         req.onsuccess = e => {
             let actas = e.target.result || [];
             let ahora = Date.now();
+            // LIMPIEZA LOCAL A LAS 24 HORAS PARA NO LLENAR LA MEMORIA DEL CELULAR
             listaActas = actas.filter(a => {
                 if (a.sello_ms && (ahora - a.sello_ms > 86400000)) {
                     db.transaction('actas', 'readwrite').objectStore('actas').delete(a.id);
@@ -706,6 +708,26 @@ async function cargarActasLocales() {
             resolve();
         };
     });
+}
+
+// =========================================================================
+// 🗑️ ELIMINAR ACTA Y DESTRUIR EVIDENCIA (TACHITO ROJO)
+// =========================================================================
+async function borrarActa(id) {
+    if(!confirm('⚠️ ¿Estás segura de eliminar esta acta permanentemente? Esta acción destruirá la evidencia y los videos guardados de forma irreversible.')) return;
+    
+    const d = document.getElementById('a_'+id);
+    if(d) d.remove();
+    
+    listaActas = listaActas.filter(a => a.id !== id);
+    
+    let db = await initDB();
+    let tx = db.transaction('actas', 'readwrite');
+    tx.objectStore('actas').delete(id);
+    
+    if(listaActas.filter(a => a.imei === localStorage.getItem('imei')).length === 0) {
+        document.getElementById('alertas').innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:\'Cormorant Garamond\',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div>';
+    }
 }
 
 let sosActivo = false;
@@ -767,7 +789,7 @@ async function alta(){
         pedirPermisosGlobalesYGPS(); 
         ir('llave');
     } catch(err) { 
-        alert('Error conectando a la base de datos.'); 
+        alert('Error conectando a la base de datos. (Asegurate de haber creado la columna "whatsapp" en tu tabla Supabase).'); 
     }
 }
 
@@ -842,7 +864,7 @@ const cerrar=()=>{
 };
 
 // -------------------------------------------------------------------------
-// 🔥 CONEXIÓN A GREEN API (CREDENCIALES ACTUALIZADAS)
+// 🔥 CONEXIÓN A GREEN API POR FETCH EN SEGUNDO PLANO
 // -------------------------------------------------------------------------
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
@@ -861,7 +883,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     
     let msg = "";
     if (tipo === 'alerta') {
-        msg = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre}* acaba de accionar su sistema de protección.\n\n📍 *Ubicación GPS:* Rastrando coordenadas exactas en este momento...\n\n🔐 *ID P4:* ${id}`;
+        msg = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre}* acaba de accionar su botón antipánico.\n\n📍 *Ubicación GPS:* Rastrando coordenadas exactas en este momento...\n\n🔐 *ID P4:* ${id}`;
     } else if (tipo === 'gps') {
         msg = `📍 *ACTUALIZACIÓN S.O.S GPS* 📍\n\nUsuaria: *${nombre}*\nUbicación confirmada por el sistema:\nhttps://maps.google.com/?q=${la},${ln}\n\n🔐 *ID P4:* ${id}`;
     } else if (tipo === 'seguro') {
@@ -921,9 +943,11 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
     });
 }
 
+// ESTA FUNCIÓN SE REPITE SIN PARAR MIENTRAS EL SOS ESTÉ ACTIVO, HASTA LAS 24HS
 async function loopEvidencia(acta) {
     if(!sosActivo || !acta) return;
 
+    // LÍMITE DE SEGURIDAD PARA NO EXPLOTAR LA MEMORIA: 24 HORAS
     if(Date.now() - (acta.sello_ms || Date.now()) > 86400000) { 
         sosActivo = false; 
         parar(); 
@@ -934,10 +958,11 @@ async function loopEvidencia(acta) {
         }
         let st = document.getElementById('st');
         if(st) st.style.display='none';
-        alert("Cierre de seguridad automático: Han pasado 24 horas desde la activación.");
+        alert("Cierre de seguridad automático: Han pasado 24 horas desde la activación. La grabación continua se detuvo para no agotar la memoria y batería del celular.");
         return; 
     }
 
+    // Actualizar GPS en cada ciclo para trazar el movimiento exacto
     navigator.geolocation.getCurrentPosition(p => {
         acta.lat = p.coords.latitude;
         acta.lng = p.coords.longitude;
@@ -946,22 +971,25 @@ async function loopEvidencia(acta) {
         if (acta.imei === localStorage.getItem('imei')) render(acta); 
     }, () => {}, { enableHighAccuracy: true, maximumAge: 0 });
 
+    // 1. Foto Frontal INMEDIATA
     try {
         let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } });
         await tomarFotoSilenciosa(vFront, acta, 'frontal');
         vFront.getTracks().forEach(t => t.stop());
-    } catch(e) {}
+    } catch(e) { console.error("Error Frontal:", e); }
 
     if(!sosActivo) return;
 
+    // 2. Foto Trasera INMEDIATA
     try {
         let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
         await tomarFotoSilenciosa(vBack, acta, 'trasera');
         vBack.getTracks().forEach(t => t.stop());
-    } catch(e) {}
+    } catch(e) { console.error("Error Trasera:", e); }
 
     if(!sosActivo) return;
 
+    // 3. GRABAR 2 MINUTOS DE VIDEO AMBIENTE (TRASERA) (120,000 ms)
     try {
         const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
         const videoRecorder = new MediaRecorder(videoStream);
@@ -972,17 +1000,22 @@ async function loopEvidencia(acta) {
             if(!acta.videos) acta.videos = [];
             acta.videos.push(videoBlob);
             await guardarActas();
+            
             let currentImei = localStorage.getItem('imei');
             if (acta.imei === currentImei) render(acta);
         };
         videoRecorder.start();
+        
+        // Esperamos 2 MINUTOS
         await new Promise(resolve => setTimeout(resolve, 120000));
+        
         if(videoRecorder.state === 'recording') videoRecorder.stop();
         videoStream.getTracks().forEach(t => t.stop());
-    } catch(e) {}
+    } catch(e) { console.error("Cámara/Micro bloqueado para video:", e); }
 
     if(!sosActivo) return;
 
+    // 4. Grabar 3 MINUTOS de Audio Continuo (180,000 ms)
     try {
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioRecorder = new MediaRecorder(audioStream);
@@ -993,15 +1026,20 @@ async function loopEvidencia(acta) {
             if(!acta.audios) acta.audios = [];
             acta.audios.push(audioBlob);
             await guardarActas();
+            
             let currentImei = localStorage.getItem('imei');
             if (acta.imei === currentImei) render(acta);
         };
         audioRecorder.start();
+        
+        // Esperamos 3 MINUTOS
         await new Promise(resolve => setTimeout(resolve, 180000));
+        
         if(audioRecorder.state === 'recording') audioRecorder.stop();
         audioStream.getTracks().forEach(t => t.stop());
-    } catch(e) {}
+    } catch(e) { console.error("Micrófono bloqueado para evidencia:", e); }
 
+    // 5. Volver a empezar el ciclo inmediatamente
     if(sosActivo) {
         setTimeout(() => loopEvidencia(acta), 1000); 
     }
@@ -1027,7 +1065,7 @@ async function disparoSOS(){
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
  aid = id;
 
- // Dispara WhatsApp inmediato
+ // AQUÍ ENVÍA EL WHATSAPP INMEDIATO (Se envia apenas sacudes o tocas)
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
 
  let batLevel = 'Desc.', batCharging = 'Desc.';
@@ -1057,7 +1095,7 @@ async function disparoSOS(){
  let acta = {
      id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
      hora: new Date().toLocaleTimeString('es-AR'), fecha: new Date().toLocaleDateString('es-AR'),
-     sello_ms: Date.now(),
+     sello_ms: Date.now(), // Para calcular las 24 horas exactas de corte local
      audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: hash, hash_judicial: hash, eventos: [],
      numero_acta: 'P4-'+Date.now(),
      bateria: batLevel, cargando: batCharging, red: redType, signal: signalData, userAgent: ua, ram: ram, cores: cores, pantalla: pantalla
@@ -1072,8 +1110,10 @@ async function disparoSOS(){
      render(acta);
  }
 
+ // Dispara el loop infinito de evidencia
  loopEvidencia(acta);
 
+ // ESTE ES EL SEGUNDO WHATSAPP (Manda el GPS en tiempo real cuando lo encuentra)
  navigator.geolocation.getCurrentPosition(p => {
     let lat = p.coords.latitude;
     let lng = p.coords.longitude;
@@ -1091,6 +1131,7 @@ async function disparoSOS(){
 
 let sh_last_x, sh_last_y, sh_last_z;
 let sh_lastUpdate = 0;
+// SENSIBILIDAD AJUSTADA A 4500
 const SHAKE_THRESHOLD = 4500; 
 
 window.addEventListener('devicemotion', function (e) {
@@ -1110,7 +1151,7 @@ window.addEventListener('devicemotion', function (e) {
         
         if (speed > SHAKE_THRESHOLD) {
             if (localStorage.getItem('ok') === '1' && !sosActivo) {
-                activarAlarmaRobo();
+                activarAlarmaRobo(); // ESTO LLAMA A DISPARO S.O.S. QUE MANDA EL WHATSAPP.
             }
         }
         sh_last_x = x;
@@ -1187,21 +1228,87 @@ async function salir(){
     }
 }
 
+
 function render(a){
  const c=document.getElementById('alertas');
  let d = document.getElementById('a_'+a.id);
+ 
+ // Si el acta no existe en pantalla, la creamos desde cero
  if (!d) {
      d = document.createElement('div');
      d.className='acta';
      d.id='a_'+a.id;
      c.prepend(d);
+     
+     d.innerHTML=`<i></i><div style="position:absolute;top:12px;right:12px;width:70px;height:70px;border-radius:50%;border:2px solid #5A3E00;background:linear-gradient(145deg,#fff,#E6C76B);display:grid;place-items:center;font-family:Cinzel;font-weight:900;font-size:9px;text-align:center;transform:rotate(-6deg);box-shadow:var(--luzRelieve);z-index:4">NI<br>UNA<br>MENOS</div>
+     <div class="noimp" style="position:absolute;top:12px;left:12px;z-index:4"><button onclick="borrarActa('${a.id}')" style="width:36px;height:36px;border-radius:6px;border:none;background:#B00020;color:#fff;font-family:Cinzel;font-weight:bold;font-size:18px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.3);" title="Eliminar Acta Permanentemente">🗑️</button></div>
+     <div style="text-align:center;padding-bottom:12px;border-bottom:3px double #000;margin-bottom:12px;position:relative;z-index:3">
+        <h2 style="font-family:Cinzel;font-weight:900;letter-spacing:4px;font-size:18px">INFORME TÉCNICO PERICIAL P4</h2>
+        <div class="nroExpediente">EXPEDIENTE N° ${a.numero_acta}</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#8B0000; margin-top:6px; font-weight:800;">📅 FECHA: ${a.fecha} &nbsp;&nbsp;|&nbsp;&nbsp; ⏰ HORA: ${a.hora}</div>
+        <div style="font-size:10px; margin-top:6px;">NI UNA MENOS ARGENTINA · niunamenosarg.com</div>
+     </div>
+     
+     <h3>I — IDENTIFICACIÓN DE VÍCTIMA</h3>
+     <table class="t"><tr><th>NOMBRE</th><td>${a.nombre}</td><th>IMEI</th><td class="mono" style="background:transparent;border:none">${a.imei}</td></tr><tr><th>IP / ISP</th><td colspan="3">${a.ip_publica||'—'} · ${a.isp_proveedor||'—'}</td></tr></table>
+     
+     <h3>II — HUELLA FORENSE DEL DISPOSITIVO</h3>
+     <table class="t">
+       <tr><th>NAVEGADOR / S.O.</th><td colspan="3" style="font-size:10px">${a.userAgent||'—'}</td></tr>
+       <tr><th>RED / ANTENA</th><td>${a.red||'—'} (${a.signal||'—'})</td><th>BATERÍA</th><td>${a.bateria||'—'} (Cargando: ${a.cargando||'—'})</td></tr>
+       <tr><th>PANTALLA</th><td>${a.pantalla||'—'}</td><th>MEMORIA RAM</th><td>${a.ram||'—'} / Núcleos: ${a.cores||'—'}</td></tr>
+     </table>
+
+     <h3>III — GEOLOCALIZACIÓN Y SEGUIMIENTO</h3>
+     <table class="t"><tr><th>WGS84 ACTUAL</th><td id="coords_${a.id}" colspan="3">${a.lat||'—'} , ${a.lng||'—'}</td></tr><tr><th>PREC · ALT · VEL</th><td id="prec_${a.id}" colspan="3">${a.precision||'—'}m · ${a.altitud||'—'} m · ${a.velocidad||'—'}</td></tr></table>
+     <div class="mapa" id="m_${a.id}"></div>
+     <div id="maplink_${a.id}"></div>
+     
+     <h3>IV — EVIDENCIA EN VIDEO</h3><div class="galeria" id="gal_vid_${a.id}" data-len="0"></div>
+     <h3>V — EVIDENCIA DE AUDIO AMBIENTAL CONTINUO</h3><div class="galeria" id="gal_aud_${a.id}" data-len="0"></div>
+     <h3>VI — EXTRACCIÓN FOTOGRÁFICA GIGANTE (MÚLTIPLE)</h3><div class="galeria" id="gal_img_${a.id}" data-len="0"></div>
+     
+     <h3>VII — FIRMAS CRIPTOGRÁFICAS</h3><div class="mono">ID: ${a.id}<br>INICIO: ${a.sello_inicio}<br>SHA‑256: ${a.sha256}<br>HMAC: ${a.hmac?.slice(0,32)||'—'}…</div>
+     <h3>VIII — MARCO LEGAL</h3><p style="font-size:11px;position:relative;z-index:3">Ley 26.485 · Ley 25.326 · Código Procesal Penal</p>
+     <div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>ARGENTINA</div><div>FIRMA PERITO INFORMÁTICO</div></div>`;
+     
+     setTimeout(()=>{
+        if(!document.getElementById('m_'+a.id) || mapas[a.id] || a.lat === 'Buscando...') return;
+        try {
+            const mm=L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat||-26.8241,a.lng||-65.2226],16);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
+            L.marker([a.lat||-26.8241,a.lng||-65.2226]).addTo(mm);
+            mapas[a.id] = mm;
+        } catch(e){}
+     }, 400);
+ } else {
+     // Si el acta YA existe, SOLAMENTE actualizamos lo dinámico para no interrumpir la reproducción.
+     document.getElementById(`coords_${a.id}`).innerText = `${a.lat||'—'} , ${a.lng||'—'}`;
+     document.getElementById(`prec_${a.id}`).innerText = `${a.precision||'—'}m · ${a.altitud||'—'} m · ${a.velocidad||'—'}`;
+     
+     if (a.lat !== 'Buscando...' && mapas[a.id]) {
+         mapas[a.id].setView([a.lat, a.lng]);
+         mapas[a.id].eachLayer((layer) => {
+             if (layer instanceof L.Marker) {
+                 mapas[a.id].removeLayer(layer);
+             }
+         });
+         L.marker([a.lat, a.lng]).addTo(mapas[a.id]);
+     } else if (a.lat !== 'Buscando...' && !mapas[a.id]) {
+         try {
+            const mm=L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat,a.lng],16);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
+            L.marker([a.lat,a.lng]).addTo(mm);
+            mapas[a.id] = mm;
+        } catch(e){}
+     }
  }
  
- if(mapas[a.id]) {
-     try { mapas[a.id].remove(); } catch(e){}
-     delete mapas[a.id];
+ if (a.lat !== 'Buscando...') {
+     document.getElementById(`maplink_${a.id}`).innerHTML = `<a href="https://maps.google.com/?q=${a.lat},${a.lng}" target="_blank" style="display:block; background:var(--oro); color:#fff; text-align:center; padding:15px; border-radius:8px; font-weight:900; font-family:'Cinzel',serif; text-decoration:none; margin-top:15px; margin-bottom: 15px; box-shadow:0 4px 10px rgba(0,0,0,0.3); font-size: 16px;">📍 ABRIR UBICACIÓN EN GOOGLE MAPS</a>`;
  }
- 
+
+ // Renderizado Inteligente de Galerías: Solo se dibuja si se agregó un nuevo archivo.
  const vV = a.videos?.length ? a.videos.map((blob,i)=>{
     let url = blob instanceof Blob ? URL.createObjectURL(blob) : (blob.url || '');
     return `<div class="foto" style="padding:10px; width:100%;">
@@ -1227,49 +1334,27 @@ function render(a){
     </div>
  `).join('') : '<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Capturando ciclo fotográfico de emergencia...</p></div>';
 
- let mapLink = (a.lat !== 'Buscando...') ? `<a href="https://maps.google.com/?q=${a.lat},${a.lng}" target="_blank" style="display:block; background:var(--oro); color:#fff; text-align:center; padding:15px; border-radius:8px; font-weight:900; font-family:'Cinzel',serif; text-decoration:none; margin-top:15px; margin-bottom: 15px; box-shadow:0 4px 10px rgba(0,0,0,0.3); font-size: 16px;">📍 ABRIR UBICACIÓN EN GOOGLE MAPS</a>` : '';
-
- d.innerHTML=`<i></i><div style="position:absolute;top:12px;right:12px;width:70px;height:70px;border-radius:50%;border:2px solid #5A3E00;background:linear-gradient(145deg,#fff,#E6C76B);display:grid;place-items:center;font-family:Cinzel;font-weight:900;font-size:9px;text-align:center;transform:rotate(-6deg);box-shadow:var(--luzRelieve);z-index:4">NI<br>UNA<br>MENOS</div>
- <div class="noimp" style="position:absolute;top:12px;left:12px;z-index:4"><button onclick="document.getElementById('a_${a.id}').remove()" style="width:28px;height:28px;border-radius:4px;border:none;background:#B00020;color:#fff;font-family:Cinzel;font-weight:bold;font-size:14px">[ X ]</button></div>
- <div style="text-align:center;padding-bottom:12px;border-bottom:3px double #000;margin-bottom:12px;position:relative;z-index:3">
-    <h2 style="font-family:Cinzel;font-weight:900;letter-spacing:4px;font-size:18px">INFORME TÉCNICO PERICIAL P4</h2>
-    <div class="nroExpediente">EXPEDIENTE N° ${a.numero_acta}</div>
-    <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#8B0000; margin-top:6px; font-weight:800;">📅 FECHA: ${a.fecha} &nbsp;&nbsp;|&nbsp;&nbsp; ⏰ HORA: ${a.hora}</div>
-    <div style="font-size:10px; margin-top:6px;">NI UNA MENOS ARGENTINA · niunamenosarg.com</div>
- </div>
+ let vidContainer = document.getElementById(`gal_vid_${a.id}`);
+ let audContainer = document.getElementById(`gal_aud_${a.id}`);
+ let imgContainer = document.getElementById(`gal_img_${a.id}`);
  
- <h3>I — IDENTIFICACIÓN DE VÍCTIMA</h3>
- <table class="t"><tr><th>NOMBRE</th><td>${a.nombre}</td><th>IMEI</th><td class="mono" style="background:transparent;border:none">${a.imei}</td></tr><tr><th>IP / ISP</th><td colspan="3">${a.ip_publica||'—'} · ${a.isp_proveedor||'—'}</td></tr></table>
+ let vidLen = a.videos?.length || 0;
+ if (vidContainer.dataset.len != vidLen) {
+     vidContainer.innerHTML = vV;
+     vidContainer.dataset.len = vidLen;
+ }
  
- <h3>II — HUELLA FORENSE DEL DISPOSITIVO</h3>
- <table class="t">
-   <tr><th>NAVEGADOR / S.O.</th><td colspan="3" style="font-size:10px">${a.userAgent||'—'}</td></tr>
-   <tr><th>RED / ANTENA</th><td>${a.red||'—'} (${a.signal||'—'})</td><th>BATERÍA</th><td>${a.bateria||'—'} (Cargando: ${a.cargando||'—'})</td></tr>
-   <tr><th>PANTALLA</th><td>${a.pantalla||'—'}</td><th>MEMORIA RAM</th><td>${a.ram||'—'} / Núcleos: ${a.cores||'—'}</td></tr>
- </table>
-
- <h3>III — GEOLOCALIZACIÓN Y SEGUIMIENTO</h3>
- <table class="t"><tr><th>WGS84 ACTUAL</th><td colspan="3">${a.lat||'—'} , ${a.lng||'—'}</td></tr><tr><th>PREC · ALT · VEL</th><td colspan="3">${a.precision||'—'}m · ${a.altitud||'—'} m · ${a.velocidad||'—'}</td></tr></table>
- <div class="mapa" id="m_${a.id}"></div>
- ${mapLink}
+ let audLen = a.audios?.length || 0;
+ if (audContainer.dataset.len != audLen) {
+     audContainer.innerHTML = aA;
+     audContainer.dataset.len = audLen;
+ }
  
- <h3>IV — EVIDENCIA EN VIDEO</h3><div class="galeria">${vV}</div>
- <h3>V — EVIDENCIA DE AUDIO AMBIENTAL CONTINUO</h3><div class="galeria">${aA}</div>
- <h3>VI — EXTRACCIÓN FOTOGRÁFICA GIGANTE (MÚLTIPLE)</h3><div class="galeria">${fT}</div>
- 
- <h3>VII — FIRMAS CRIPTOGRÁFICAS</h3><div class="mono">ID: ${a.id}<br>INICIO: ${a.sello_inicio}<br>SHA‑256: ${a.sha256}<br>HMAC: ${a.hmac?.slice(0,32)||'—'}…</div>
- <h3>VIII — MARCO LEGAL</h3><p style="font-size:11px;position:relative;z-index:3">Ley 26.485 · Ley 25.326 · Código Procesal Penal</p>
- <div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>ARGENTINA</div><div>FIRMA PERITO INFORMÁTICO</div></div>`;
- 
- setTimeout(()=>{
-    if(!document.getElementById('m_'+a.id) || mapas[a.id] || a.lat === 'Buscando...') return;
-    try {
-        const mm=L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat||-26.8241,a.lng||-65.2226],16);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
-        L.marker([a.lat||-26.8241,a.lng||-65.2226]).addTo(mm);
-        mapas[a.id] = mm;
-    } catch(e){}
- }, 400);
+ let imgLen = a.imagenes?.length || 0;
+ if (imgContainer.dataset.len != imgLen) {
+     imgContainer.innerHTML = fT;
+     imgContainer.dataset.len = imgLen;
+ }
 }
 
 function renderActasLocales() { listaActas.forEach(render); }
@@ -1297,7 +1382,15 @@ const expTXT=()=>{
     
     const b=new Blob([t],{type:'text/plain'});
     const u=URL.createObjectURL(b);
-    const a=document.createElement('a');a.href=u;a.download='ACTA_P4_OFICIAL_'+Date.now()+'.txt';a.click();
+    
+    // Nueva función forzada para celulares
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = u;
+    a.download = 'ACTA_P4_OFICIAL_' + Date.now() + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 200);
 };
 
 const verificar=async()=>{alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales válidas\nLeyes: 26.485 · 25.326 · Código Procesal Penal')};
