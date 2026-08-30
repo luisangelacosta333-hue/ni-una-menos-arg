@@ -341,7 +341,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 
 <section id="sos" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ ATRÁS</button><h2 class="tit">PROTECCIÓN ACTIVA</h2>
- <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
+ <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS('Botón Antipánico manual')">S.O.S</button></div>
  
  <div class="estadoSOS" id="st">
    <h2 style="font-size:18px; letter-spacing: 2px; margin-bottom: 8px;">¡SISTEMA ACTIVADO!</h2>
@@ -454,17 +454,19 @@ const ir = id => {
     }
 }
 
+// CORRECCIÓN TEXTO LECTURA GENERAL: Ahora menciona explícitamente el video como herramienta principal.
 function leerVoz(){
  speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, mediante el comando de voz secreta gritando ayuda, automáticamente ante un impacto o caída fuerte, o si se agota el modo trayecto al viajar. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. En segundo plano y de manera indetectable, el sistema asegura tu evidencia grabando audio de manera continua, tomando múltiples fotografías con ambas cámaras, y rastreando tu ubicación por GPS segundo a segundo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema cien por ciento blindado y privado. Además, si no realizás una denuncia oficial, a las setenta y dos horas se elimina y destruye automáticamente toda la evidencia para garantizar tu privacidad total.`);
+ const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, mediante el comando de voz secreta gritando ayuda, automáticamente ante un impacto o caída fuerte, o si se agota el modo trayecto al viajar. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. En segundo plano y de manera indetectable, el sistema asegura tu evidencia como herramienta principal grabando video de forma continua, además de audio, tomando múltiples fotografías con ambas cámaras, y rastreando tu ubicación por GPS segundo a segundo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema cien por ciento blindado y privado. Además, si no realizás una denuncia oficial, a las setenta y dos horas se elimina y destruye automáticamente toda la evidencia para garantizar tu privacidad total.`);
  u.lang='es-AR';u.rate=.92;u.pitch=1;u.volume=1;
  speechSynthesis.speak(u);
 }
 
+// CORRECCIÓN TEXTO AVISO DE EMERGENCIA: Ahora es más explícito para disuadir e informar a todos.
 function emitirAvisoPericial() {
     try {
         speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance("Atención. Herramienta principal activada. El sistema está grabando video de forma oculta para asegurar la mayor información pericial, para atrapar a los delincuentes y para brindar una mayor protección a las víctimas.");
+        const u = new SpeechSynthesisUtterance("Atención. Herramienta principal activada. El sistema está grabando video de forma oculta para asegurar la mayor información pericial, atrapar a los delincuentes y brindar la mayor protección a la víctima.");
         u.lang = 'es-AR';
         u.rate = 0.95;
         u.pitch = 1;
@@ -509,7 +511,8 @@ async function iniciarTrayecto() {
                 clearInterval(trayectoInterval);
                 document.getElementById('trayectoEstado').innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S...";
                 ir('sos');
-                disparoSOS();
+                // CORRECCIÓN: Le pasamos el motivo exacto para que el WhatsApp avise a la familia.
+                disparoSOS('Modo Trayecto / Temporizador de viaje agotado');
             } else {
                 let min = Math.floor(diff / 60000);
                 let sec = Math.floor((diff % 60000) / 1000);
@@ -617,7 +620,8 @@ async function toggleVoz() {
                 btnVoz.innerText = "🎙️ ACTIVAR RECONOCIMIENTO DE VOZ";
                 btnVoz.style.background = "var(--oroMedio)";
                 
-                activarAlarmaRobo();
+                // CORRECCIÓN: Pasamos el motivo a la función para que alerte por WhatsApp correctamente.
+                activarAlarmaRobo('Comando de Voz Secreto ("Ayuda")');
             }
         };
         
@@ -723,11 +727,12 @@ async function cargarActasLocales() {
 
 let sosActivo = false;
 
-function toggleSOS() {
+// CORRECCIÓN: Le pasamos el motivo al Toggle
+function toggleSOS(motivo = 'Botón Antipánico Manual') {
     if(sosActivo) {
         pararConLlave();
     } else {
-        disparoSOS();
+        disparoSOS(motivo);
     }
 }
 
@@ -869,12 +874,13 @@ function formatArg(num) {
     return '549' + c;
 }
 
-function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
+// CORRECCIÓN: Agregamos el parámetro "motivo" para informar QUÉ causó la alerta a los familiares.
+function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', motivo = 'Botón de Emergencia manual') {
     if (!contactos || contactos.length === 0) return;
     
     let msg = "";
     if (tipo === 'alerta') {
-        msg = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre}* acaba de accionar su botón antipánico.\n\n📍 *Ubicación GPS:* Rastrando coordenadas exactas en este momento...\n\n🔐 *ID P4:* ${id}`;
+        msg = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre}* se encuentra en PELIGRO y el sistema acaba de activarse automáticamente.\n\n⚠️ *MOTIVO DE ACTIVACIÓN:* ${motivo}\n\n📍 *Ubicación GPS:* Rastrando coordenadas exactas en este momento...\n\n🔐 *ID P4:* ${id}`;
     } else if (tipo === 'gps') {
         msg = `📍 *ACTUALIZACIÓN S.O.S GPS* 📍\n\nUsuaria: *${nombre}*\nUbicación confirmada por el sistema:\nhttps://maps.google.com/?q=${la},${ln}\n\n🔐 *ID P4:* ${id}`;
     } else if (tipo === 'seguro') {
@@ -886,7 +892,6 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
             let cel = formatArg(numero);
             let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
             
-            // keepalive:true previene que el navegador cancele el envío si la app está en segundo plano
             fetch(url, {
                 method: 'POST',
                 keepalive: true, 
@@ -960,7 +965,6 @@ async function loopEvidencia(acta) {
         vBack.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
-    // Grabación simultánea en clips de 15 segundos para no perder evidencia si se interrumpe.
     let promesaVideo = (async () => {
         try {
             const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
@@ -1010,10 +1014,21 @@ async function loopEvidencia(acta) {
     }
 }
 
-async function disparoSOS(){
+// CORRECCIÓN VITAL: Envío de WhatsApp movido a la línea 1 antes de tocar la cámara o pantalla
+async function disparoSOS(motivo = 'Botón Antipánico manual'){
  if(sosActivo) return; 
  sosActivo = true;
  
+ const imei = localStorage.getItem('imei') || 'SIN_IMEI';
+ const nombre = localStorage.getItem('nombre') || 'Usuaria';
+ const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
+ const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
+ aid = id;
+
+ // 1. ENVIAR WHATSAPP INMEDIATAMENTE para garantizar que la alerta salga antes que el teléfono ponga a dormir la pestaña.
+ enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta', motivo);
+
+ // 2. LUEGO HABLAMOS
  emitirAvisoPericial();
  
  let btnSos = document.getElementById('btnBigSOS');
@@ -1028,17 +1043,8 @@ async function disparoSOS(){
     navigator.vibrate([1000, 500, 1000, 500, 1000, 500, 2000]);
  }
 
- // Corrección fundamental: El try-catch ya no bloquea con el await si el usuario no tocó la pantalla.
  try { if('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(()=>{}); } catch(e){}
  
- const imei = localStorage.getItem('imei') || 'SIN_IMEI';
- const nombre = localStorage.getItem('nombre') || 'Usuaria';
- const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
- const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
- aid = id;
-
- enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
-
  let batLevel = 'Desc.', batCharging = 'Desc.';
  try {
     if(navigator.getBattery) {
@@ -1119,7 +1125,8 @@ window.addEventListener('devicemotion', function (e) {
         
         if (speed > SHAKE_THRESHOLD) {
             if (localStorage.getItem('ok') === '1' && !sosActivo) {
-                activarAlarmaRobo();
+                // CORRECCIÓN: Le pasamos el motivo del impacto.
+                activarAlarmaRobo('Impacto Físico / Sacudida brusca del teléfono');
             }
         }
         sh_last_x = x;
@@ -1128,7 +1135,8 @@ window.addEventListener('devicemotion', function (e) {
     }
 }, true);
 
-function activarAlarmaRobo() {
+// CORRECCIÓN: Recibe el motivo y se lo pasa a disparoSOS
+function activarAlarmaRobo(motivo = 'Impacto Físico / Sacudida') {
     ir('sos');
     if ("vibrate" in navigator) navigator.vibrate([500, 200, 500, 200, 1000]);
     let parpadeos = 0;
@@ -1140,7 +1148,7 @@ function activarAlarmaRobo() {
             document.body.style.backgroundColor = '#FFFFFF';
         }
     }, 150);
-    disparoSOS();
+    disparoSOS(motivo);
 }
 
 const parar = () => {
