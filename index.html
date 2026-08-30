@@ -747,7 +747,7 @@ async function alta(){
     const n = document.getElementById('rN').value.trim();
     const i = IM(document.getElementById('rI').value);
     const w = document.getElementById('rW').value.trim();
-    const c = [document.getElementById('cF1').value, document.getElementById('cF2').value].filter(Boolean);
+    const c = [document.getElementById('cF1').value.trim(), document.getElementById('cF2').value.trim()].filter(Boolean);
     
     if(!n || !/^\d{15}$/.test(i) || !w) return alert('Requiere Nombre completo, IMEI válido de 15 dígitos y tu número de WhatsApp.');
     
@@ -836,8 +836,6 @@ async function validar(){
         } else {
             sessionStorage.setItem('k', k);
             localStorage.setItem('imei', sub.imei);
-            
-            // CORREGIDO: NO SOBRESCRIBIMOS 'contactos' AQUÍ PARA QUE NO SE PIERDAN LOS FAMILIARES REGISTRADOS
 
             alert('✅ LLAVE VÁLIDA. Ingresando al sistema judicial...');
             ir('panel');
@@ -875,8 +873,22 @@ function formatArg(num) {
     return '549' + c;
 }
 
+// FUNCIÓN CORREGIDA: GARANTIZA EL ENVÍO A LOS CONTACTOS AGENDADOS O RESPALDO
 function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
-    if (!contactos || contactos.length === 0) return;
+    // Si la lista viene vacía, recupera automáticamente de localStorage
+    if (!contactos || contactos.length === 0) {
+        try {
+            contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
+        } catch(e) {
+            contactos = [];
+        }
+    }
+    
+    // Respaldo de seguridad obligatorio si no hay contactos guardados
+    if (!contactos || contactos.length === 0) {
+        const miWa = localStorage.getItem('mi_wa');
+        contactos = miWa ? [miWa] : ['3816092676'];
+    }
     
     let msg = "";
     if (tipo === 'alerta') {
@@ -893,16 +905,21 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
             let cel = formatArg(numero);
             let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
             
+            console.log(`📤 Enviando WhatsApp a ${cel}...`);
             fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-            }).then(res => res.json()).then(data => {
-                if (data.status === "error" || data.error) console.error("Fallo GreenAPI:", data);
-            }).catch(e => console.error("Error Fetch WP:", e));
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(`📥 Respuesta GreenAPI para ${cel}:`, data);
+                if (data.status === "error" || data.error) console.error("❌ Fallo GreenAPI:", data);
+            })
+            .catch(e => console.error("❌ Error Fetch WP:", e));
             
         } catch (e) {
-            console.error("Error de Red WP:", e);
+            console.error("❌ Error de Red WP:", e);
         }
     }
 }
@@ -1044,7 +1061,14 @@ async function disparoSOS(){
  
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
- const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
+ 
+ // Obtención segura de contactos
+ let contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
+ if (!contactos || contactos.length === 0) {
+     const miWa = localStorage.getItem('mi_wa');
+     contactos = miWa ? [miWa] : ['3816092676'];
+ }
+
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
  aid = id;
 
