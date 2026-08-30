@@ -67,7 +67,7 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .paso span{color:#555;font-size:14px;font-weight:400;margin-top:4px;line-height:1.6;display:block}
 
 .btn{position:relative;width:100%;max-width:700px;margin:0 auto;display:flex;align-items:center;justify-content:center;padding:20px 24px;border-radius:999px;border:none;cursor:pointer;font-family:'Cinzel',serif;font-weight:900;letter-spacing:4.5px;font-size:13.5px;text-transform:uppercase;background:var(--bordeOro);color:#FFFFFF;text-shadow:0 1px 2px rgba(0,0,0,.3);box-shadow:var(--luz);overflow:hidden;transition:.4s}
-.btn::before{content:"absolute;inset:0;background:linear-gradient(110deg,transparent 22%,rgba(255,255,255,0.8) 50%,transparent 78%);transform:translateX(-130%);transition:1s}
+.btn::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 22%,rgba(255,255,255,0.8) 50%,transparent 78%);transform:translateX(-130%);transition:1s}
 .btn:hover{transform:translateY(-2px);box-shadow:var(--luzFuerte);letter-spacing:5.5px}
 .btn:hover::before{transform:translateX(130%)}
 .btn:active{transform:scale(.98)}
@@ -461,11 +461,8 @@ function leerVoz(){
  speechSynthesis.speak(u);
 }
 
-// ---------------------------------------------------------
-// FUNCIÓN DE AVISO PERICIAL VACIADA (SILENCIO ABSOLUTO)
-// ---------------------------------------------------------
 function emitirAvisoPericial() {
-    // Eliminado para que el micrófono no hable NUNCA bajo ninguna circunstancia.
+    // ELIMINADO PARA QUE NO HABLE NUNCA, COMO PEDISTE.
 }
 
 const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
@@ -503,8 +500,7 @@ async function iniciarTrayecto() {
             if(diff <= 0) {
                 clearInterval(trayectoInterval);
                 document.getElementById('trayectoEstado').innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S...";
-                ir('sos');
-                disparoSOS(); // <- LLAMA EXACTAMENTE IGUAL QUE EL SACUDÓN
+                activarAlarmaRobo(); // <--- EXACTAMENTE LA MISMA ORDEN QUE EL SACUDÓN
             } else {
                 let min = Math.floor(diff / 60000);
                 let sec = Math.floor((diff % 60000) / 1000);
@@ -612,8 +608,7 @@ async function toggleVoz() {
                 btnVoz.innerText = "🎙️ ACTIVAR RECONOCIMIENTO DE VOZ";
                 btnVoz.style.background = "var(--oroMedio)";
                 
-                ir('sos');
-                disparoSOS(); // <- LLAMA EXACTAMENTE IGUAL QUE EL SACUDÓN
+                activarAlarmaRobo(); // <--- EXACTAMENTE LA MISMA ORDEN QUE EL SACUDÓN
             }
         };
         
@@ -723,7 +718,7 @@ function toggleSOS() {
     if(sosActivo) {
         pararConLlave();
     } else {
-        disparoSOS();
+        activarAlarmaRobo(); // <--- ACTUALIZADO PARA QUE EL BOTON HAGA LO MISMO
     }
 }
 
@@ -851,7 +846,7 @@ const cerrar=()=>{
 };
 
 // =========================================================================
-// 🔥 CONEXIÓN A GREEN API POR FETCH EN SEGUNDO PLANO (MODIFICADO SOLO ESTO)
+// 🔥 CONEXIÓN A GREEN API POR FETCH
 // =========================================================================
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e37fd7bb454b7ad23a7f74a3398';
@@ -878,43 +873,23 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     }
 
     for (let numero of contactos) {
-        let cel = formatArg(numero);
-        let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
-        let payload = JSON.stringify({ chatId: `${cel}@c.us`, message: msg });
-        
-        // SISTEMA BLINDADO ANTIBLOQUEO (Ametralladora de reintentos)
-        let intentos = 0;
-        const lanzarMisil = () => {
-            // 1. Fetch nativo con reintento por si la antena del teléfono está dormida
+        try {
+            let cel = formatArg(numero);
+            let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
+            
             fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: payload
-            }).then(r => {
-                if (!r.ok) throw new Error('Red dormida');
-            }).catch(e => {
-                intentos++;
-                // Reintenta hasta 6 veces cada 3.5 segundos
-                if(intentos < 6) setTimeout(lanzarMisil, 3500); 
-            });
-            
-            // 2. Respaldo XHR clásico (Inmune a la suspensión del navegador en segundo plano)
-            try {
-                let xhr = new XMLHttpRequest();
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-                xhr.send(payload);
-            } catch(err) {}
-        };
-        
-        lanzarMisil();
+                body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
+            }).then(res => res.json()).catch(e => {});
+        } catch (e) {}
     }
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
 // =========================================================================
-// 📸 CAPTURA MÁXIMA DE EVIDENCIA (TU CÓDIGO ORIGINAL INTACTO)
+// 📸 CAPTURA MÁXIMA DE EVIDENCIA (VIDEO, AUDIO Y FOTOS)
 // =========================================================================
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
@@ -1140,6 +1115,7 @@ window.addEventListener('devicemotion', function (e) {
     }
 }, true);
 
+// FUNCIÓN MAESTRA: AHORA EL BOTÓN, EL TEMPORIZADOR Y LA VOZ LLAMAN A ESTA MISMA
 function activarAlarmaRobo() {
     ir('sos');
     if ("vibrate" in navigator) navigator.vibrate([500, 200, 500, 200, 1000]);
@@ -1152,6 +1128,7 @@ function activarAlarmaRobo() {
             document.body.style.backgroundColor = '#FFFFFF';
         }
     }, 150);
+    
     disparoSOS();
 }
 
