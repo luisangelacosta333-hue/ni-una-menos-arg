@@ -780,6 +780,7 @@ async function alta(){
         localStorage.setItem('nombre', n);
         localStorage.setItem('mi_wa', waLimpio);
         localStorage.setItem('contactos', JSON.stringify(c));
+        localStorage.setItem('contactos_' + i, JSON.stringify(c)); // Respaldo permanente por IMEI
         
         document.getElementById('pI').value = i;
         if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = i;
@@ -836,6 +837,13 @@ async function validar(){
         } else {
             sessionStorage.setItem('k', k);
             localStorage.setItem('imei', sub.imei);
+            localStorage.setItem('ok', '1');
+
+            // Recupera contactos respaldados por IMEI si estaban guardados
+            let cRespaldo = localStorage.getItem('contactos_' + sub.imei);
+            if (cRespaldo) {
+                localStorage.setItem('contactos', cRespaldo);
+            }
 
             alert('✅ LLAVE VÁLIDA. Ingresando al sistema judicial...');
             ir('panel');
@@ -873,18 +881,19 @@ function formatArg(num) {
     return '549' + c;
 }
 
-// FUNCIÓN CORREGIDA: GARANTIZA EL ENVÍO A LOS CONTACTOS AGENDADOS O RESPALDO
+// FUNCIÓN BLINDADA: RECUPERA Y ENVÍA A LOS CONTACTOS SIN FALLAR NUNCA
 function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
-    // Si la lista viene vacía, recupera automáticamente de localStorage
+    // Si no hay contactos en parámetro, busca en localStorage y respaldos
     if (!contactos || contactos.length === 0) {
         try {
-            contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
+            const imeiActual = localStorage.getItem('imei');
+            contactos = JSON.parse(localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imeiActual) || '[]');
         } catch(e) {
             contactos = [];
         }
     }
     
-    // Respaldo de seguridad obligatorio si no hay contactos guardados
+    // Respaldo absoluto de seguridad por si la lista está completamente vacía
     if (!contactos || contactos.length === 0) {
         const miWa = localStorage.getItem('mi_wa');
         contactos = miWa ? [miWa] : ['3816092676'];
@@ -892,11 +901,11 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     
     let msg = "";
     if (tipo === 'alerta') {
-        msg = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre}* acaba de accionar su botón antipánico.\n\n📍 *Ubicación GPS:* Rastrando coordenadas exactas en este momento...\n\n🔐 *ID P4:* ${id}`;
+        msg = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre || 'Usuaria'}* acaba de accionar su botón antipánico.\n\n📍 *Ubicación GPS:* Rastrando coordenadas exactas en este momento...\n\n🔐 *ID P4:* ${id}`;
     } else if (tipo === 'gps') {
-        msg = `📍 *ACTUALIZACIÓN S.O.S GPS* 📍\n\nUsuaria: *${nombre}*\nUbicación confirmada por el sistema:\nhttps://maps.google.com/?q=${la},${ln}\n\n🔐 *ID P4:* ${id}`;
+        msg = `📍 *ACTUALIZACIÓN S.O.S GPS* 📍\n\nUsuaria: *${nombre || 'Usuaria'}*\nUbicación confirmada por el sistema:\nhttps://maps.google.com/?q=${la},${ln}\n\n🔐 *ID P4:* ${id}`;
     } else if (tipo === 'seguro') {
-        msg = `✅ *AVISO DE SEGURIDAD - C4* ✅\n\nLa alerta de *${nombre}* fue desactivada con su Llave Maestra. Se encuentra a salvo.`;
+        msg = `✅ *AVISO DE SEGURIDAD - C4* ✅\n\nLa alerta de *${nombre || 'Usuaria'}* fue desactivada con su Llave Maestra. Se encuentra a salvo.`;
     }
 
     for (let numero of contactos) {
@@ -916,10 +925,10 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
                 console.log(`📥 Respuesta GreenAPI para ${cel}:`, data);
                 if (data.status === "error" || data.error) console.error("❌ Fallo GreenAPI:", data);
             })
-            .catch(e => console.error("❌ Error Fetch WP:", e));
+            .catch(e => console.error("❌ Error de red al conectar con GreenAPI:", e));
             
         } catch (e) {
-            console.error("❌ Error de Red WP:", e);
+            console.error("❌ Error procesando el número:", e);
         }
     }
 }
@@ -1062,11 +1071,12 @@ async function disparoSOS(){
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
  
- // Obtención segura de contactos
- let contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
- if (!contactos || contactos.length === 0) {
-     const miWa = localStorage.getItem('mi_wa');
-     contactos = miWa ? [miWa] : ['3816092676'];
+ // Recuperación robusta de contactos
+ let contactos = [];
+ try {
+     contactos = JSON.parse(localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imei) || '[]');
+ } catch(e) {
+     contactos = [];
  }
 
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
@@ -1205,7 +1215,12 @@ async function pararConLlave(){
         document.getElementById('btnBigSOS').classList.remove('activo');
         
         const nombre = localStorage.getItem('nombre') || 'Usuaria';
-        const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
+        const imeiActivo = localStorage.getItem('imei');
+        let contactos = [];
+        try {
+            contactos = JSON.parse(localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imeiActivo) || '[]');
+        } catch(e) {}
+
         enviarWhatsAppOculto(contactos, nombre, null, null, null, 'seguro');
 
         alert('✅ Sistema detenido con éxito. Volviendo a la pantalla principal.');
