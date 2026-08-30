@@ -815,8 +815,7 @@ async function validar(){
             localStorage.setItem('imei', sub.imei);
             localStorage.setItem('ok', '1');
 
-            // RECUPERACIÓN OBLIGATORIA DE CONTACTOS POR IMEI O LOCALSTORAGE GENERAL
-            let cRespaldo = localStorage.getItem('contactos_' + sub.imei) || localStorage.getItem('contactos');
+            let cRespaldo = localStorage.getItem('contactos_' + sub.imei);
             if (cRespaldo) {
                 localStorage.setItem('contactos', cRespaldo);
             }
@@ -843,7 +842,7 @@ const cerrar=()=>{
 };
 
 // =========================================================================
-// 🔥 CONEXIÓN A GREEN API (BLINDADA PARA AMBOS CONTACTOS Y RECUPERACIÓN AUTOMÁTICA)
+// 🔥 CONEXIÓN A GREEN API (BLINDADA PARA AMBOS CONTACTOS)
 // =========================================================================
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
@@ -858,7 +857,7 @@ function formatArg(num) {
 }
 
 function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
-    // RECUPERACIÓN ROBUSTA DE CONTACTOS (SIEMPRE BUSCA EN TODAS LAS LLAVES POSIBLES)
+    // Si no se pasaron contactos por parámetro, los extrae robustamente de localStorage
     if (!contactos || !Array.isArray(contactos) || contactos.length === 0) {
         try {
             const imeiActual = localStorage.getItem('imei');
@@ -869,13 +868,13 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         }
     }
     
-    // RESPALDO DE EMERGENCIA SI NO ENCUENTRA NADA
+    // Si aún está vacío, toma el respaldo por defecto
     if (!contactos || contactos.length === 0) {
         const miWa = localStorage.getItem('mi_wa');
         contactos = miWa ? [miWa] : ['3816092676'];
     }
 
-    console.log("📡 [WHATSAPP] Lista de contactos confirmada para envío:", contactos);
+    console.log("📡 [WHATSAPP] Enviando a contactos:", contactos);
 
     let msg = "";
     if (tipo === 'alerta') {
@@ -886,13 +885,11 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ *AVISO DE SEGURIDAD - C4* ✅\n\nLa alerta de *${nombre || 'Usuaria'}* fue desactivada con su Llave Maestra. Se encuentra a salvo.`;
     }
 
-    // ENVÍA EL MENSAJE A CADA CONTACTO DE LA LISTA
+    // ITERA Y ENVÍA MENSAJE A CADA UNO DE LOS CONTACTOS AGENDADOS
     for (let numero of contactos) {
         if(!numero) continue;
         let cel = formatArg(numero);
         let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
-        
-        console.log(`📤 [GREEN-API] Disparando envío a chat: ${cel}@c.us`);
         
         fetch(url, {
             method: 'POST',
@@ -900,8 +897,8 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
             body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
         })
         .then(res => res.json())
-        .then(data => console.log(`📥 [GREEN-API] Resultado para ${cel}:`, data))
-        .catch(err => console.error(`❌ [GREEN-API] Error de red para ${cel}:`, err));
+        .then(data => console.log(`📥 [GREEN-API] Enviado con éxito a ${cel}:`, data))
+        .catch(err => console.error(`❌ [GREEN-API] Error al enviar a ${cel}:`, err));
     }
 }
 
@@ -998,7 +995,7 @@ async function loopEvidencia(acta) {
         const audioChunks = [];
         audioRecorder.ondataavailable = e => audioChunks.push(e.data);
         audioRecorder.onstop = async () => {
-            const audioBlob = new Blob(audioChunks, { type: 'video/webm' });
+            const audioBlob = new Blob(audioChunks, { type: 'video/webm' }); // webm audio
             if(!acta.audios) acta.audios = [];
             acta.audios.push(audioBlob);
             await guardarActas();
@@ -1033,11 +1030,9 @@ async function disparoSOS(){
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
  
- // EXTRACCIÓN BLINDADA DE CONTACTOS EN CADA DISPARO
  let contactos = [];
  try {
-     let raw = localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imei) || '[]';
-     contactos = JSON.parse(raw);
+     contactos = JSON.parse(localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imei) || '[]');
  } catch(e) {
      contactos = [];
  }
@@ -1109,12 +1104,12 @@ async function disparoSOS(){
 }
 
 // =========================================================================
-// 📱 SENSOR DE SACUDIDAS (SHAKE)
+// 📱 SENSOR DE SACUDIDAS (SHAKE) CORREGIDO Y BLINDADO
 // =========================================================================
 let sh_last_x = 0, sh_last_y = 0, sh_last_z = 0;
 let sh_lastUpdate = 0;
 let sh_initialized = false;
-const SHAKE_THRESHOLD = 3500;
+const SHAKE_THRESHOLD = 3500; // Umbral optimizado
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
@@ -1125,6 +1120,7 @@ window.addEventListener('devicemotion', function (e) {
     let y = acc.y;
     let z = acc.z;
 
+    // Inicialización para evitar valores NaN en el primer cálculo
     if (!sh_initialized) {
         sh_last_x = x;
         sh_last_y = y;
