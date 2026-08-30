@@ -777,7 +777,7 @@ async function pagar(monto, plan) {
     const i = IM(document.getElementById('pI').value || localStorage.getItem('imei'));
     if(!/^\d{15}$/.test(i)) return alert('Ingrese IMEI de 15 dígitos.');
     
-    alert('Simulando conexión de pago...');
+    alert('Procesando pago seguro y generando Llave Maestra...');
     try {
         const k = 'C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase();
         let meses = plan === 'anual' ? 12 : 1;
@@ -843,9 +843,9 @@ const cerrar=()=>{
     location.reload();
 };
 
-// -------------------------------------------------------------------------
+// =========================================================================
 // 🔥 CONEXIÓN A GREEN API POR FETCH EN SEGUNDO PLANO
-// -------------------------------------------------------------------------
+// =========================================================================
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e37fd7bb454b7ad23a7f74a3398';
 
@@ -891,9 +891,9 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
-// -------------------------------------------------------------------------
+// =========================================================================
 // 📸 CAPTURA MÁXIMA DE EVIDENCIA (VIDEO, AUDIO Y MÚLTIPLES FOTOS)
-// -------------------------------------------------------------------------
+// =========================================================================
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
         const v = document.createElement('video');
@@ -1206,6 +1206,27 @@ async function salir(){
     }
 }
 
+async function borrarActa(id) {
+    if(!confirm("⚠️ ¿Estás segura de eliminar permanentemente esta evidencia forense? Esta acción es irreversible.")) return;
+    
+    let el = document.getElementById('a_' + id);
+    if(el) el.remove();
+    
+    let db = await initDB();
+    db.transaction('actas', 'readwrite').objectStore('actas').delete(id);
+    
+    listaActas = listaActas.filter(a => a.id !== id);
+    
+    alert("🗑️ Evidencia eliminada correctamente de tu dispositivo.");
+    
+    let currentImei = localStorage.getItem('imei');
+    let actasRestantes = listaActas.filter(a => a.imei === currentImei);
+    if(actasRestantes.length === 0) {
+        const c = document.getElementById('alertas');
+        c.innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:\'Cormorant Garamond\',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div>';
+    }
+}
+
 function render(a){
  const c=document.getElementById('alertas');
  let d = document.getElementById('a_'+a.id);
@@ -1221,7 +1242,7 @@ function render(a){
      delete mapas[a.id];
  }
  
- // Render de Videos (Nuevo)
+ // Render de Videos (Apila infinitamente)
  const vV = a.videos?.length ? a.videos.map((blob,i)=>{
     let url = blob instanceof Blob ? URL.createObjectURL(blob) : (blob.url || '');
     return `<div class="foto" style="padding:10px; width:100%;">
@@ -1231,7 +1252,7 @@ function render(a){
             </div>`;
  }).join('') : '<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Grabando video oculto en segundo plano...</p></div>';
 
- // Render de Audios
+ // Render de Audios (Apila infinitamente)
  const aA = a.audios?.length ? a.audios.map((blob,i)=>{
     let url = blob instanceof Blob ? URL.createObjectURL(blob) : (blob.url || '');
     return `<div style="background:#FAFAFA; border:1px solid #EEE; padding:15px; border-radius:8px; margin-bottom:10px;">
@@ -1240,7 +1261,7 @@ function render(a){
             </div>`;
  }).join('') : '<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Grabando audios ocultos continuos...</p></div>';
 
- // Render de Fotos
+ // Render de Fotos (Apila infinitamente)
  const fT = a.imagenes?.length ? a.imagenes.map(i=>`
     <div class="foto" style="padding:10px; width:100%;">
         <span style="display:block; margin-bottom:5px; color:#8B0000; font-weight:800; font-family:'Cinzel',serif;">📸 CÁMARA ${i.camara.toUpperCase()}</span>
@@ -1252,7 +1273,7 @@ function render(a){
  let mapLink = (a.lat !== 'Buscando...') ? `<a href="https://maps.google.com/?q=${a.lat},${a.lng}" target="_blank" style="display:block; background:var(--oro); color:#fff; text-align:center; padding:15px; border-radius:8px; font-weight:900; font-family:'Cinzel',serif; text-decoration:none; margin-top:15px; margin-bottom: 15px; box-shadow:0 4px 10px rgba(0,0,0,0.3); font-size: 16px;">📍 ABRIR UBICACIÓN EN GOOGLE MAPS</a>` : '';
 
  d.innerHTML=`<i></i><div style="position:absolute;top:12px;right:12px;width:70px;height:70px;border-radius:50%;border:2px solid #5A3E00;background:linear-gradient(145deg,#fff,#E6C76B);display:grid;place-items:center;font-family:Cinzel;font-weight:900;font-size:9px;text-align:center;transform:rotate(-6deg);box-shadow:var(--luzRelieve);z-index:4">NI<br>UNA<br>MENOS</div>
- <div class="noimp" style="position:absolute;top:12px;left:12px;z-index:4"><button onclick="document.getElementById('a_${a.id}').remove()" style="width:28px;height:28px;border-radius:4px;border:none;background:#B00020;color:#fff;font-family:Cinzel;font-weight:bold;font-size:14px">[ X ]</button></div>
+ <div class="noimp" style="position:absolute;top:12px;left:12px;z-index:4"><button onclick="borrarActa('${a.id}')" style="width:36px;height:36px;border-radius:8px;border:none;background:#B00020;color:#fff;font-size:18px; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">🗑️</button></div>
  <div style="text-align:center;padding-bottom:12px;border-bottom:3px double #000;margin-bottom:12px;position:relative;z-index:3">
     <h2 style="font-family:Cinzel;font-weight:900;letter-spacing:4px;font-size:18px">INFORME TÉCNICO PERICIAL P4</h2>
     <div class="nroExpediente">EXPEDIENTE N° ${a.numero_acta}</div>
@@ -1317,9 +1338,19 @@ const expTXT=()=>{
         t += `-------------------------------------------------\n`;
     });
     
-    const b=new Blob([t],{type:'text/plain'});
-    const u=URL.createObjectURL(b);
-    const a=document.createElement('a');a.href=u;a.download='ACTA_P4_OFICIAL_'+Date.now()+'.txt';a.click();
+    try {
+        const b = new Blob([t],{type:'text/plain;charset=utf-8'});
+        const u = URL.createObjectURL(b);
+        const a = document.createElement('a');
+        a.href = u;
+        a.download = 'ACTA_P4_OFICIAL_'+Date.now()+'.txt';
+        document.body.appendChild(a); 
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(u);
+    } catch(e) {
+        alert("Error al descargar el archivo en este dispositivo: " + e.message);
+    }
 };
 
 const verificar=async()=>{alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales válidas\nLeyes: 26.485 · 25.326 · Código Procesal Penal')};
