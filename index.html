@@ -6,7 +6,8 @@
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
 <meta http-equiv="Strict-Transport-Security" content="max-age=31536000;preload">
 <title>NI UNA MENOS · ENERGY 2026 | GLAMOUR PREMIUM</title>
-<link rel="manifest" href="manifest.json?v=2026_v8">
+<!-- FORZAMOS CACHÉ NUEVO PARA ELIMINAR EL ERROR DEL MICRÓFONO -->
+<link rel="manifest" href="manifest.json?v=2026_v10">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -476,7 +477,7 @@ function emitirAvisoPericial() {
 const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
 
 // =========================================================================
-// ⏱️ TEMPORIZADOR MODO TRAYECTO (CON PERSISTENCIA Y WAKELOCK)
+// ⏱️ TEMPORIZADOR MODO TRAYECTO (CON PERSISTENCIA ESTRICTA)
 // =========================================================================
 let trayectoInterval = null;
 let wakeLockTrayecto = null;
@@ -499,9 +500,8 @@ async function iniciarTrayecto() {
         
         try { if ('wakeLock' in navigator) wakeLockTrayecto = await navigator.wakeLock.request('screen'); } catch (e) {}
         
-        // Guardamos el tiempo final en la memoria permanente del teléfono
         let fin = Date.now() + m * 60000;
-        localStorage.setItem('finTrayecto_C4', fin);
+        localStorage.setItem('finTrayecto_C4', fin); // Se ancla en memoria para que no desaparezca al recargar
         
         arrancarRelojTrayecto();
         alert("✅ Temporizador iniciado con éxito. Podés navegar por la aplicación o apagar la pantalla, el reloj seguirá activo de forma nativa.");
@@ -548,7 +548,7 @@ function verificarTrayecto() {
         if(estadoUI) estadoUI.innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S SILENCIOSO...";
         
         ir('sos');
-        // DISPARO 100% SILENCIOSO (TRUE)
+        // DISPARO 100% SILENCIOSO GARANTIZADO
         disparoSOS('Modo Trayecto / Temporizador de viaje agotado', true);
     } else {
         let min = Math.floor(diff / 60000);
@@ -599,7 +599,7 @@ async function cancelarTrayecto() {
     }
 }
 
-// PROTECCIÓN EXTRA: Si el navegador suspende la pestaña, esto fuerza la verificación al despertar el celular
+// PROTECCIÓN EXTRA: Si el OS duerme la pestaña, esto fuerza el disparo al prender la pantalla
 document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === 'visible') {
         verificarTrayecto();
@@ -780,7 +780,7 @@ function toggleSOS(motivo = 'Botón Antipánico manual') {
     if(sosActivo) {
         pararConLlave();
     } else {
-        disparoSOS(motivo, false); // El botón manual siempre hace ruido y avisa
+        disparoSOS(motivo, false); // El botón manual avisa y hace ruido
     }
 }
 
@@ -908,7 +908,7 @@ const cerrar=()=>{
 };
 
 // =========================================================================
-// 🔥 CONEXIÓN A GREEN API POR FETCH EN SEGUNDO PLANO (SIN KEEPALIVE QUE BLOQUEA)
+// 🔥 CONEXIÓN A GREEN API (CON DOBLE SISTEMA ANTIBLOQUEO DE PANTALLA)
 // =========================================================================
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e37fd7bb454b7ad23a7f74a3398';
@@ -934,41 +934,46 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', mo
         msg = `✅ *AVISO DE SEGURIDAD - C4* ✅\n\nLa alerta de *${nombre}* fue desactivada con su Llave Maestra. Se encuentra a salvo.`;
     }
 
-    for (let numero of contactos) {
-        try {
-            let cel = formatArg(numero);
-            let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
-            
-            // CORRECCIÓN: Quitamos el "keepalive: true" porque Chrome lo cancela por seguridad (CORS Preflight)
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-            }).catch(e => { console.error("Error envío WA:", e) });
-        } catch (e) {}
-    }
+    contactos.forEach(numero => {
+        let cel = formatArg(numero);
+        let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
+        let payload = JSON.stringify({ chatId: `${cel}@c.us`, message: msg });
+        
+        // INTENTO 1: Fetch normal (Funciona al sacudir / pantalla prendida)
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload
+        }).catch(e => {
+            // INTENTO 2: sendBeacon (Fuerza el envío si la pantalla está apagada / en el bolsillo)
+            try {
+                let blob = new Blob([payload], { type: 'application/json' });
+                navigator.sendBeacon(url, blob);
+            } catch(err) {}
+        });
+    });
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
 // =========================================================================
-// 📸 CAPTURA MÁXIMA DE EVIDENCIA (CON TIMEOUT ANTICUELGUE)
+// 📸 CAPTURA MÁXIMA DE EVIDENCIA (SIN BLOQUEOS NI PROMESAS CONGELADAS)
 // =========================================================================
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
         let resuelto = false;
         
-        // CORRECCIÓN: Si el navegador congela la cámara porque la pantalla está apagada, abortamos la foto en 2.5 seg y seguimos grabando el audio/video.
+        // Timeout de seguridad: Si la pantalla está bloqueada y la cámara no responde en 2 segundos, saltamos a grabar audio para no colgar el sistema.
         let timeout = setTimeout(() => { 
             if(!resuelto) { resuelto=true; resolve(); } 
-        }, 2500); 
+        }, 2000); 
 
         const v = document.createElement('video');
         v.muted = true; v.playsInline = true; v.autoplay = true;
         v.srcObject = stream;
         
         v.onloadeddata = async () => {
-            try { await v.play(); } catch(e){} // No bloqueamos si falla
+            try { await v.play(); } catch(e){} 
             setTimeout(() => { 
                 if(resuelto) return;
                 try {
@@ -980,17 +985,13 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
                         if(!acta.imagenes) acta.imagenes = [];
                         acta.imagenes.push({url: b64Img, camara: tipo, sha256: 'HASH-'+Date.now()});
                         guardarActas();
-                        
-                        let currentImei = localStorage.getItem('imei');
-                        if (acta.imei === currentImei) {
-                            render(acta);
-                        }
+                        if (acta.imei === localStorage.getItem('imei')) render(acta);
                     }
                 } catch(err){}
                 resuelto = true;
                 clearTimeout(timeout);
                 resolve();
-            }, 800); 
+            }, 500); 
         };
         v.onerror = () => { 
             if(!resuelto) { resuelto = true; clearTimeout(timeout); resolve(); } 
@@ -1016,73 +1017,69 @@ async function loopEvidencia(acta) {
     }, () => {}, { enableHighAccuracy: true, maximumAge: 0 });
 
     try {
-        let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } });
+        let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 640 } });
         await tomarFotoSilenciosa(vFront, acta, 'frontal');
         vFront.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
     try {
-        let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
+        let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: 640 } });
         await tomarFotoSilenciosa(vBack, acta, 'trasera');
         vBack.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
-    let promesaVideo = new Promise(async (resolve) => {
+    // Grabación robusta: Si el video falla (teléfono en el bolsillo), pasa al audio directo.
+    let grabando = false;
+    
+    try {
+        const vStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment' } });
+        const vRec = new MediaRecorder(vStream);
+        const vChunks = [];
+        vRec.ondataavailable = e => vChunks.push(e.data);
+        vRec.onstop = async () => {
+            acta.videos = acta.videos || [];
+            acta.videos.push(new Blob(vChunks, { type: 'video/webm' }));
+            await guardarActas();
+            if (acta.imei === localStorage.getItem('imei')) render(acta);
+        };
+        vRec.start();
+        grabando = true;
+        setTimeout(() => {
+            if(vRec.state === 'recording') vRec.stop();
+            vStream.getTracks().forEach(t => t.stop());
+            setTimeout(() => loopEvidencia(acta), 1500); 
+        }, 15000);
+    } catch(e) {
+        // Fallback: Modo bolsillo. Grabar solo audio.
         try {
-            const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
-            const videoRecorder = new MediaRecorder(videoStream);
-            const videoChunks = [];
-            videoRecorder.ondataavailable = e => videoChunks.push(e.data);
-            videoRecorder.onstop = async () => {
-                const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
-                if(!acta.videos) acta.videos = [];
-                acta.videos.push(videoBlob);
+            const aStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const aRec = new MediaRecorder(aStream);
+            const aChunks = [];
+            aRec.ondataavailable = e => aChunks.push(e.data);
+            aRec.onstop = async () => {
+                acta.audios = acta.audios || [];
+                acta.audios.push(new Blob(aChunks, { type: 'audio/webm' }));
                 await guardarActas();
-                let currentImei = localStorage.getItem('imei');
-                if (acta.imei === currentImei) render(acta);
-                resolve();
+                if (acta.imei === localStorage.getItem('imei')) render(acta);
             };
-            videoRecorder.start();
+            aRec.start();
+            grabando = true;
             setTimeout(() => {
-                if(videoRecorder.state === 'recording') videoRecorder.stop();
-                videoStream.getTracks().forEach(t => t.stop());
+                if(aRec.state === 'recording') aRec.stop();
+                aStream.getTracks().forEach(t => t.stop());
+                setTimeout(() => loopEvidencia(acta), 1500);
             }, 15000);
-        } catch(e) { resolve(); } // Si el celular bloquea el video, resolvemos para no colgar el ciclo
-    });
+        } catch(e2) {}
+    }
 
-    let promesaAudio = new Promise(async (resolve) => {
-        try {
-            const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const audioRecorder = new MediaRecorder(audioStream);
-            const audioChunks = [];
-            audioRecorder.ondataavailable = e => audioChunks.push(e.data);
-            audioRecorder.onstop = async () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                if(!acta.audios) acta.audios = [];
-                acta.audios.push(audioBlob);
-                await guardarActas();
-                let currentImei = localStorage.getItem('imei');
-                if (acta.imei === currentImei) render(acta);
-                resolve();
-            };
-            audioRecorder.start();
-            setTimeout(() => {
-                if(audioRecorder.state === 'recording') audioRecorder.stop();
-                audioStream.getTracks().forEach(t => t.stop());
-            }, 15000);
-        } catch(e) { resolve(); } // Resolucion rápida en caso de bloqueo del OS
-    });
-
-    await Promise.all([promesaVideo, promesaAudio]);
-
-    if(sosActivo) {
-        // Pausa de 2 segundos antes de volver a empezar para no saturar si los permisos fallan
-        setTimeout(() => loopEvidencia(acta), 2000); 
+    // Si fallan todas las cámaras y micrófonos (muy raro), se reintenta automáticamente en 3 segundos.
+    if(!grabando && sosActivo) {
+        setTimeout(() => loopEvidencia(acta), 3000);
     }
 }
 
 // =========================================================================
-// NÚCLEO DE DISPARO CON MODO SILENCIOSO Y WA INMEDIATO
+// NÚCLEO DE DISPARO DIRECTO E ININTERRUMPIBLE
 // =========================================================================
 async function disparoSOS(motivo = 'Botón Antipánico manual', silencioso = false){
  if(sosActivo) return; 
@@ -1094,11 +1091,11 @@ async function disparoSOS(motivo = 'Botón Antipánico manual', silencioso = fal
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
  aid = id;
 
- // 1. ENVIAR WHATSAPP INMEDIATAMENTE ANTES DE HACER NADA
+ // 1. WHATSAPP PRIORIDAD MÁXIMA - SE MANDA ANTES DE CUALQUIER OTRA ACCIÓN
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta', motivo);
 
- // 2. AVISOS AUDITIVOS / VIBRATORIOS SOLAMENTE SI NO ESTÁ EN MODO SILENCIOSO
- if(!silencioso) {
+ // 2. LÓGICA DE SILENCIO ESTRICTA
+ if(silencioso !== true) {
      emitirAvisoPericial();
      if ("vibrate" in navigator) {
         navigator.vibrate([1000, 500, 1000, 500, 1000, 500, 2000]);
@@ -1418,13 +1415,12 @@ addEventListener('DOMContentLoaded', async ()=>{
  if(localStorage.getItem('ok')==='1'){
     document.getElementById('zonaOk').style.display='block';
     
-    // CORRECCIÓN: Si había un temporizador corriendo antes de recargar, lo vuelve a arrancar automáticamente.
     if(localStorage.getItem('finTrayecto_C4')) {
         arrancarRelojTrayecto();
     }
  }
  ir('inicio');
- if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v8').catch(()=>{}));
+ if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v10').catch(()=>{}));
  document.addEventListener('contextmenu',e=>e.preventDefault());
 });
 </script></body></html>
