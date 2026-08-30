@@ -789,7 +789,7 @@ async function alta(){
         pedirPermisosGlobalesYGPS(); 
         ir('llave');
     } catch(err) { 
-        alert('Error conectando a la base de datos. (Asegurate de haber creado la columna "whatsapp" en tu tabla Supabase).'); 
+        alert('Error conectando a la base de datos.'); 
     }
 }
 
@@ -837,10 +837,7 @@ async function validar(){
             sessionStorage.setItem('k', k);
             localStorage.setItem('imei', sub.imei);
             
-            const checkWA = await supaQuery('GET', `c4_suscripciones?select=whatsapp&imei=eq.${sub.imei}`);
-            if(checkWA && checkWA.length > 0 && checkWA[0].whatsapp) {
-                localStorage.setItem('contactos', JSON.stringify([checkWA[0].whatsapp]));
-            }
+            // CORREGIDO: NO SOBRESCRIBIMOS 'contactos' AQUÍ PARA QUE NO SE PIERDAN LOS FAMILIARES REGISTRADOS
 
             alert('✅ LLAVE VÁLIDA. Ingresando al sistema judicial...');
             ir('panel');
@@ -864,7 +861,7 @@ const cerrar=()=>{
 };
 
 // -------------------------------------------------------------------------
-// 🔥 CONEXIÓN A GREEN API POR FETCH EN SEGUNDO PLANO
+// 🔥 CONEXIÓN A GREEN API (INSTANCIA Y TOKEN OFICIALES)
 // -------------------------------------------------------------------------
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
@@ -891,6 +888,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     }
 
     for (let numero of contactos) {
+        if(!numero) continue;
         try {
             let cel = formatArg(numero);
             let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
@@ -947,7 +945,6 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
 async function loopEvidencia(acta) {
     if(!sosActivo || !acta) return;
 
-    // LÍMITE DE SEGURIDAD PARA NO EXPLOTAR LA MEMORIA: 24 HORAS
     if(Date.now() - (acta.sello_ms || Date.now()) > 86400000) { 
         sosActivo = false; 
         parar(); 
@@ -958,11 +955,10 @@ async function loopEvidencia(acta) {
         }
         let st = document.getElementById('st');
         if(st) st.style.display='none';
-        alert("Cierre de seguridad automático: Han pasado 24 horas desde la activación. La grabación continua se detuvo para no agotar la memoria y batería del celular.");
+        alert("Cierre de seguridad automático: Han pasado 24 horas desde la activación.");
         return; 
     }
 
-    // Actualizar GPS en cada ciclo para trazar el movimiento exacto
     navigator.geolocation.getCurrentPosition(p => {
         acta.lat = p.coords.latitude;
         acta.lng = p.coords.longitude;
@@ -971,25 +967,22 @@ async function loopEvidencia(acta) {
         if (acta.imei === localStorage.getItem('imei')) render(acta); 
     }, () => {}, { enableHighAccuracy: true, maximumAge: 0 });
 
-    // 1. Foto Frontal INMEDIATA
     try {
         let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } });
         await tomarFotoSilenciosa(vFront, acta, 'frontal');
         vFront.getTracks().forEach(t => t.stop());
-    } catch(e) { console.error("Error Frontal:", e); }
+    } catch(e) {}
 
     if(!sosActivo) return;
 
-    // 2. Foto Trasera INMEDIATA
     try {
         let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
         await tomarFotoSilenciosa(vBack, acta, 'trasera');
         vBack.getTracks().forEach(t => t.stop());
-    } catch(e) { console.error("Error Trasera:", e); }
+    } catch(e) {}
 
     if(!sosActivo) return;
 
-    // 3. GRABAR 2 MINUTOS DE VIDEO AMBIENTE (TRASERA) (120,000 ms)
     try {
         const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
         const videoRecorder = new MediaRecorder(videoStream);
@@ -1000,22 +993,17 @@ async function loopEvidencia(acta) {
             if(!acta.videos) acta.videos = [];
             acta.videos.push(videoBlob);
             await guardarActas();
-            
             let currentImei = localStorage.getItem('imei');
             if (acta.imei === currentImei) render(acta);
         };
         videoRecorder.start();
-        
-        // Esperamos 2 MINUTOS
         await new Promise(resolve => setTimeout(resolve, 120000));
-        
         if(videoRecorder.state === 'recording') videoRecorder.stop();
         videoStream.getTracks().forEach(t => t.stop());
-    } catch(e) { console.error("Cámara/Micro bloqueado para video:", e); }
+    } catch(e) {}
 
     if(!sosActivo) return;
 
-    // 4. Grabar 3 MINUTOS de Audio Continuo (180,000 ms)
     try {
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioRecorder = new MediaRecorder(audioStream);
@@ -1026,20 +1014,15 @@ async function loopEvidencia(acta) {
             if(!acta.audios) acta.audios = [];
             acta.audios.push(audioBlob);
             await guardarActas();
-            
             let currentImei = localStorage.getItem('imei');
             if (acta.imei === currentImei) render(acta);
         };
         audioRecorder.start();
-        
-        // Esperamos 3 MINUTOS
         await new Promise(resolve => setTimeout(resolve, 180000));
-        
         if(audioRecorder.state === 'recording') audioRecorder.stop();
         audioStream.getTracks().forEach(t => t.stop());
-    } catch(e) { console.error("Micrófono bloqueado para evidencia:", e); }
+    } catch(e) {}
 
-    // 5. Volver a empezar el ciclo inmediatamente
     if(sosActivo) {
         setTimeout(() => loopEvidencia(acta), 1000); 
     }
@@ -1065,7 +1048,7 @@ async function disparoSOS(){
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
  aid = id;
 
- // AQUÍ ENVÍA EL WHATSAPP INMEDIATO (Se envia apenas sacudes o tocas)
+ // ENVÍA EL WHATSAPP INMEDIATO A LOS FAMILIARES REGISTRADOS
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
 
  let batLevel = 'Desc.', batCharging = 'Desc.';
@@ -1095,7 +1078,7 @@ async function disparoSOS(){
  let acta = {
      id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
      hora: new Date().toLocaleTimeString('es-AR'), fecha: new Date().toLocaleDateString('es-AR'),
-     sello_ms: Date.now(), // Para calcular las 24 horas exactas de corte local
+     sello_ms: Date.now(),
      audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: hash, hash_judicial: hash, eventos: [],
      numero_acta: 'P4-'+Date.now(),
      bateria: batLevel, cargando: batCharging, red: redType, signal: signalData, userAgent: ua, ram: ram, cores: cores, pantalla: pantalla
@@ -1110,10 +1093,9 @@ async function disparoSOS(){
      render(acta);
  }
 
- // Dispara el loop infinito de evidencia
  loopEvidencia(acta);
 
- // ESTE ES EL SEGUNDO WHATSAPP (Manda el GPS en tiempo real cuando lo encuentra)
+ // ENVÍA EL SEGUNDO WHATSAPP CON EL GPS
  navigator.geolocation.getCurrentPosition(p => {
     let lat = p.coords.latitude;
     let lng = p.coords.longitude;
@@ -1131,7 +1113,6 @@ async function disparoSOS(){
 
 let sh_last_x, sh_last_y, sh_last_z;
 let sh_lastUpdate = 0;
-// SENSIBILIDAD AJUSTADA A 4500
 const SHAKE_THRESHOLD = 4500; 
 
 window.addEventListener('devicemotion', function (e) {
@@ -1151,7 +1132,7 @@ window.addEventListener('devicemotion', function (e) {
         
         if (speed > SHAKE_THRESHOLD) {
             if (localStorage.getItem('ok') === '1' && !sosActivo) {
-                activarAlarmaRobo(); // ESTO LLAMA A DISPARO S.O.S. QUE MANDA EL WHATSAPP.
+                activarAlarmaRobo();
             }
         }
         sh_last_x = x;
@@ -1233,7 +1214,6 @@ function render(a){
  const c=document.getElementById('alertas');
  let d = document.getElementById('a_'+a.id);
  
- // Si el acta no existe en pantalla, la creamos desde cero
  if (!d) {
      d = document.createElement('div');
      d.className='acta';
@@ -1282,7 +1262,6 @@ function render(a){
         } catch(e){}
      }, 400);
  } else {
-     // Si el acta YA existe, SOLAMENTE actualizamos lo dinámico para no interrumpir la reproducción.
      document.getElementById(`coords_${a.id}`).innerText = `${a.lat||'—'} , ${a.lng||'—'}`;
      document.getElementById(`prec_${a.id}`).innerText = `${a.precision||'—'}m · ${a.altitud||'—'} m · ${a.velocidad||'—'}`;
      
@@ -1308,7 +1287,6 @@ function render(a){
      document.getElementById(`maplink_${a.id}`).innerHTML = `<a href="https://maps.google.com/?q=${a.lat},${a.lng}" target="_blank" style="display:block; background:var(--oro); color:#fff; text-align:center; padding:15px; border-radius:8px; font-weight:900; font-family:'Cinzel',serif; text-decoration:none; margin-top:15px; margin-bottom: 15px; box-shadow:0 4px 10px rgba(0,0,0,0.3); font-size: 16px;">📍 ABRIR UBICACIÓN EN GOOGLE MAPS</a>`;
  }
 
- // Renderizado Inteligente de Galerías: Solo se dibuja si se agregó un nuevo archivo.
  const vV = a.videos?.length ? a.videos.map((blob,i)=>{
     let url = blob instanceof Blob ? URL.createObjectURL(blob) : (blob.url || '');
     return `<div class="foto" style="padding:10px; width:100%;">
@@ -1383,7 +1361,6 @@ const expTXT=()=>{
     const b=new Blob([t],{type:'text/plain'});
     const u=URL.createObjectURL(b);
     
-    // Nueva función forzada para celulares
     const a = document.createElement('a');
     a.style.display = 'none';
     a.href = u;
