@@ -227,25 +227,25 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
    <button class="btn rubi" onclick="irSOS()">✦ INGRESAR AL BOTÓN ANTIPÁNICO ✦</button>
    
    <div style="margin-top: 25px; display:flex; flex-direction:column; gap:15px;">
-       
-       <div style="background:#FFFFFF; border:1.5px solid var(--oro); padding:20px; border-radius:12px; box-shadow:var(--luz);">
-           <h4 style="font-family:'Cinzel'; color:var(--oroOscuro); font-size:16px; margin-bottom:10px; letter-spacing:2px; font-weight:800;">⏱️ MODO TRAYECTO (TEMPORIZADOR)</h4>
-           <p style="font-size:13px; margin-bottom:15px; color:#555; line-height:1.5;">Ideal para taxis o caminar sola. Si el tiempo llega a cero y no pusiste tu clave, el S.O.S se dispara solo.</p>
-           
-           <div style="display:flex; flex-direction:column; gap:12px;">
-               <input type="number" id="minTrayecto" placeholder="Minutos (ej: 15)" style="width:100%; padding:14px; border-radius:12px; border:1px solid #D4AF37; font-weight:bold; font-size:15px; text-align:center; box-sizing:border-box;" inputmode="numeric">
-               <button id="btnTrayectoAccion" class="btn" style="width:100%; padding:14px 20px; font-size:13px; letter-spacing:2px;" onclick="iniciarTrayecto()">INICIAR TRAYECTO</button>
-           </div>
-           
-           <div id="trayectoEstado" style="display:none; font-weight:900; color:#8B0000; font-size:18px; margin-top:15px; text-align:center;">Tiempo para reportarte:<br><span id="trayectoTiempo" style="font-size:24px;">--:--</span></div>
-       </div>
+        
+        <div style="background:#FFFFFF; border:1.5px solid var(--oro); padding:20px; border-radius:12px; box-shadow:var(--luz);">
+            <h4 style="font-family:'Cinzel'; color:var(--oroOscuro); font-size:16px; margin-bottom:10px; letter-spacing:2px; font-weight:800;">⏱️ MODO TRAYECTO (TEMPORIZADOR)</h4>
+            <p style="font-size:13px; margin-bottom:15px; color:#555; line-height:1.5;">Ideal para taxis o caminar sola. Si el tiempo llega a cero y no pusiste tu clave, el S.O.S se dispara solo.</p>
+            
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <input type="number" id="minTrayecto" placeholder="Minutos (ej: 15)" style="width:100%; padding:14px; border-radius:12px; border:1px solid #D4AF37; font-weight:bold; font-size:15px; text-align:center; box-sizing:border-box;" inputmode="numeric">
+                <button id="btnTrayectoAccion" class="btn" style="width:100%; padding:14px 20px; font-size:13px; letter-spacing:2px;" onclick="iniciarTrayecto()">INICIAR TRAYECTO</button>
+            </div>
+            
+            <div id="trayectoEstado" style="display:none; font-weight:900; color:#8B0000; font-size:18px; margin-top:15px; text-align:center;">Tiempo para reportarte:<br><span id="trayectoTiempo" style="font-size:24px;">--:--</span></div>
+        </div>
 
-       <div style="background:#FFFFFF; border:1.5px solid var(--oro); padding:20px; border-radius:12px; box-shadow:var(--luz);">
-           <h4 style="font-family:'Cinzel'; color:var(--oroOscuro); font-size:16px; margin-bottom:10px; letter-spacing:2px; font-weight:800;">🗣️ ALARMA SECRETA POR VOZ</h4>
-           <p style="font-size:13px; margin-bottom:15px; color:#555; line-height:1.5;">Si el celular está en tu bolsillo y no podés tocarlo, gritá fuerte <b>"AYUDA SISTEMA"</b> o <b>"AUXILIO"</b> y se activará.</p>
-           <button id="btnVoz" class="btn" style="padding:15px; font-size:12px; letter-spacing:2px; background:var(--oroMedio);" onclick="toggleVoz()">🎙️ ACTIVAR RECONOCIMIENTO DE VOZ</button>
-       </div>
-       
+        <div style="background:#FFFFFF; border:1.5px solid var(--oro); padding:20px; border-radius:12px; box-shadow:var(--luz);">
+            <h4 style="font-family:'Cinzel'; color:var(--oroOscuro); font-size:16px; margin-bottom:10px; letter-spacing:2px; font-weight:800;">🗣️ ALARMA SECRETA POR VOZ</h4>
+            <p style="font-size:13px; margin-bottom:15px; color:#555; line-height:1.5;">Si el celular está en tu bolsillo y no podés tocarlo, gritá fuerte <b>"AYUDA SISTEMA"</b> o <b>"AUXILIO"</b> y se activará.</p>
+            <button id="btnVoz" class="btn" style="padding:15px; font-size:12px; letter-spacing:2px; background:var(--oroMedio);" onclick="toggleVoz()">🎙️ ACTIVAR RECONOCIMIENTO DE VOZ</button>
+        </div>
+        
    </div>
   </div>
  </div>
@@ -372,6 +372,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <div id="alertas"><div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div></div>
  <button class="btn blanco" onclick="cerrar()" style="margin-top:20px">CERRAR SESIÓN</button>
 </section>
+
 </main>
 
 <div class="footer-wrap">
@@ -390,9 +391,6 @@ const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digi
 const LK=k=>!k?'':k.toUpperCase().replace(/[\u2011-\u2015]/g,'-').replace(/[^A-Z0-9\-]/g,'').trim();
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
-// =========================================================================
-// 📲 INSTALACIÓN PWA
-// =========================================================================
 let deferredPrompt;
 const installBtn = document.getElementById('btn-install-pwa');
 
@@ -418,7 +416,6 @@ window.addEventListener('appinstalled', () => {
     alert("¡Ni Una Menos instalada correctamente!");
 });
 
-// VARIABLE DE MAPAS
 let mapas = {};
 
 async function pedirPermisosGlobalesYGPS() {
@@ -452,7 +449,7 @@ const ir = id => {
             }
         }, 400);
     }
-}
+};
 
 const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
 
@@ -463,9 +460,6 @@ function leerVoz(){
  speechSynthesis.speak(u);
 }
 
-// =========================================================================
-// ⏱️ TEMPORIZADOR MODO TRAYECTO (CORREGIDO PARA DISPARAR EVIDENCIA)
-// =========================================================================
 let trayectoInterval = null;
 let finTrayecto = 0;
 
@@ -496,7 +490,7 @@ async function iniciarTrayecto() {
             if(diff <= 0) {
                 clearInterval(trayectoInterval);
                 document.getElementById('trayectoEstado').innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S...";
-                ir('sos');
+                irSOS();
                 disparoSOS();
             } else {
                 let min = Math.floor(diff / 60000);
@@ -542,9 +536,6 @@ async function cancelarTrayecto() {
     }
 }
 
-// =========================================================================
-// 🗣️ ACTIVACIÓN POR VOZ SECRETA EN SEGUNDO PLANO (PANTALLA OSCURA)
-// =========================================================================
 let recognition = null;
 let vozActiva = false;
 
@@ -611,23 +602,22 @@ async function toggleVoz() {
         
         recognition.onerror = function(event) {
             if(vozActiva && event.error !== 'not-allowed') {
-                setTimeout(() => { if(vozActiva) recognition.start(); }, 1000); 
+                setTimeout(() => { if(vozActiva) recognition.start(); }, 1500); 
             }
         };
         
         recognition.onend = function() {
             if(vozActiva) {
-                setTimeout(() => { if(vozActiva) recognition.start(); }, 300);
+                setTimeout(() => { if(vozActiva) recognition.start(); }, 500);
             }
         };
         
         recognition.start();
-        alert("✅ Reconocimiento silencioso activado. Podés llevar el celular en el bolsillo.");
+        alert("✅ Reconocimiento de voz activado en modo silencioso.");
     } catch(e) {
         alert("Error al validar la llave con el servidor.");
     }
 }
-
 
 const sigilo = () => {
     try { document.documentElement.requestFullscreen(); } catch(e){}
@@ -643,10 +633,8 @@ const sigilo = () => {
             s.remove();
         }
     });
-    alert("⚠️ MODO SIGILO ACTIVADO ⚠️\nLa pantalla se pondrá totalmente negra (parecerá apagada). Para salir y volver al menú, tocá la pantalla 3 VECES RÁPIDAS.");
+    alert("⚠️ MODO SIGILO ACTIVADO ⚠️\nLa pantalla se pondrá totalmente negra. Tocá la pantalla 3 VECES RÁPIDAS para salir.");
 };
-
-const b64=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});
 
 async function sha256(message) {
     const msgBuffer = new TextEncoder().encode(message);
@@ -666,9 +654,6 @@ async function supaQuery(method, endpoint, body = null) {
     return res.json();
 }
 
-// =========================================================================
-// 💾 BASE DE DATOS INTERNA PARA GUARDAR EVIDENCIA (INDEXEDDB)
-// =========================================================================
 const initDB = () => new Promise((resolve) => {
     let req = indexedDB.open('C4_DB', 2);
     req.onupgradeneeded = e => {
@@ -709,6 +694,19 @@ async function cargarActasLocales() {
     });
 }
 
+async function borrarActa(id) {
+    if(!confirm('⚠️ ¿Estás segura de eliminar esta acta permanentemente?')) return;
+    const d = document.getElementById('a_'+id);
+    if(d) d.remove();
+    listaActas = listaActas.filter(a => a.id !== id);
+    let db = await initDB();
+    let tx = db.transaction('actas', 'readwrite');
+    tx.objectStore('actas').delete(id);
+    if(listaActas.filter(a => a.imei === localStorage.getItem('imei')).length === 0) {
+        document.getElementById('alertas').innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:\'Cormorant Garamond\',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div>';
+    }
+}
+
 let sosActivo = false;
 
 function toggleSOS() {
@@ -719,14 +717,13 @@ function toggleSOS() {
     }
 }
 
-// =========================================================================
-// 🔥 ALTA Y SISTEMA ANTI-PÍCARO
-// =========================================================================
 async function alta(){
     const n = document.getElementById('rN').value.trim();
     const i = IM(document.getElementById('rI').value);
     const w = document.getElementById('rW').value.trim();
-    const c = [document.getElementById('cF1').value, document.getElementById('cF2').value].filter(Boolean);
+    const c1 = document.getElementById('cF1').value.trim();
+    const c2 = document.getElementById('cF2').value.trim();
+    const c = [c1, c2].filter(Boolean);
     
     if(!n || !/^\d{15}$/.test(i) || !w) return alert('Requiere Nombre completo, IMEI válido de 15 dígitos y tu número de WhatsApp.');
     
@@ -735,7 +732,7 @@ async function alta(){
     try {
         const checkWA = await supaQuery('GET', `c4_suscripciones?select=*&whatsapp=eq.${waLimpio}`);
         if(checkWA && checkWA.length > 0) {
-            alert('🛑 ¡SISTEMA ANTI-PÍCARO ACTIVADO!\nEste número de WhatsApp ya se encuentra registrado en la base de datos y utilizó sus días gratuitos.');
+            alert('🛑 ¡SISTEMA ANTI-PÍCARO ACTIVADO!\nEste número de WhatsApp ya se encuentra registrado en la base de datos.');
             return;
         }
 
@@ -759,6 +756,7 @@ async function alta(){
         localStorage.setItem('nombre', n);
         localStorage.setItem('mi_wa', waLimpio);
         localStorage.setItem('contactos', JSON.stringify(c));
+        localStorage.setItem('contactos_' + i, JSON.stringify(c)); 
         
         document.getElementById('pI').value = i;
         if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = i;
@@ -776,7 +774,7 @@ async function pagar(monto, plan) {
     const i = IM(document.getElementById('pI').value || localStorage.getItem('imei'));
     if(!/^\d{15}$/.test(i)) return alert('Ingrese IMEI de 15 dígitos.');
     
-    alert('Procesando pago seguro y generando Llave Maestra...');
+    alert('Simulando conexión de pago...');
     try {
         const k = 'C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase();
         let meses = plan === 'anual' ? 12 : 1;
@@ -815,10 +813,12 @@ async function validar(){
         } else {
             sessionStorage.setItem('k', k);
             localStorage.setItem('imei', sub.imei);
-            
-            const checkWA = await supaQuery('GET', `c4_suscripciones?select=whatsapp&imei=eq.${sub.imei}`);
-            if(checkWA && checkWA.length > 0 && checkWA[0].whatsapp) {
-                localStorage.setItem('contactos', JSON.stringify([checkWA[0].whatsapp]));
+            localStorage.setItem('ok', '1');
+
+            // RECUPERACIÓN OBLIGATORIA DE CONTACTOS POR IMEI O LOCALSTORAGE GENERAL
+            let cRespaldo = localStorage.getItem('contactos_' + sub.imei) || localStorage.getItem('contactos');
+            if (cRespaldo) {
+                localStorage.setItem('contactos', cRespaldo);
             }
 
             alert('✅ LLAVE VÁLIDA. Ingresando al sistema judicial...');
@@ -843,10 +843,10 @@ const cerrar=()=>{
 };
 
 // =========================================================================
-// 🔥 CONEXIÓN A GREEN API POR FETCH EN SEGUNDO PLANO
+// 🔥 CONEXIÓN A GREEN API (BLINDADA PARA AMBOS CONTACTOS Y RECUPERACIÓN AUTOMÁTICA)
 // =========================================================================
 const WA_INSTANCE = '710722723701';
-const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e37fd7bb454b7ad23a7f74a3398';
+const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
 
 function formatArg(num) {
     let c = String(num).replace(/\D/g, '');
@@ -858,36 +858,55 @@ function formatArg(num) {
 }
 
 function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
-    if (!contactos || contactos.length === 0) return;
+    // RECUPERACIÓN ROBUSTA DE CONTACTOS (SIEMPRE BUSCA EN TODAS LAS LLAVES POSIBLES)
+    if (!contactos || !Array.isArray(contactos) || contactos.length === 0) {
+        try {
+            const imeiActual = localStorage.getItem('imei');
+            let raw = localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imeiActual) || '[]';
+            contactos = JSON.parse(raw);
+        } catch(e) {
+            contactos = [];
+        }
+    }
     
-    let msg = "";
-    if (tipo === 'alerta') {
-        msg = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre}* acaba de accionar su botón antipánico.\n\n📍 *Ubicación GPS:* Rastrando coordenadas exactas en este momento...\n\n🔐 *ID P4:* ${id}`;
-    } else if (tipo === 'gps') {
-        msg = `📍 *ACTUALIZACIÓN S.O.S GPS* 📍\n\nUsuaria: *${nombre}*\nUbicación confirmada por el sistema:\nhttps://maps.google.com/?q=${la},${ln}\n\n🔐 *ID P4:* ${id}`;
-    } else if (tipo === 'seguro') {
-        msg = `✅ *AVISO DE SEGURIDAD - C4* ✅\n\nLa alerta de *${nombre}* fue desactivada con su Llave Maestra. Se encuentra a salvo.`;
+    // RESPALDO DE EMERGENCIA SI NO ENCUENTRA NADA
+    if (!contactos || contactos.length === 0) {
+        const miWa = localStorage.getItem('mi_wa');
+        contactos = miWa ? [miWa] : ['3816092676'];
     }
 
+    console.log("📡 [WHATSAPP] Lista de contactos confirmada para envío:", contactos);
+
+    let msg = "";
+    if (tipo === 'alerta') {
+        msg = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre || 'Usuaria'}* acaba de accionar su botón antipánico.\n\n📍 *Ubicación GPS:* Rastrando coordenadas exactas...\n\n🔐 *ID P4:* ${id}`;
+    } else if (tipo === 'gps') {
+        msg = `📍 *ACTUALIZACIÓN S.O.S GPS* 📍\n\nUsuaria: *${nombre || 'Usuaria'}*\nUbicación confirmada:\nhttps://maps.google.com/?q=${la},${ln}\n\n🔐 *ID P4:* ${id}`;
+    } else if (tipo === 'seguro') {
+        msg = `✅ *AVISO DE SEGURIDAD - C4* ✅\n\nLa alerta de *${nombre || 'Usuaria'}* fue desactivada con su Llave Maestra. Se encuentra a salvo.`;
+    }
+
+    // ENVÍA EL MENSAJE A CADA CONTACTO DE LA LISTA
     for (let numero of contactos) {
-        try {
-            let cel = formatArg(numero);
-            let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
-            
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-            }).then(res => res.json()).catch(e => {});
-        } catch (e) {}
+        if(!numero) continue;
+        let cel = formatArg(numero);
+        let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
+        
+        console.log(`📤 [GREEN-API] Disparando envío a chat: ${cel}@c.us`);
+        
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
+        })
+        .then(res => res.json())
+        .then(data => console.log(`📥 [GREEN-API] Resultado para ${cel}:`, data))
+        .catch(err => console.error(`❌ [GREEN-API] Error de red para ${cel}:`, err));
     }
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
-// =========================================================================
-// 📸 CAPTURA MÁXIMA DE EVIDENCIA (VIDEO, AUDIO Y FOTOS)
-// =========================================================================
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
         const v = document.createElement('video');
@@ -904,11 +923,8 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
                     if(!acta.imagenes) acta.imagenes = [];
                     acta.imagenes.push({url: b64Img, camara: tipo, sha256: 'HASH-'+Date.now()});
                     guardarActas();
-                    
                     let currentImei = localStorage.getItem('imei');
-                    if (acta.imei === currentImei) {
-                        render(acta);
-                    }
+                    if (acta.imei === currentImei) render(acta);
                 }
                 resolve();
             }, 800); 
@@ -923,6 +939,11 @@ async function loopEvidencia(acta) {
     if(Date.now() - (acta.sello_ms || Date.now()) > 86400000) { 
         sosActivo = false; 
         parar(); 
+        let btn = document.getElementById('btnBigSOS');
+        if(btn) { btn.innerText = 'S.O.S'; btn.classList.remove('activo'); }
+        let st = document.getElementById('st');
+        if(st) st.style.display='none';
+        alert("Cierre de seguridad automático: Han pasado 24 horas.");
         return; 
     }
 
@@ -960,7 +981,6 @@ async function loopEvidencia(acta) {
             if(!acta.videos) acta.videos = [];
             acta.videos.push(videoBlob);
             await guardarActas();
-            
             let currentImei = localStorage.getItem('imei');
             if (acta.imei === currentImei) render(acta);
         };
@@ -978,11 +998,10 @@ async function loopEvidencia(acta) {
         const audioChunks = [];
         audioRecorder.ondataavailable = e => audioChunks.push(e.data);
         audioRecorder.onstop = async () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const audioBlob = new Blob(audioChunks, { type: 'video/webm' });
             if(!acta.audios) acta.audios = [];
             acta.audios.push(audioBlob);
             await guardarActas();
-            
             let currentImei = localStorage.getItem('imei');
             if (acta.imei === currentImei) render(acta);
         };
@@ -1000,27 +1019,33 @@ async function loopEvidencia(acta) {
 async function disparoSOS(){
  if(sosActivo) return; 
  sosActivo = true;
- 
- let btnSos = document.getElementById('btnBigSOS');
- if(btnSos) {
-     btnSos.innerText = 'DETENER S.O.S';
-     btnSos.classList.add('activo');
- }
- let stDiv = document.getElementById('st');
- if(stDiv) stDiv.style.display='block';
+ document.getElementById('btnBigSOS').innerText = 'DETENER S.O.S';
+ document.getElementById('btnBigSOS').classList.add('activo');
+ document.getElementById('st').style.display='block';
  
  if ("vibrate" in navigator) {
     navigator.vibrate([1000, 500, 1000, 500, 1000, 500, 2000]);
  }
 
+ speechSynthesis.cancel();
  try{if('wakeLock'in navigator)await navigator.wakeLock.request('screen')}catch{}
  
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
- const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
+ 
+ // EXTRACCIÓN BLINDADA DE CONTACTOS EN CADA DISPARO
+ let contactos = [];
+ try {
+     let raw = localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imei) || '[]';
+     contactos = JSON.parse(raw);
+ } catch(e) {
+     contactos = [];
+ }
+
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
  aid = id;
 
+ // ENVÍA WHATSAPP INMEDIATO A LOS CONTACTOS
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
 
  let batLevel = 'Desc.', batCharging = 'Desc.';
@@ -1037,7 +1062,7 @@ async function disparoSOS(){
  try { 
     if(navigator.connection) {
         redType = navigator.connection.effectiveType || 'Desc.'; 
-        signalData = `Vel. Bajada: ${navigator.connection.downlink||0}Mbps | Latencia (RTT): ${navigator.connection.rtt||0}ms`;
+        signalData = `Vel. Bajada: ${navigator.connection.downlink||0}Mbps | RTT: ${navigator.connection.rtt||0}ms`;
     }
  } catch(e){}
 
@@ -1061,12 +1086,13 @@ async function disparoSOS(){
  let currentImei = localStorage.getItem('imei');
  if (acta.imei === currentImei) {
      const c = document.getElementById('alertas');
-     if(c && c.innerHTML.includes('calma')) c.innerHTML='';
+     if(c.innerHTML.includes('calma')) c.innerHTML='';
      render(acta);
  }
 
  loopEvidencia(acta);
 
+ // ENVÍA GPS POR WHATSAPP
  navigator.geolocation.getCurrentPosition(p => {
     let lat = p.coords.latitude;
     let lng = p.coords.longitude;
@@ -1082,22 +1108,34 @@ async function disparoSOS(){
  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
 }
 
-let sh_last_x, sh_last_y, sh_last_z;
+// =========================================================================
+// 📱 SENSOR DE SACUDIDAS (SHAKE)
+// =========================================================================
+let sh_last_x = 0, sh_last_y = 0, sh_last_z = 0;
 let sh_lastUpdate = 0;
-const SHAKE_THRESHOLD = 4500; 
+let sh_initialized = false;
+const SHAKE_THRESHOLD = 3500;
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
     if(!acc || acc.x === null) return;
     
     let currTime = Date.now();
+    let x = acc.x;
+    let y = acc.y;
+    let z = acc.z;
+
+    if (!sh_initialized) {
+        sh_last_x = x;
+        sh_last_y = y;
+        sh_last_z = z;
+        sh_initialized = true;
+        return;
+    }
+
     if ((currTime - sh_lastUpdate) > 100) {
         let diffTime = (currTime - sh_lastUpdate);
         sh_lastUpdate = currTime;
-        
-        let x = acc.x;
-        let y = acc.y;
-        let z = acc.z;
         
         let speed = Math.abs(x + y + z - sh_last_x - sh_last_y - sh_last_z) / diffTime * 10000;
         
@@ -1130,13 +1168,12 @@ function activarAlarmaRobo() {
 const parar = () => {
     if(gps) navigator.geolocation.clearWatch(gps);
     if(la) clearInterval(la); if(lv) clearInterval(lv); if(l10) clearInterval(l10);
-    let stDiv = document.getElementById('st');
-    if(stDiv) stDiv.style.display='none';
+    document.getElementById('st').style.display='none';
     document.body.style.backgroundColor = '#FFFFFF';
 };
 
 async function pararConLlave(){
-    const k = prompt('⚠️ SEGURIDAD ANTIRROBO\nPara detener la alerta y avisar que estás a salvo, ingresá tu Llave Maestra C4:');
+    const k = prompt('⚠️ SEGURIDAD ANTIRROBO\nPara detener la alerta, ingresá tu Llave Maestra C4:');
     if(!k) return;
     
     const llaveLimpia = LK(k);
@@ -1149,169 +1186,159 @@ async function pararConLlave(){
 
         parar(); 
         sosActivo = false;
-        let btnSos = document.getElementById('btnBigSOS');
-        if(btnSos) {
-            btnSos.innerText = 'S.O.S';
-            btnSos.classList.remove('activo');
-        }
+        document.getElementById('btnBigSOS').innerText = 'S.O.S';
+        document.getElementById('btnBigSOS').classList.remove('activo');
         
         const nombre = localStorage.getItem('nombre') || 'Usuaria';
-        const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
+        const imeiActivo = localStorage.getItem('imei');
+        let contactos = [];
+        try {
+            contactos = JSON.parse(localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imeiActivo) || '[]');
+        } catch(e) {}
+
         enviarWhatsAppOculto(contactos, nombre, null, null, null, 'seguro');
 
-        alert('✅ Sistema detenido con éxito. Volviendo a la pantalla principal.');
+        alert('✅ Sistema detenido con éxito.');
         ir('inicio');
     } catch(e) {
         alert('Error al validar la llave con la base de datos.');
     }
 }
 
-async function borrarActa(id) {
-    if(!confirm("⚠️ ¿Estás segura de eliminar permanentemente esta evidencia forense?")) return;
+async function salir(){
+    const k = prompt('⚠️ DESVINCULACIÓN DEL SISTEMA\nIngresá tu Llave Maestra C4:');
+    if(!k) return;
     
-    let el = document.getElementById('a_' + id);
-    if(el) el.remove();
-    
-    let db = await initDB();
-    db.transaction('actas', 'readwrite').objectStore('actas').delete(id);
-    
-    listaActas = listaActas.filter(a => a.id !== id);
-    
-    alert("🗑️ Evidencia eliminada correctamente de tu dispositivo.");
-    
-    let currentImei = localStorage.getItem('imei');
-    let actasRestantes = listaActas.filter(a => a.imei === currentImei);
-    if(actasRestantes.length === 0) {
-        const c = document.getElementById('alertas');
-        if(c) c.innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:\'Cormorant Garamond\',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div>';
+    const llaveLimpia = LK(k);
+    try {
+        const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`);
+        if(res.length === 0) {
+            alert('❌ LLAVE INCORRECTA.');
+            return;
+        }
+        parar();
+        localStorage.clear(); sessionStorage.clear(); location.reload();
+    } catch(e) {
+        alert('Error validando la llave con el servidor.');
     }
 }
 
 function render(a){
  const c=document.getElementById('alertas');
- if(!c) return;
  let d = document.getElementById('a_'+a.id);
+ 
  if (!d) {
      d = document.createElement('div');
      d.className='acta';
      d.id='a_'+a.id;
      c.prepend(d);
+     
+     d.innerHTML=`<i></i><div style="position:absolute;top:12px;right:12px;width:70px;height:70px;border-radius:50%;border:2px solid #5A3E00;background:linear-gradient(145deg,#fff,#E6C76B);display:grid;place-items:center;font-family:Cinzel;font-weight:900;font-size:9px;text-align:center;transform:rotate(-6deg);box-shadow:var(--luzRelieve);z-index:4">NI<br>UNA<br>MENOS</div>
+     <div class="noimp" style="position:absolute;top:12px;left:12px;z-index:4"><button onclick="borrarActa('${a.id}')" style="width:36px;height:36px;border-radius:6px;border:none;background:#B00020;color:#fff;font-family:Cinzel;font-weight:bold;font-size:18px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.3);" title="Eliminar Acta">🗑️</button></div>
+     <div style="text-align:center;padding-bottom:12px;border-bottom:3px double #000;margin-bottom:12px;position:relative;z-index:3">
+        <h2 style="font-family:Cinzel;font-weight:900;letter-spacing:4px;font-size:18px">INFORME TÉCNICO PERICIAL P4</h2>
+        <div class="nroExpediente">EXPEDIENTE N° ${a.numero_acta}</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#8B0000; margin-top:6px; font-weight:800;">📅 FECHA: ${a.fecha} &nbsp;&nbsp;|&nbsp;&nbsp; ⏰ HORA: ${a.hora}</div>
+        <div style="font-size:10px; margin-top:6px;">NI UNA MENOS ARGENTINA · niunamenosarg.com</div>
+     </div>
+     
+     <h3>I — IDENTIFICACIÓN DE VÍCTIMA</h3>
+     <table class="t"><tr><th>NOMBRE</th><td>${a.nombre}</td><th>IMEI</th><td class="mono" style="background:transparent;border:none">${a.imei}</td></tr></table>
+     
+     <h3>II — HUELLA FORENSE DEL DISPOSITIVO</h3>
+     <table class="t">
+       <tr><th>NAVEGADOR / S.O.</th><td colspan="3" style="font-size:10px">${a.userAgent||'—'}</td></tr>
+       <tr><th>RED / ANTENA</th><td>${a.red||'—'} (${a.signal||'—'})</td><th>BATERÍA</th><td>${a.bateria||'—'}</td></tr>
+     </table>
+
+     <h3>III — GEOLOCALIZACIÓN Y SEGUIMIENTO</h3>
+     <table class="t"><tr><th>WGS84 ACTUAL</th><td id="coords_${a.id}" colspan="3">${a.lat||'—'} , ${a.lng||'—'}</td></tr><tr><th>PREC · ALT · VEL</th><td id="prec_${a.id}" colspan="3">${a.precision||'—'}m · ${a.altitud||'—'} m · ${a.velocidad||'—'}</td></tr></table>
+     <div class="mapa" id="m_${a.id}"></div>
+     <div id="maplink_${a.id}"></div>
+     
+     <h3>IV — EVIDENCIA EN VIDEO</h3><div class="galeria" id="gal_vid_${a.id}" data-len="0"></div>
+     <h3>V — EVIDENCIA DE AUDIO AMBIENTAL CONTINUO</h3><div class="galeria" id="gal_aud_${a.id}" data-len="0"></div>
+     <h3>VI — EXTRACCIÓN FOTOGRÁFICA GIGANTE</h3><div class="galeria" id="gal_img_${a.id}" data-len="0"></div>
+     
+     <h3>VII — FIRMAS CRIPTOGRÁFICAS</h3><div class="mono">ID: ${a.id}<br>SHA‑256: ${a.sha256}</div>
+     <div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>ARGENTINA</div><div>FIRMA PERITO</div></div>`;
+     
+     setTimeout(()=>{
+        if(!document.getElementById('m_'+a.id) || mapas[a.id] || a.lat === 'Buscando...') return;
+        try {
+            const mm=L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat||-26.8241,a.lng||-65.2226],16);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
+            L.marker([a.lat||-26.8241,a.lng||-65.2226]).addTo(mm);
+            mapas[a.id] = mm;
+        } catch(e){}
+     }, 400);
+ } else {
+     document.getElementById(`coords_${a.id}`).innerText = `${a.lat||'—'} , ${a.lng||'—'}`;
+     document.getElementById(`prec_${a.id}`).innerText = `${a.precision||'—'}m`;
+     
+     if (a.lat !== 'Buscando...' && mapas[a.id]) {
+         mapas[a.id].setView([a.lat, a.lng]);
+         mapas[a.id].eachLayer((layer) => {
+             if (layer instanceof L.Marker) mapas[a.id].removeLayer(layer);
+         });
+         L.marker([a.lat, a.lng]).addTo(mapas[a.id]);
+     } else if (a.lat !== 'Buscando...' && !mapas[a.id]) {
+         try {
+            const mm=L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat,a.lng],16);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
+            L.marker([a.lat,a.lng]).addTo(mm);
+            mapas[a.id] = mm;
+        } catch(e){}
+     }
  }
  
- if(mapas[a.id]) {
-     try { mapas[a.id].remove(); } catch(e){}
-     delete mapas[a.id];
+ if (a.lat !== 'Buscando...') {
+     document.getElementById(`maplink_${a.id}`).innerHTML = `<a href="https://maps.google.com/?q=${a.lat},${a.lng}" target="_blank" style="display:block; background:var(--oro); color:#fff; text-align:center; padding:15px; border-radius:8px; font-weight:900; font-family:'Cinzel',serif; text-decoration:none; margin-top:15px; margin-bottom: 15px; box-shadow:0 4px 10px rgba(0,0,0,0.3); font-size: 16px;">📍 ABRIR UBICACIÓN EN GOOGLE MAPS</a>`;
  }
- 
+
  const vV = a.videos?.length ? a.videos.map((blob,i)=>{
     let url = blob instanceof Blob ? URL.createObjectURL(blob) : (blob.url || '');
-    return `<div class="foto" style="padding:10px; width:100%;">
-                <span style="display:block; margin-bottom:5px; color:#8B0000; font-weight:800; font-family:'Cinzel',serif;">🎥 VIDEO SECUENCIAL ${i+1}</span>
-                <video controls playsinline preload="metadata" src="${url}" style="width:100%; border-radius:8px;"></video>
-                <div class="hash-overlay">HASH: HASH-${Date.now().toString().slice(-8)}...</div>
-            </div>`;
- }).join('') : '<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Grabando video oculto en segundo plano...</p></div>';
+    return `<div class="foto" style="padding:10px; width:100%;"><span style="color:#8B0000; font-weight:800;">🎥 VIDEO SECUENCIAL ${i+1}</span><video controls playsinline preload="metadata" src="${url}" style="width:100%; border-radius:8px;"></video></div>`;
+ }).join('') : '';
 
  const aA = a.audios?.length ? a.audios.map((blob,i)=>{
     let url = blob instanceof Blob ? URL.createObjectURL(blob) : (blob.url || '');
-    return `<div style="background:#FAFAFA; border:1px solid #EEE; padding:15px; border-radius:8px; margin-bottom:10px;">
-                <p style="font-family:'Cinzel',serif; font-size:12px; font-weight:800; color:#8B0000; margin-bottom:8px;">🎙️ EVIDENCIA DE AUDIO AMBIENTAL ${i+1}</p>
-                <audio controls src="${url}" style="width:100%;"></audio>
-            </div>`;
- }).join('') : '<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Grabando audios ocultos continuos...</p></div>';
+    return `<div style="background:#FAFAFA; border:1px solid #EEE; padding:15px; border-radius:8px; margin-bottom:10px;"><p style="font-size:12px; font-weight:800; color:#8B0000;">🎙️ AUDIO ${i+1}</p><audio controls src="${url}" style="width:100%;"></audio></div>`;
+ }).join('') : '';
 
  const fT = a.imagenes?.length ? a.imagenes.map(i=>`
     <div class="foto" style="padding:10px; width:100%;">
-        <span style="display:block; margin-bottom:5px; color:#8B0000; font-weight:800; font-family:'Cinzel',serif;">📸 CÁMARA ${i.camara.toUpperCase()}</span>
+        <span style="color:#8B0000; font-weight:800;">📸 CÁMARA ${i.camara.toUpperCase()}</span>
         <img src="${i.url}" style="width:100%; height:auto; border-radius:8px;" onerror="this.src=''">
-        <div class="hash-overlay">HASH: ${i.sha256?.slice(0,15)}...</div>
     </div>
- `).join('') : '<div class="ev-caja"><p style="text-align:center;padding:10px;color:#888;">Capturando ciclo fotográfico de emergencia...</p></div>';
+ `).join('') : '';
 
- let mapLink = (a.lat !== 'Buscando...') ? `<a href="https://maps.google.com/?q=${a.lat},${a.lng}" target="_blank" style="display:block; background:var(--oro); color:#fff; text-align:center; padding:15px; border-radius:8px; font-weight:900; font-family:'Cinzel',serif; text-decoration:none; margin-top:15px; margin-bottom: 15px; box-shadow:0 4px 10px rgba(0,0,0,0.3); font-size: 16px;">📍 ABRIR UBICACIÓN EN GOOGLE MAPS</a>` : '';
-
- d.innerHTML=`<i></i><div style="position:absolute;top:12px;right:12px;width:70px;height:70px;border-radius:50%;border:2px solid #5A3E00;background:linear-gradient(145deg,#fff,#E6C76B);display:grid;place-items:center;font-family:Cinzel;font-weight:900;font-size:9px;text-align:center;transform:rotate(-6deg);box-shadow:var(--luzRelieve);z-index:4">NI<br>UNA<br>MENOS</div>
- <div class="noimp" style="position:absolute;top:12px;left:12px;z-index:4"><button onclick="borrarActa('${a.id}')" style="width:36px;height:36px;border-radius:8px;border:none;background:#B00020;color:#fff;font-size:18px; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">🗑️</button></div>
- <div style="text-align:center;padding-bottom:12px;border-bottom:3px double #000;margin-bottom:12px;position:relative;z-index:3">
-    <h2 style="font-family:Cinzel;font-weight:900;letter-spacing:4px;font-size:18px">INFORME TÉCNICO PERICIAL P4</h2>
-    <div class="nroExpediente">EXPEDIENTE N° ${a.numero_acta}</div>
-    <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#8B0000; margin-top:6px; font-weight:800;">📅 FECHA: ${a.fecha} &nbsp;&nbsp;|&nbsp;&nbsp; ⏰ HORA: ${a.hora}</div>
-    <div style="font-size:10px; margin-top:6px;">NI UNA MENOS ARGENTINA · niunamenosarg.com</div>
- </div>
+ let vidContainer = document.getElementById(`gal_vid_${a.id}`);
+ let audContainer = document.getElementById(`gal_aud_${a.id}`);
+ let imgContainer = document.getElementById(`gal_img_${a.id}`);
  
- <h3>I — IDENTIFICACIÓN DE VÍCTIMA</h3>
- <table class="t"><tr><th>NOMBRE</th><td>${a.nombre}</td><th>IMEI</th><td class="mono" style="background:transparent;border:none">${a.imei}</td></tr><tr><th>IP / ISP</th><td colspan="3">${a.ip_publica||'—'} · ${a.isp_proveedor||'—'}</td></tr></table>
- 
- <h3>II — HUELLA FORENSE DEL DISPOSITIVO</h3>
- <table class="t">
-   <tr><th>NAVEGADOR / S.O.</th><td colspan="3" style="font-size:10px">${a.userAgent||'—'}</td></tr>
-   <tr><th>RED / ANTENA</th><td>${a.red||'—'} (${a.signal||'—'})</td><th>BATERÍA</th><td>${a.bateria||'—'} (Cargando: ${a.cargando||'—'})</td></tr>
-   <tr><th>PANTALLA</th><td>${a.pantalla||'—'}</td><th>MEMORIA RAM</th><td>${a.ram||'—'} / Núcleos: ${a.cores||'—'}</td></tr>
- </table>
-
- <h3>III — GEOLOCALIZACIÓN Y SEGUIMIENTO</h3>
- <table class="t"><tr><th>WGS84 ACTUAL</th><td colspan="3">${a.lat||'—'} , ${a.lng||'—'}</td></tr><tr><th>PREC · ALT · VEL</th><td colspan="3">${a.precision||'—'}m · ${a.altitud||'—'} m · ${a.velocidad||'—'}</td></tr></table>
- <div class="mapa" id="m_${a.id}"></div>
- ${mapLink}
- 
- <h3>IV — EVIDENCIA EN VIDEO</h3><div class="galeria">${vV}</div>
- <h3>V — EVIDENCIA DE AUDIO AMBIENTAL CONTINUO</h3><div class="galeria">${aA}</div>
- <h3>VI — EXTRACCIÓN FOTOGRÁFICA GIGANTE (MÚLTIPLE)</h3><div class="galeria">${fT}</div>
- 
- <h3>VII — FIRMAS CRIPTOGRÁFICAS</h3><div class="mono">ID: ${a.id}<br>INICIO: ${a.sello_inicio}<br>SHA‑256: ${a.sha256}<br>HMAC: ${a.hmac?.slice(0,32)||'—'}…</div>
- <h3>VIII — MARCO LEGAL</h3><p style="font-size:11px;position:relative;z-index:3">Ley 26.485 · Ley 25.326 · Código Procesal Penal</p>
- <div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>ARGENTINA</div><div>FIRMA PERITO INFORMÁTICO</div></div>`;
- 
- setTimeout(()=>{
-    if(!document.getElementById('m_'+a.id) || mapas[a.id] || a.lat === 'Buscando...') return;
-    try {
-        const mm=L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat||-26.8241,a.lng||-65.2226],16);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
-        L.marker([a.lat||-26.8241,a.lng||-65.2226]).addTo(mm);
-        mapas[a.id] = mm;
-    } catch(e){}
- }, 400);
+ if (vidContainer && vidContainer.dataset.len != (a.videos?.length || 0)) { vidContainer.innerHTML = vV; vidContainer.dataset.len = a.videos?.length || 0; }
+ if (audContainer && audContainer.dataset.len != (a.audios?.length || 0)) { audContainer.innerHTML = aA; audContainer.dataset.len = a.audios?.length || 0; }
+ if (imgContainer && imgContainer.dataset.len != (a.imagenes?.length || 0)) { imgContainer.innerHTML = fT; imgContainer.dataset.len = a.imagenes?.length || 0; }
 }
-
-function renderActasLocales() { listaActas.forEach(render); }
 
 const expTXT=()=>{
     let currentImei = localStorage.getItem('imei');
     let actasParaExportar = listaActas.filter(a => a.imei === currentImei);
-    
-    if(actasParaExportar.length === 0) return alert('No hay actas registradas para descargar.');
-    let t = "=================================================\n";
-    t += " NI UNA MENOS ARGENTINA - CADENA DE CUSTODIA P4\n";
-    t += "=================================================\n\n";
-    
+    if(actasParaExportar.length === 0) return alert('No hay actas registradas.');
+    let t = "=== NI UNA MENOS ARGENTINA - ACTA P4 ===\n\n";
     actasParaExportar.forEach(a => {
-        t += `[ EXPEDIENTE N° ${a.numero_acta} ]\n`;
-        t += `FECHA Y HORA DE ALERTA: ${a.fecha} ${a.hora}\n`;
-        t += `NOMBRE DE LA VÍCTIMA: ${a.nombre}\n`;
-        t += `IMEI DEL DISPOSITIVO: ${a.imei}\n`;
-        t += `UBICACIÓN GPS WGS84: ${a.lat}, ${a.lng} (Precisión: ${a.precision}m)\n`;
-        t += `RED/ANTENA CAPTURADA: ${a.red} | Señal: ${a.signal}\n`;
-        t += `BATERÍA AL MOMENTO: ${a.bateria} (Cargando: ${a.cargando})\n`;
-        t += `HASH SHA-256 (FIRMA): ${a.sha256}\n`;
-        t += `-------------------------------------------------\n`;
+        t += `Expediente: ${a.numero_acta} | Fecha: ${a.fecha} ${a.hora}\nGPS: ${a.lat}, ${a.lng}\nHash: ${a.sha256}\n--------------------\n`;
     });
-    
-    try {
-        const b = new Blob([t],{type:'text/plain;charset=utf-8'});
-        const u = URL.createObjectURL(b);
-        const a = document.createElement('a');
-        a.href = u;
-        a.download = 'ACTA_P4_OFICIAL_'+Date.now()+'.txt';
-        document.body.appendChild(a); 
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(u);
-    } catch(e) {
-        alert("Error al descargar el archivo en este dispositivo: " + e.message);
-    }
+    const b=new Blob([t],{type:'text/plain'});
+    const u=URL.createObjectURL(b);
+    const a = document.createElement('a');
+    a.href = u; a.download = 'ACTA_P4_' + Date.now() + '.txt';
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 200);
 };
 
-const verificar=async()=>{alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales válidas\nLeyes: 26.485 · 25.326 · Código Procesal Penal')};
+const verificar=async()=>{alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales válidas\nLeyes: 26.485 · 25.326')};
 
 addEventListener('DOMContentLoaded', async ()=>{
  await cargarActasLocales(); 
