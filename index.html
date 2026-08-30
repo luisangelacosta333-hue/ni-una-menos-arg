@@ -6,8 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
 <meta http-equiv="Strict-Transport-Security" content="max-age=31536000;preload">
 <title>NI UNA MENOS · ENERGY 2026 | GLAMOUR PREMIUM</title>
-<!-- FORZAMOS CACHÉ NUEVO PARA ELIMINAR EL ERROR DEL MICRÓFONO -->
-<link rel="manifest" href="manifest.json?v=2026_v10">
+<link rel="manifest" href="manifest.json?v=2026_v8">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -231,7 +230,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
        
        <div style="background:#FFFFFF; border:1.5px solid var(--oro); padding:20px; border-radius:12px; box-shadow:var(--luz);">
            <h4 style="font-family:'Cinzel'; color:var(--oroOscuro); font-size:16px; margin-bottom:10px; letter-spacing:2px; font-weight:800;">⏱️ MODO TRAYECTO (TEMPORIZADOR)</h4>
-           <p style="font-size:13px; margin-bottom:15px; color:#555; line-height:1.5;">Ideal para taxis o caminar sola. Si el tiempo llega a cero y no pusiste tu clave, el S.O.S se dispara solo de forma <b>totalmente silenciosa</b>.</p>
+           <p style="font-size:13px; margin-bottom:15px; color:#555; line-height:1.5;">Ideal para taxis o caminar sola. Si el tiempo llega a cero y no pusiste tu clave, el S.O.S se dispara solo.</p>
            
            <div style="display:flex; flex-direction:column; gap:12px;">
                <input type="number" id="minTrayecto" placeholder="Minutos (ej: 15)" style="width:100%; padding:14px; border-radius:12px; border:1px solid #D4AF37; font-weight:bold; font-size:15px; text-align:center; box-sizing:border-box;" inputmode="numeric">
@@ -243,7 +242,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 
        <div style="background:#FFFFFF; border:1.5px solid var(--oro); padding:20px; border-radius:12px; box-shadow:var(--luz);">
            <h4 style="font-family:'Cinzel'; color:var(--oroOscuro); font-size:16px; margin-bottom:10px; letter-spacing:2px; font-weight:800;">🗣️ ALARMA SECRETA POR VOZ</h4>
-           <p style="font-size:13px; margin-bottom:15px; color:#555; line-height:1.5;">Si el celular está en tu bolsillo y no podés tocarlo, gritá fuerte <b>"AYUDA SISTEMA"</b> o <b>"AUXILIO"</b> y se activará en silencio.</p>
+           <p style="font-size:13px; margin-bottom:15px; color:#555; line-height:1.5;">Si el celular está en tu bolsillo y no podés tocarlo, gritá fuerte <b>"AYUDA SISTEMA"</b> o <b>"AUXILIO"</b> y se activará.</p>
            <button id="btnVoz" class="btn" style="padding:15px; font-size:12px; letter-spacing:2px; background:var(--oroMedio);" onclick="toggleVoz()">🎙️ ACTIVAR RECONOCIMIENTO DE VOZ</button>
        </div>
        
@@ -457,30 +456,18 @@ const ir = id => {
 
 function leerVoz(){
  speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, mediante el comando de voz secreta gritando ayuda, automáticamente ante un impacto o caída fuerte, o si se agota el modo trayecto al viajar. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. En segundo plano y de manera indetectable, el sistema asegura tu evidencia como herramienta principal grabando video de forma continua, además de audio, tomando múltiples fotografías con ambas cámaras, y rastreando tu ubicación por GPS segundo a segundo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema cien por ciento blindado y privado. Además, si no realizás una denuncia oficial, a las setenta y dos horas se elimina y destruye automáticamente toda la evidencia para garantizar tu privacidad total.`);
+ const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, mediante el comando de voz secreta gritando ayuda, automáticamente ante un impacto o caída fuerte, o si se agota el modo trayecto al viajar. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. En segundo plano y de manera indetectable, el sistema asegura tu evidencia grabando audio de manera continua, tomando múltiples fotografías con ambas cámaras, y rastreando tu ubicación por GPS segundo a segundo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema cien por ciento blindado y privado. Además, si no realizás una denuncia oficial, a las setenta y dos horas se elimina y destruye automáticamente toda la evidencia para garantizar tu privacidad total.`);
  u.lang='es-AR';u.rate=.92;u.pitch=1;u.volume=1;
  speechSynthesis.speak(u);
-}
-
-function emitirAvisoPericial() {
-    try {
-        speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance("Atención. Herramienta principal activada. El sistema está grabando video de forma oculta para asegurar la mayor información pericial, atrapar a los delincuentes y brindar la mayor protección a la víctima.");
-        u.lang = 'es-AR';
-        u.rate = 0.95;
-        u.pitch = 1;
-        u.volume = 1;
-        speechSynthesis.speak(u);
-    } catch(e) {}
 }
 
 const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
 
 // =========================================================================
-// ⏱️ TEMPORIZADOR MODO TRAYECTO (CON PERSISTENCIA ESTRICTA)
+// ⏱️ TEMPORIZADOR MODO TRAYECTO
 // =========================================================================
 let trayectoInterval = null;
-let wakeLockTrayecto = null;
+let finTrayecto = 0;
 
 async function iniciarTrayecto() {
     let input = document.getElementById('minTrayecto');
@@ -498,28 +485,29 @@ async function iniciarTrayecto() {
             return alert('❌ LLAVE INCORRECTA. Acceso denegado.');
         }
         
-        try { if ('wakeLock' in navigator) wakeLockTrayecto = await navigator.wakeLock.request('screen'); } catch (e) {}
+        // Memoria Persistente para que no se borre al salir o recargar la página
+        finTrayecto = Date.now() + m * 60000;
+        localStorage.setItem('finTrayecto_C4', finTrayecto); 
         
-        let fin = Date.now() + m * 60000;
-        localStorage.setItem('finTrayecto_C4', fin); // Se ancla en memoria para que no desaparezca al recargar
-        
-        arrancarRelojTrayecto();
-        alert("✅ Temporizador iniciado con éxito. Podés navegar por la aplicación o apagar la pantalla, el reloj seguirá activo de forma nativa.");
+        reanudarTrayecto();
+        alert("✅ Temporizador iniciado con éxito.");
     } catch(e) {
         alert("Error al validar la llave con el servidor.");
     }
 }
 
-function arrancarRelojTrayecto() {
-    let fin = parseInt(localStorage.getItem('finTrayecto_C4'));
-    if(!fin) return;
-
+// Función que mantiene vivo el reloj incluso si recargas
+function reanudarTrayecto() {
+    let guardado = localStorage.getItem('finTrayecto_C4');
+    if(!guardado) return;
+    
+    finTrayecto = parseInt(guardado);
     let input = document.getElementById('minTrayecto');
     if(input) input.style.display = 'none';
     
     let estadoUI = document.getElementById('trayectoEstado');
     if(estadoUI) estadoUI.style.display = 'block';
-
+    
     let btnAccion = document.getElementById('btnTrayectoAccion');
     if(btnAccion) {
         btnAccion.innerText = "CANCELAR TRAYECTO";
@@ -528,34 +516,23 @@ function arrancarRelojTrayecto() {
     }
 
     if(trayectoInterval) clearInterval(trayectoInterval);
-
-    trayectoInterval = setInterval(verificarTrayecto, 1000);
-    verificarTrayecto(); 
-}
-
-function verificarTrayecto() {
-    let fin = parseInt(localStorage.getItem('finTrayecto_C4'));
-    if(!fin) return;
     
-    let diff = fin - Date.now();
-    
-    if(diff <= 0) {
-        // EL TIEMPO SE ACABÓ
-        clearInterval(trayectoInterval);
-        localStorage.removeItem('finTrayecto_C4');
-        
-        let estadoUI = document.getElementById('trayectoEstado');
-        if(estadoUI) estadoUI.innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S SILENCIOSO...";
-        
-        ir('sos');
-        // DISPARO 100% SILENCIOSO GARANTIZADO
-        disparoSOS('Modo Trayecto / Temporizador de viaje agotado', true);
-    } else {
-        let min = Math.floor(diff / 60000);
-        let sec = Math.floor((diff % 60000) / 1000);
-        let ms = document.getElementById('trayectoTiempo');
-        if(ms) ms.innerText = `${min}:${sec.toString().padStart(2,'0')}`;
-    }
+    trayectoInterval = setInterval(() => {
+        let diff = finTrayecto - Date.now();
+        if(diff <= 0) {
+            clearInterval(trayectoInterval);
+            localStorage.removeItem('finTrayecto_C4');
+            let estadoUI = document.getElementById('trayectoEstado');
+            if(estadoUI) estadoUI.innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S...";
+            ir('sos');
+            disparoSOS(true); // Se envía TRUE para que sea 100% silencioso (sin vibrar)
+        } else {
+            let min = Math.floor(diff / 60000);
+            let sec = Math.floor((diff % 60000) / 1000);
+            let tTiempo = document.getElementById('trayectoTiempo');
+            if(tTiempo) tTiempo.innerText = `${min}:${sec.toString().padStart(2,'0')}`;
+        }
+    }, 1000);
 }
 
 async function cancelarTrayecto() {
@@ -568,23 +545,16 @@ async function cancelarTrayecto() {
         if(res.length === 0) {
             return alert('❌ LLAVE INCORRECTA. No se puede cancelar.');
         }
-        
-        try { if(wakeLockTrayecto) wakeLockTrayecto.release(); wakeLockTrayecto = null; } catch(e){}
-        
         clearInterval(trayectoInterval);
         localStorage.removeItem('finTrayecto_C4');
         
-        let minTrayecto = document.getElementById('minTrayecto');
-        if(minTrayecto) {
-            minTrayecto.style.display = 'inline-block';
-            minTrayecto.value = '';
+        let mTrayecto = document.getElementById('minTrayecto');
+        if(mTrayecto) {
+            mTrayecto.style.display = 'inline-block';
+            mTrayecto.value = '';
         }
-        
-        let trayectoEstado = document.getElementById('trayectoEstado');
-        if(trayectoEstado) {
-            trayectoEstado.style.display = 'none';
-            trayectoEstado.innerHTML = 'Tiempo para reportarte:<br><span id="trayectoTiempo" style="font-size:24px;">--:--</span>';
-        }
+        let tEstado = document.getElementById('trayectoEstado');
+        if(tEstado) tEstado.style.display = 'none';
         
         let btnAccion = document.getElementById('btnTrayectoAccion');
         if(btnAccion) {
@@ -598,13 +568,6 @@ async function cancelarTrayecto() {
         alert("Error al validar la llave con el servidor.");
     }
 }
-
-// PROTECCIÓN EXTRA: Si el OS duerme la pestaña, esto fuerza el disparo al prender la pantalla
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === 'visible') {
-        verificarTrayecto();
-    }
-});
 
 // =========================================================================
 // 🗣️ ACTIVACIÓN POR VOZ SECRETA EN SEGUNDO PLANO
@@ -669,8 +632,8 @@ async function toggleVoz() {
                 btnVoz.innerText = "🎙️ ACTIVAR RECONOCIMIENTO DE VOZ";
                 btnVoz.style.background = "var(--oroMedio)";
                 
-                // DISPARO 100% SILENCIOSO (TRUE)
-                activarAlarmaRobo('Comando de Voz Secreto ("Ayuda")', true);
+                ir('sos');
+                disparoSOS(true); // true = Silencioso
             }
         };
         
@@ -776,11 +739,11 @@ async function cargarActasLocales() {
 
 let sosActivo = false;
 
-function toggleSOS(motivo = 'Botón Antipánico manual') {
+function toggleSOS() {
     if(sosActivo) {
         pararConLlave();
     } else {
-        disparoSOS(motivo, false); // El botón manual avisa y hace ruido
+        disparoSOS(false);
     }
 }
 
@@ -908,7 +871,7 @@ const cerrar=()=>{
 };
 
 // =========================================================================
-// 🔥 CONEXIÓN A GREEN API (CON DOBLE SISTEMA ANTIBLOQUEO DE PANTALLA)
+// 🔥 CONEXIÓN A GREEN API POR FETCH
 // =========================================================================
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e37fd7bb454b7ad23a7f74a3398';
@@ -922,80 +885,63 @@ function formatArg(num) {
     return '549' + c;
 }
 
-function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', motivo = 'Botón de Emergencia manual') {
+function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     if (!contactos || contactos.length === 0) return;
     
     let msg = "";
     if (tipo === 'alerta') {
-        msg = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre}* se encuentra en PELIGRO y el sistema acaba de activarse automáticamente.\n\n⚠️ *MOTIVO DE ACTIVACIÓN:* ${motivo}\n\n📍 *Ubicación GPS:* Rastrando coordenadas exactas en este momento...\n\n🔐 *ID P4:* ${id}`;
+        msg = `🚨 *ALERTA S.O.S - SISTEMA C4 NI UNA MENOS* 🚨\n\nAtención: La usuaria *${nombre}* acaba de accionar su botón antipánico.\n\n📍 *Ubicación GPS:* Rastrando coordenadas exactas en este momento...\n\n🔐 *ID P4:* ${id}`;
     } else if (tipo === 'gps') {
         msg = `📍 *ACTUALIZACIÓN S.O.S GPS* 📍\n\nUsuaria: *${nombre}*\nUbicación confirmada por el sistema:\nhttps://maps.google.com/?q=${la},${ln}\n\n🔐 *ID P4:* ${id}`;
     } else if (tipo === 'seguro') {
         msg = `✅ *AVISO DE SEGURIDAD - C4* ✅\n\nLa alerta de *${nombre}* fue desactivada con su Llave Maestra. Se encuentra a salvo.`;
     }
 
-    contactos.forEach(numero => {
-        let cel = formatArg(numero);
-        let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
-        let payload = JSON.stringify({ chatId: `${cel}@c.us`, message: msg });
-        
-        // INTENTO 1: Fetch normal (Funciona al sacudir / pantalla prendida)
-        fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: payload
-        }).catch(e => {
-            // INTENTO 2: sendBeacon (Fuerza el envío si la pantalla está apagada / en el bolsillo)
-            try {
-                let blob = new Blob([payload], { type: 'application/json' });
-                navigator.sendBeacon(url, blob);
-            } catch(err) {}
-        });
-    });
+    for (let numero of contactos) {
+        try {
+            let cel = formatArg(numero);
+            let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
+            
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
+            }).then(res => res.json()).catch(e => {});
+        } catch (e) {}
+    }
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
 // =========================================================================
-// 📸 CAPTURA MÁXIMA DE EVIDENCIA (SIN BLOQUEOS NI PROMESAS CONGELADAS)
+// 📸 CAPTURA MÁXIMA DE EVIDENCIA (VIDEO, AUDIO Y FOTOS)
 // =========================================================================
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
-        let resuelto = false;
-        
-        // Timeout de seguridad: Si la pantalla está bloqueada y la cámara no responde en 2 segundos, saltamos a grabar audio para no colgar el sistema.
-        let timeout = setTimeout(() => { 
-            if(!resuelto) { resuelto=true; resolve(); } 
-        }, 2000); 
-
         const v = document.createElement('video');
         v.muted = true; v.playsInline = true; v.autoplay = true;
         v.srcObject = stream;
-        
         v.onloadeddata = async () => {
-            try { await v.play(); } catch(e){} 
+            await v.play();
             setTimeout(() => { 
-                if(resuelto) return;
-                try {
-                    const cv = document.createElement('canvas');
-                    cv.width = v.videoWidth || 1280; cv.height = v.videoHeight || 720;
-                    cv.getContext('2d').drawImage(v, 0, 0, cv.width, cv.height);
-                    let b64Img = cv.toDataURL('image/jpeg', 0.8);
-                    if(acta) {
-                        if(!acta.imagenes) acta.imagenes = [];
-                        acta.imagenes.push({url: b64Img, camara: tipo, sha256: 'HASH-'+Date.now()});
-                        guardarActas();
-                        if (acta.imei === localStorage.getItem('imei')) render(acta);
+                const cv = document.createElement('canvas');
+                cv.width = v.videoWidth || 1280; cv.height = v.videoHeight || 720;
+                cv.getContext('2d').drawImage(v, 0, 0, cv.width, cv.height);
+                let b64Img = cv.toDataURL('image/jpeg', 0.8);
+                if(acta) {
+                    if(!acta.imagenes) acta.imagenes = [];
+                    acta.imagenes.push({url: b64Img, camara: tipo, sha256: 'HASH-'+Date.now()});
+                    guardarActas();
+                    
+                    let currentImei = localStorage.getItem('imei');
+                    if (acta.imei === currentImei) {
+                        render(acta);
                     }
-                } catch(err){}
-                resuelto = true;
-                clearTimeout(timeout);
+                }
                 resolve();
-            }, 500); 
+            }, 800); 
         };
-        v.onerror = () => { 
-            if(!resuelto) { resuelto = true; clearTimeout(timeout); resolve(); } 
-        };
+        v.onerror = () => resolve();
     });
 }
 
@@ -1017,91 +963,81 @@ async function loopEvidencia(acta) {
     }, () => {}, { enableHighAccuracy: true, maximumAge: 0 });
 
     try {
-        let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 640 } });
+        let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } });
         await tomarFotoSilenciosa(vFront, acta, 'frontal');
         vFront.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
+    if(!sosActivo) return;
+
     try {
-        let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: 640 } });
+        let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
         await tomarFotoSilenciosa(vBack, acta, 'trasera');
         vBack.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
-    // Grabación robusta: Si el video falla (teléfono en el bolsillo), pasa al audio directo.
-    let grabando = false;
-    
-    try {
-        const vStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment' } });
-        const vRec = new MediaRecorder(vStream);
-        const vChunks = [];
-        vRec.ondataavailable = e => vChunks.push(e.data);
-        vRec.onstop = async () => {
-            acta.videos = acta.videos || [];
-            acta.videos.push(new Blob(vChunks, { type: 'video/webm' }));
-            await guardarActas();
-            if (acta.imei === localStorage.getItem('imei')) render(acta);
-        };
-        vRec.start();
-        grabando = true;
-        setTimeout(() => {
-            if(vRec.state === 'recording') vRec.stop();
-            vStream.getTracks().forEach(t => t.stop());
-            setTimeout(() => loopEvidencia(acta), 1500); 
-        }, 15000);
-    } catch(e) {
-        // Fallback: Modo bolsillo. Grabar solo audio.
-        try {
-            const aStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const aRec = new MediaRecorder(aStream);
-            const aChunks = [];
-            aRec.ondataavailable = e => aChunks.push(e.data);
-            aRec.onstop = async () => {
-                acta.audios = acta.audios || [];
-                acta.audios.push(new Blob(aChunks, { type: 'audio/webm' }));
-                await guardarActas();
-                if (acta.imei === localStorage.getItem('imei')) render(acta);
-            };
-            aRec.start();
-            grabando = true;
-            setTimeout(() => {
-                if(aRec.state === 'recording') aRec.stop();
-                aStream.getTracks().forEach(t => t.stop());
-                setTimeout(() => loopEvidencia(acta), 1500);
-            }, 15000);
-        } catch(e2) {}
-    }
+    if(!sosActivo) return;
 
-    // Si fallan todas las cámaras y micrófonos (muy raro), se reintenta automáticamente en 3 segundos.
-    if(!grabando && sosActivo) {
-        setTimeout(() => loopEvidencia(acta), 3000);
+    try {
+        const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
+        const videoRecorder = new MediaRecorder(videoStream);
+        const videoChunks = [];
+        videoRecorder.ondataavailable = e => videoChunks.push(e.data);
+        videoRecorder.onstop = async () => {
+            const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
+            if(!acta.videos) acta.videos = [];
+            acta.videos.push(videoBlob);
+            await guardarActas();
+            
+            let currentImei = localStorage.getItem('imei');
+            if (acta.imei === currentImei) render(acta);
+        };
+        videoRecorder.start();
+        await new Promise(resolve => setTimeout(resolve, 120000));
+        if(videoRecorder.state === 'recording') videoRecorder.stop();
+        videoStream.getTracks().forEach(t => t.stop());
+    } catch(e) {}
+
+    if(!sosActivo) return;
+
+    try {
+        const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const audioRecorder = new MediaRecorder(audioStream);
+        const audioChunks = [];
+        audioRecorder.ondataavailable = e => audioChunks.push(e.data);
+        audioRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            if(!acta.audios) acta.audios = [];
+            acta.audios.push(audioBlob);
+            await guardarActas();
+            
+            let currentImei = localStorage.getItem('imei');
+            if (acta.imei === currentImei) render(acta);
+        };
+        audioRecorder.start();
+        await new Promise(resolve => setTimeout(resolve, 180000));
+        if(audioRecorder.state === 'recording') audioRecorder.stop();
+        audioStream.getTracks().forEach(t => t.stop());
+    } catch(e) {}
+
+    if(sosActivo) {
+        setTimeout(() => loopEvidencia(acta), 1000); 
     }
 }
 
-// =========================================================================
-// NÚCLEO DE DISPARO DIRECTO E ININTERRUMPIBLE
-// =========================================================================
-async function disparoSOS(motivo = 'Botón Antipánico manual', silencioso = false){
+async function disparoSOS(esSilencioso = false){
  if(sosActivo) return; 
  sosActivo = true;
- 
+
+ // ¡LÍNEA 1! SE MANDA EL WHATSAPP ANTES DE CUALQUIER OTRA COSA
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
  const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
  aid = id;
 
- // 1. WHATSAPP PRIORIDAD MÁXIMA - SE MANDA ANTES DE CUALQUIER OTRA ACCIÓN
- enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta', motivo);
+ enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
 
- // 2. LÓGICA DE SILENCIO ESTRICTA
- if(silencioso !== true) {
-     emitirAvisoPericial();
-     if ("vibrate" in navigator) {
-        navigator.vibrate([1000, 500, 1000, 500, 1000, 500, 2000]);
-     }
- }
- 
  let btnSos = document.getElementById('btnBigSOS');
  if(btnSos) {
      btnSos.innerText = 'DETENER S.O.S';
@@ -1110,7 +1046,12 @@ async function disparoSOS(motivo = 'Botón Antipánico manual', silencioso = fal
  let stDiv = document.getElementById('st');
  if(stDiv) stDiv.style.display='block';
  
- try { if('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(()=>{}); } catch(e){}
+ if (!esSilencioso && "vibrate" in navigator) {
+    navigator.vibrate([1000, 500, 1000, 500, 1000, 500, 2000]);
+ }
+
+ // ¡SE LE QUITA EL AWAIT A ESTO PARA QUE NO CONGELE CUANDO LA PANTALLA ESTÁ APAGADA!
+ try{if('wakeLock'in navigator) navigator.wakeLock.request('screen').catch(()=>{})}catch{}
  
  let batLevel = 'Desc.', batCharging = 'Desc.';
  try {
@@ -1192,7 +1133,7 @@ window.addEventListener('devicemotion', function (e) {
         
         if (speed > SHAKE_THRESHOLD) {
             if (localStorage.getItem('ok') === '1' && !sosActivo) {
-                activarAlarmaRobo('Impacto Físico / Sacudida brusca del teléfono', false);
+                activarAlarmaRobo();
             }
         }
         sh_last_x = x;
@@ -1201,27 +1142,24 @@ window.addEventListener('devicemotion', function (e) {
     }
 }, true);
 
-function activarAlarmaRobo(motivo = 'Impacto Físico / Sacudida', silencioso = false) {
+function activarAlarmaRobo() {
     ir('sos');
-    if (!silencioso) {
-        if ("vibrate" in navigator) navigator.vibrate([500, 200, 500, 200, 1000]);
-        let parpadeos = 0;
-        let destello = setInterval(() => {
-            document.body.style.backgroundColor = (parpadeos % 2 === 0) ? '#B00020' : '#FFFFFF';
-            parpadeos++;
-            if (parpadeos > 8) { 
-                clearInterval(destello);
-                document.body.style.backgroundColor = '#FFFFFF';
-            }
-        }, 150);
-    }
-    disparoSOS(motivo, silencioso);
+    if ("vibrate" in navigator) navigator.vibrate([500, 200, 500, 200, 1000]);
+    let parpadeos = 0;
+    let destello = setInterval(() => {
+        document.body.style.backgroundColor = (parpadeos % 2 === 0) ? '#B00020' : '#FFFFFF';
+        parpadeos++;
+        if (parpadeos > 8) { 
+            clearInterval(destello);
+            document.body.style.backgroundColor = '#FFFFFF';
+        }
+    }, 150);
+    disparoSOS(false);
 }
 
 const parar = () => {
     if(gps) navigator.geolocation.clearWatch(gps);
     if(la) clearInterval(la); if(lv) clearInterval(lv); if(l10) clearInterval(l10);
-    try { if(wakeLockTrayecto) wakeLockTrayecto.release(); wakeLockTrayecto = null; } catch(e){}
     let stDiv = document.getElementById('st');
     if(stDiv) stDiv.style.display='none';
     document.body.style.backgroundColor = '#FFFFFF';
@@ -1415,8 +1353,37 @@ addEventListener('DOMContentLoaded', async ()=>{
  if(localStorage.getItem('ok')==='1'){
     document.getElementById('zonaOk').style.display='block';
     
+    // RESTAURAR TEMPORIZADOR AL RECARGAR LA PÁGINA
     if(localStorage.getItem('finTrayecto_C4')) {
-        arrancarRelojTrayecto();
+        let guardado = localStorage.getItem('finTrayecto_C4');
+        finTrayecto = parseInt(guardado);
+        
+        document.getElementById('minTrayecto').style.display = 'none';
+        document.getElementById('trayectoEstado').style.display = 'block';
+        
+        let btnAccion = document.getElementById('btnTrayectoAccion');
+        if(btnAccion) {
+            btnAccion.innerText = "CANCELAR TRAYECTO";
+            btnAccion.style.background = "#8B0000";
+            btnAccion.onclick = cancelarTrayecto;
+        }
+
+        if(trayectoInterval) clearInterval(trayectoInterval);
+        
+        trayectoInterval = setInterval(() => {
+            let diff = finTrayecto - Date.now();
+            if(diff <= 0) {
+                clearInterval(trayectoInterval);
+                localStorage.removeItem('finTrayecto_C4');
+                document.getElementById('trayectoEstado').innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S...";
+                ir('sos');
+                disparoSOS(true); 
+            } else {
+                let min = Math.floor(diff / 60000);
+                let sec = Math.floor((diff % 60000) / 1000);
+                document.getElementById('trayectoTiempo').innerText = `${min}:${sec.toString().padStart(2,'0')}`;
+            }
+        }, 1000);
     }
  }
  ir('inicio');
