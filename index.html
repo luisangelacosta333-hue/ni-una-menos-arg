@@ -476,10 +476,9 @@ function emitirAvisoPericial() {
 const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
 
 // =========================================================================
-// ⏱️ TEMPORIZADOR MODO TRAYECTO (CON WAKELOCK ANTIBLOQUEO)
+// ⏱️ TEMPORIZADOR MODO TRAYECTO (CON PERSISTENCIA Y WAKELOCK)
 // =========================================================================
 let trayectoInterval = null;
-let finTrayecto = 0;
 let wakeLockTrayecto = null;
 
 async function iniciarTrayecto() {
@@ -498,38 +497,61 @@ async function iniciarTrayecto() {
             return alert('❌ LLAVE INCORRECTA. Acceso denegado.');
         }
         
-        // Bloqueo de pantalla para asegurar que el navegador no suspenda el temporizador
         try { if ('wakeLock' in navigator) wakeLockTrayecto = await navigator.wakeLock.request('screen'); } catch (e) {}
         
-        finTrayecto = Date.now() + m * 60000;
-        input.style.display = 'none';
-        document.getElementById('trayectoEstado').style.display = 'block';
+        // CORRECCIÓN: Guardamos el tiempo final en la memoria permanente del teléfono
+        let fin = Date.now() + m * 60000;
+        localStorage.setItem('finTrayecto_C4', fin);
         
-        if(trayectoInterval) clearInterval(trayectoInterval);
-        
-        trayectoInterval = setInterval(() => {
-            let diff = finTrayecto - Date.now();
-            if(diff <= 0) {
-                clearInterval(trayectoInterval);
-                document.getElementById('trayectoEstado').innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S...";
-                ir('sos');
-                // DISPARO 100% SILENCIOSO
-                disparoSOS('Modo Trayecto / Temporizador de viaje agotado', true);
-            } else {
-                let min = Math.floor(diff / 60000);
-                let sec = Math.floor((diff % 60000) / 1000);
-                document.getElementById('trayectoTiempo').innerText = `${min}:${sec.toString().padStart(2,'0')}`;
-            }
-        }, 1000);
+        arrancarRelojTrayecto();
+        alert("✅ Temporizador iniciado con éxito. Podés navegar por la aplicación, el reloj seguirá activo.");
+    } catch(e) {
+        alert("Error al validar la llave con el servidor.");
+    }
+}
 
-        let btnAccion = document.getElementById('btnTrayectoAccion');
+function arrancarRelojTrayecto() {
+    let fin = parseInt(localStorage.getItem('finTrayecto_C4'));
+    if(!fin) return;
+
+    document.getElementById('minTrayecto').style.display = 'none';
+    document.getElementById('trayectoEstado').style.display = 'block';
+
+    let btnAccion = document.getElementById('btnTrayectoAccion');
+    if(btnAccion) {
         btnAccion.innerText = "CANCELAR TRAYECTO";
         btnAccion.style.background = "#8B0000";
         btnAccion.onclick = cancelarTrayecto;
+    }
+
+    if(trayectoInterval) clearInterval(trayectoInterval);
+
+    trayectoInterval = setInterval(verificarTrayecto, 1000);
+    verificarTrayecto(); 
+}
+
+function verificarTrayecto() {
+    let fin = parseInt(localStorage.getItem('finTrayecto_C4'));
+    if(!fin) return;
+    
+    let diff = fin - Date.now();
+    
+    if(diff <= 0) {
+        // EL TIEMPO SE ACABÓ
+        clearInterval(trayectoInterval);
+        localStorage.removeItem('finTrayecto_C4');
         
-        alert("✅ Temporizador iniciado con éxito.");
-    } catch(e) {
-        alert("Error al validar la llave con el servidor.");
+        let estadoUI = document.getElementById('trayectoEstado');
+        if(estadoUI) estadoUI.innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S SILENCIOSO...";
+        
+        ir('sos');
+        // DISPARO 100% SILENCIOSO (TRUE)
+        disparoSOS('Modo Trayecto / Temporizador de viaje agotado', true);
+    } else {
+        let min = Math.floor(diff / 60000);
+        let sec = Math.floor((diff % 60000) / 1000);
+        let ms = document.getElementById('trayectoTiempo');
+        if(ms) ms.innerText = `${min}:${sec.toString().padStart(2,'0')}`;
     }
 }
 
@@ -547,20 +569,39 @@ async function cancelarTrayecto() {
         try { if(wakeLockTrayecto) wakeLockTrayecto.release(); wakeLockTrayecto = null; } catch(e){}
         
         clearInterval(trayectoInterval);
-        document.getElementById('minTrayecto').style.display = 'inline-block';
-        document.getElementById('minTrayecto').value = '';
-        document.getElementById('trayectoEstado').style.display = 'none';
+        localStorage.removeItem('finTrayecto_C4');
+        
+        let minTrayecto = document.getElementById('minTrayecto');
+        if(minTrayecto) {
+            minTrayecto.style.display = 'inline-block';
+            minTrayecto.value = '';
+        }
+        
+        let trayectoEstado = document.getElementById('trayectoEstado');
+        if(trayectoEstado) {
+            trayectoEstado.style.display = 'none';
+            trayectoEstado.innerHTML = 'Tiempo para reportarte:<br><span id="trayectoTiempo" style="font-size:24px;">--:--</span>';
+        }
         
         let btnAccion = document.getElementById('btnTrayectoAccion');
-        btnAccion.innerText = "INICIAR TRAYECTO";
-        btnAccion.style.background = "var(--bordeOro)";
-        btnAccion.onclick = iniciarTrayecto;
+        if(btnAccion) {
+            btnAccion.innerText = "INICIAR TRAYECTO";
+            btnAccion.style.background = "var(--bordeOro)";
+            btnAccion.onclick = iniciarTrayecto;
+        }
         
         alert("✅ Llegaste bien. Temporizador cancelado con éxito.");
     } catch(e) {
         alert("Error al validar la llave con el servidor.");
     }
 }
+
+// CORRECCIÓN: Si el navegador suspende la pestaña, esto fuerza la verificación al despertar el celular
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === 'visible') {
+        verificarTrayecto();
+    }
+});
 
 // =========================================================================
 // 🗣️ ACTIVACIÓN POR VOZ SECRETA EN SEGUNDO PLANO
@@ -625,7 +666,7 @@ async function toggleVoz() {
                 btnVoz.innerText = "🎙️ ACTIVAR RECONOCIMIENTO DE VOZ";
                 btnVoz.style.background = "var(--oroMedio)";
                 
-                // DISPARO 100% SILENCIOSO
+                // DISPARO 100% SILENCIOSO (TRUE)
                 activarAlarmaRobo('Comando de Voz Secreto ("Ayuda")', true);
             }
         };
@@ -648,6 +689,7 @@ async function toggleVoz() {
         alert("Error al validar la llave con el servidor.");
     }
 }
+
 
 const sigilo = () => {
     try { document.documentElement.requestFullscreen(); } catch(e){}
@@ -1017,7 +1059,7 @@ async function loopEvidencia(acta) {
 }
 
 // =========================================================================
-// CORRECCIÓN: NÚCLEO DE DISPARO CON MODO SILENCIOSO Y WA INMEDIATO
+// NÚCLEO DE DISPARO CON MODO SILENCIOSO Y WA INMEDIATO
 // =========================================================================
 async function disparoSOS(motivo = 'Botón Antipánico manual', silencioso = false){
  if(sosActivo) return; 
@@ -1029,7 +1071,7 @@ async function disparoSOS(motivo = 'Botón Antipánico manual', silencioso = fal
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
  aid = id;
 
- // 1. ENVIAR WHATSAPP INMEDIATAMENTE
+ // 1. ENVIAR WHATSAPP INMEDIATAMENTE ANTES DE HACER NADA
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta', motivo);
 
  // 2. AVISOS AUDITIVOS / VIBRATORIOS SOLAMENTE SI NO ESTÁ EN MODO SILENCIOSO
@@ -1139,7 +1181,6 @@ window.addEventListener('devicemotion', function (e) {
     }
 }, true);
 
-// CORRECCIÓN: Se agrega el parámetro silencioso a la activación física
 function activarAlarmaRobo(motivo = 'Impacto Físico / Sacudida', silencioso = false) {
     ir('sos');
     if (!silencioso) {
@@ -1353,6 +1394,11 @@ addEventListener('DOMContentLoaded', async ()=>{
  }
  if(localStorage.getItem('ok')==='1'){
     document.getElementById('zonaOk').style.display='block';
+    
+    // CORRECCIÓN: Si había un temporizador corriendo antes de recargar, lo vuelve a arrancar automáticamente.
+    if(localStorage.getItem('finTrayecto_C4')) {
+        arrancarRelojTrayecto();
+    }
  }
  ir('inicio');
  if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v8').catch(()=>{}));
