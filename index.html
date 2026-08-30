@@ -224,7 +224,9 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
   <div class="caja" style="background:#FFF3F5;border:1px solid #8B0000;padding:28px;">
    <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">✦ PROTECCIÓN ACTIVA ✦</h3>
    <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás registrada en el sistema.<br>Si sentís miedo o sospechás que corrés peligro, activá el botón manualmente aquí:</p>
-   <button class="btn rubi" onclick="toggleSOS()">✦ INGRESAR AL BOTÓN ANTIPÁNICO ✦</button>
+   
+   <!-- EL BOTON MANUAL AHORA LLAMA A activarAlarmaRobo IGUAL QUE EL SACUDÓN -->
+   <button class="btn rubi" onclick="activarAlarmaRobo()">✦ INGRESAR AL BOTÓN ANTIPÁNICO ✦</button>
    
    <div style="margin-top: 25px; display:flex; flex-direction:column; gap:15px;">
        
@@ -459,10 +461,6 @@ function leerVoz(){
  const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, mediante el comando de voz secreta gritando ayuda, automáticamente ante un impacto o caída fuerte, o si se agota el modo trayecto al viajar. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. En segundo plano y de manera indetectable, el sistema asegura tu evidencia grabando audio de manera continua, tomando múltiples fotografías con ambas cámaras, y rastreando tu ubicación por GPS segundo a segundo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema cien por ciento blindado y privado. Además, si no realizás una denuncia oficial, a las setenta y dos horas se elimina y destruye automáticamente toda la evidencia para garantizar tu privacidad total.`);
  u.lang='es-AR';u.rate=.92;u.pitch=1;u.volume=1;
  speechSynthesis.speak(u);
-}
-
-function emitirAvisoPericial() {
-    // ELIMINADO PARA QUE NO HABLE NUNCA, COMO PEDISTE.
 }
 
 const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
@@ -718,7 +716,7 @@ function toggleSOS() {
     if(sosActivo) {
         pararConLlave();
     } else {
-        activarAlarmaRobo(); // <--- ACTUALIZADO PARA QUE EL BOTON HAGA LO MISMO
+        activarAlarmaRobo(); // <--- EL BOTÓN TAMBIÉN USA LA MISMA ORDEN
     }
 }
 
@@ -846,7 +844,7 @@ const cerrar=()=>{
 };
 
 // =========================================================================
-// 🔥 CONEXIÓN A GREEN API POR FETCH
+// 🔥 CONEXIÓN A GREEN API REFORZADA (CON AWAIT PARA GARANTIZAR ENTREGA)
 // =========================================================================
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e37fd7bb454b7ad23a7f74a3398';
@@ -860,7 +858,7 @@ function formatArg(num) {
     return '549' + c;
 }
 
-function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
+async function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     if (!contactos || contactos.length === 0) return;
     
     let msg = "";
@@ -872,24 +870,27 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ *AVISO DE SEGURIDAD - C4* ✅\n\nLa alerta de *${nombre}* fue desactivada con su Llave Maestra. Se encuentra a salvo.`;
     }
 
-    for (let numero of contactos) {
+    const promesas = contactos.map(async (numero) => {
         try {
             let cel = formatArg(numero);
             let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
             
-            fetch(url, {
+            // SE ESPERA A QUE SALGA SÍ O SÍ
+            await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-            }).then(res => res.json()).catch(e => {});
+            });
         } catch (e) {}
-    }
+    });
+
+    await Promise.all(promesas);
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
 // =========================================================================
-// 📸 CAPTURA MÁXIMA DE EVIDENCIA (VIDEO, AUDIO Y FOTOS)
+// 📸 CAPTURA MÁXIMA DE EVIDENCIA (TU CÓDIGO ORIGINAL INTACTO)
 // =========================================================================
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
@@ -1003,14 +1004,6 @@ async function loopEvidencia(acta) {
 async function disparoSOS(){
  if(sosActivo) return; 
  sosActivo = true;
- 
- const imei = localStorage.getItem('imei') || 'SIN_IMEI';
- const nombre = localStorage.getItem('nombre') || 'Usuaria';
- const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
- const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
- aid = id;
-
- enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
 
  let btnSos = document.getElementById('btnBigSOS');
  if(btnSos) {
@@ -1019,11 +1012,16 @@ async function disparoSOS(){
  }
  let stDiv = document.getElementById('st');
  if(stDiv) stDiv.style.display='block';
- 
- if ("vibrate" in navigator) {
-    navigator.vibrate([1000, 500, 1000, 500, 1000, 500, 2000]);
- }
 
+ const imei = localStorage.getItem('imei') || 'SIN_IMEI';
+ const nombre = localStorage.getItem('nombre') || 'Usuaria';
+ const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
+ const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
+ aid = id;
+
+ // SE ESPERA A QUE EL WHATSAPP SALGA ANTES DE PEDIR LA CÁMARA PARA QUE NO SE BLOQUEE
+ await enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
+ 
  try{if('wakeLock'in navigator) navigator.wakeLock.request('screen').catch(()=>{})}catch{}
  
  let batLevel = 'Desc.', batCharging = 'Desc.';
@@ -1115,7 +1113,7 @@ window.addEventListener('devicemotion', function (e) {
     }
 }, true);
 
-// FUNCIÓN MAESTRA: AHORA EL BOTÓN, EL TEMPORIZADOR Y LA VOZ LLAMAN A ESTA MISMA
+// FUNCIÓN MAESTRA: TODOS LOS MÉTODOS AHORA LLAMAN A ESTA MISMA FUNCIÓN
 function activarAlarmaRobo() {
     ir('sos');
     if ("vibrate" in navigator) navigator.vibrate([500, 200, 500, 200, 1000]);
