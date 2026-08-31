@@ -343,8 +343,8 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
       <p style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;margin:0;">
           Realiza el pago correspondiente al plan que elijas a la siguiente cuenta:<br><br>
           <b>Titular:</b> Luis Ángel Acosta<br>
-          <b>CVU / ALIAS:</b> <span style="font-family:'JetBrains Mono',monospace;">(Ingresa aquí el CVU/Alias de Luis)</span><br>
-          <b>CBU:</b> <span style="font-family:'JetBrains Mono',monospace;">(Ingresa aquí el CBU si es necesario)</span>
+          <b>ALIAS:</b> <span style="font-family:'JetBrains Mono',monospace;">noir.elite.ceo</span><br>
+          <b>CBU:</b> <span style="font-family:'JetBrains Mono',monospace;">0110257630025717844115</span>
       </p>
    </div>
  </div>
@@ -555,7 +555,7 @@ async function verificar() {
 }
 
 // ==========================================
-// 3. LÓGICA DE BASE DE DATOS HÍBRIDA (ANTI FALLOS)
+// 3. LÓGICA DE BASE DE DATOS Y ACTAS INICIALES
 // ==========================================
 async function authTrucha(imei) {
     if (!supaClient || !imei) return null;
@@ -656,8 +656,24 @@ async function borrarActa(id) {
     }
 }
 
+// ESTO CREA UN ACTA AL INSTANTE PARA QUE EL PANEL NUNCA ESTÉ VACÍO
+async function generarActaDeAlta(imei, nombre) {
+    const id = 'ALTA-' + Date.now();
+    const hash = await sha256(id + imei + Date.now());
+    let acta = {
+        id: id, imei: imei, nombre: nombre, lat: 'Sistema en Guardia', lng: 'Sistema en Guardia', precision: 0,
+        hora: new Date().toLocaleTimeString('es-AR'), fecha: new Date().toLocaleDateString('es-AR'),
+        sello_ms: Date.now(),
+        audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: hash, hash_judicial: hash, eventos: ['Alta en el sistema'],
+        numero_acta: 'P4-REGISTRO-'+Date.now(),
+        bateria: 'Conectado', cargando: 'N/A', red: 'Segura', signal: 'N/A', userAgent: navigator.userAgent, ram: 'N/A', cores: 'N/A', pantalla: 'N/A'
+    };
+    listaActas.push(acta);
+    await guardarActas();
+}
+
 // ==========================================
-// 4. REGISTRO Y LOGIN HÍBRIDO
+// 4. REGISTRO Y LOGIN
 // ==========================================
 async function alta(){
     const n = document.getElementById('rN').value.trim();
@@ -673,7 +689,6 @@ async function alta(){
     
     let waLimpio = w.replace(/\D/g, ''); 
 
-    // ✅ MENSAJE DE BIENVENIDA (YA REGISTRADO)
     if(localStorage.getItem('imei') === i && localStorage.getItem('ok') === '1') {
         alert('✅ Bienvenida de nuevo.\nTu equipo ya se encuentra registrado y protegido con tu Llave Maestra.');
         ir('llave');
@@ -726,10 +741,11 @@ async function alta(){
     document.getElementById('lk').textContent = k;
     localStorage.setItem('ok','1');
     
+    await generarActaDeAlta(i, n);
+
     let numerosBienvenida = [...new Set([waLimpio, ...c])];
     enviarWhatsAppOculto(numerosBienvenida, n, null, null, null, 'bienvenida');
 
-    // ✅ MENSAJE DE BIENVENIDA (NUEVO REGISTRO EXITOSO)
     alert('✅ ¡REGISTRO EXITOSO!\nEl sistema C4 Judicial está activado en tu dispositivo.');
 
     pedirPermisosGlobalesYGPS(); 
@@ -752,8 +768,8 @@ function mostrarModalPago(plan, precio) {
                 <p>Estás a punto de abonar el <b>Plan ${plan.toUpperCase()}</b> por <b>${precio}</b>.</p>
                 <div class="datos-pago">
                     <b>Titular:</b> Luis Ángel Acosta<br>
-                    <b>CVU / ALIAS:</b> (Ingresa aquí tu CVU/Alias)<br>
-                    <b>CBU:</b> (Ingresa aquí tu CBU)
+                    <b>ALIAS:</b> noir.elite.ceo<br>
+                    <b>CBU:</b> 0110257630025717844115
                 </div>
                 <p style="font-size: 13px; color: #666;">Al realizar la transferencia, toca el botón de abajo para subir la foto del comprobante. Nuestra IA lo leerá y activará tu cuenta automáticamente.</p>
                 <button class="btn" onclick="document.getElementById('fileComprobante').click(); cerrarModalPago();">SUBIR COMPROBANTE</button>
@@ -768,7 +784,6 @@ function cerrarModalPago() {
     const modal = document.getElementById('modal-pago');
     if (modal) modal.remove();
 }
-
 
 async function procesarComprobante(e) {
     const file = e.target.files[0];
@@ -824,6 +839,8 @@ async function ejecutarPagoAprobado(i, plan) {
     localStorage.setItem('ok', '1');
     localStorage.setItem('imei', i);
     localStorage.setItem('llave_maestra_' + i, k);
+    
+    await generarActaDeAlta(i, localStorage.getItem('nombre') || 'Usuaria');
     
     pedirPermisosGlobalesYGPS();
     iniciarRealtime(); 
@@ -886,7 +903,7 @@ async function validar(){
 }
 
 // ==========================================
-// 5. GATILLO REMOTO Y WHATSAPP HÍBRIDO
+// 5. GATILLO REMOTO Y WHATSAPP ORIGINAL
 // ==========================================
 async function recuperar(accion) {
     const i = IM(document.getElementById('rrI').value);
@@ -934,14 +951,14 @@ async function recuperar(accion) {
 
 let sosActivo = false;
 
-// ✅ SOLUCIÓN AL BOTÓN S.O.S (Función puente que faltaba)
-function toggleSOS() {
+// LA FUNCIÓN PUENTE DEL BOTÓN PARA QUE ARRANQUE O SE DETENGA
+window.toggleSOS = function() {
     if (sosActivo) {
         pararConLlave();
     } else {
         disparoSOS('boton');
     }
-}
+};
 
 function iniciarRealtime() {
     if (!supaClient) return; 
@@ -980,17 +997,6 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', ti
 
     contactos = [...new Set(contactos)];
 
-    // ✅ SOLUCIÓN GREEN API (ARGENTINA) 
-    // Formatea los números para que siempre tengan el "549" si la gente los cargó cortos.
-    contactos = contactos.map(num => {
-        let nStr = String(num).replace(/\D/g, '');
-        // Si cargan 10 dígitos (ej: 3816092676), se le clava el 549 para que Vercel/GreenAPI no falle
-        if (nStr.length === 10 && !nStr.startsWith('54')) {
-            return '549' + nStr;
-        }
-        return nStr;
-    });
-
     let msg = "";
     if (tipo === 'alerta') {
         if (tipo_disparo === 'sacudida') {
@@ -1008,6 +1014,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', ti
         msg = `🛡️ *SISTEMA C4 - NI UNA MENOS* 🛡️\n\nHola. *${nombre}* te ha registrado en su red de seguridad.\n\n⚠️ *PASO OBLIGATORIO:*\nPara que nuestras alertas S.O.S (con audio y ubicación GPS en vivo) te lleguen inmediatamente en caso de emergencia y WhatsApp no las bloquee, necesitás hacer lo siguiente ahora mismo:\n\n1️⃣ Agendá este número en tus contactos.\n2️⃣ Respondé a este mensaje únicamente con la frase:\n\n*ni una menos*\n\nAl responder, el canal seguro quedará habilitado de por vida.`;
     }
 
+    // EL FETCH ORIGINAL QUE FUNCIONABA
     fetch('/api/whatsapp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1469,4 +1476,3 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 });
 </script></body></html>
-
