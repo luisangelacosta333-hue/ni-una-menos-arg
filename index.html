@@ -373,6 +373,9 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 
 <section id="panel" class="vista"><h2 class="tit" style="text-align:left;border-bottom:1px solid var(--oro);padding-bottom:10px;letter-spacing:5px">✦ CENTRO JUDICIAL P4 ✦</h2>
+ <div id="cobertura_banner" style="display:none; background:#FFFCF2; border:1px solid var(--oro); padding:15px; border-radius:8px; text-align:center; margin-bottom:20px; font-weight:bold; color:var(--oroOscuro); font-family:'Cinzel',serif; box-shadow:var(--luz); letter-spacing:1px;">
+    ✦ COBERTURA JUDICIAL ACTIVA: <span id="dias_cobertura">--</span> DÍAS RESTANTES ✦
+ </div>
  <div style="display:flex;gap:12px;flex-wrap:wrap">
   <button class="btn" onclick="window.print()" style="flex:1 1 100%">✦ IMPRIMIR ACTA JUDICIAL (PDF) ✦</button>
   <button class="btn blanco" onclick="verificar()" style="flex:1 1 100%; margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
@@ -818,6 +821,14 @@ async function validar(){
                 localStorage.setItem('contactos', cRespaldo);
             }
 
+            // CALCULAR Y MOSTRAR LOS DÍAS DE COBERTURA
+            const diasRestantes = Math.ceil((new Date(sub.fecha_vencimiento) - new Date()) / (1000 * 60 * 60 * 24));
+            const bannerDias = document.getElementById('dias_cobertura');
+            if (bannerDias) {
+                bannerDias.innerText = diasRestantes;
+                document.getElementById('cobertura_banner').style.display = 'block';
+            }
+
             alert('✅ LLAVE VÁLIDA. Ingresando al sistema judicial...');
             ir('panel');
             
@@ -891,9 +902,6 @@ setInterval(async () => {
 // =========================================================================
 // 🔥 CONEXIÓN A BACKEND DE VERCEL PARA WHATSAPP 🔥
 // =========================================================================
-const WA_INSTANCE = '710722723701';
-const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
-
 function formatArg(num) {
     let c = String(num).replace(/\D/g, '');
     if (c.startsWith('549')) return c;
@@ -928,21 +936,20 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ *SISTEMA SEGURO* \nDesactivado a salvo.`;
     }
 
-    for (let numero of contactos) {
-        if(!numero) continue;
-        let cel = formatArg(numero);
-        
-        let url = `/api/whatsapp`;
-        
-        fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
+    // AHORA MANDAMOS EL PAQUETE COMPLETO A VERCEL CON LOS NÚMEROS FORMATEADOS
+    const contactosFormateados = contactos.map(num => formatArg(num));
+
+    fetch('/api/whatsapp', { // Asegurate de que esta sea la ruta correcta a tu backend de Vercel
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            contactos: contactosFormateados, 
+            mensaje: msg 
         })
-        .then(res => res.json())
-        .then(data => console.log('WA Vercel enviado', data))
-        .catch(err => console.error('Error WA Vercel:', err));
-    }
+    })
+    .then(res => res.json())
+    .then(data => console.log('✅ WA Vercel respondió:', data))
+    .catch(err => console.error('❌ Error WA Vercel:', err));
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
