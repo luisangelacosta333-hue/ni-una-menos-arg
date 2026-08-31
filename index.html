@@ -342,7 +342,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
       <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">💳 DATOS PARA TRANSFERENCIA</b>
       <p style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;margin:0;">
           Realiza el pago correspondiente al plan que elijas a la siguiente cuenta:<br><br>
-          <b>Titular:</b> Luis Ángel Acosta<br>
           <b>ALIAS:</b> <span style="font-family:'JetBrains Mono',monospace;">noir.elite.ceo</span><br>
           <b>CBU:</b> <span style="font-family:'JetBrains Mono',monospace;">0110257630025717844115</span>
       </p>
@@ -380,7 +379,14 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 
 <section id="login" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER AL INICIO</button><h2 class="tit">PANEL DE ACTAS</h2>
- <div class="caja"><div class="campo"><input id="lkI" placeholder="C4‑XXXX‑XXXX" style="text-align:center;font-size:30px;letter-spacing:8px;text-transform:uppercase; font-weight:800;"></div>
+ <div class="caja">
+  <div class="campo" style="display: flex; gap: 10px; align-items: center;">
+    <input id="lkI" placeholder="C4‑XXXX‑XXXX" style="flex: 1; text-align:center; font-size:22px; letter-spacing:4px; text-transform:uppercase; font-weight:800; padding: 18px 10px;">
+    <!-- BOTÓN PEGAR INCORPORADO PARA SOLUCIONAR EL PROBLEMA DE ESCRITURA -->
+    <button class="btn blanco" onclick="pegarLlave()" style="width: auto; padding: 18px 15px; font-size: 12px; letter-spacing: 2px; border: 1px solid var(--oro);" title="Pegar del portapapeles">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+    </button>
+  </div>
  <button class="btn" onclick="validar()">✦ VER ACTAS / EVIDENCIA ✦</button></div>
 </section>
 
@@ -537,7 +543,7 @@ async function cerrar() {
 function expTXT() {
     let currentImei = localStorage.getItem('imei');
     let actasParaExportar = listaActas.filter(a => a.imei === currentImei);
-    if(actasParaExportar.length === 0) return alert('No hay actas registradas.');
+    if(actasParaExportar.length === 0) return alert('No hay actas registradas para descargar.');
     let t = "=== NI UNA MENOS ARGENTINA - ACTA P4 ===\n\n";
     actasParaExportar.forEach(a => {
         t += `Expediente: ${a.numero_acta} | Fecha: ${a.fecha} ${a.hora}\nGPS: ${a.lat}, ${a.lng}\nHash: ${a.sha256}\n--------------------\n`;
@@ -552,6 +558,22 @@ function expTXT() {
 
 async function verificar() {
     alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales válidas\nLeyes: 26.485 · 25.326');
+}
+
+// ==========================================
+// PEGAR LLAVE AUTOMÁTICO
+// ==========================================
+async function pegarLlave() {
+    try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+            document.getElementById('lkI').value = text;
+        } else {
+            alert('El portapapeles está vacío.');
+        }
+    } catch (err) {
+        alert('Permiso denegado para leer el portapapeles.\nMantené presionado el cuadro en blanco y tocá "Pegar".');
+    }
 }
 
 // ==========================================
@@ -767,7 +789,6 @@ function mostrarModalPago(plan, precio) {
                 <h3>REALIZAR PAGO</h3>
                 <p>Estás a punto de abonar el <b>Plan ${plan.toUpperCase()}</b> por <b>${precio}</b>.</p>
                 <div class="datos-pago">
-                    <b>Titular:</b> Luis Ángel Acosta<br>
                     <b>ALIAS:</b> noir.elite.ceo<br>
                     <b>CBU:</b> 0110257630025717844115
                 </div>
@@ -892,9 +913,14 @@ async function validar(){
         ir('panel');
         
         const c = document.getElementById('alertas');
-        c.innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:\'Cormorant Garamond\',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div>';
-        
         let actasFiltradas = listaActas.filter(a => a.imei === sub.imei);
+        
+        // SOLUCIÓN AL PANEL EN BLANCO: Si logueó bien pero no tenía acta local, le genera una para que no esté vacío
+        if (actasFiltradas.length === 0) {
+            await generarActaDeAlta(sub.imei, localStorage.getItem('nombre') || 'Titular Registrado');
+            actasFiltradas = listaActas.filter(a => a.imei === sub.imei);
+        }
+
         if (actasFiltradas.length > 0) {
             c.innerHTML = ''; 
             actasFiltradas.forEach(render);
@@ -951,7 +977,6 @@ async function recuperar(accion) {
 
 let sosActivo = false;
 
-// LA FUNCIÓN PUENTE DEL BOTÓN PARA QUE ARRANQUE O SE DETENGA
 window.toggleSOS = function() {
     if (sosActivo) {
         pararConLlave();
@@ -981,6 +1006,7 @@ function iniciarRealtime() {
         .subscribe();
 }
 
+// FETCH DE WHATSAPP 100% ORIGINAL PARA QUE NO FALLE CON VERCEL
 function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', tipo_disparo = 'boton') {
     if (!contactos || !Array.isArray(contactos) || contactos.length === 0) {
         try {
@@ -1014,7 +1040,6 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', ti
         msg = `🛡️ *SISTEMA C4 - NI UNA MENOS* 🛡️\n\nHola. *${nombre}* te ha registrado en su red de seguridad.\n\n⚠️ *PASO OBLIGATORIO:*\nPara que nuestras alertas S.O.S (con audio y ubicación GPS en vivo) te lleguen inmediatamente en caso de emergencia y WhatsApp no las bloquee, necesitás hacer lo siguiente ahora mismo:\n\n1️⃣ Agendá este número en tus contactos.\n2️⃣ Respondé a este mensaje únicamente con la frase:\n\n*ni una menos*\n\nAl responder, el canal seguro quedará habilitado de por vida.`;
     }
 
-    // EL FETCH ORIGINAL QUE FUNCIONABA
     fetch('/api/whatsapp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
