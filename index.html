@@ -438,22 +438,8 @@ async function authTrucha(imei) {
             let regData = await regRes.json();
             
             if (!regRes.ok) {
-                const errorReal = regData.msg || regData.error_description || regData.error?.message || "Error desconocido en Supabase";
-                
-                if (errorReal.includes("User already registered") || errorReal.includes("already registered")) {
-                    alert(`🛑 USUARIO TRABADO EN SUPABASE\n\nEl correo ${email} quedó bloqueado de las pruebas anteriores (seguro por el Confirm Email).\n\nSOLUCIÓN OBLIGATORIA:\n1. Entrá a Supabase -> Authentication -> Users.\n2. BORRÁ ese usuario.\n3. Volvé a tocar el botón en la app.`);
-                    return false;
-                }
-
-                alert("⚠️ ERROR AL CREAR USUARIO:\n" + errorReal);
                 return false;
             }
-
-            if ((regData.id || regData.user) && !regData.access_token && !regData.session) {
-                alert("⚠️ ATENCIÓN: Tenés activada la 'Confirmación de Email'.\nAndá a Supabase -> Authentication -> Providers -> Email y APAGÁ 'Confirm email' para que esto funcione.");
-                return false;
-            }
-
             data = regData; 
         }
         
@@ -465,10 +451,8 @@ async function authTrucha(imei) {
             return true;
         }
         
-        alert("Error crítico: Supabase conectó pero no devolvió el Token de acceso.");
         return false;
     } catch (e) {
-        alert("Error de red conectando con Supabase: " + e.message);
         return false;
     }
 }
@@ -576,16 +560,11 @@ const sigilo = () => {
     alert("⚠️ MODO SIGILO ACTIVADO ⚠️\nLa pantalla se pondrá totalmente negra. Tocá la pantalla 3 VECES RÁPIDAS para salir.");
 };
 
-// 🔥 2. CORRECCIÓN: Agregado try/catch al HASH para que si hay error local, no destruya el Acta 🔥
 async function sha256(message) {
-    try {
-        const msgBuffer = new TextEncoder().encode(message);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    } catch (e) {
-        return 'HASH-' + Math.random().toString(36).substr(2, 9).toUpperCase(); 
-    }
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 const initDB = () => new Promise((resolve) => {
@@ -931,7 +910,6 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ *SISTEMA SEGURO* \nDesactivado a salvo.`;
     }
 
-    // 🔥 3. CORRECCIÓN: Usamos el .vercel.app directo para evitar que los redireccionamientos de DNS rompan el paquete de datos 🔥
     let urlVercel = `https://ni-una-menos-arg.vercel.app/api/whatsapp`; 
 
     fetch(urlVercel, {
@@ -941,7 +919,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
             contactos: contactos, 
             mensaje: msg 
         })
-    }).catch(err => console.error("Error contactando a Vercel:", err));
+    }).catch(err => {});
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
@@ -1012,7 +990,7 @@ async function loopEvidencia(acta) {
 
     if(!sosActivo) return;
 
-    // 🔥 4. CORRECCIÓN: Volvemos a bajar a 15 segundos para que los audios aparezcan rápido y no parezca que "no graba" 🔥
+    // 2. VIDEO SECUENCIAL
     try {
         const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
         const videoRecorder = new MediaRecorder(videoStream);
@@ -1027,13 +1005,14 @@ async function loopEvidencia(acta) {
             if (acta.imei === currentImei) render(acta);
         };
         videoRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 15000));
+        await new Promise(resolve => setTimeout(resolve, 60000));
         if(videoRecorder.state === 'recording') videoRecorder.stop();
         videoStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
     if(!sosActivo) return;
 
+    // 3. AUDIO AMBIENTAL CONTINUO
     try {
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioRecorder = new MediaRecorder(audioStream);
@@ -1048,7 +1027,7 @@ async function loopEvidencia(acta) {
             if (acta.imei === currentImei) render(acta);
         };
         audioRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 15000));
+        await new Promise(resolve => setTimeout(resolve, 60000));
         if(audioRecorder.state === 'recording') audioRecorder.stop();
         audioStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
@@ -1086,11 +1065,9 @@ async function disparoSOS(){
  const id = 'P4-' + Date.now() + '-' + Math.random().toString(16).slice(2,8).toUpperCase();
  aid = id;
  
- // 🔥 1. CORRECCIÓN: Disparo en segundo plano para que el Acta se cree INSTANTÁNEAMENTE y no se trabe 🔥
  if (imei && imei !== 'SIN_IMEI') {
-     authTrucha(imei).then(ok => {
-         if(ok) supaQuery('POST', 'c4_emergencias', { imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() }).catch(()=>{});
-     });
+     await authTrucha(imei);
+     supaQuery('POST', 'c4_emergencias', { imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() }).catch(()=>{});
  }
 
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
@@ -1118,9 +1095,7 @@ async function disparoSOS(){
  const cores = navigator.hardwareConcurrency || 'Desc.';
  const pantalla = `${screen.width}x${screen.height}`;
 
- let hash;
- try { hash = await sha256(id+imei+Date.now()); } catch(e) { hash = 'HASH-LOCAL-OFFLINE'; }
- 
+ const hash = await sha256(id+imei+Date.now());
  let acta = {
      id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
      hora: new Date().toLocaleTimeString('es-AR'), fecha: new Date().toLocaleDateString('es-AR'),
@@ -1259,17 +1234,13 @@ async function pararConLlave(){
         let t = "=== NI UNA MENOS ARGENTINA - ACTA JUDICIAL P4 ===\n\n";
         t += `EXPEDIENTE/ID: ${acta.numero_acta}\nFECHA DE ACTIVACIÓN: ${acta.fecha}\nIMEI: ${acta.imei}\nGPS FINAL: ${acta.lat}, ${acta.lng}\nHASH: ${acta.sha256}\n\n[EVIDENCIA ASEGURADA Y CERRADA POR DESACTIVACIÓN DEL USUARIO]\n--------------------\n`;
         
-        if (navigator.share) {
-            navigator.share({ title: 'Acta Judicial P4', text: t }).catch(console.error);
-        } else {
-            const b = new Blob([t],{type:'text/plain'});
-            const u = URL.createObjectURL(b);
-            const a = document.createElement('a');
-            a.href = u; a.download = acta.numero_acta + '.txt';
-            document.body.appendChild(a); 
-            a.click();
-            setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 200);
-        }
+        const b = new Blob([t],{type:'text/plain'});
+        const u = URL.createObjectURL(b);
+        const a = document.createElement('a');
+        a.href = u; a.download = acta.numero_acta + '.txt';
+        document.body.appendChild(a); 
+        a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 200);
     }
 
     parar(); 
@@ -1415,17 +1386,12 @@ const expTXT=()=>{
         t += `Expediente: ${a.numero_acta} | Fecha: ${a.fecha} ${a.hora}\nGPS: ${a.lat}, ${a.lng}\nHash: ${a.sha256}\n--------------------\n`;
     });
     
-    // FIX DE DESCARGA: Agregado share API nativo para webviews (Instagram, Facebook)
-    if (navigator.share) {
-        navigator.share({ title: 'Actas Judiciales P4', text: t }).catch(console.error);
-    } else {
-        const b=new Blob([t],{type:'text/plain'});
-        const u=URL.createObjectURL(b);
-        const a = document.createElement('a');
-        a.href = u; a.download = 'ACTA_P4_' + Date.now() + '.txt';
-        document.body.appendChild(a); a.click();
-        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 200);
-    }
+    const b=new Blob([t],{type:'text/plain'});
+    const u=URL.createObjectURL(b);
+    const a = document.createElement('a');
+    a.href = u; a.download = 'ACTA_P4_' + Date.now() + '.txt';
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 200);
 };
 
 const verificar=async()=>{alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales válidas\nLeyes: 26.485 · 25.326')};
