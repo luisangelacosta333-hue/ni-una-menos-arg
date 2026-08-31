@@ -208,10 +208,10 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <p><strong style="display:block;color:var(--oroOscuro);font-weight:800;margin-bottom:10px">Protección integral forense para resguardar tu vida.</strong>
  Nuestro sistema de evidencia graba audio continuo, saca fotos, graba videos y rastrea tu ubicación. Todo opera de forma invisible. Si te roban el celular, vos o un familiar pueden activarlo manualmente a distancia ingresando tu Llave Maestra desde cualquier otro dispositivo para no arriesgarte. <strong>Sistema 100% blindado y privado.</strong></p>
 
- <!-- BOTÓN GIGANTE PARA DESCARGAR ACTA EN LA LANDING PAGE (DORADO, NO ROJO) -->
+ <!-- BOTÓN GIGANTE PARA DESCARGAR ACTA EN LA LANDING PAGE (DORADO) -->
  <button class="btn" onclick="ir('login')" style="max-width:820px;margin-inline:auto;margin-top:25px;padding:25px;font-size:16px;box-shadow:var(--luzFuerte); letter-spacing: 5px;">📄 DESCARGAR ACTA PERICIAL P4</button>
 
- <!-- ACCESO DIRECTO AL S.O.S REMOTO (DISEÑO DORADO) -->
+ <!-- ACCESO DIRECTO AL S.O.S REMOTO (DORADO) -->
  <div style="background:#FFFCF2;border:2px solid var(--oro);padding:22px;border-radius:12px;margin:25px auto;max-width:820px;box-shadow:var(--luz);">
   <b style="color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:22px;letter-spacing:3px;display:block;margin-bottom:10px;text-shadow: 0 1px 2px rgba(212,175,55,0.2);">✦ DETONADOR S.O.S. REMOTO ✦</b>
   <span style="font-size:15px;color:#333;font-weight:600;line-height:1.6;display:block;margin-bottom:15px;">
@@ -334,7 +334,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
   <p style="font-size:15px;color:#333;margin-bottom:20px;text-align:center;line-height:1.6;font-weight:600;">¿Te robaron el celular? No te arriesgues.<br>Ingresá tu IMEI y tu Llave Maestra para activar remotamente el equipo del ladrón.</p>
   <div class="campo"><label>IMEI DEL EQUIPO ROBADO</label><input id="rrI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
   <div class="campo"><label>TU LLAVE MAESTRA C4</label><input id="rrL" placeholder="C4‑XXXX‑XXXX" style="text-transform:uppercase"></div>
-  <button class="btn rubi" onclick="recuperar('detonar')" style="margin-top:10px; font-size:15px; letter-spacing:3px; padding:25px;">💥 DISPARAR ALARMA AL CELULAR 💥</button>
+  <button class="btn" onclick="recuperar('detonar')" style="margin-top:10px; font-size:15px; letter-spacing:3px; padding:25px;">💥 DISPARAR ALARMA AL CELULAR 💥</button>
   <button class="btn blanco" onclick="recuperar('restaurar')" style="margin-top:18px">RESTABLECER SISTEMA EN ESTE EQUIPO</button>
  </div>
 </section>
@@ -406,8 +406,7 @@ function irSOS() {
 function leerVoz() {
     try {
         speechSynthesis.cancel();
-        // GUION DE VENTA PROFESIONAL, SIN ERRORES Y VENDE DIRECTO EL GATILLO A DISTANCIA Y TODA LA EVIDENCIA
-        const u = new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina. Nuestra aplicación está diseñada para proteger a las personas y resguardar tu vida. Es un sistema integral de evidencia que opera de forma invisible: graba audio de forma continua, saca fotos, graba videos y rastrea tu ubicación por GPS segundo a segundo. Toda esta información construye tu Acta Pericial P4, que podés descargar directamente desde nuestra plataforma. Si te roban el celular, podés activarlo desde cualquier otro celular o el de un familiar, y lo activás manualmente a distancia cargando tu Llave Maestra. Al instante, el equipo comienza a recabar toda la evidencia para la justicia y manda alertas a tus contactos. Es un sistema cien por ciento blindado, legal y privado.`);
+        const u = new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina. Nuestra aplicación está diseñada para proteger a las personas y resguardar tu vida. Es un sistema integral de evidencia que opera de forma invisible: graba audio de forma continua, saca fotos, graba videos y rastrea tu ubicación por GPS segundo a segundo. Toda esta información construye tu Acta Pericial P4. Si te roban el celular, lo activás desde cualquier celular o de un familiar, y lo activás manual a distancia cargando tu Llave Maestra. El sistema recaba toda la información y en las 72 horas, si no hay denuncia, queda todo borrado para garantizar tu privacidad. Este es un sistema con seguridad criptográfica para la justicia. Podés descargar el acta, la imprimís y la llevás a comisaría o fiscalía.`);
         u.lang = 'es-AR'; u.rate = 0.92; u.pitch = 1; u.volume = 1;
         speechSynthesis.speak(u);
     } catch(e) {
@@ -559,7 +558,7 @@ async function borrarActa(id) {
 }
 
 // ==========================================
-// 4. REGISTRO E INTEGRACIÓN OPENAI
+// 4. REGISTRO (SIN EMAIL) E INTEGRACIÓN OPENAI
 // ==========================================
 async function alta(){
     const n = document.getElementById('rN').value.trim();
@@ -573,7 +572,6 @@ async function alta(){
     
     let waLimpio = w.replace(/\D/g, ''); 
 
-    // Autenticamos el correo trucho de seguridad atado a este IMEI en la base de datos
     await authTrucha(i);
 
     try {
@@ -597,7 +595,6 @@ async function alta(){
         let fechaVencimiento = new Date();
         fechaVencimiento.setDate(fechaVencimiento.getDate() + 15);
 
-        // Agregamos todo a la base de datos (con el correo automático del sistema)
         await supaQuery('POST', 'c4_suscripciones', { email: i+'@c4judicial.com.ar', imei: i, whatsapp: waLimpio, llave_acceso: k, tipo_plan: 'prueba_15', fecha_vencimiento: fechaVencimiento.toISOString(), activa: true, alarma_remota: false });
 
         localStorage.setItem('imei', i); 
@@ -776,7 +773,7 @@ function iniciarRealtime() {
         }, (payload) => {
             if (payload.new && payload.new.alarma_remota === true && !sosActivo) {
                 ir('sos');
-                disparoSOS('remoto'); // Indicamos origen remoto
+                disparoSOS('remoto'); 
             }
         })
         .subscribe();
