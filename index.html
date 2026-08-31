@@ -67,7 +67,7 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .paso span{color:#555;font-size:14px;font-weight:400;margin-top:4px;line-height:1.6;display:block}
 
 .btn{position:relative;width:100%;max-width:700px;margin:0 auto;display:flex;align-items:center;justify-content:center;padding:20px 24px;border-radius:999px;border:none;cursor:pointer;font-family:'Cinzel',serif;font-weight:900;letter-spacing:4.5px;font-size:13.5px;text-transform:uppercase;background:var(--bordeOro);color:#FFFFFF;text-shadow:0 1px 2px rgba(0,0,0,.3);box-shadow:var(--luz);overflow:hidden;transition:.4s}
-.btn::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 22%,rgba(255,255,255,0.8) 50%,transparent 78%);transform:translateX(-130%);transition:1s}
+.btn::before{content:"absolute;inset:0;background:linear-gradient(110deg,transparent 22%,rgba(255,255,255,0.8) 50%,transparent 78%);transform:translateX(-130%);transition:1s}
 .btn:hover{transform:translateY(-2px);box-shadow:var(--luzFuerte);letter-spacing:5.5px}
 .btn:hover::before{transform:translateX(130%)}
 .btn:active{transform:scale(.98)}
@@ -936,7 +936,10 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-        }).catch(err => {});
+        })
+        .then(res => res.json())
+        .then(data => console.log(`✅ WA enviado a ${cel}:`, data))
+        .catch(err => console.error(`❌ Error al enviar WA a ${cel}. Revisá la URL o el Token:`, err));
     }
 }
 
@@ -1008,7 +1011,7 @@ async function loopEvidencia(acta) {
 
     if(!sosActivo) return;
 
-    // 2. VIDEO SECUENCIAL (Acortado a 15 segundos para generar loop rápido)
+    // 2. VIDEO SECUENCIAL (Aumentado a 60 segundos)
     try {
         const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
         const videoRecorder = new MediaRecorder(videoStream);
@@ -1023,21 +1026,21 @@ async function loopEvidencia(acta) {
             if (acta.imei === currentImei) render(acta);
         };
         videoRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 15000));
+        await new Promise(resolve => setTimeout(resolve, 60000));
         if(videoRecorder.state === 'recording') videoRecorder.stop();
         videoStream.getTracks().forEach(t => t.stop());
-    } catch(e) {}
+    } catch(e) { console.error("Error en video:", e); }
 
     if(!sosActivo) return;
 
-    // 3. AUDIO AMBIENTAL CONTINUO (Acortado a 15 segundos para generar loop rápido)
+    // 3. AUDIO AMBIENTAL CONTINUO (Aumentado a 60 segundos)
     try {
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioRecorder = new MediaRecorder(audioStream);
         const audioChunks = [];
         audioRecorder.ondataavailable = e => audioChunks.push(e.data);
         audioRecorder.onstop = async () => {
-            const audioBlob = new Blob(audioChunks, { type: 'video/webm' });
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm; codecs=opus' });
             if(!acta.audios) acta.audios = [];
             acta.audios.push(audioBlob);
             await guardarActas();
@@ -1045,10 +1048,10 @@ async function loopEvidencia(acta) {
             if (acta.imei === currentImei) render(acta);
         };
         audioRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 15000));
+        await new Promise(resolve => setTimeout(resolve, 60000));
         if(audioRecorder.state === 'recording') audioRecorder.stop();
         audioStream.getTracks().forEach(t => t.stop());
-    } catch(e) {}
+    } catch(e) { console.error("Error en audio:", e); }
 
     if(sosActivo) {
         setTimeout(() => loopEvidencia(acta), 1000); 
