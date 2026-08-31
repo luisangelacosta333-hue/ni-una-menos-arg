@@ -373,9 +373,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 
 <section id="panel" class="vista"><h2 class="tit" style="text-align:left;border-bottom:1px solid var(--oro);padding-bottom:10px;letter-spacing:5px">✦ CENTRO JUDICIAL P4 ✦</h2>
- <div id="cobertura_banner" style="display:none; background:#FFFCF2; border:1px solid var(--oro); padding:15px; border-radius:8px; text-align:center; margin-bottom:20px; font-weight:bold; color:var(--oroOscuro); font-family:'Cinzel',serif; box-shadow:var(--luz); letter-spacing:1px;">
-    ✦ COBERTURA JUDICIAL ACTIVA: <span id="dias_cobertura">--</span> DÍAS RESTANTES ✦
- </div>
  <div style="display:flex;gap:12px;flex-wrap:wrap">
   <button class="btn" onclick="window.print()" style="flex:1 1 100%">✦ IMPRIMIR ACTA JUDICIAL (PDF) ✦</button>
   <button class="btn blanco" onclick="verificar()" style="flex:1 1 100%; margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
@@ -814,18 +811,11 @@ async function validar(){
             localStorage.setItem('imei', sub.imei);
             localStorage.setItem('llave_maestra', sub.llave_acceso); 
             localStorage.setItem('ok', '1');
+            localStorage.setItem('vencimiento', sub.fecha_vencimiento); // GUARDAMOS VENCIMIENTO PARA EL ACTA
 
             let cRespaldo = localStorage.getItem('contactos_' + sub.imei) || localStorage.getItem('contactos');
             if (cRespaldo) {
                 localStorage.setItem('contactos', cRespaldo);
-            }
-
-            // CALCULAR Y MOSTRAR LOS DÍAS DE COBERTURA
-            const diasRestantes = Math.ceil((new Date(sub.fecha_vencimiento) - new Date()) / (1000 * 60 * 60 * 24));
-            const bannerDias = document.getElementById('dias_cobertura');
-            if (bannerDias) {
-                bannerDias.innerText = diasRestantes;
-                document.getElementById('cobertura_banner').style.display = 'block';
             }
 
             alert('✅ LLAVE VÁLIDA. Ingresando al sistema judicial...');
@@ -942,8 +932,6 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         if(!numero) continue;
         let cel = formatArg(numero);
         
-        // APUNTAMOS AL BACKEND DE VERCEL EN LUGAR DE GREEN API DIRECTO
-        // Reemplazá "/api/whatsapp" por la ruta exacta de tu archivo en Vercel si le pusiste otro nombre (ej: "/api/create")
         let url = `/api/whatsapp`;
         
         fetch(url, {
@@ -1025,7 +1013,7 @@ async function loopEvidencia(acta) {
 
     if(!sosActivo) return;
 
-    // 2. VIDEO SECUENCIAL 
+    // 2. VIDEO SECUENCIAL A 60 SEGUNDOS (1 MINUTO)
     try {
         const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
         const videoRecorder = new MediaRecorder(videoStream);
@@ -1040,14 +1028,14 @@ async function loopEvidencia(acta) {
             if (acta.imei === currentImei) render(acta);
         };
         videoRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 30000));
+        await new Promise(resolve => setTimeout(resolve, 60000));
         if(videoRecorder.state === 'recording') videoRecorder.stop();
         videoStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
     if(!sosActivo) return;
 
-    // 3. AUDIO AMBIENTAL CONTINUO 
+    // 3. AUDIO AMBIENTAL CONTINUO A 60 SEGUNDOS (1 MINUTO)
     try {
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioRecorder = new MediaRecorder(audioStream);
@@ -1062,7 +1050,7 @@ async function loopEvidencia(acta) {
             if (acta.imei === currentImei) render(acta);
         };
         audioRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 30000));
+        await new Promise(resolve => setTimeout(resolve, 60000));
         if(audioRecorder.state === 'recording') audioRecorder.stop();
         audioStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
@@ -1075,6 +1063,10 @@ async function loopEvidencia(acta) {
 async function disparoSOS(){
  if(sosActivo) return; 
  sosActivo = true;
+ 
+ // MEMORIA DE ESTADO: Guardamos que el botón está activado para que resista recargas o minimizaciones
+ localStorage.setItem('sosActivo_memoria', '1');
+
  document.getElementById('btnBigSOS').innerText = 'DETENER S.O.S';
  document.getElementById('btnBigSOS').classList.add('activo');
  document.getElementById('st').style.display='block';
@@ -1099,6 +1091,7 @@ async function disparoSOS(){
 
  const id = 'P4-' + Date.now() + '-' + Math.random().toString(16).slice(2,8).toUpperCase();
  aid = id;
+ localStorage.setItem('aid_memoria', id); // Guardamos el ID del acta para retomarla si se sale de la app
  
  if (imei && imei !== 'SIN_IMEI') {
      await authTrucha(imei);
@@ -1226,6 +1219,8 @@ const parar = () => {
     if(la) clearInterval(la); if(lv) clearInterval(lv); if(l10) clearInterval(l10);
     document.getElementById('st').style.display='none';
     document.body.style.backgroundColor = '#FFFFFF';
+    localStorage.removeItem('sosActivo_memoria');
+    localStorage.removeItem('aid_memoria');
 };
 
 async function pararConLlave(){
@@ -1303,6 +1298,15 @@ function render(a){
  const c=document.getElementById('alertas');
  let d = document.getElementById('a_'+a.id);
  
+ // LOGICA PARA EL RELOJ DE ARENA DE LOS DÍAS
+ let v_fecha = localStorage.getItem('vencimiento');
+ let badgeDias = '';
+ if(v_fecha) {
+    let diff = Math.ceil((new Date(v_fecha) - new Date()) / 86400000);
+    let diasRestantes = diff > 0 ? diff : 0;
+    badgeDias = `<div style="background:#FFFCF2;border:1px solid #D4AF37;padding:5px 12px;border-radius:999px;display:inline-block;font-size:11px;font-weight:900;color:#5A3E00;margin-top:10px;letter-spacing:1px;box-shadow:var(--luzRelieve);">⏳ COBERTURA JUDICIAL: ${diasRestantes} DÍAS RESTANTES</div>`;
+ }
+ 
  if (!d) {
      d = document.createElement('div');
      d.className='acta';
@@ -1315,6 +1319,7 @@ function render(a){
         <h2 style="font-family:Cinzel;font-weight:900;letter-spacing:4px;font-size:18px">INFORME TÉCNICO PERICIAL P4</h2>
         <div class="nroExpediente">EXPEDIENTE N° ${a.numero_acta}</div>
         <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#8B0000; margin-top:6px; font-weight:800;">📅 FECHA: ${a.fecha} &nbsp;&nbsp;|&nbsp;&nbsp; ⏰ HORA: ${a.hora}</div>
+        ${badgeDias}
         <div style="font-size:10px; margin-top:6px;">NI UNA MENOS ARGENTINA · niunamenosarg.com</div>
      </div>
      
@@ -1411,6 +1416,30 @@ addEventListener('DOMContentLoaded', async ()=>{
     document.getElementById('zonaOk').style.display='block';
  }
  ir('inicio');
+
+ // 🔥 RESUCITADOR DE ESTADO S.O.S (Si la víctima cerró o minimizó la app)
+ if(localStorage.getItem('sosActivo_memoria') === '1') {
+    sosActivo = true;
+    let btnSOS = document.getElementById('btnBigSOS');
+    if(btnSOS) {
+        btnSOS.innerText = 'DETENER S.O.S';
+        btnSOS.classList.add('activo');
+    }
+    let st = document.getElementById('st');
+    if(st) st.style.display='block';
+
+    let lastAid = localStorage.getItem('aid_memoria');
+    let actaEnCurso = listaActas.find(a => a.id === lastAid);
+    if(actaEnCurso) {
+        // Retoma el acta anterior y vuelve a inyectarle la evidencia sin borrar nada
+        loopEvidencia(actaEnCurso);
+    } else {
+        // Failsafe por si se borró la base local
+        sosActivo = false;
+        disparoSOS();
+    }
+ }
+
  if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v8').catch(()=>{}));
  document.addEventListener('contextmenu',e=>e.preventDefault());
 });
