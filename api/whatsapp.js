@@ -16,6 +16,7 @@ export default async function handler(req, res) {
         }
 
         // 🛡️ ORDEN PARA LEER LAS LLAVES OCULTAS DE VERCEL
+        // Asegurate de crear estas variables en Settings > Environment Variables de Vercel
         const idInstance = process.env.GREEN_API_ID;
         const apiTokenInstance = process.env.GREEN_API_TOKEN;
 
@@ -23,14 +24,14 @@ export default async function handler(req, res) {
             return res.status(500).json({ success: false, msg: 'Faltan las llaves de Green API en Vercel.' });
         }
 
-        // URL del servidor de Green API (basado en el host 7107 de tu captura)
+        // URL del servidor de Green API
         const urlGreenApi = `https://7107.api.greenapi.com/waInstance${idInstance}/sendMessage/${apiTokenInstance}`;
 
         // Bucle para mandar la alerta a todos los familiares registrados
-        const promesasDeEnvio = contactos.map(async (numero) => {
-            // Limpiamos cualquier símbolo y le agregamos el código que exige WhatsApp (@c.us)
-            const numeroLimpio = numero.toString().replace(/\D/g, '');
-            const chatId = `${numeroLimpio}@c.us`;
+        const promesasDeEnvio = contactos.map(async (numeroFormateado) => {
+            // Acá el número ya viene formateado y limpio desde el Frontend, 
+            // solo le agregamos el @c.us que necesita Green API
+            const chatId = `${numeroFormateado}@c.us`;
 
             const payload = {
                 chatId: chatId,
