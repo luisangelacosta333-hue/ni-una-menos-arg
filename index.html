@@ -67,7 +67,7 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .paso span{color:#555;font-size:14px;font-weight:400;margin-top:4px;line-height:1.6;display:block}
 
 .btn{position:relative;width:100%;max-width:700px;margin:0 auto;display:flex;align-items:center;justify-content:center;padding:20px 24px;border-radius:999px;border:none;cursor:pointer;font-family:'Cinzel',serif;font-weight:900;letter-spacing:4.5px;font-size:13.5px;text-transform:uppercase;background:var(--bordeOro);color:#FFFFFF;text-shadow:0 1px 2px rgba(0,0,0,.3);box-shadow:var(--luz);overflow:hidden;transition:.4s}
-.btn::before{content:"absolute;inset:0;background:linear-gradient(110deg,transparent 22%,rgba(255,255,255,0.8) 50%,transparent 78%);transform:translateX(-130%);transition:1s}
+.btn::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 22%,rgba(255,255,255,0.8) 50%,transparent 78%);transform:translateX(-130%);transition:1s}
 .btn:hover{transform:translateY(-2px);box-shadow:var(--luzFuerte);letter-spacing:5.5px}
 .btn:hover::before{transform:translateX(130%)}
 .btn:active{transform:scale(.98)}
