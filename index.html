@@ -416,7 +416,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 
 <section id="panel" class="vista"><h2 class="tit" style="text-align:left;border-bottom:1px solid var(--oro);padding-bottom:10px;letter-spacing:5px">✦ CENTRO JUDICIAL P4 ✦</h2>
  <div style="display:flex;gap:12px;flex-wrap:wrap">
-  <button class="btn" onclick="window.print()" style="flex:1 1 100%; font-size:16px;">⬇ DESCARGAR ACTA P4 (PDF)</button>
+  <button class="btn" onclick="descargarPDF()" style="flex:1 1 100%; font-size:16px;">⬇ DESCARGAR ACTA P4 (PDF)</button>
   <button class="btn blanco" onclick="expTXT()" style="flex:1 1 100%; border-color:#333; color:#333;">⬇ DESCARGAR TEXTO (TXT)</button>
   <button class="btn blanco" onclick="verificar()" style="flex:1 1 100%; margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
  </div>
@@ -541,19 +541,36 @@ async function cerrar() {
 }
 
 function expTXT() {
-    let currentImei = localStorage.getItem('imei');
+    let currentImei = localStorage.getItem('imei') || sessionStorage.getItem('k_imei');
     let actasParaExportar = listaActas.filter(a => a.imei === currentImei);
     if(actasParaExportar.length === 0) return alert('No hay actas registradas para descargar.');
-    let t = "=== NI UNA MENOS ARGENTINA - ACTA P4 ===\n\n";
+    
+    let t = "=== NI UNA MENOS ARGENTINA - ACTA P4 ===\r\n\r\n";
     actasParaExportar.forEach(a => {
-        t += `Expediente: ${a.numero_acta} | Fecha: ${a.fecha} ${a.hora}\nGPS: ${a.lat}, ${a.lng}\nHash: ${a.sha256}\n--------------------\n`;
+        t += `Expediente: ${a.numero_acta}\r\nFecha: ${a.fecha} ${a.hora}\r\nGPS: ${a.lat}, ${a.lng}\r\nHash: ${a.sha256}\r\n--------------------\r\n`;
     });
-    const b = new Blob([t],{type:'text/plain'});
-    const u = URL.createObjectURL(b);
+    
+    // BLINDAJE DE DESCARGA TXT PARA CELULARES
+    const blob = new Blob([t], { type: 'text/plain;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = u; a.download = 'ACTA_P4_' + Date.now() + '.txt';
-    document.body.appendChild(a); a.click();
-    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 200);
+    a.style.display = 'none';
+    a.href = url;
+    a.download = 'ACTA_P4_' + Date.now() + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 100);
+}
+
+function descargarPDF() {
+    try {
+        window.print();
+    } catch(e) {
+        alert("Tu dispositivo bloquea la impresión. Usá el botón de TXT.");
+    }
 }
 
 async function verificar() {
@@ -617,11 +634,23 @@ async function supaQuery(method, endpoint, body = null) {
     return res.json();
 }
 
+// SOLUCIÓN CRÍTICA: SI EL NAVEGADOR ESTÁ EN HTTP, HACE UN HASH ALTERNATIVO PARA QUE NO FALLE LA CREACIÓN DEL ACTA.
 async function sha256(message) {
-    const msgBuffer = new TextEncoder().encode(message);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    try {
+        if (!crypto.subtle) throw new Error("No crypto");
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch(e) {
+        let hash = 0;
+        for (let i = 0; i < message.length; i++) {
+            const char = message.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash |= 0;
+        }
+        return 'INSECURE-HASH-' + Math.abs(hash).toString(16) + Date.now().toString(16);
+    }
 }
 
 const initDB = () => new Promise((resolve) => {
@@ -678,7 +707,6 @@ async function borrarActa(id) {
     }
 }
 
-// ESTO CREA UN ACTA AL INSTANTE PARA QUE EL PANEL NUNCA ESTÉ VACÍO
 async function generarActaDeAlta(imei, nombre) {
     const id = 'ALTA-' + Date.now();
     const hash = await sha256(id + imei + Date.now());
@@ -903,6 +931,7 @@ async function validar(){
     } else {
         sessionStorage.setItem('k', k);
         localStorage.setItem('imei', sub.imei);
+        sessionStorage.setItem('k_imei', sub.imei);
         localStorage.setItem('ok', '1');
 
         let cRespaldo = localStorage.getItem('contactos_' + sub.imei) || localStorage.getItem('contactos');
@@ -915,7 +944,6 @@ async function validar(){
         const c = document.getElementById('alertas');
         let actasFiltradas = listaActas.filter(a => a.imei === sub.imei);
         
-        // SOLUCIÓN AL PANEL EN BLANCO: Si logueó bien pero no tenía acta local, le genera una para que no esté vacío
         if (actasFiltradas.length === 0) {
             await generarActaDeAlta(sub.imei, localStorage.getItem('nombre') || 'Titular Registrado');
             actasFiltradas = listaActas.filter(a => a.imei === sub.imei);
@@ -1006,7 +1034,6 @@ function iniciarRealtime() {
         .subscribe();
 }
 
-// FETCH DE WHATSAPP 100% ORIGINAL PARA QUE NO FALLE CON VERCEL
 function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', tipo_disparo = 'boton') {
     if (!contactos || !Array.isArray(contactos) || contactos.length === 0) {
         try {
@@ -1021,7 +1048,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', ti
         contactos = miWa ? [miWa] : ['3816092676'];
     }
 
-    contactos = [...new Set(contactos)];
+    contactos = [...new Set(contactos.filter(Boolean))];
 
     let msg = "";
     if (tipo === 'alerta') {
@@ -1040,11 +1067,12 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', ti
         msg = `🛡️ *SISTEMA C4 - NI UNA MENOS* 🛡️\n\nHola. *${nombre}* te ha registrado en su red de seguridad.\n\n⚠️ *PASO OBLIGATORIO:*\nPara que nuestras alertas S.O.S (con audio y ubicación GPS en vivo) te lleguen inmediatamente en caso de emergencia y WhatsApp no las bloquee, necesitás hacer lo siguiente ahora mismo:\n\n1️⃣ Agendá este número en tus contactos.\n2️⃣ Respondé a este mensaje únicamente con la frase:\n\n*ni una menos*\n\nAl responder, el canal seguro quedará habilitado de por vida.`;
     }
 
+    // EL FETCH ORIGINAL A TU VERCEL EXACTAMENTE COMO ESTABA
     fetch('/api/whatsapp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contactos: contactos, mensaje: msg })
-    }).catch(err => console.error("Fallo al conectar con API WhatsApp:", err));
+    }).catch(err => console.error("Fallo al conectar con Green API:", err));
 }
 
 // ==========================================
