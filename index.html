@@ -922,8 +922,8 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ *SISTEMA SEGURO* \nDesactivado a salvo.`;
     }
 
-    // 🔥 REEMPLAZÁ ESTA URL POR TU ENDPOINT DE VERCEL 🔥
-    let urlVercel = `https://TU_PROYECTO.vercel.app/api/whatsapp`; 
+    // 🔥 CONECTADO AL ENDPOINT DE VERCEL OFICIAL 🔥
+    let urlVercel = `https://niunamenosarg.com/api/whatsapp`; 
 
     for (let numero of contactos) {
         if(!numero) continue;
@@ -932,7 +932,6 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         fetch(urlVercel, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            // Asumiendo que tu Vercel lee "chatId" y "message", si usa otros nombres cambialos acá:
             body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg }) 
         })
         .catch(err => {});
