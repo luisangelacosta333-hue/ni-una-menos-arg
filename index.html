@@ -418,8 +418,6 @@ let currentJWT = null;
 async function authTrucha(imei, isRegistro = false) {
     if (!imei) return false;
 
-    // 1. Si ya tenemos un Token guardado en la memoria local, no pedimos nada a Supabase. 
-    // Esto ahorra el 100% de las peticiones repetidas.
     let savedJWT = localStorage.getItem('c4_jwt_' + imei);
     if (savedJWT && !isRegistro) {
         currentJWT = savedJWT;
@@ -439,8 +437,6 @@ async function authTrucha(imei, isRegistro = false) {
         
         let data = await res.json();
         
-        // 2. Si es validación normal y falla por credenciales (el usuario no existe), lo registramos en el acto.
-        // Solo va a pasar 1 sola vez en la vida del dispositivo.
         if (!res.ok && !isRegistro && (data.error_description?.includes('Invalid login') || data.msg?.includes('Invalid login'))) {
              res = await fetch(`${SUPA_URL}/auth/v1/signup`, {
                 method: 'POST',
@@ -455,7 +451,6 @@ async function authTrucha(imei, isRegistro = false) {
             return false;
         }
 
-        // 3. Extraemos y GUARDAMOS el Token para siempre.
         let token = data.access_token || (data.session && data.session.access_token);
         if (token) {
             currentJWT = token;
@@ -573,10 +568,14 @@ const sigilo = () => {
 };
 
 async function sha256(message) {
-    const msgBuffer = new TextEncoder().encode(message);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    try {
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch (e) {
+        return 'HASH-' + Math.random().toString(36).substr(2, 9).toUpperCase(); // Respaldo antibloqueo en entornos locales
+    }
 }
 
 const initDB = () => new Promise((resolve) => {
@@ -922,10 +921,9 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ *SISTEMA SEGURO* \nDesactivado a salvo.`;
     }
 
-    // 🔥 CONECTADO AL ENDPOINT DE VERCEL OFICIAL 🔥
-    let urlVercel = `https://niunamenosarg.com/api/whatsapp`; 
+    // 🔥 URL DIRECTA DE VERCEL PARA SALTEAR PROBLEMAS DE DNS DEL DOMINIO 🔥
+    let urlVercel = `https://ni-una-menos-arg.vercel.app/api/whatsapp`; 
 
-    // 🔥 MANDAMOS TODO DE UN SOLO GOLPE A VERCEL 🔥
     fetch(urlVercel, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -933,8 +931,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
             contactos: contactos, 
             mensaje: msg 
         })
-    })
-    .catch(err => console.error("Fallo Vercel:", err));
+    }).catch(err => {});
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
@@ -1064,7 +1061,7 @@ async function disparoSOS(){
  }
 
  speechSynthesis.cancel();
- try{if('wakeLock'in navigator)await navigator.wakeLock.request('screen')}catch{}
+ try{ if('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(e=>{}); } catch(e){}
  
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
@@ -1079,10 +1076,12 @@ async function disparoSOS(){
 
  const id = 'P4-' + Date.now() + '-' + Math.random().toString(16).slice(2,8).toUpperCase();
  aid = id;
- 
+
+ // 🔥 DISPARO EN SEGUNDO PLANO PARA NO BLOQUEAR EL ACTA 🔥
  if (imei && imei !== 'SIN_IMEI') {
-     await authTrucha(imei);
-     supaQuery('POST', 'c4_emergencias', { imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() }).catch(()=>{});
+     authTrucha(imei).then(ok => {
+         if(ok) supaQuery('POST', 'c4_emergencias', { imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() }).catch(e=>{});
+     });
  }
 
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
