@@ -155,7 +155,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 .ley{display:inline-block;padding:5px 12px;margin:4px;border-radius:999px;border:1px solid var(--oroMedio);color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;font-weight:700;background:#FFFCF2}
 @media(max-width:640px){.grid2{grid-template-columns:1fr}}
 
-/* BOTÓN INSTALAR PW4 CON LOGO C4 MINI */
+/* BOTÓN INSTALAR PWA CON LOGO C4 MINI */
 #btn-install-pwa {
     position: fixed;
     top: 15px;
@@ -273,7 +273,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 <section id="registro" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER AL INICIO</button><h2 class="tit">CARGA OFICIAL</h2>
  <div class="caja">
   <div class="campo"><label>NOMBRE Y APELLIDO</label><input id="rN"></div>
-  <div class="campo"><label>CORREO ELECTRÓNICO</label><input id="rE" type="email" placeholder="tu@email.com"></div>
   <div class="campo"><label>IMEI 15 DÍGITOS</label><input id="rI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
   <div class="campo"><label>TU NÚMERO DE WHATSAPP</label><input id="rW" inputmode="tel" placeholder="Para validar registro único"></div>
   <div class="campo"><label>CONTACTO FAMILIAR 1</label><input id="cF1" inputmode="tel" placeholder="WhatsApp para alerta SOS"></div>
@@ -347,7 +346,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
   <p style="font-size:15px;color:#333;margin-bottom:20px;text-align:center;line-height:1.6;font-weight:600;">¿Te robaron el celular? No te arriesgues.<br>Ingresá tu IMEI y tu Llave Maestra para activar remotamente el equipo del ladrón.</p>
   <div class="campo"><label>IMEI DEL EQUIPO ROBADO</label><input id="rrI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
   <div class="campo"><label>TU LLAVE MAESTRA C4</label><input id="rrL" placeholder="C4‑XXXX‑XXXX" style="text-transform:uppercase"></div>
-  <button class="btn" onclick="recuperar('detonar')" style="margin-top:10px; font-size:15px; letter-spacing:3px; padding:25px;">💥 DISPARAR ALARMA AL CELULAR 💥</button>
+  <button class="btn rubi" onclick="recuperar('detonar')" style="margin-top:10px; font-size:15px; letter-spacing:3px; padding:25px;">💥 DISPARAR ALARMA AL CELULAR 💥</button>
   <button class="btn blanco" onclick="recuperar('restaurar')" style="margin-top:18px">RESTABLECER SISTEMA EN ESTE EQUIPO</button>
  </div>
 </section>
@@ -395,14 +394,19 @@ const LK = k => !k ? '' : k.toUpperCase().replace(/[\u2011-\u2015]/g,'-').replac
 const IM = i => (i||'').toString().replace(/\D/g,'').slice(0,15);
 
 // ==========================================
-// 2. NAVEGACIÓN INTELIGENTE (SCROLL CORREGIDO Y SEGURO)
+// 2. NAVEGACIÓN INTELIGENTE (SCROLL CORREGIDO)
 // ==========================================
 function ir(id) {
     document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
     document.getElementById(id).classList.add('activa');
     
-    // Scroll directo y seguro al principio de la página, sin trabarse
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    // Desplazamiento inteligente: bajamos directo al contenido para evitar el logo gigante de arriba
+    const mainTag = document.querySelector('main');
+    if (mainTag) {
+        window.scrollTo({top: mainTag.offsetTop - 10, behavior: 'smooth'});
+    } else {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
     
     if(id === 'panel') {
         setTimeout(() => {
@@ -422,7 +426,7 @@ function leerVoz() {
     try {
         speechSynthesis.cancel();
         // GUION EXACTO SOLICITADO
-        const u = new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina. Nuestra aplicación está diseñada para proteger a las personas. Mientras estás en la aplicación, si sentís que estás en peligro, con un sacudón brusco se activa y le avisa inmediatamente a tus contactos. Es un sistema de evidencia forense que graba fotos, saca videos, captura audio continuo y rastrea tu ubicación. Si te roban el celular, lo activás manualmente a distancia desde cualquier otro celular o el de un familiar usando tu Llave Maestra. El sistema recaba toda la información y en las setenta y dos horas, si no hay denuncia, queda todo borrado para garantizar tu privacidad. Este es un sistema con seguridad criptográfica SHA para la justicia. Podés descargar el acta pericial, la imprimís y la llevás a la comisaría o fiscalía.`);
+        const u = new SpeechSynthesisUtterance(`Nuestra aplicación está diseñada para proteger a las personas. Es un sistema integral de evidencia que opera de forma invisible: graba audio de forma continua, saca fotos, graba videos y rastrea tu ubicación por GPS segundo a segundo. Toda esta información construye tu Acta Pericial P4. Si te roban el celular, lo activás desde cualquier celular o de un familiar, y lo activás manual a distancia cargando tu Llave Maestra. El sistema recaba toda la información y en las setenta y dos horas, si no hay denuncia, queda todo borrado para garantizar tu privacidad. Este es un sistema con seguridad criptográfica para la justicia. Podés descargar el acta, la imprimís y la llevás a comisaría o fiscalía.`);
         u.lang = 'es-AR'; u.rate = 0.92; u.pitch = 1; u.volume = 1;
         speechSynthesis.speak(u);
     } catch(e) {
@@ -574,22 +578,20 @@ async function borrarActa(id) {
 }
 
 // ==========================================
-// 4. REGISTRO (CON EMAIL) E INTEGRACIÓN OPENAI
+// 4. REGISTRO E INTEGRACIÓN OPENAI
 // ==========================================
 async function alta(){
     const n = document.getElementById('rN').value.trim();
-    const eMail = document.getElementById('rE').value.trim(); // NUEVO: Toma el email real
     const i = IM(document.getElementById('rI').value);
     const w = document.getElementById('rW').value.trim();
     const c1 = document.getElementById('cF1').value.trim();
     const c2 = document.getElementById('cF2').value.trim();
     const c = [c1, c2].filter(Boolean);
     
-    if(!n || !eMail || !/^\d{15}$/.test(i) || !w) return alert('Requiere Nombre completo, Email válido, IMEI de 15 dígitos y tu número de WhatsApp.');
+    if(!n || !/^\d{15}$/.test(i) || !w) return alert('Requiere Nombre completo, IMEI válido de 15 dígitos y tu número de WhatsApp.');
     
     let waLimpio = w.replace(/\D/g, ''); 
 
-    // Autenticamos el correo trucho de seguridad atado a este IMEI
     await authTrucha(i);
 
     try {
@@ -613,8 +615,8 @@ async function alta(){
         let fechaVencimiento = new Date();
         fechaVencimiento.setDate(fechaVencimiento.getDate() + 15);
 
-        // Agregamos el correo real a la base de datos
-        await supaQuery('POST', 'c4_suscripciones', { email: eMail, imei: i, whatsapp: waLimpio, llave_acceso: k, tipo_plan: 'prueba_15', fecha_vencimiento: fechaVencimiento.toISOString(), activa: true, alarma_remota: false });
+        // Agregamos todo a la base de datos (con el correo automático del sistema)
+        await supaQuery('POST', 'c4_suscripciones', { email: i+'@c4judicial.com.ar', imei: i, whatsapp: waLimpio, llave_acceso: k, tipo_plan: 'prueba_15', fecha_vencimiento: fechaVencimiento.toISOString(), activa: true, alarma_remota: false });
 
         localStorage.setItem('imei', i); 
         localStorage.setItem('nombre', n);
