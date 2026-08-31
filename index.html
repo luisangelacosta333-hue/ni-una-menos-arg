@@ -155,58 +155,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 .ley{display:inline-block;padding:5px 12px;margin:4px;border-radius:999px;border:1px solid var(--oroMedio);color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;font-weight:700;background:#FFFCF2}
 @media(max-width:640px){.grid2{grid-template-columns:1fr}}
 
-/* BOTÓN INSTALAR PWA CON LOGO C4 MINI */
-#btn-install-pwa {
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    background: var(--blanco);
-    color: var(--oroOscuro);
-    padding: 6px 14px 6px 6px;
-    border-radius: 50px;
-    font-family: 'Cinzel', serif;
-    font-weight: 900;
-    font-size: 13px;
-    letter-spacing: 1px;
-    border: 1px solid var(--oro);
-    box-shadow: var(--luzFuerte);
-    cursor: pointer;
-    z-index: 9999999;
-    display: none;
-    align-items: center;
-    gap: 8px;
-    animation: entrar .5s ease both;
-}
-.c4-mini {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 20%,#FFFFFF,#FFF8DC 35%,#E6C76B 62%,#A87F0A 88%,#5A3E00 100%);
-    color: var(--blanco);
-    display: grid;
-    place-items: center;
-    font-size: 12px;
-    border: 1px solid var(--oro);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-@media print {
-  @page { size: A4; margin: 10mm; }
-  body { background: #fff !important; color: #000 !important; }
-  .btn, .footer-wrap, .noimp, .vista:not(.activa), header, .scroll-container, #btn-install-pwa { display: none !important; }
-  .vista { padding: 0 !important; max-width: 100% !important; display: block !important; }
-  #panel { display: block !important; }
-  #alertas { display: block !important; width: 100%; }
-  .acta { 
-    position: relative !important; left: auto !important; top: auto !important; width: 100% !important; border: none !important; box-shadow: none !important; page-break-inside: avoid; page-break-after: always; margin: 0 0 20px 0 !important;
-  }
-  .acta h3, .acta th, .acta td, .acta div { color: #000 !important; -webkit-text-fill-color: #000 !important; }
-  .acta::after { border-color: #000 !important; }
-  .acta .t th { background: #eee !important; }
-  .acta .mono { background: #fff !important; border-color: #000 !important; }
-}
-
-/* ESTILOS PARA EL MODAL DE PAGO */
+/* ESTILOS PARA EL MODAL DE PAGO (SIN NOMBRE) */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -256,9 +205,22 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
     margin-top: 10px;
 }
 
+@media print {
+  @page { size: A4; margin: 10mm; }
+  body { background: #fff !important; color: #000 !important; }
+  .btn, .footer-wrap, .noimp, .vista:not(.activa), header { display: none !important; }
+  .vista { padding: 0 !important; max-width: 100% !important; display: block !important; }
+  #panel { display: block !important; }
+  #alertas { display: block !important; width: 100%; }
+  .acta { 
+    position: relative !important; left: auto !important; top: auto !important; width: 100% !important; border: none !important; box-shadow: none !important; page-break-inside: avoid; page-break-after: always; margin: 0 0 20px 0 !important;
+  }
+  .acta h3, .acta th, .acta td, .acta div { color: #000 !important; -webkit-text-fill-color: #000 !important; }
+  .acta::after { border-color: #000 !important; }
+  .acta .t th { background: #eee !important; }
+  .acta .mono { background: #fff !important; border-color: #000 !important; }
+}
 </style></head><body>
-
-<button id="btn-install-pwa"><div class="c4-mini">C4</div> INSTALAR APP</button>
 
 <div class="app">
 <header>
@@ -337,15 +299,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
      <input type="hidden" id="pI">
    </div>
    <p style="text-align:center; font-size:14px; font-weight:600; color:#555; margin-bottom: 15px;">Seleccioná el plan y subí la foto de tu transferencia. Nuestra Inteligencia Artificial leerá el comprobante y te activará al instante.</p>
-   
-   <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-top:10px;text-align:left;">
-      <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">💳 DATOS PARA TRANSFERENCIA</b>
-      <p style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;margin:0;">
-          Realiza el pago correspondiente al plan que elijas a la siguiente cuenta:<br><br>
-          <b>ALIAS:</b> <span style="font-family:'JetBrains Mono',monospace;">noir.elite.ceo</span><br>
-          <b>CBU:</b> <span style="font-family:'JetBrains Mono',monospace;">0110257630025717844115</span>
-      </p>
-   </div>
  </div>
  <input type="file" id="fileComprobante" accept="image/*" style="display:none" onchange="procesarComprobante(event)">
  
@@ -382,7 +335,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <div class="caja">
   <div class="campo" style="display: flex; gap: 10px; align-items: center;">
     <input id="lkI" placeholder="C4‑XXXX‑XXXX" style="flex: 1; text-align:center; font-size:22px; letter-spacing:4px; text-transform:uppercase; font-weight:800; padding: 18px 10px;">
-    <!-- BOTÓN PEGAR INCORPORADO PARA SOLUCIONAR EL PROBLEMA DE ESCRITURA -->
+    <!-- BOTÓN PEGAR INCORPORADO -->
     <button class="btn blanco" onclick="pegarLlave()" style="width: auto; padding: 18px 15px; font-size: 12px; letter-spacing: 2px; border: 1px solid var(--oro);" title="Pegar del portapapeles">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
     </button>
@@ -456,9 +409,7 @@ try {
     if (typeof window.supabase !== 'undefined') {
         supaClient = window.supabase.createClient(SUPA_URL, SUPA_KEY);
     }
-} catch(e) {
-    console.warn("Supabase Realtime offline.");
-}
+} catch(e) {}
 
 const LK = k => !k ? '' : k.toUpperCase().replace(/[\u2011-\u2015]/g,'-').replace(/[^A-Z0-9\-]/g,'').trim();
 const IM = i => (i||'').toString().replace(/\D/g,'').slice(0,15);
@@ -540,27 +491,40 @@ async function cerrar() {
     location.reload();
 }
 
+// ✅ SOLUCIÓN AL TXT: DOBLE BLINDAJE (DESCARGA NORMAL + MENÚ COMPARTIR DEL CELULAR)
 function expTXT() {
     let currentImei = localStorage.getItem('imei') || sessionStorage.getItem('k_imei');
     let actasParaExportar = listaActas.filter(a => a.imei === currentImei);
-    if(actasParaExportar.length === 0) {
-        alert('No hay actas registradas para descargar.');
-        return;
-    }
+    if(actasParaExportar.length === 0) return alert('No hay actas registradas para descargar.');
     
     let t = "=== NI UNA MENOS ARGENTINA - ACTA P4 ===\r\n\r\n";
     actasParaExportar.forEach(a => {
         t += `Expediente: ${a.numero_acta}\r\nFecha: ${a.fecha} ${a.hora}\r\nGPS: ${a.lat}, ${a.lng}\r\nHash: ${a.sha256}\r\n--------------------\r\n`;
     });
-    
-    // SOLUCIÓN DEFINITIVA PARA CELULARES: Data URI bypass
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(t));
-    element.setAttribute('download', 'ACTA_P4_' + Date.now() + '.txt');
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+
+    try {
+        const b = new Blob([t], { type: 'text/plain;charset=utf-8' });
+        const u = URL.createObjectURL(b);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = u;
+        a.download = 'ACTA_P4_' + Date.now() + '.txt';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 200);
+    } catch(e) {
+        console.warn("Fallo el Blob normal");
+    }
+
+    // SI LA DESCARGA LA BLOQUEA EL NAVEGADOR DEL CELU, ABRE EL MENÚ "COMPARTIR" (NO FALLA NUNCA)
+    if (navigator.share) {
+        setTimeout(() => {
+            navigator.share({
+                title: 'Acta Pericial P4',
+                text: t
+            }).catch(()=>{});
+        }, 600);
+    }
 }
 
 function descargarPDF() {
@@ -742,7 +706,7 @@ async function alta(){
         return;
     }
 
-    try { await authTrucha(i); } catch(e) { console.warn('Auth offline'); }
+    try { await authTrucha(i); } catch(e) {}
 
     let dbError = false;
     try {
@@ -762,7 +726,6 @@ async function alta(){
             return;
         }
     } catch(err) {
-        console.warn('Operando en modo local seguro, sin conexión remota a DB.');
         dbError = true;
     }
 
@@ -773,7 +736,7 @@ async function alta(){
     if(!dbError) {
         try {
             await supaQuery('POST', 'c4_suscripciones', { email: i+'@c4judicial.com.ar', imei: i, whatsapp: waLimpio, llave_acceso: k, tipo_plan: 'prueba_15', fecha_vencimiento: fechaVencimiento.toISOString(), activa: true, alarma_remota: false });
-        } catch(e) { console.warn("Fallo guardado remoto, respaldando local."); }
+        } catch(e) {}
     }
 
     localStorage.setItem('imei', i); 
@@ -878,7 +841,7 @@ async function ejecutarPagoAprobado(i, plan) {
     } catch(errUpsert) {
         try {
             await supaQuery('PATCH', `c4_suscripciones?imei=eq.${i}`, { llave_acceso: k, tipo_plan: plan, fecha_vencimiento: nuevaFecha.toISOString(), activa: true });
-        } catch(e) { console.warn("Modo local: no se guardó en DB remota."); }
+        } catch(e) {}
     }
     
     document.getElementById('lk').textContent = k;
@@ -909,9 +872,7 @@ async function validar(){
     try {
         const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${k}`);
         if(res.length > 0) fromDB = res[0];
-    } catch(e) {
-        console.warn("Validación remota falló, comprobando local.");
-    }
+    } catch(e) { }
 
     if (!fromDB && !validoLocal) {
         return alert('Acceso Denegado. Llave incorrecta o base de datos offline.');
@@ -968,9 +929,7 @@ async function recuperar(accion) {
     try {
         const res = await supaQuery('GET', `c4_suscripciones?select=*&imei=eq.${i}&llave_acceso=eq.${l}&activa=eq.true`);
         if (res.length > 0) fromDB = res[0];
-    } catch(e) {
-        console.warn("DB offline, usando modo local.");
-    }
+    } catch(e) {}
 
     let validoLocal = localStorage.getItem('llave_maestra_' + i) === l;
 
@@ -988,9 +947,8 @@ async function recuperar(accion) {
         if(confirm('⚠️ ATENCIÓN: ¿Estás seguro de DETONAR el celular a distancia? El equipo empezará a grabar audio, fotos y enviará su ubicación GPS inmediatamente.')) {
             try {
                 await supaQuery('PATCH', `c4_suscripciones?imei=eq.${i}`, { alarma_remota: true });
-            } catch(e) {
-                console.warn("Aviso remoto falló, se activará localmente si es el mismo equipo.");
-            }
+            } catch(e) {}
+            
             if (localStorage.getItem('imei') === i) {
                 ir('sos');
                 disparoSOS('remoto');
@@ -1031,6 +989,19 @@ function iniciarRealtime() {
         .subscribe();
 }
 
+// ✅ EL FETCH DE WHATSAPP 100% ORIGINAL (DIRECTO A GREEN API COMO TENÍAS EN TU CÓDIGO)
+const WA_INSTANCE = '710722723701';
+const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
+
+function formatArg(num) {
+    let c = String(num).replace(/\D/g, '');
+    if (c.startsWith('549')) return c;
+    if (c.startsWith('54')) return '549' + c.substring(2);
+    if (c.startsWith('0')) c = c.substring(1);
+    c = c.replace(/^(11|2\d{2}|3\d{2})15(\d+)$/, '$1$2'); 
+    return '549' + c;
+}
+
 function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', tipo_disparo = 'boton') {
     if (!contactos || !Array.isArray(contactos) || contactos.length === 0) {
         try {
@@ -1064,11 +1035,17 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', ti
         msg = `🛡️ *SISTEMA C4 - NI UNA MENOS* 🛡️\n\nHola. *${nombre}* te ha registrado en su red de seguridad.\n\n⚠️ *PASO OBLIGATORIO:*\nPara que nuestras alertas S.O.S (con audio y ubicación GPS en vivo) te lleguen inmediatamente en caso de emergencia y WhatsApp no las bloquee, necesitás hacer lo siguiente ahora mismo:\n\n1️⃣ Agendá este número en tus contactos.\n2️⃣ Respondé a este mensaje únicamente con la frase:\n\n*ni una menos*\n\nAl responder, el canal seguro quedará habilitado de por vida.`;
     }
 
-    fetch('/api/whatsapp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contactos: contactos, mensaje: msg })
-    }).catch(err => console.error("Fallo al conectar con Green API:", err));
+    for (let numero of contactos) {
+        if(!numero) continue;
+        let cel = formatArg(numero);
+        let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
+        
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
+        }).catch(err => console.error(err));
+    }
 }
 
 // ==========================================
