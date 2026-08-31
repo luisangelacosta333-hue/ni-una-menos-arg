@@ -411,18 +411,27 @@ const LK = k => {
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
 // =========================================================================
-// 🔥 AUTH NINJA: ENGAÑO A SUPABASE (RLS) - VERSIÓN DEFINITIVA
+// 🔥 AUTH NINJA: OPTIMIZADO (UNA SOLA PETICIÓN / MEMORIA LOCAL)
 // =========================================================================
 let currentJWT = null;
 
-async function authTrucha(imei) {
+async function authTrucha(imei, isRegistro = false) {
     if (!imei) return false;
+
+    // 1. Si ya tenemos un Token guardado en la memoria local, no pedimos nada a Supabase. 
+    // Esto ahorra el 100% de las peticiones repetidas.
+    let savedJWT = localStorage.getItem('c4_jwt_' + imei);
+    if (savedJWT && !isRegistro) {
+        currentJWT = savedJWT;
+        return true;
+    }
+
     const email = imei + '@c4judicial.com.ar';
     const password = 'C4_Sec2026!' + imei; 
+    let endpoint = isRegistro ? 'signup' : 'token?grant_type=password';
     
     try {
-        // 1. Modo Sigilo: Intentamos loguearnos directamente
-        let res = await fetch(`${SUPA_URL}/auth/v1/token?grant_type=password`, {
+        let res = await fetch(`${SUPA_URL}/auth/v1/${endpoint}`, {
             method: 'POST',
             headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
@@ -430,50 +439,32 @@ async function authTrucha(imei) {
         
         let data = await res.json();
         
-        // 2. Si rebota (porque no existe o falló), lo registramos en el acto
-        if (!res.ok) {
-            let regRes = await fetch(`${SUPA_URL}/auth/v1/signup`, {
+        // 2. Si es validación normal y falla por credenciales (el usuario no existe), lo registramos en el acto.
+        // Solo va a pasar 1 sola vez en la vida del dispositivo.
+        if (!res.ok && !isRegistro && (data.error_description?.includes('Invalid login') || data.msg?.includes('Invalid login'))) {
+             res = await fetch(`${SUPA_URL}/auth/v1/signup`, {
                 method: 'POST',
                 headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
-            let regData = await regRes.json();
-            
-            // Si Supabase tira un error real (ej: demasiados intentos), lo mostramos EXACTO
-            if (!regRes.ok) {
-                const errorReal = regData.msg || regData.error_description || regData.error?.message || "Error desconocido en Supabase";
-                
-                if (errorReal.includes("User already registered") || errorReal.includes("already registered")) {
-                    alert(`🛑 USUARIO TRABADO EN SUPABASE\n\nEl correo ${email} quedó bloqueado de las pruebas anteriores (seguro por el Confirm Email).\n\nSOLUCIÓN OBLIGATORIA:\n1. Entrá a Supabase -> Authentication -> Users.\n2. BORRÁ ese usuario.\n3. Volvé a tocar el botón en la app.`);
-                    return false;
-                }
-
-                alert("⚠️ ERROR AL CREAR USUARIO:\n" + errorReal);
-                return false;
-            }
-
-            // Si pasa pero no da token, es por culpa del "Confirm Email"
-            if ((regData.id || regData.user) && !regData.access_token && !regData.session) {
-                alert("⚠️ ATENCIÓN: Tenés activada la 'Confirmación de Email'.\nAndá a Supabase -> Authentication -> Providers -> Email y APAGÁ 'Confirm email' para que esto funcione.");
-                return false;
-            }
-
-            data = regData; // Sobreescribimos con la data exitosa del registro
+            data = await res.json();
         }
-        
-        // 3. Extraemos el Botín (Token JWT) para abrir el candado RLS
-        if (data.access_token) {
-            currentJWT = data.access_token;
-            return true;
-        } else if (data.session && data.session.access_token) {
-            currentJWT = data.session.access_token;
+
+        if (!res.ok) {
+            console.error("Error Ninja:", data);
+            return false;
+        }
+
+        // 3. Extraemos y GUARDAMOS el Token para siempre.
+        let token = data.access_token || (data.session && data.session.access_token);
+        if (token) {
+            currentJWT = token;
+            localStorage.setItem('c4_jwt_' + imei, token); 
             return true;
         }
         
-        alert("Error crítico: Supabase conectó pero no devolvió el Token de acceso.");
         return false;
     } catch (e) {
-        alert("Error de red conectando con Supabase: " + e.message);
         return false;
     }
 }
@@ -665,8 +656,8 @@ async function alta(){
     const emailTrucho = i + '@c4judicial.com.ar';
 
     try {
-        const authOk = await authTrucha(i);
-        if(!authOk) return; // Si falla authTrucha, la propia función ya lanzó la alerta específica.
+        const authOk = await authTrucha(i, true); // <--- ACÁ PASA "TRUE" PARA QUE HAGA UNA SOLA PETICIÓN DE REGISTRO
+        if(!authOk) return; 
 
         const checkWA = await supaQuery('GET', `c4_suscripciones?select=*&whatsapp=eq.${waLimpio}`);
         if(checkWA && checkWA.length > 0) {
@@ -894,10 +885,8 @@ setInterval(async () => {
 }, 8000);
 
 // =========================================================================
-// 🔥 CONEXIÓN A GREEN API (PRODUCCIÓN LIMPIA Y SILENCIOSA)
+// 🔥 CONEXIÓN A VERCEL (PRODUCCIÓN LIMPIA Y SILENCIOSA)
 // =========================================================================
-const WA_INSTANCE = '710722723701';
-const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
 
 function formatArg(num) {
     let c = String(num).replace(/\D/g, '');
@@ -933,23 +922,18 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ *SISTEMA SEGURO* \nDesactivado a salvo.`;
     }
 
+    // 🔥 REEMPLAZÁ ESTA URL POR TU ENDPOINT DE VERCEL 🔥
+    let urlVercel = `https://TU_PROYECTO.vercel.app/api/whatsapp`; 
+
     for (let numero of contactos) {
         if(!numero) continue;
         let cel = formatArg(numero);
-        let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
         
-        fetch(url, {
+        fetch(urlVercel, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-        })
-        .then(async res => {
-            let textRes = await res.text();
-            try {
-                return textRes ? JSON.parse(textRes) : { idMessage: "sent_ok" };
-            } catch(e) {
-                return { idMessage: "sent_ok" };
-            }
+            // Asumiendo que tu Vercel lee "chatId" y "message", si usa otros nombres cambialos acá:
+            body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg }) 
         })
         .catch(err => {});
     }
