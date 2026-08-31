@@ -240,7 +240,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <div id="zonaOk" style="display:none;padding-bottom:20px;">
   <div class="caja" style="background:#FFF3F5;border:1px solid #8B0000;padding:28px;">
    <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">✦ PROTECCIÓN ACTIVA ✦</h3>
-   <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás registrada en el sistema.<br><b>Apretá el botón rojo ahora para que empiece a grabar la evidencia y enviar las alertas.</b></p>
+   <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás registrada en el sistema.<br>Si sentís miedo o sospechás que corrés peligro, activá el botón manualmente aquí:</p>
    <button class="btn rubi" onclick="irSOS()">✦ INGRESAR AL BOTÓN ANTIPÁNICO ✦</button>
   </div>
  </div>
@@ -398,6 +398,7 @@ const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 
 const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digit',day:'2-digit'},oH={timeZone:'America/Argentina/Buenos_Aires',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false};
 
+// FIX CRÍTICO: FORMATO AUTOMÁTICO DE LLAVE PARA EVITAR ERRORES DE USUARIA
 const LK = k => {
     let str = (k || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (str.startsWith('C4')) {
@@ -411,55 +412,61 @@ const LK = k => {
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
 // =========================================================================
-// 🔥 AUTH NINJA: OPTIMIZADO (UNA SOLA PETICIÓN / MEMORIA LOCAL)
+// 🔥 FIX RLS SUPABASE: SISTEMA AUTENTICACIÓN AUTOMÁTICA FANTASMA
 // =========================================================================
 let currentJWT = null;
 
-async function authTrucha(imei, isRegistro = false) {
+async function authTrucha(imei) {
     if (!imei) return false;
-
-    let savedJWT = localStorage.getItem('c4_jwt_' + imei);
-    if (savedJWT && !isRegistro) {
-        currentJWT = savedJWT;
-        return true;
-    }
-
     const email = imei + '@c4judicial.com.ar';
     const password = 'C4_Sec2026!' + imei; 
-    let endpoint = isRegistro ? 'signup' : 'token?grant_type=password';
     
     try {
-        let res = await fetch(`${SUPA_URL}/auth/v1/${endpoint}`, {
+        // 1. Intentar Loguearse
+        let res = await fetch(`${SUPA_URL}/auth/v1/token?grant_type=password`, {
             method: 'POST',
             headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
-        
         let data = await res.json();
         
-        if (!res.ok && !isRegistro && (data.error_description?.includes('Invalid login') || data.msg?.includes('Invalid login'))) {
-             res = await fetch(`${SUPA_URL}/auth/v1/signup`, {
+        // 2. Si falla el login por cualquier motivo (ej: el usuario no existe), lo registramos
+        if (data.error) {
+            let regRes = await fetch(`${SUPA_URL}/auth/v1/signup`, {
                 method: 'POST',
                 headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
-            data = await res.json();
-        }
+            let regData = await regRes.json();
+            
+            // Si el registro falla, muestra el error EXACTO de Supabase en pantalla
+            if (regData.error) {
+                alert("⚠️ ERROR SUPABASE AL CREAR USUARIO:\n" + regData.error.message + "\n\n(Revisá en Supabase -> Authentication -> Providers -> Email que 'Enable Email Signup' esté en ON).");
+                return false;
+            }
 
-        if (!res.ok) {
-            console.error("Error Ninja:", data);
-            return false;
-        }
+            // Si pide confirmación de email y no da token
+            if ((regData.id || regData.user) && !regData.access_token && !regData.session) {
+                alert("⚠️ PANEL SUPABASE: Tenés activada la 'Confirmación de Email'.\n\nEntrá a Supabase -> Authentication -> Providers -> Email -> y DESACTIVÁ 'Confirm email' para que el sistema deje crear la cuenta automáticamente.");
+                return false;
+            }
 
-        let token = data.access_token || (data.session && data.session.access_token);
-        if (token) {
-            currentJWT = token;
-            localStorage.setItem('c4_jwt_' + imei, token); 
+            data = regData; // Pasamos la data exitosa de registro
+        }
+        
+        // 3. Extraer Token
+        if (data.access_token) {
+            currentJWT = data.access_token;
+            return true;
+        } else if (data.session && data.session.access_token) {
+            currentJWT = data.session.access_token;
             return true;
         }
         
+        alert("Error de Supabase: No devolvió Token de acceso.");
         return false;
     } catch (e) {
+        alert("Error de red conectando con Supabase: " + e.message);
         return false;
     }
 }
@@ -568,14 +575,10 @@ const sigilo = () => {
 };
 
 async function sha256(message) {
-    try {
-        const msgBuffer = new TextEncoder().encode(message);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    } catch (e) {
-        return 'HASH-' + Math.random().toString(36).substr(2, 9).toUpperCase(); // Respaldo antibloqueo en entornos locales
-    }
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 const initDB = () => new Promise((resolve) => {
@@ -655,8 +658,8 @@ async function alta(){
     const emailTrucho = i + '@c4judicial.com.ar';
 
     try {
-        const authOk = await authTrucha(i, true); 
-        if(!authOk) return; 
+        const authOk = await authTrucha(i);
+        if(!authOk) return; // Si falla authTrucha, la propia función ya lanzó la alerta específica.
 
         const checkWA = await supaQuery('GET', `c4_suscripciones?select=*&whatsapp=eq.${waLimpio}`);
         if(checkWA && checkWA.length > 0) {
@@ -678,6 +681,7 @@ async function alta(){
         let fechaVencimiento = new Date();
         fechaVencimiento.setDate(fechaVencimiento.getDate() + 15);
 
+        // FIX: Agregado el campo email
         await supaQuery('POST', 'c4_suscripciones', { 
             email: emailTrucho,
             imei: i, 
@@ -921,17 +925,18 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ *SISTEMA SEGURO* \nDesactivado a salvo.`;
     }
 
-    // 🔥 URL DIRECTA DE VERCEL PARA SALTEAR PROBLEMAS DE DNS DEL DOMINIO 🔥
-    let urlVercel = `https://ni-una-menos-arg.vercel.app/api/whatsapp`; 
+    // 🔥 URL DIRECTA DE VERCEL (Dominio oficial) 🔥
+    let urlVercel = `https://niunamenosarg.com/api/whatsapp`;
 
+    // 🔥 ENVIAMOS EL FORMATO EXACTO QUE ESPERA VERCEL: contactos y mensaje 🔥
     fetch(urlVercel, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            contactos: contactos, 
-            mensaje: msg 
+        body: JSON.stringify({
+            contactos: contactos,
+            mensaje: msg
         })
-    }).catch(err => {});
+    }).catch(err => console.error("Error contactando a Vercel:", err));
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
@@ -1017,7 +1022,7 @@ async function loopEvidencia(acta) {
             if (acta.imei === currentImei) render(acta);
         };
         videoRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 15000));
+        await new Promise(resolve => setTimeout(resolve, 60000));
         if(videoRecorder.state === 'recording') videoRecorder.stop();
         videoStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
@@ -1039,7 +1044,7 @@ async function loopEvidencia(acta) {
             if (acta.imei === currentImei) render(acta);
         };
         audioRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 15000));
+        await new Promise(resolve => setTimeout(resolve, 60000));
         if(audioRecorder.state === 'recording') audioRecorder.stop();
         audioStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
@@ -1061,7 +1066,7 @@ async function disparoSOS(){
  }
 
  speechSynthesis.cancel();
- try{ if('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(e=>{}); } catch(e){}
+ try{if('wakeLock'in navigator)await navigator.wakeLock.request('screen')}catch{}
  
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
@@ -1076,12 +1081,10 @@ async function disparoSOS(){
 
  const id = 'P4-' + Date.now() + '-' + Math.random().toString(16).slice(2,8).toUpperCase();
  aid = id;
-
- // 🔥 DISPARO EN SEGUNDO PLANO PARA NO BLOQUEAR EL ACTA 🔥
+ 
  if (imei && imei !== 'SIN_IMEI') {
-     authTrucha(imei).then(ok => {
-         if(ok) supaQuery('POST', 'c4_emergencias', { imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() }).catch(e=>{});
-     });
+     await authTrucha(imei);
+     supaQuery('POST', 'c4_emergencias', { imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() }).catch(()=>{});
  }
 
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
