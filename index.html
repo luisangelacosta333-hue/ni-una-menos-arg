@@ -419,9 +419,10 @@ let currentJWT = null;
 async function authTrucha(imei) {
     if (!imei) return false;
     const email = imei + '@c4judicial.com.ar';
-    const password = imei + 'C4_Sec2026!'; 
+    const password = 'C4_Sec2026!' + imei; 
     
     try {
+        // 1. Intentar Loguearse
         let res = await fetch(`${SUPA_URL}/auth/v1/token?grant_type=password`, {
             method: 'POST',
             headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
@@ -429,22 +430,43 @@ async function authTrucha(imei) {
         });
         let data = await res.json();
         
-        if (data.error && (data.error.message.includes("Invalid login") || data.error.message.includes("not found") || data.error.message.includes("Invalid credentials"))) {
+        // 2. Si falla el login por cualquier motivo (ej: el usuario no existe), lo registramos
+        if (data.error) {
             let regRes = await fetch(`${SUPA_URL}/auth/v1/signup`, {
                 method: 'POST',
                 headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
-            data = await regRes.json();
+            let regData = await regRes.json();
+            
+            // Si el registro falla, muestra el error EXACTO de Supabase en pantalla
+            if (regData.error) {
+                alert("⚠️ ERROR SUPABASE AL CREAR USUARIO:\n" + regData.error.message + "\n\n(Revisá en Supabase -> Authentication -> Providers -> Email que 'Enable Email Signup' esté en ON).");
+                return false;
+            }
+
+            // Si pide confirmación de email y no da token
+            if ((regData.id || regData.user) && !regData.access_token && !regData.session) {
+                alert("⚠️ PANEL SUPABASE: Tenés activada la 'Confirmación de Email'.\n\nEntrá a Supabase -> Authentication -> Providers -> Email -> y DESACTIVÁ 'Confirm email' para que el sistema deje crear la cuenta automáticamente.");
+                return false;
+            }
+
+            data = regData; // Pasamos la data exitosa de registro
         }
         
+        // 3. Extraer Token
         if (data.access_token) {
             currentJWT = data.access_token;
             return true;
+        } else if (data.session && data.session.access_token) {
+            currentJWT = data.session.access_token;
+            return true;
         }
+        
+        alert("Error de Supabase: No devolvió Token de acceso.");
         return false;
     } catch (e) {
-        console.error("Error authTrucha", e);
+        alert("Error de red conectando con Supabase: " + e.message);
         return false;
     }
 }
@@ -637,7 +659,7 @@ async function alta(){
 
     try {
         const authOk = await authTrucha(i);
-        if(!authOk) return alert("Error al establecer conexión segura con el servidor judicial.");
+        if(!authOk) return; // Si falla authTrucha, la propia función ya lanzó la alerta específica.
 
         const checkWA = await supaQuery('GET', `c4_suscripciones?select=*&whatsapp=eq.${waLimpio}`);
         if(checkWA && checkWA.length > 0) {
@@ -686,7 +708,7 @@ async function alta(){
         pedirPermisosGlobalesYGPS(); 
         ir('llave');
     } catch(err) { 
-        alert('Error conectando a la base de datos.'); 
+        alert('Error conectando a la base de datos.\nSi el error persiste, revisá las políticas RLS en Supabase.'); 
         console.error(err);
     }
 }
@@ -704,7 +726,7 @@ async function pagar(monto, plan) {
 
         const emailTrucho = i + '@c4judicial.com.ar';
         const authOk = await authTrucha(i);
-        if(!authOk) return alert("Error de conexión segura.");
+        if(!authOk) return;
 
         try {
             await supaQuery('POST', 'c4_suscripciones', { email: emailTrucho, imei: i, llave_acceso: k, tipo_plan: plan, fecha_vencimiento: nuevaFecha.toISOString(), activa: true, alarma_remota: false });
@@ -738,7 +760,7 @@ async function procesarPagoIA() {
 
         const emailTrucho = i + '@c4judicial.com.ar';
         const authOk = await authTrucha(i);
-        if(!authOk) return alert("Error de conexión segura.");
+        if(!authOk) return;
 
         try {
             await supaQuery('POST', 'c4_suscripciones', { email: emailTrucho, imei: i, llave_acceso: k, tipo_plan: 'aprobado_ia', fecha_vencimiento: nuevaFecha.toISOString(), activa: true, alarma_remota: false });
@@ -827,7 +849,7 @@ async function recuperar(accion) {
     
     try {
         const authOk = await authTrucha(i);
-        if(!authOk) return alert('Error de conexión segura al servidor.');
+        if(!authOk) return;
 
         const res = await supaQuery('GET', `c4_suscripciones?select=*&imei=eq.${i}&llave_acceso=eq.${l}&activa=eq.true`);
         if(res.length === 0) {
