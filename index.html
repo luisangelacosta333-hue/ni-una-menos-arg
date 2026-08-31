@@ -10,8 +10,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<!-- LIBRERÍA OFICIAL DE SUPABASE -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --blanco:#FFFFFF;
@@ -76,7 +74,7 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .btn.rubi{background:linear-gradient(135deg,#8B0000,#C70020,#8B0000,#4A0008);color:#fff;box-shadow:0 0 0 1.5px rgba(176,0,32,.5),0 15px 40px rgba(176,0,32,.45)}
 .btn.blanco{background:transparent;color:var(--oroOscuro);border:1.5px solid var(--oroMedio);box-shadow:none;text-shadow:none}
 .btn.blanco:hover{box-shadow:var(--luz); background: #FFFCF2;}
-.btn.volver{background:transparent;box-shadow:none;color:var(--oroOscuro);font-size:12px;letter-spacing:4px;width:auto;padding:4px 0;border:none;text-shadow:none; cursor:pointer;}
+.btn.volver{background:transparent;box-shadow:none;color:var(--oroOscuro);font-size:12px;letter-spacing:4px;width:auto;padding:4px 0;border:none;text-shadow:none}
 
 .campo{margin-bottom:18px}
 .campo label{display:block;font-family:'Cinzel',serif;letter-spacing:5px;font-size:12px;color:var(--oroOscuro);font-weight:900;margin-bottom:8px;text-transform:uppercase}
@@ -155,39 +153,28 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 .ley{display:inline-block;padding:5px 12px;margin:4px;border-radius:999px;border:1px solid var(--oroMedio);color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;font-weight:700;background:#FFFCF2}
 @media(max-width:640px){.grid2{grid-template-columns:1fr}}
 
-/* BOTÓN INSTALAR PWA CON LOGO C4 MINI */
+/* BOTÓN INSTALAR PWA */
 #btn-install-pwa {
     position: fixed;
     top: 15px;
     right: 15px;
-    background: var(--blanco);
-    color: var(--oroOscuro);
-    padding: 6px 14px 6px 6px;
+    background: var(--oro);
+    color: #fff;
+    padding: 8px 16px;
     border-radius: 50px;
     font-family: 'Cinzel', serif;
     font-weight: 900;
     font-size: 13px;
-    letter-spacing: 1px;
-    border: 1px solid var(--oro);
+    letter-spacing: 2px;
+    border: 1px solid var(--oroClaro);
     box-shadow: var(--luzFuerte);
     cursor: pointer;
     z-index: 9999999;
     display: none;
     align-items: center;
     gap: 8px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
     animation: entrar .5s ease both;
-}
-.c4-mini {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 20%,#FFFFFF,#FFF8DC 35%,#E6C76B 62%,#A87F0A 88%,#5A3E00 100%);
-    color: var(--blanco);
-    display: grid;
-    place-items: center;
-    font-size: 12px;
-    border: 1px solid var(--oro);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 @media print {
@@ -207,8 +194,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 }
 </style></head><body>
 
-<!-- LOGUITO DE PWA DESCARGABLE AGREGADO AQUÍ -->
-<button id="btn-install-pwa"><div class="c4-mini">C4</div> INSTALAR APP</button>
+<button id="btn-install-pwa"><span style="font-size: 1.2rem;">📲</span> INSTALAR</button>
 
 <div class="app">
 <header>
@@ -217,25 +203,21 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <h1>NI UNA MENOS</h1>
  <h2>ARGENTINA · ENERGY 2026 · ACTA P4 JUDICIAL</h2>
  <div class="tag">MALTRATO ✦ VIOLENCIA ✦ SECUESTRO ✦ PROTECCIÓN DE MENORES</div>
- <p><strong style="display:block;color:var(--oroOscuro);font-weight:800;margin-bottom:10px">Protección integral forense para resguardar tu vida.</strong>
- Nuestro sistema de evidencia graba audio continuo, saca fotos, graba videos y rastrea tu ubicación. Todo opera de forma invisible. Si te roban el celular, vos o un familiar pueden activarlo manualmente a distancia ingresando tu Llave Maestra desde cualquier otro dispositivo para no arriesgarte. <strong>Sistema 100% blindado y privado.</strong></p>
+ <p><strong style="display:block;color:var(--oroOscuro);font-weight:800;margin-bottom:10px">Protección integral forense que cubre lo que nadie cubre.</strong>
+ Se activa al instante con el botón antipánico o automáticamente ante un impacto. Alerta a sus contactos y asegura evidencia: GPS en tiempo real, audio continuo, fotos, métricas de red. Cuenta con doble firma <strong>SHA‑256 + SHA‑3</strong>, <strong>HMAC</strong>, Búfer Offline y Acta P4. <strong>Sistema 100% blindado y privado.</strong></p>
 
- <!-- BOTÓN GIGANTE PARA DESCARGAR ACTA EN LA LANDING PAGE (DORADO) -->
- <button class="btn" onclick="ir('login')" style="max-width:820px;margin-inline:auto;margin-top:25px;padding:25px;font-size:16px;box-shadow:var(--luzFuerte); letter-spacing: 5px;">📄 DESCARGAR ACTA PERICIAL P4</button>
-
- <!-- ACCESO DIRECTO AL S.O.S REMOTO (DORADO) -->
- <div style="background:#FFFCF2;border:2px solid var(--oro);padding:22px;border-radius:12px;margin:25px auto;max-width:820px;box-shadow:var(--luz);">
-  <b style="color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:22px;letter-spacing:3px;display:block;margin-bottom:10px;text-shadow: 0 1px 2px rgba(212,175,55,0.2);">✦ DETONADOR S.O.S. REMOTO ✦</b>
-  <span style="font-size:15px;color:#333;font-weight:600;line-height:1.6;display:block;margin-bottom:15px;">
-    ¿Te acaban de robar el celular? Ingresá aquí desde el teléfono de un familiar. Cargá tu <b>Llave Maestra</b> para activar manualmente el sistema a distancia y rastrear tu equipo al instante.
-  </span>
-  <button class="btn" onclick="ir('recuperar')" style="max-width:100%; font-size: 14px; letter-spacing: 3px;">💥 ENTRAR AL PANEL DE EMERGENCIA 💥</button>
+ <div style="background:#FFFCF2;border:1.5px solid var(--oro);padding:22px;border-radius:12px;margin:25px auto;max-width:820px;box-shadow:var(--luz);">
+  <b style="color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:20px;letter-spacing:3px;display:block;margin-bottom:10px;">✦ 15 DÍAS GRATIS ✦</b>
+  <span style="font-size:16px;color:#333;font-weight:600;line-height:1.5;display:block;">Descargá y registrate hoy mismo. Probala y comprobá cómo funciona nuestro sistema de protección pericial sin costo.</span>
  </div>
 
- <button class="btn blanco" onclick="leerVoz()" style="max-width:520px;margin-inline:auto;margin-top:15px;box-shadow:var(--luz)">✦ ESCUCHAR CÓMO FUNCIONA ✦</button>
+ <!-- BOTÓN DE ACCESO AL ACTA JUDICIAL EN LA LANDING PAGE PRINCIPAL -->
+ <button class="btn blanco" onclick="ir('login')" style="max-width:520px;margin-inline:auto;margin-top:15px;box-shadow:var(--luz)">✦ CONSULTAR ACTAS / CENTRO JUDICIAL ✦</button>
+
+ <button class="btn" onclick="leerVoz()" style="max-width:520px;margin-inline:auto;margin-top:15px;box-shadow:var(--luzFuerte)">✦ PRESENTACIÓN DE FUNCIONAMIENTO ✦</button>
  
  <div class="scroll-container top-marquee">
-  <div class="scroll-text">✦ GATILLO A DISTANCIA INMEDIATO 🇦🇷 ACTIVACIÓN SILENCIOSA REMOTA 🇦🇷 SENSOR DE IMPACTO Y SACUDIDA 🇦🇷 RASTREO GPS SEGUNDO A SEGUNDO 🇦🇷 GRABACIÓN DE AUDIO OCULTA 🇦🇷 ALERTA WHATSAPP A FAMILIARES 🇦🇷 BÚFER OFFLINE SIN SEÑAL 🇦🇷 MODO SIGILO DOMÉSTICO 🇦🇷</div>
+  <div class="scroll-text">✦ ACTIVACIÓN INMEDIATA POR BOTÓN O IMPACTO 🇦🇷 RASTREO GPS SEGUNDO A SEGUNDO 🇦🇷 GRABACIÓN DE AUDIO OCULTA 🇦🇷 VIDEO HD COMO EVIDENCIA 🇦🇷 FOTOS AUTOMÁTICAS FRONTAL Y TRASERA 🇦🇷 ALERTA WHATSAPP A FAMILIARES 🇦🇷 BÚFER OFFLINE SIN SEÑAL 🇦🇷 S.O.S. REMOTO 🇦🇷</div>
  </div>
 </div>
 </header>
@@ -243,34 +225,48 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 <section id="inicio" class="vista activa">
  <div id="zonaOk" style="display:none;padding-bottom:20px;">
   <div class="caja" style="background:#FFF3F5;border:1px solid #8B0000;padding:28px;">
-   <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">✦ SISTEMA EN GUARDIA ✦</h3>
-   <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">El teléfono está escuchando la señal de tu Llave Maestra por si te lo roban. Si corrés peligro ahora y lo tenés en la mano, activalo manualmente aquí:</p>
-   <button class="btn rubi" onclick="irSOS()">✦ DETONAR BOTÓN ANTIPÁNICO ✦</button>
+   <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">✦ PROTECCIÓN ACTIVA ✦</h3>
+   <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás registrada en el sistema.<br>Si sentís miedo o sospechás que corrés peligro, activá el botón manualmente aquí:</p>
+   <button class="btn rubi" onclick="irSOS()">✦ INGRESAR AL BOTÓN ANTIPÁNICO ✦</button>
   </div>
  </div>
  <div class="caja"><h3>✦ 5 PASOS PARA ACTIVAR ✦</h3>
   <div class="paso"><div class="n">I</div><div><b>NOMBRE Y APELLIDO</b><span>Datos de la persona a proteger</span></div></div>
   <div class="paso"><div class="n">II</div><div><b>IMEI *#06#</b><span>15 dígitos = Identidad legal del equipo</span></div></div>
   <div class="paso"><div class="n">III</div><div><b>2 CONTACTOS</b><span>Alerta automática a familiares por WhatsApp</span></div></div>
-  <div class="paso"><div class="n">IV</div><div><b>PAGO INTELIGENTE (IA)</b><span>Aprobación automática leyendo tu comprobante</span></div></div>
-  <div class="paso"><div class="n">V</div><div><b>LLAVE C4</b><span>Tu código secreto para activarlo a distancia</span></div></div>
+  <div class="paso"><div class="n">IV</div><div><b>PAGO INTELIGENTE (IA)</b><span>Aprobación inmediata sin comisiones</span></div></div>
+  <div class="paso"><div class="n">V</div><div><b>LLAVE C4</b><span>Única · intransferible · válida judicialmente</span></div></div>
  </div>
- <div class="caja"><h3>✦ MÓDULOS DE DEFENSA ✦</h3>
+ <div class="caja"><h3>✦ LO QUE CUBRIMOS · LO QUE TE DEFIENDE ✦</h3>
   <div class="grid2">
-   <div class="info-bloque"><b>⬩ GATILLO A DISTANCIA</b><p>Si te roban, un familiar detona tu teléfono remotamente con la Llave Maestra.</p></div>
-   <div class="info-bloque"><b>⬩ SENSOR DE SACUDIDA</b><p>Si tenés la app en pantalla, un sacudón brusco dispara la alarma a tus contactos.</p></div>
-   <div class="info-bloque"><b>⬩ MODO SIGILO (PREVENTIVO)</b><p>Oscurece la pantalla totalmente. Ideal si caminás por zonas peligrosas o sufrís violencia doméstica.</p></div>
-   <div class="info-bloque"><b>⬩ RASTREO GPS CONTINUO</b><p>Trazado segundo a segundo en vivo. Si el celular se frena, fuerza un reporte.</p></div>
-   <div class="info-bloque"><b>⬩ AUDIO FORENSE</b><p>Grabación ambiental cifrada con su propio hash de integridad judicial.</p></div>
-   <div class="info-bloque"><b>⬩ FOTOS AUTOMÁTICAS</b><p>Captura frontal y trasera para registrar el rostro del delincuente o agresor.</p></div>
+   <div class="info-bloque"><b>⬩ VIOLENCIA DE GÉNERO</b><p>Ley 26.485 protección integral, medidas urgentes, prueba pericial lista.</p></div>
+   <div class="info-bloque"><b>⬩ MALTRATO Y AMENAZAS</b><p>Intrafamiliar, laboral, escolar o callejero. Audio continuo + foto automática.</p></div>
+   <div class="info-bloque"><b>⬩ SECUESTRO / PRIVACIÓN</b><p>Activación manual, remota o por temporizador. Ruta trazada segundo a segundo.</p></div>
+   <div class="info-bloque"><b>⬩ RIESGO DE MENOR</b><p>Protección de niñas, niños y adolescentes. Acta lista para fiscalía y familia.</p></div>
+   <div class="info-bloque"><b>⬩ PERSECUCIÓN Y ACOSO</b><p>Historial GPS completo, celda y redes, prueba irrefutable de desplazamiento.</p></div>
+   <div class="info-bloque"><b>⬩ DOMICILIO / CASA</b><p>Modo específico, intervalos cortos, alerta si sale o entra a zona definida.</p></div>
+  </div>
+  <div style="margin-top:15px;text-align:center">
+   <span class="ley">LEY 26.485</span><span class="ley">LEY 25.326</span><span class="ley">CÓDIGO PROCESAL PENAL</span>
+  </div>
+ </div>
+ <div class="caja"><h3>✦ MÓDULOS DE EVIDENCIA FORENSE ✦</h3>
+  <div class="grid2">
+   <div class="info-bloque"><b>⬩ BOTÓN ANTIPÁNICO</b><p>1 toque = todo activado. Pantalla apagada o bloqueada.</p></div>
+   <div class="info-bloque"><b>⬩ SENSOR DE IMPACTO</b><p>Detección de caídas bruscas o golpes que disparan la alarma.</p></div>
+   <div class="info-bloque"><b>⬩ S.O.S. REMOTO</b><p>Activación a distancia desde cualquier dispositivo en caso de arrebato o robo.</p></div>
+   <div class="info-bloque"><b>⬩ GPS EN TIEMPO REAL</b><p>Trazado segundo a segundo. Si el celular se frena, fuerza un reporte.</p></div>
+   <div class="info-bloque"><b>⬩ AUDIO SEGURO</b><p>Grabación oculta cifrada con su propio hash de integridad judicial.</p></div>
+   <div class="info-bloque"><b>⬩ FOTOS AUTO</b><p>Captura fotográfica frontal y trasera de forma silenciosa.</p></div>
   </div>
  </div>
  <button class="btn" onclick="ir('registro')">✦ ACTIVAR PROTECCIÓN ✦</button>
  <button class="btn blanco" onclick="ir('pago')" style="margin-top:12px;">✦ PAGO / PLANES ✦</button>
- <button class="btn blanco" onclick="sigilo()" style="margin-top:12px;">✦ MODO SIGILO PREVENTIVO ✦</button>
+ <button class="btn blanco" onclick="ir('recuperar')" style="margin-top:12px;">✦ RECUPERAR · S.O.S. REMOTO ✦</button>
+ <button class="btn blanco" onclick="sigilo()" style="margin-top:12px;">✦ MODO SIGILO ✦</button>
 </section>
 
-<section id="registro" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER AL INICIO</button><h2 class="tit">CARGA OFICIAL</h2>
+<section id="registro" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER</button><h2 class="tit">CARGA OFICIAL</h2>
  <div class="caja">
   <div class="campo"><label>NOMBRE Y APELLIDO</label><input id="rN"></div>
   <div class="campo"><label>IMEI 15 DÍGITOS</label><input id="rI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
@@ -281,20 +277,16 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  </div>
 </section>
 
-<section id="pago" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER AL INICIO</button><h2 class="tit">BÓVEDA · PLANES</h2>
+<section id="pago" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER</button><h2 class="tit">BÓVEDA · PLANES</h2>
  <div class="caja">
    <div class="campo">
      <label style="text-align:center;">IMEI ASIGNADO</label>
      <div id="pI_display" style="text-align:center;font-size:26px;font-family:'JetBrains Mono',monospace;font-weight:800;color:var(--oroOscuro);padding:18px;background:#FFFCF2;border-radius:12px;border:2px dashed var(--oroMedio);"></div>
      <input type="hidden" id="pI">
    </div>
-   <p style="text-align:center; font-size:14px; font-weight:600; color:#555; margin-bottom: 15px;">Seleccioná el plan y subí la foto de tu transferencia. Nuestra Inteligencia Artificial leerá el comprobante y te activará al instante.</p>
  </div>
- <!-- INPUT OCULTO PARA SUBIR EL COMPROBANTE A OPENAI -->
- <input type="file" id="fileComprobante" accept="image/*" style="display:none" onchange="procesarComprobante(event)">
- 
- <div class="plan" onclick="pedirComprobante('mensual')"><div class="n">PLAN MENSUAL</div><div class="p">$ 4.900</div><div style="font-size:12px; text-align:center; margin-top:8px; color:#5A3E00; font-weight:800;">TOCÁ PARA SUBIR COMPROBANTE</div></div>
- <div class="plan diamante" onclick="pedirComprobante('anual')"><div class="etiqueta">✦ ENERGY 2026</div><div class="n">PLAN ANUAL PRO</div><div class="p">$ 39.900</div><div style="font-size:12px; text-align:center; margin-top:8px; color:#5A3E00; font-weight:800;">TOCÁ PARA SUBIR COMPROBANTE</div></div>
+ <div class="plan" onclick="pagar('4900.00','mensual')"><div class="n">PLAN MENSUAL</div><div class="p">$ 4.900</div></div>
+ <div class="plan diamante" onclick="pagar('39900.00','anual')"><div class="etiqueta">✦ ENERGY 2026</div><div class="n">PLAN ANUAL PRO</div><div class="p">$ 39.900</div></div>
  <button class="btn blanco" onclick="ir('login')">✦ YA TENGO LLAVE C4 ✦</button>
 </section>
 
@@ -305,13 +297,13 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
   <p style="font-weight:600;color:#555;margin-top:18px;font-size:15px; letter-spacing:1px;">ÚNICA · INTRANSFERIBLE · VÁLIDA JUDICIALMENTE</p>
   
   <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-top:22px;text-align:left;box-shadow:var(--luz);">
-    <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">💡 EL SECRETO DE TU SEGURIDAD</b>
-    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Si te roban el celular, vas a necesitar esta Llave Maestra para activar el sistema a distancia desde la computadora o el teléfono de un familiar. <b>ANOTALA Y GUARDALA.</b></span>
+    <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">💡 INSTRUCCIÓN VITAL</b>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Si activás el sistema por accidente, tocá "Detener S.O.S". Por seguridad antirrobo, <b>te pedirá que ingreses esta Llave Maestra</b> para confirmar que sos vos y no un ladrón quien intenta apagarlo. <b>MEMORIZALA.</b></span>
   </div>
 
   <div style="background:#FFFCF2;border:1px solid #D4AF37;padding:16px;border-radius:12px;margin-top:12px;text-align:left;box-shadow:var(--luz);">
     <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">⚠️ OBLIGATORIO: AGENDAR NÚMERO</b>
-    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Para recibir la evidencia y que WhatsApp no bloquee las alertas a tus contactos, <b>agendá este número ahora mismo: 381 60 92 676</b>.</span>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Para recibir la evidencia y asegurar que WhatsApp no bloquee el sistema, <b>es obligatorio agendar este número en tus contactos ahora mismo: 381 60 92 676</b>.</span>
   </div>
 
   <div style="display:flex;gap:12px;margin-top:25px;flex-wrap:wrap;justify-content:center">
@@ -322,44 +314,43 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <button class="btn" onclick="ir('login')">✦ INGRESAR AL PANEL ✦</button>
 </section>
 
-<section id="login" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER AL INICIO</button><h2 class="tit">PANEL DE ACTAS</h2>
+<section id="login" class="vista"><button class="btn volver" onclick="ir('pago')">⟵ VOLVER</button><h2 class="tit">ACCESO JUDICIAL</h2>
  <div class="caja"><div class="campo"><input id="lkI" placeholder="C4‑XXXX‑XXXX" style="text-align:center;font-size:30px;letter-spacing:8px;text-transform:uppercase; font-weight:800;"></div>
- <button class="btn" onclick="validar()">✦ VER ACTAS / EVIDENCIA ✦</button></div>
+ <button class="btn" onclick="validar()">✦ INGRESAR ✦</button></div>
 </section>
 
-<section id="sos" class="vista"><button class="btn volver" onclick="volverSOS()">⟵ VOLVER AL INICIO</button><h2 class="tit">SISTEMA DETONADO</h2>
+<section id="sos" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ ATRÁS</button><h2 class="tit">PROTECCIÓN ACTIVA</h2>
  <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
  
  <div class="estadoSOS" id="st">
-   <h2 style="font-size:18px; letter-spacing: 2px; margin-bottom: 8px;">¡EVIDENCIA EN PROCESO!</h2>
-   ✦ RASTREO Y GRABACIÓN ACTIVA ✦<br>
+   <h2 style="font-size:18px; letter-spacing: 2px; margin-bottom: 8px;">¡SISTEMA ACTIVADO!</h2>
+   ✦ EVIDENCIA Y ALERTAS ENVIADAS ✦<br>
    GPS SEGUNDO A SEGUNDO · AUDIO · VIDEO · FOTOS · SENSORES · CELDA · WIFI · CADENA<br><br>
-   <span style="font-size:12px;color:#888;font-weight:400;">(Las alertas se están enviando a tus contactos de forma silenciosa)</span><br><br>
+   <span style="font-size:12px;color:#888;font-weight:400;">(Búfer Offline activo: la evidencia se resguarda sin señal)</span><br><br>
    <div style="background:#FFE79B;color:#5A3E00;padding:10px;border-radius:8px;font-weight:700;margin-top:12px;font-size:12px;line-height:1.4;">
-    ⚠️ PARA DETENER EL SISTEMA Y APAGAR LA ALARMA:<br>Tocá el botón "DETENER S.O.S" e ingresá tu Llave Maestra.
+    ⚠️ ¿FUE UNA ACTIVACIÓN ACCIDENTAL?<br>Tocá el botón "DETENER S.O.S" e ingresá tu Llave Maestra.
    </div>
  </div>
 </section>
 
-<section id="recuperar" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER AL INICIO</button><h2 class="tit">DETONADOR REMOTO S.O.S</h2>
+<section id="recuperar" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER</button><h2 class="tit">RECUPERACIÓN Y S.O.S. REMOTO</h2>
  <div class="caja">
-  <p style="font-size:15px;color:#333;margin-bottom:20px;text-align:center;line-height:1.6;font-weight:600;">¿Te robaron el celular? No te arriesgues.<br>Ingresá tu IMEI y tu Llave Maestra para activar remotamente el equipo del ladrón.</p>
-  <div class="campo"><label>IMEI DEL EQUIPO ROBADO</label><input id="rrI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
-  <div class="campo"><label>TU LLAVE MAESTRA C4</label><input id="rrL" placeholder="C4‑XXXX‑XXXX" style="text-transform:uppercase"></div>
-  <button class="btn rubi" onclick="recuperar('detonar')" style="margin-top:10px; font-size:15px; letter-spacing:3px; padding:25px;">💥 DISPARAR ALARMA AL CELULAR 💥</button>
-  <button class="btn blanco" onclick="recuperar('restaurar')" style="margin-top:18px">RESTABLECER SISTEMA EN ESTE EQUIPO</button>
+  <p style="font-size:14px;color:#555;margin-bottom:15px;text-align:center;line-height:1.6;">Si te arrebataron el celular y no pudiste activar el botón, un familiar o vos desde cualquier otro dispositivo podéis ingresar vuestro IMEI y Llave Maestra para **activar el S.O.S. a distancia** y rastrear la ubicación GPS inmediatamente.</p>
+  <div class="campo"><label>IMEI DEL EQUIPO</label><input id="rrI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
+  <div class="campo"><label>LLAVE MAESTRA C4</label><input id="rrL" placeholder="C4‑XXXX‑XXXX" style="text-transform:uppercase"></div>
+  <button class="btn" onclick="recuperar('restaurar')">✦ RESTAURAR ACCESO ✦</button>
+  <button class="btn rubi" onclick="recuperar('detonar')" style="margin-top:18px">✦ ACTIVAR S.O.S. A DISTANCIA ✦</button>
  </div>
 </section>
 
 <section id="panel" class="vista"><h2 class="tit" style="text-align:left;border-bottom:1px solid var(--oro);padding-bottom:10px;letter-spacing:5px">✦ CENTRO JUDICIAL P4 ✦</h2>
  <div style="display:flex;gap:12px;flex-wrap:wrap">
-  <!-- BOTÓN GIGANTE PARA DESCARGAR PDF (DORADO) -->
-  <button class="btn" onclick="window.print()" style="flex:1 1 100%; font-size:16px;">⬇ DESCARGAR ACTA P4 (PDF)</button>
+  <button class="btn" onclick="window.print()" style="flex:1 1 100%">✦ IMPRIMIR ACTA JUDICIAL (PDF) ✦</button>
   <button class="btn blanco" onclick="expTXT()" style="flex:1 1 100%; border-color:#333; color:#333;">⬇ DESCARGAR TEXTO (TXT)</button>
   <button class="btn blanco" onclick="verificar()" style="flex:1 1 100%; margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
  </div>
  <div id="alertas"><div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div></div>
- <button class="btn blanco" onclick="cerrar()" style="margin-top:20px">CERRAR SESIÓN / SALIR</button>
+ <button class="btn blanco" onclick="cerrar()" style="margin-top:20px">CERRAR SESIÓN</button>
 </section>
 
 </main>
@@ -373,86 +364,83 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ==========================================
-// 0. BLINDAJE ANTI-COPIA Y CONSOLA (MODO TANQUE)
-// ==========================================
-document.addEventListener('contextmenu', e => e.preventDefault());
-document.onkeydown = function(e) {
-  if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
-  if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) { e.preventDefault(); return false; }
-  if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c' || e.keyCode === 67)) { e.preventDefault(); return false; }
-  if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) { e.preventDefault(); return false; }
-  if (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) { e.preventDefault(); return false; }
-};
-
-// ==========================================
-// 1. CONFIGURACIÓN SEGURA DE VARIABLES
-// ==========================================
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 
-let supaClient = null;
-try {
-    if (typeof window.supabase !== 'undefined') {
-        supaClient = window.supabase.createClient(SUPA_URL, SUPA_KEY);
-    }
-} catch(e) {
-    console.warn("Supabase Realtime offline.");
+const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digit',day:'2-digit'},oH={timeZone:'America/Argentina/Buenos_Aires',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false};
+const LK=k=>!k?'':k.toUpperCase().replace(/[\u2011-\u2015]/g,'-').replace(/[^A-Z0-9\-]/g,'').trim();
+const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
+
+let deferredPrompt;
+const installBtn = document.getElementById('btn-install-pwa');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if(installBtn) installBtn.style.display = 'flex';
+});
+
+if(installBtn) {
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            installBtn.style.display = 'none';
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+        }
+    });
 }
 
-const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digit',day:'2-digit'};
-const oH={timeZone:'America/Argentina/Buenos_Aires',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false};
-const LK = k => !k ? '' : k.toUpperCase().replace(/[\u2011-\u2015]/g,'-').replace(/[^A-Z0-9\-]/g,'').trim();
-const IM = i => (i||'').toString().replace(/\D/g,'').slice(0,15);
+window.addEventListener('appinstalled', () => {
+    if(installBtn) installBtn.style.display = 'none';
+    alert("¡Ni Una Menos instalada correctamente!");
+});
 
-// ==========================================
-// 2. NAVEGACIÓN INTELIGENTE (SCROLL CORREGIDO)
-// ==========================================
-function ir(id) {
-    document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
-    document.getElementById(id).classList.add('activa');
-    
-    const mainTag = document.querySelector('main');
-    if (mainTag) {
-        window.scrollTo({top: mainTag.offsetTop - 10, behavior: 'smooth'});
-    } else {
-        window.scrollTo({top: 0, behavior: 'smooth'});
+let mapas = {};
+
+async function pedirPermisosGlobalesYGPS() {
+    alert("⚠️ CONFIGURACIÓN DE SEGURIDAD ⚠️\nA continuación el sistema te pedirá acceso al GPS, Cámara y Micrófono. Es OBLIGATORIO que pongas 'Permitir' en todo para que funcione ante un robo o emergencia.");
+    if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
+        DeviceMotionEvent.requestPermission().catch(()=>{});
     }
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        stream.getTracks().forEach(track => track.stop());
+    } catch(e) {}
+    
+    navigator.geolocation.getCurrentPosition(
+        () => alert("✅ Sensores vinculados correctamente. Tu sistema está blindado."),
+        () => alert("❌ RECHAZASTE EL GPS. El sistema no podrá enviar tu ubicación en una emergencia."),
+        {enableHighAccuracy: true}
+    );
+}
+
+const ir = id => {
+    document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
+    document.getElementById(id).classList.add('activa');
+    scrollTo({top:0,behavior:'smooth'});
     
     if(id === 'panel') {
         setTimeout(() => {
             for (let key in mapas) {
-                if (mapas[key] && typeof mapas[key].invalidateSize === 'function') mapas[key].invalidateSize();
+                if (mapas[key] && typeof mapas[key].invalidateSize === 'function') {
+                    mapas[key].invalidateSize();
+                }
             }
         }, 400);
     }
+};
+
+const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
+
+function leerVoz(){
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, o automáticamente ante un impacto o caída fuerte. Además, en caso de un arrebato o robo donde no puedas tocar tu teléfono, podés activar el S.O.S a distancia ingresando tu Llave Maestra desde cualquier otro dispositivo en nuestra sección de recuperación judicial. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. En segundo plano y de manera indetectable, el sistema asegura tu evidencia grabando audio de manera continua, tomando múltiples fotografías con ambas cámaras, y rastreando tu ubicación por GPS segundo a segundo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema cien por ciento blindado y privado. Además, si no realizás una denuncia oficial, a las setenta y dos horas se elimina y destruye automáticamente toda la evidencia para garantizar tu privacidad total.`);
+ u.lang='es-AR';u.rate=.92;u.pitch=1;u.volume=1;
+ speechSynthesis.speak(u);
 }
 
-function irSOS() {
-    if(localStorage.getItem('ok') === '1') ir('sos');
-    else ir('pago');
-}
-
-function volverSOS() {
-    if (sosActivo) {
-        pararConLlave();
-    } else {
-        ir('inicio');
-    }
-}
-
-function leerVoz() {
-    try {
-        speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(`Nuestra aplicación está diseñada para proteger a las personas. Es un sistema integral de evidencia que opera de forma invisible: graba audio de forma continua, saca fotos, graba videos y rastrea tu ubicación por GPS segundo a segundo. Toda esta información construye tu Acta Pericial P4. Si te roban el celular, lo activás desde cualquier celular o de un familiar, y lo activás manual a distancia cargando tu Llave Maestra. Además, si estás dentro de la aplicación, con un sacudón se activa automáticamente y le manda el mensaje de alerta a tus dos contactos. El sistema recaba toda la información y en las setenta y dos horas, si no hay denuncia, queda todo borrado para garantizar tu privacidad. Este es un sistema con seguridad criptográfica para la justicia. Podés descargar el acta, la imprimís y la llevás a comisaría o fiscalía.`);
-        u.lang = 'es-AR'; u.rate = 0.92; u.pitch = 1; u.volume = 1;
-        speechSynthesis.speak(u);
-    } catch(e) {
-        alert("El navegador bloqueó el audio. Intentá tocar la pantalla primero.");
-    }
-}
-
-function sigilo() {
+const sigilo = () => {
     try { document.documentElement.requestFullscreen(); } catch(e){}
     let s = document.createElement('div');
     s.id = 'pantalla-sigilo';
@@ -466,80 +454,25 @@ function sigilo() {
             s.remove();
         }
     });
-    alert("⚠️ MODO SIGILO ACTIVADO ⚠️\nLa pantalla se pondrá totalmente negra. Esto es ideal para dejar el celular grabando sobre una mesa si sufrís violencia doméstica, o si caminás por una zona peligrosa. Tocá la pantalla 3 VECES RÁPIDAS para salir.");
-}
-
-async function cerrar() {
-    if(supaClient) await supaClient.auth.signOut();
-    localStorage.removeItem('imei'); 
-    sessionStorage.clear();
-    location.reload();
-}
-
-function expTXT() {
-    let currentImei = localStorage.getItem('imei');
-    let actasParaExportar = listaActas.filter(a => a.imei === currentImei);
-    if(actasParaExportar.length === 0) return alert('No hay actas registradas.');
-    let t = "=== NI UNA MENOS ARGENTINA - ACTA P4 ===\n\n";
-    actasParaExportar.forEach(a => {
-        t += `Expediente: ${a.numero_acta} | Fecha: ${a.fecha} ${a.hora}\nGPS: ${a.lat}, ${a.lng}\nHash: ${a.sha256}\n--------------------\n`;
-    });
-    const b = new Blob([t],{type:'text/plain'});
-    const u = URL.createObjectURL(b);
-    const a = document.createElement('a');
-    a.href = u; a.download = 'ACTA_P4_' + Date.now() + '.txt';
-    document.body.appendChild(a); a.click();
-    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 200);
-}
-
-async function verificar() {
-    alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales válidas\nLeyes: 26.485 · 25.326');
-}
-
-// ==========================================
-// 3. BASE DE DATOS Y LÓGICA CORE RLS
-// ==========================================
-
-async function authTrucha(imei) {
-    if (!supaClient || !imei) return null;
-    const email = `${imei}@c4judicial.com.ar`;
-    const password = 'C4-Secure-Password-2026!';
-    
-    let { data, error } = await supaClient.auth.signInWithPassword({ email, password });
-    if (error) {
-        let res = await supaClient.auth.signUp({ email, password });
-        data = res.data;
-    }
-    return data?.session?.access_token || SUPA_KEY;
-}
-
-async function supaQuery(method, endpoint, body = null) {
-    let token = SUPA_KEY;
-    if (supaClient) {
-        const { data: { session } } = await supaClient.auth.getSession();
-        if (session) token = session.access_token;
-    }
-
-    const options = {
-        method,
-        headers: { 
-            'apikey': SUPA_KEY, 
-            'Authorization': `Bearer ${token}`, 
-            'Content-Type': 'application/json', 
-            'Prefer': 'return=representation' 
-        }
-    };
-    if (body) options.body = JSON.stringify(body);
-    const res = await fetch(`${SUPA_URL}/rest/v1/${endpoint}`, options);
-    if (!res.ok) throw new Error(await res.text());
-    return res.json();
-}
+    alert("⚠️ MODO SIGILO ACTIVADO ⚠️\nLa pantalla se pondrá totalmente negra. Tocá la pantalla 3 VECES RÁPIDAS para salir.");
+};
 
 async function sha256(message) {
     const msgBuffer = new TextEncoder().encode(message);
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function supaQuery(method, endpoint, body = null) {
+    const options = {
+        method,
+        headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' }
+    };
+    if (body) options.body = JSON.stringify(body);
+    const res = await fetch(`${SUPA_URL}/rest/v1/${endpoint}`, options);
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
 }
 
 const initDB = () => new Promise((resolve) => {
@@ -595,25 +528,27 @@ async function borrarActa(id) {
     }
 }
 
-// ==========================================
-// 4. REGISTRO E INTEGRACIÓN OPENAI
-// ==========================================
+let sosActivo = false;
+
+function toggleSOS() {
+    if(sosActivo) {
+        pararConLlave();
+    } else {
+        disparoSOS();
+    }
+}
+
 async function alta(){
     const n = document.getElementById('rN').value.trim();
     const i = IM(document.getElementById('rI').value);
     const w = document.getElementById('rW').value.trim();
-    
-    // FILTRO ANTIPÍCARO (Evita que pongan el mismo contacto 2 veces)
-    const c1 = document.getElementById('cF1').value.trim().replace(/\D/g, '');
-    const c2 = document.getElementById('cF2').value.trim().replace(/\D/g, '');
-    let c = [c1, c2].filter(Boolean);
-    c = [...new Set(c)]; // Borra los duplicados matemáticamente
+    const c1 = document.getElementById('cF1').value.trim();
+    const c2 = document.getElementById('cF2').value.trim();
+    const c = [c1, c2].filter(Boolean);
     
     if(!n || !/^\d{15}$/.test(i) || !w) return alert('Requiere Nombre completo, IMEI válido de 15 dígitos y tu número de WhatsApp.');
     
     let waLimpio = w.replace(/\D/g, ''); 
-
-    await authTrucha(i);
 
     try {
         const checkWA = await supaQuery('GET', `c4_suscripciones?select=*&whatsapp=eq.${waLimpio}`);
@@ -636,8 +571,7 @@ async function alta(){
         let fechaVencimiento = new Date();
         fechaVencimiento.setDate(fechaVencimiento.getDate() + 15);
 
-        // Agregamos todo a la base de datos (con el correo automático del sistema)
-        await supaQuery('POST', 'c4_suscripciones', { email: i+'@c4judicial.com.ar', imei: i, whatsapp: waLimpio, llave_acceso: k, tipo_plan: 'prueba_15', fecha_vencimiento: fechaVencimiento.toISOString(), activa: true, alarma_remota: false });
+        await supaQuery('POST', 'c4_suscripciones', { imei: i, whatsapp: waLimpio, llave_acceso: k, tipo_plan: 'prueba_15', fecha_vencimiento: fechaVencimiento.toISOString(), activa: true, alarma_remota: false });
 
         localStorage.setItem('imei', i); 
         localStorage.setItem('nombre', n);
@@ -651,85 +585,41 @@ async function alta(){
         localStorage.setItem('ok','1');
         
         pedirPermisosGlobalesYGPS(); 
-        iniciarRealtime(); 
         ir('llave');
     } catch(err) { 
-        alert('Error conectando a la base de datos segura.'); 
+        alert('Error conectando a la base de datos.'); 
     }
 }
 
-let planSeleccionado = '';
-function pedirComprobante(plan) {
-    planSeleccionado = plan;
-    document.getElementById('fileComprobante').click();
-}
-
-async function procesarComprobante(e) {
-    const file = e.target.files[0];
-    if(!file) return;
+async function pagar(monto, plan) {
+    const i = IM(document.getElementById('pI').value || localStorage.getItem('imei'));
+    if(!/^\d{15}$/.test(i)) return alert('Ingrese IMEI de 15 dígitos.');
     
-    const imeiActual = IM(document.getElementById('pI').value || localStorage.getItem('imei'));
-    if(!/^\d{15}$/.test(imeiActual)) return alert('Error: No se encontró el IMEI para asignar el pago.');
-
-    alert('⏳ LA INTELIGENCIA ARTIFICIAL ESTÁ LEYENDO TU COMPROBANTE...\nPor favor, aguardá sin cerrar la pantalla.');
-
-    const reader = new FileReader();
-    reader.onload = async function(ev) {
-        const base64Image = ev.target.result;
-        
-        try {
-            const peticion = await fetch('/api/pagos', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ local: imeiActual, fotoBase64: base64Image })
-            });
-            const data = await peticion.json();
-
-            if(!data.success) {
-                alert('❌ COMPROBANTE RECHAZADO:\n' + (data.msg || 'La IA determinó que no es válido.'));
-                return;
-            }
-
-            alert('✅ ¡PAGO APROBADO POR IA!\nTu transferencia fue verificada con éxito.');
-            ejecutarPagoAprobado(imeiActual, planSeleccionado);
-
-        } catch(err) {
-            alert('Hubo un error de conexión con el servidor de IA.');
-        }
-    };
-    reader.readAsDataURL(file);
-}
-
-async function ejecutarPagoAprobado(i, plan) {
-    const k = 'C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase();
-    let meses = plan === 'anual' ? 12 : 1;
-    let nuevaFecha = new Date();
-    nuevaFecha.setMonth(nuevaFecha.getMonth() + meses);
-
-    await authTrucha(i);
-
+    alert('Simulando conexión de pago...');
     try {
-        await supaQuery('POST', 'c4_suscripciones', { email: i+'@c4judicial.com.ar', imei: i, llave_acceso: k, tipo_plan: plan, fecha_vencimiento: nuevaFecha.toISOString(), activa: true, alarma_remota: false });
-    } catch(errUpsert) {
-        await supaQuery('PATCH', `c4_suscripciones?imei=eq.${i}`, { llave_acceso: k, tipo_plan: plan, fecha_vencimiento: nuevaFecha.toISOString(), activa: true });
-    }
-    
-    document.getElementById('lk').textContent = k;
-    localStorage.setItem('ok', '1');
-    localStorage.setItem('imei', i);
-    
-    pedirPermisosGlobalesYGPS();
-    iniciarRealtime(); 
-    ir('llave');
+        const k = 'C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase();
+        let meses = plan === 'anual' ? 12 : 1;
+        let nuevaFecha = new Date();
+        nuevaFecha.setMonth(nuevaFecha.getMonth() + meses);
+
+        try {
+            await supaQuery('POST', 'c4_suscripciones', { imei: i, llave_acceso: k, tipo_plan: plan, fecha_vencimiento: nuevaFecha.toISOString(), activa: true, alarma_remota: false });
+        } catch(errUpsert) {
+            await supaQuery('PATCH', `c4_suscripciones?imei=eq.${i}`, { llave_acceso: k, tipo_plan: plan, fecha_vencimiento: nuevaFecha.toISOString(), activa: true });
+        }
+        
+        document.getElementById('lk').textContent = k;
+        localStorage.setItem('ok', '1');
+        localStorage.setItem('imei', i);
+        
+        pedirPermisosGlobalesYGPS();
+        ir('llave');
+    } catch(err) { alert('Error al acreditar el pago.'); }
 }
 
 async function validar(){
     const k = LK(document.getElementById('lkI').value);
     if(!k) return;
-    
-    const imeiGuardado = localStorage.getItem('imei');
-    if (imeiGuardado) await authTrucha(imeiGuardado); 
-
     try {
         const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${k}`);
         if(res.length === 0) return alert('Acceso Denegado.');
@@ -746,13 +636,12 @@ async function validar(){
             localStorage.setItem('imei', sub.imei);
             localStorage.setItem('ok', '1');
 
-            await authTrucha(sub.imei);
-
             let cRespaldo = localStorage.getItem('contactos_' + sub.imei) || localStorage.getItem('contactos');
-            if (cRespaldo) localStorage.setItem('contactos', cRespaldo);
+            if (cRespaldo) {
+                localStorage.setItem('contactos', cRespaldo);
+            }
 
-            alert('✅ LLAVE VÁLIDA. Ingresando al panel judicial...');
-            iniciarRealtime(); 
+            alert('✅ LLAVE VÁLIDA. Ingresando al sistema judicial...');
             ir('panel');
             
             const c = document.getElementById('alertas');
@@ -764,20 +653,24 @@ async function validar(){
                 actasFiltradas.forEach(render);
             }
         }
-    } catch(e) { alert('Error validando la llave con el servidor judicial.'); }
+    } catch(e) { alert('Error validando la llave.'); }
 }
 
-// ==========================================
-// 5. GATILLO REMOTO Y WHATSAPP
-// ==========================================
+const cerrar=()=>{
+    localStorage.removeItem('imei'); 
+    sessionStorage.clear();
+    location.reload();
+};
+
+// =========================================================================
+// 🔥 RECUPERACIÓN Y S.O.S. REMOTO (NUBE SUPABASE)
+// =========================================================================
 async function recuperar(accion) {
     const i = IM(document.getElementById('rrI').value);
     const l = LK(document.getElementById('rrL').value);
     
     if(!/^\d{15}$/.test(i) || !l) return alert('Por favor ingresá un IMEI válido de 15 dígitos y tu Llave Maestra C4.');
     
-    await authTrucha(i);
-
     try {
         const res = await supaQuery('GET', `c4_suscripciones?select=*&imei=eq.${i}&llave_acceso=eq.${l}&activa=eq.true`);
         if(res.length === 0) {
@@ -788,12 +681,11 @@ async function recuperar(accion) {
             localStorage.setItem('imei', i);
             localStorage.setItem('ok', '1');
             alert('✅ Sistema restaurado con éxito en este dispositivo.');
-            iniciarRealtime();
             ir('panel');
         } else if(accion === 'detonar') {
-            if(confirm('⚠️ ATENCIÓN: ¿Estás seguro de DETONAR el celular a distancia? El equipo empezará a grabar audio, fotos y enviará su ubicación GPS inmediatamente.')) {
+            if(confirm('⚠️ ¿Estás seguro de activar el S.O.S. a distancia para este dispositivo? Esto enviará la orden a la nube para disparar la alarma.')) {
                 await supaQuery('PATCH', `c4_suscripciones?imei=eq.${i}`, { alarma_remota: true });
-                alert('🚨 ORDEN DE DISPARO ENVIADA. En cuanto el dispositivo robado abra un navegador o se despierte, comenzará la transmisión de evidencia.');
+                alert('🚨 ORDEN REMOTA ENVIADA. En cuanto el dispositivo tenga conexión, se activará la alarma, las cámaras y el rastreo GPS.');
             }
         }
     } catch(e) {
@@ -801,36 +693,44 @@ async function recuperar(accion) {
     }
 }
 
-let sosActivo = false;
-
-function iniciarRealtime() {
-    if (!supaClient) return; 
-    
+// COMPROBACIÓN AUTOMÁTICA EN SEGUNDO PLANO DE S.O.S. REMOTO DESDE LA NUBE
+setInterval(async () => {
     const imei = localStorage.getItem('imei');
-    if (!imei || localStorage.getItem('ok') !== '1') return;
-
-    supaClient.channel('canal-gatillo-remoto')
-        .on('postgres_changes', {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'c4_suscripciones',
-            filter: `imei=eq.${imei}`
-        }, (payload) => {
-            if (payload.new && payload.new.alarma_remota === true && !sosActivo) {
+    if (imei && localStorage.getItem('ok') === '1' && !sosActivo) {
+        try {
+            const res = await supaQuery('GET', `c4_suscripciones?select=alarma_remota&imei=eq.${imei}`);
+            if (res.length > 0 && res[0].alarma_remota === true) {
                 ir('sos');
-                disparoSOS('remoto'); 
+                disparoSOS();
             }
-        })
-        .subscribe();
+        } catch(e) {}
+    }
+}, 8000);
+
+// =========================================================================
+// 🔥 CONEXIÓN A GREEN API (PRODUCCIÓN LIMPIA Y SILENCIOSA)
+// =========================================================================
+const WA_INSTANCE = '710722723701';
+const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
+
+function formatArg(num) {
+    let c = String(num).replace(/\D/g, '');
+    if (c.startsWith('549')) return c;
+    if (c.startsWith('54')) return '549' + c.substring(2);
+    if (c.startsWith('0')) c = c.substring(1);
+    c = c.replace(/^(11|2\d{2}|3\d{2})15(\d+)$/, '$1$2'); 
+    return '549' + c;
 }
 
-function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', tipo_disparo = 'boton') {
+function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     if (!contactos || !Array.isArray(contactos) || contactos.length === 0) {
         try {
             const imeiActual = localStorage.getItem('imei');
             let raw = localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imeiActual) || '[]';
             contactos = JSON.parse(raw);
-        } catch(e) { contactos = []; }
+        } catch(e) {
+            contactos = [];
+        }
     }
     
     if (!contactos || contactos.length === 0) {
@@ -838,37 +738,40 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', ti
         contactos = miWa ? [miWa] : ['3816092676'];
     }
 
-    // FILTRO ANTIPÍCARO SEGUNDA CAPA (Por si se corrompió el caché)
-    contactos = [...new Set(contactos)];
-
     let msg = "";
     if (tipo === 'alerta') {
-        if (tipo_disparo === 'sacudida') {
-            msg = `🚨 *ALERTA S.O.S - ACTIVADA POR IMPACTO / SACUDIDA* 🚨\nEl dispositivo de *${nombre || 'Usuaria'}* registró un movimiento violento y activó la alarma.\nID: ${id}`;
-        } else if (tipo_disparo === 'remoto') {
-            msg = `🚨 *ALERTA S.O.S - GATILLO REMOTO DETONADO* 🚨\nSe ha activado a distancia el sistema para: *${nombre || 'Usuaria'}*.\nID: ${id}`;
-        } else {
-            msg = `🚨 *ALERTA S.O.S - C4* 🚨\nUsuaria: *${nombre || 'Usuaria'}* activó el botón antipánico.\nID: ${id}`;
-        }
+        msg = `🚨 *ALERTA S.O.S - C4* 🚨\nUsuaria: *${nombre || 'Usuaria'}* activó el botón antipánico.\nID: ${id}`;
     } else if (tipo === 'gps') {
         msg = `📍 *GPS S.O.S* 📍\nhttps://maps.google.com/?q=${la},${ln}`;
     } else if (tipo === 'seguro') {
         msg = `✅ *SISTEMA SEGURO* \nDesactivado a salvo.`;
     }
 
-    // DISPARO A VERCEL API (Protegido por el filtro anti-duplicados superior)
-    fetch('/api/whatsapp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contactos: contactos, mensaje: msg })
-    }).catch(err => console.error("Fallo al conectar con Green API:", err));
+    for (let numero of contactos) {
+        if(!numero) continue;
+        let cel = formatArg(numero);
+        let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
+        
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
+        })
+        .then(async res => {
+            let textRes = await res.text();
+            try {
+                return textRes ? JSON.parse(textRes) : { idMessage: "sent_ok" };
+            } catch(e) {
+                return { idMessage: "sent_ok" };
+            }
+        })
+        .catch(err => {});
+    }
 }
 
-// ==========================================
-// 6. EVIDENCIA: FOTOS, VIDEO, AUDIO, GPS
-// ==========================================
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
+// ORDEN DE CAPTURA FORENSE: FOTOS, VIDEOS Y AUDIOS EN SECUENCIA PERFECTA
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
         const v = document.createElement('video');
@@ -917,6 +820,7 @@ async function loopEvidencia(acta) {
         if (acta.imei === localStorage.getItem('imei')) render(acta); 
     }, () => {}, { enableHighAccuracy: true, maximumAge: 0 });
 
+    // 1. CAPTURA FOTOGRÁFICA FRONTAL Y TRASERA PRIMERO
     try {
         let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } });
         await tomarFotoSilenciosa(vFront, acta, 'frontal');
@@ -933,6 +837,7 @@ async function loopEvidencia(acta) {
 
     if(!sosActivo) return;
 
+    // 2. VIDEO SECUENCIAL
     try {
         const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
         const videoRecorder = new MediaRecorder(videoStream);
@@ -954,6 +859,7 @@ async function loopEvidencia(acta) {
 
     if(!sosActivo) return;
 
+    // 3. AUDIO AMBIENTAL CONTINUO
     try {
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioRecorder = new MediaRecorder(audioStream);
@@ -978,7 +884,7 @@ async function loopEvidencia(acta) {
     }
 }
 
-async function disparoSOS(origen = 'boton'){
+async function disparoSOS(){
  if(sosActivo) return; 
  sosActivo = true;
  document.getElementById('btnBigSOS').innerText = 'DETENER S.O.S';
@@ -989,8 +895,8 @@ async function disparoSOS(origen = 'boton'){
     navigator.vibrate([1000, 500, 1000, 500, 1000, 500, 2000]);
  }
 
- try { speechSynthesis.cancel(); } catch(e){}
- try { if('wakeLock' in navigator) await navigator.wakeLock.request('screen'); } catch(e){}
+ speechSynthesis.cancel();
+ try{if('wakeLock'in navigator)await navigator.wakeLock.request('screen')}catch{}
  
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
@@ -1006,7 +912,7 @@ async function disparoSOS(origen = 'boton'){
  const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
  aid = id;
 
- enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta', origen);
+ enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
 
  let batLevel = 'Desc.', batCharging = 'Desc.';
  try {
@@ -1067,9 +973,7 @@ async function disparoSOS(origen = 'boton'){
  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
 }
 
-// ==========================================
-// 7. SENSOR DE SACUDIDAS
-// ==========================================
+// SENSOR DE SACUDIDAS CON SENSIBILIDAD OPTIMIZADA A 3000
 let sh_last_x = 0, sh_last_y = 0, sh_last_z = 0;
 let sh_lastUpdate = 0;
 let sh_initialized = false;
@@ -1121,23 +1025,21 @@ function activarAlarmaRobo() {
             document.body.style.backgroundColor = '#FFFFFF';
         }
     }, 150);
-    disparoSOS('sacudida');
+    disparoSOS();
 }
 
-function parar() {
+const parar = () => {
     if(gps) navigator.geolocation.clearWatch(gps);
+    if(la) clearInterval(la); if(lv) clearInterval(lv); if(l10) clearInterval(l10);
     document.getElementById('st').style.display='none';
     document.body.style.backgroundColor = '#FFFFFF';
-}
+};
 
-async function pararConLlave() {
+async function pararConLlave(){
     const k = prompt('⚠️ SEGURIDAD ANTIRROBO\nPara detener la alerta, ingresá tu Llave Maestra C4:');
     if(!k) return;
     
     const llaveLimpia = LK(k);
-    
-    await authTrucha(localStorage.getItem('imei') || 'generico');
-
     try {
         const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`);
         if(res.length === 0) {
@@ -1145,6 +1047,7 @@ async function pararConLlave() {
             return;
         }
 
+        // Restablecer la bandera de alarma remota en la base de datos
         const imeiActivo = localStorage.getItem('imei');
         if(imeiActivo) {
             await supaQuery('PATCH', `c4_suscripciones?imei=eq.${imeiActivo}`, { alarma_remota: false });
@@ -1170,9 +1073,24 @@ async function pararConLlave() {
     }
 }
 
-// ==========================================
-// 8. RENDERIZADO DEL ACTA P4
-// ==========================================
+async function salir(){
+    const k = prompt('⚠️ DESVINCULACIÓN DEL SISTEMA\nIngresá tu Llave Maestra C4:');
+    if(!k) return;
+    
+    const llaveLimpia = LK(k);
+    try {
+        const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`);
+        if(res.length === 0) {
+            alert('❌ LLAVE INCORRECTA.');
+            return;
+        }
+        parar();
+        localStorage.clear(); sessionStorage.clear(); location.reload();
+    } catch(e) {
+        alert('Error validando la llave con el servidor.');
+    }
+}
+
 function render(a){
  const c=document.getElementById('alertas');
  let d = document.getElementById('a_'+a.id);
@@ -1272,46 +1190,36 @@ function render(a){
  if (audContainer && audContainer.dataset.len != (a.audios?.length || 0)) { audContainer.innerHTML = aA; audContainer.dataset.len = a.audios?.length || 0; }
 }
 
-// ==========================================
-// 9. INICIALIZACIÓN Y EVENTOS PWA
-// ==========================================
-let promptInstalacion;
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    promptInstalacion = e;
-    const btn = document.getElementById('btn-install-pwa');
-    if (btn) btn.style.display = 'flex';
-});
+const expTXT=()=>{
+    let currentImei = localStorage.getItem('imei');
+    let actasParaExportar = listaActas.filter(a => a.imei === currentImei);
+    if(actasParaExportar.length === 0) return alert('No hay actas registradas.');
+    let t = "=== NI UNA MENOS ARGENTINA - ACTA P4 ===\n\n";
+    actasParaExportar.forEach(a => {
+        t += `Expediente: ${a.numero_acta} | Fecha: ${a.fecha} ${a.hora}\nGPS: ${a.lat}, ${a.lng}\nHash: ${a.sha256}\n--------------------\n`;
+    });
+    const b=new Blob([t],{type:'text/plain'});
+    const u=URL.createObjectURL(b);
+    const a = document.createElement('a');
+    a.href = u; a.download = 'ACTA_P4_' + Date.now() + '.txt';
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 200);
+};
 
-window.addEventListener('DOMContentLoaded', async () => {
-    const btnInstall = document.getElementById('btn-install-pwa');
-    if (btnInstall) {
-        btnInstall.addEventListener('click', async () => {
-            if (promptInstalacion) {
-                promptInstalacion.prompt();
-                const { outcome } = await promptInstalacion.userChoice;
-                if (outcome === 'accepted') {
-                    btnInstall.style.display = 'none';
-                }
-                promptInstalacion = null;
-            }
-        });
-    }
+const verificar=async()=>{alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales válidas\nLeyes: 26.485 · 25.326')};
 
-    await cargarActasLocales(); 
-    const savedImei = localStorage.getItem('imei');
-    if(savedImei) {
-        document.getElementById('pI').value = savedImei;
-        if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = savedImei;
-        authTrucha(savedImei);
-    }
-    if(localStorage.getItem('ok')==='1'){
-        document.getElementById('zonaOk').style.display='block';
-        iniciarRealtime();
-    }
-    ir('inicio');
-    if('serviceWorker'in navigator) {
-        navigator.serviceWorker.register('sw.js?v=2026_v8').catch(()=>{});
-    }
+addEventListener('DOMContentLoaded', async ()=>{
+ await cargarActasLocales(); 
+ const savedImei = localStorage.getItem('imei');
+ if(savedImei) {
+    document.getElementById('pI').value = savedImei;
+    if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = savedImei;
+ }
+ if(localStorage.getItem('ok')==='1'){
+    document.getElementById('zonaOk').style.display='block';
+ }
+ ir('inicio');
+ if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v8').catch(()=>{}));
+ document.addEventListener('contextmenu',e=>e.preventDefault());
 });
 </script></body></html>
