@@ -398,7 +398,6 @@ const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 
 const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digit',day:'2-digit'},oH={timeZone:'America/Argentina/Buenos_Aires',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false};
 
-// FIX CRÍTICO: FORMATO AUTOMÁTICO DE LLAVE PARA EVITAR ERRORES DE USUARIA
 const LK = k => {
     let str = (k || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (str.startsWith('C4')) {
@@ -412,7 +411,7 @@ const LK = k => {
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
 // =========================================================================
-// 🔥 FIX RLS SUPABASE: SISTEMA AUTENTICACIÓN AUTOMÁTICA FANTASMA
+// 🔥 AUTH NINJA: ENGAÑO A SUPABASE (RLS) - VERSIÓN DEFINITIVA
 // =========================================================================
 let currentJWT = null;
 
@@ -422,16 +421,17 @@ async function authTrucha(imei) {
     const password = 'C4_Sec2026!' + imei; 
     
     try {
-        // 1. Intentar Loguearse
+        // 1. Modo Sigilo: Intentamos loguearnos directamente
         let res = await fetch(`${SUPA_URL}/auth/v1/token?grant_type=password`, {
             method: 'POST',
             headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
+        
         let data = await res.json();
         
-        // 2. Si falla el login por cualquier motivo (ej: el usuario no existe), lo registramos
-        if (data.error) {
+        // 2. Si rebota (porque no existe o falló), lo registramos en el acto
+        if (!res.ok) {
             let regRes = await fetch(`${SUPA_URL}/auth/v1/signup`, {
                 method: 'POST',
                 headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
@@ -439,22 +439,23 @@ async function authTrucha(imei) {
             });
             let regData = await regRes.json();
             
-            // Si el registro falla, muestra el error EXACTO de Supabase en pantalla
-            if (regData.error) {
-                alert("⚠️ ERROR SUPABASE AL CREAR USUARIO:\n" + regData.error.message + "\n\n(Revisá en Supabase -> Authentication -> Providers -> Email que 'Enable Email Signup' esté en ON).");
+            // Si Supabase tira un error real (ej: demasiados intentos), lo mostramos EXACTO
+            if (!regRes.ok) {
+                const errorReal = regData.msg || regData.error_description || regData.error?.message || "Error desconocido en Supabase";
+                alert("⚠️ ERROR AL CREAR USUARIO:\n" + errorReal);
                 return false;
             }
 
-            // Si pide confirmación de email y no da token
+            // Si pasa pero no da token, es por culpa del "Confirm Email"
             if ((regData.id || regData.user) && !regData.access_token && !regData.session) {
-                alert("⚠️ PANEL SUPABASE: Tenés activada la 'Confirmación de Email'.\n\nEntrá a Supabase -> Authentication -> Providers -> Email -> y DESACTIVÁ 'Confirm email' para que el sistema deje crear la cuenta automáticamente.");
+                alert("⚠️ ATENCIÓN: Tenés activada la 'Confirmación de Email'.\nAndá a Supabase -> Authentication -> Providers -> Email y APAGÁ 'Confirm email' para que esto funcione.");
                 return false;
             }
 
-            data = regData; // Pasamos la data exitosa de registro
+            data = regData; // Sobreescribimos con la data exitosa del registro
         }
         
-        // 3. Extraer Token
+        // 3. Extraemos el Botín (Token JWT) para abrir el candado RLS
         if (data.access_token) {
             currentJWT = data.access_token;
             return true;
@@ -463,7 +464,7 @@ async function authTrucha(imei) {
             return true;
         }
         
-        alert("Error de Supabase: No devolvió Token de acceso.");
+        alert("Error crítico: Supabase conectó pero no devolvió el Token de acceso.");
         return false;
     } catch (e) {
         alert("Error de red conectando con Supabase: " + e.message);
@@ -681,7 +682,6 @@ async function alta(){
         let fechaVencimiento = new Date();
         fechaVencimiento.setDate(fechaVencimiento.getDate() + 15);
 
-        // FIX: Agregado el campo email
         await supaQuery('POST', 'c4_suscripciones', { 
             email: emailTrucho,
             imei: i, 
