@@ -205,6 +205,57 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
   .acta .t th { background: #eee !important; }
   .acta .mono { background: #fff !important; border-color: #000 !important; }
 }
+
+/* ESTILOS PARA EL MODAL DE PAGO */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(5px);
+}
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 90%;
+    width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    border: 2px solid var(--oro);
+}
+.modal-content h3 {
+    font-family: 'Cinzel', serif;
+    color: var(--oroOscuro);
+    margin-bottom: 15px;
+    font-weight: 900;
+}
+.modal-content p {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+.modal-content .datos-pago {
+    background: #FAFAFA;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px dashed var(--oroMedio);
+    margin-bottom: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--negro);
+}
+.modal-content .btn {
+    margin-top: 10px;
+}
+
 </style></head><body>
 
 <button id="btn-install-pwa"><div class="c4-mini">C4</div> INSTALAR APP</button>
@@ -286,11 +337,21 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
      <input type="hidden" id="pI">
    </div>
    <p style="text-align:center; font-size:14px; font-weight:600; color:#555; margin-bottom: 15px;">Seleccioná el plan y subí la foto de tu transferencia. Nuestra Inteligencia Artificial leerá el comprobante y te activará al instante.</p>
+   
+   <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-top:10px;text-align:left;">
+      <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">💳 DATOS PARA TRANSFERENCIA</b>
+      <p style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;margin:0;">
+          Realiza el pago correspondiente al plan que elijas a la siguiente cuenta:<br><br>
+          <b>Titular:</b> Luis Ángel Acosta<br>
+          <b>CVU / ALIAS:</b> <span style="font-family:'JetBrains Mono',monospace;">(Ingresa aquí el CVU/Alias de Luis)</span><br>
+          <b>CBU:</b> <span style="font-family:'JetBrains Mono',monospace;">(Ingresa aquí el CBU si es necesario)</span>
+      </p>
+   </div>
  </div>
  <input type="file" id="fileComprobante" accept="image/*" style="display:none" onchange="procesarComprobante(event)">
  
- <div class="plan" onclick="pedirComprobante('mensual')"><div class="n">PLAN MENSUAL</div><div class="p">$ 4.900</div><div style="font-size:12px; text-align:center; margin-top:8px; color:#5A3E00; font-weight:800;">TOCÁ PARA SUBIR COMPROBANTE</div></div>
- <div class="plan diamante" onclick="pedirComprobante('anual')"><div class="etiqueta">✦ ENERGY 2026</div><div class="n">PLAN ANUAL PRO</div><div class="p">$ 39.900</div><div style="font-size:12px; text-align:center; margin-top:8px; color:#5A3E00; font-weight:800;">TOCÁ PARA SUBIR COMPROBANTE</div></div>
+ <div class="plan" onclick="mostrarModalPago('mensual', '$ 4.900')"><div class="n">PLAN MENSUAL</div><div class="p">$ 4.900</div><div style="font-size:12px; text-align:center; margin-top:8px; color:#5A3E00; font-weight:800;">TOCÁ PARA VER DATOS Y SUBIR COMPROBANTE</div></div>
+ <div class="plan diamante" onclick="mostrarModalPago('anual', '$ 39.900')"><div class="etiqueta">✦ ENERGY 2026</div><div class="n">PLAN ANUAL PRO</div><div class="p">$ 39.900</div><div style="font-size:12px; text-align:center; margin-top:8px; color:#5A3E00; font-weight:800;">TOCÁ PARA VER DATOS Y SUBIR COMPROBANTE</div></div>
  <button class="btn blanco" onclick="ir('login')">✦ YA TENGO LLAVE C4 ✦</button>
 </section>
 
@@ -396,7 +457,6 @@ try {
 const LK = k => !k ? '' : k.toUpperCase().replace(/[\u2011-\u2015]/g,'-').replace(/[^A-Z0-9\-]/g,'').trim();
 const IM = i => (i||'').toString().replace(/\D/g,'').slice(0,15);
 
-// FUNCIONES DE PERMISOS FALTANTES SOLUCIONADAS
 function pedirPermisosGlobalesYGPS() {
     try {
         if(navigator.geolocation) navigator.geolocation.getCurrentPosition(()=>{}, ()=>{});
@@ -409,7 +469,7 @@ function pedirPermisosGlobalesYGPS() {
 }
 
 // ==========================================
-// 2. NAVEGACIÓN Y AUDIO (ACTUALIZADO)
+// 2. NAVEGACIÓN Y AUDIO
 // ==========================================
 function ir(id) {
     document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
@@ -442,7 +502,6 @@ function volverSOS() {
 function leerVoz() {
     try {
         speechSynthesis.cancel();
-        // TEXTO ACTUALIZADO CON EL PEDIDO FINAL SOBRE EL SACUDÓN
         const u = new SpeechSynthesisUtterance(`Nuestra aplicación está diseñada para proteger a las personas. Es un sistema integral de evidencia que opera de forma invisible: graba audio de forma continua, saca fotos, graba videos y rastrea tu ubicación por GPS segundo a segundo. Toda esta información construye tu Acta Pericial P4. Si te roban el celular, lo activás desde cualquier celular o de un familiar, y lo activás manual a distancia cargando tu Llave Maestra. El sistema recaba toda la información y en las setenta y dos horas, si no hay denuncia, queda todo borrado para garantizar tu privacidad. Este es un sistema con seguridad criptográfica para la justicia. Podés descargar el acta, la imprimís y la llevás a comisaría o fiscalía. También, tené en cuenta que si estás dentro de la aplicación, podés con un sacudón activarla, y le manda a tus dos contactos por WhatsApp tu ubicación a tus familiares.`);
         u.lang = 'es-AR'; u.rate = 0.92; u.pitch = 1; u.volume = 1;
         speechSynthesis.speak(u);
@@ -598,7 +657,7 @@ async function borrarActa(id) {
 }
 
 // ==========================================
-// 4. REGISTRO Y LOGIN HÍBRIDO (SIN ERRORES BLOQUEANTES)
+// 4. REGISTRO Y LOGIN HÍBRIDO
 // ==========================================
 async function alta(){
     const n = document.getElementById('rN').value.trim();
@@ -614,8 +673,9 @@ async function alta(){
     
     let waLimpio = w.replace(/\D/g, ''); 
 
+    // ✅ MENSAJE DE BIENVENIDA (YA REGISTRADO)
     if(localStorage.getItem('imei') === i && localStorage.getItem('ok') === '1') {
-        alert('Este equipo ya está registrado en este navegador.');
+        alert('✅ Bienvenida de nuevo.\nTu equipo ya se encuentra registrado y protegido con tu Llave Maestra.');
         ir('llave');
         return;
     }
@@ -654,7 +714,6 @@ async function alta(){
         } catch(e) { console.warn("Fallo guardado remoto, respaldando local."); }
     }
 
-    // FLUJO LOCAL (Siempre funciona, incluso si la base de datos falla)
     localStorage.setItem('imei', i); 
     localStorage.setItem('nombre', n);
     localStorage.setItem('mi_wa', waLimpio);
@@ -670,6 +729,9 @@ async function alta(){
     let numerosBienvenida = [...new Set([waLimpio, ...c])];
     enviarWhatsAppOculto(numerosBienvenida, n, null, null, null, 'bienvenida');
 
+    // ✅ MENSAJE DE BIENVENIDA (NUEVO REGISTRO EXITOSO)
+    alert('✅ ¡REGISTRO EXITOSO!\nEl sistema C4 Judicial está activado en tu dispositivo.');
+
     pedirPermisosGlobalesYGPS(); 
     iniciarRealtime(); 
     ir('llave');
@@ -680,6 +742,33 @@ function pedirComprobante(plan) {
     planSeleccionado = plan;
     document.getElementById('fileComprobante').click();
 }
+
+function mostrarModalPago(plan, precio) {
+    planSeleccionado = plan;
+    const modalHTML = `
+        <div class="modal-overlay" id="modal-pago">
+            <div class="modal-content">
+                <h3>REALIZAR PAGO</h3>
+                <p>Estás a punto de abonar el <b>Plan ${plan.toUpperCase()}</b> por <b>${precio}</b>.</p>
+                <div class="datos-pago">
+                    <b>Titular:</b> Luis Ángel Acosta<br>
+                    <b>CVU / ALIAS:</b> (Ingresa aquí tu CVU/Alias)<br>
+                    <b>CBU:</b> (Ingresa aquí tu CBU)
+                </div>
+                <p style="font-size: 13px; color: #666;">Al realizar la transferencia, toca el botón de abajo para subir la foto del comprobante. Nuestra IA lo leerá y activará tu cuenta automáticamente.</p>
+                <button class="btn" onclick="document.getElementById('fileComprobante').click(); cerrarModalPago();">SUBIR COMPROBANTE</button>
+                <button class="btn blanco" onclick="cerrarModalPago()">CANCELAR</button>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+function cerrarModalPago() {
+    const modal = document.getElementById('modal-pago');
+    if (modal) modal.remove();
+}
+
 
 async function procesarComprobante(e) {
     const file = e.target.files[0];
@@ -845,6 +934,15 @@ async function recuperar(accion) {
 
 let sosActivo = false;
 
+// ✅ SOLUCIÓN AL BOTÓN S.O.S (Función puente que faltaba)
+function toggleSOS() {
+    if (sosActivo) {
+        pararConLlave();
+    } else {
+        disparoSOS('boton');
+    }
+}
+
 function iniciarRealtime() {
     if (!supaClient) return; 
     
@@ -882,6 +980,17 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', ti
 
     contactos = [...new Set(contactos)];
 
+    // ✅ SOLUCIÓN GREEN API (ARGENTINA) 
+    // Formatea los números para que siempre tengan el "549" si la gente los cargó cortos.
+    contactos = contactos.map(num => {
+        let nStr = String(num).replace(/\D/g, '');
+        // Si cargan 10 dígitos (ej: 3816092676), se le clava el 549 para que Vercel/GreenAPI no falle
+        if (nStr.length === 10 && !nStr.startsWith('54')) {
+            return '549' + nStr;
+        }
+        return nStr;
+    });
+
     let msg = "";
     if (tipo === 'alerta') {
         if (tipo_disparo === 'sacudida') {
@@ -903,7 +1012,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', ti
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contactos: contactos, mensaje: msg })
-    }).catch(err => console.error("Fallo al conectar con Green API:", err));
+    }).catch(err => console.error("Fallo al conectar con API WhatsApp:", err));
 }
 
 // ==========================================
@@ -1360,3 +1469,4 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 });
 </script></body></html>
+
