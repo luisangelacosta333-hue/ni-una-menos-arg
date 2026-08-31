@@ -155,28 +155,39 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 .ley{display:inline-block;padding:5px 12px;margin:4px;border-radius:999px;border:1px solid var(--oroMedio);color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;font-weight:700;background:#FFFCF2}
 @media(max-width:640px){.grid2{grid-template-columns:1fr}}
 
-/* BOTÓN INSTALAR PWA */
+/* BOTÓN INSTALAR PWA CON LOGO C4 MINI */
 #btn-install-pwa {
     position: fixed;
     top: 15px;
     right: 15px;
-    background: var(--oro);
-    color: #fff;
-    padding: 8px 16px;
+    background: var(--blanco);
+    color: var(--oroOscuro);
+    padding: 6px 14px 6px 6px;
     border-radius: 50px;
     font-family: 'Cinzel', serif;
     font-weight: 900;
     font-size: 13px;
-    letter-spacing: 2px;
-    border: 1px solid var(--oroClaro);
+    letter-spacing: 1px;
+    border: 1px solid var(--oro);
     box-shadow: var(--luzFuerte);
     cursor: pointer;
     z-index: 9999999;
     display: none;
     align-items: center;
     gap: 8px;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
     animation: entrar .5s ease both;
+}
+.c4-mini {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 20%,#FFFFFF,#FFF8DC 35%,#E6C76B 62%,#A87F0A 88%,#5A3E00 100%);
+    color: var(--blanco);
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    border: 1px solid var(--oro);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 @media print {
@@ -196,7 +207,8 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 }
 </style></head><body>
 
-<button id="btn-install-pwa"><span style="font-size: 1.2rem;">📲</span> INSTALAR</button>
+<!-- LOGUITO DE PWA DESCARGABLE AGREGADO AQUÍ -->
+<button id="btn-install-pwa"><div class="c4-mini">C4</div> INSTALAR APP</button>
 
 <div class="app">
 <header>
@@ -205,24 +217,25 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <h1>NI UNA MENOS</h1>
  <h2>ARGENTINA · ENERGY 2026 · ACTA P4 JUDICIAL</h2>
  <div class="tag">MALTRATO ✦ VIOLENCIA ✦ SECUESTRO ✦ PROTECCIÓN DE MENORES</div>
- <p><strong style="display:block;color:var(--oroOscuro);font-weight:800;margin-bottom:10px">Protección integral forense que cubre lo que nadie cubre.</strong>
- Nuestra aplicación está diseñada para resguardar tu vida. Un sistema de evidencia invisible que graba audio, saca fotos, filma videos y rastrea tu ubicación por GPS. Si te roban el celular, lo activás manualmente a distancia cargando tu Llave Maestra. El equipo recabará la evidencia y mandará alertas. <strong>Sistema 100% blindado y privado.</strong></p>
+ <p><strong style="display:block;color:var(--oroOscuro);font-weight:800;margin-bottom:10px">Protección integral forense para resguardar tu vida.</strong>
+ Nuestro sistema de evidencia graba audio continuo, saca fotos, graba videos y rastrea tu ubicación. Todo opera de forma invisible. Si te roban el celular, vos o un familiar pueden activarlo manualmente a distancia ingresando tu Llave Maestra desde cualquier otro dispositivo para no arriesgarte. <strong>Sistema 100% blindado y privado.</strong></p>
 
- <div style="background:#FFFCF2;border:1.5px solid var(--oro);padding:22px;border-radius:12px;margin:25px auto;max-width:820px;box-shadow:var(--luz);">
-  <b style="color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:20px;letter-spacing:3px;display:block;margin-bottom:10px;">✦ 15 DÍAS GRATIS ✦</b>
-  <span style="font-size:16px;color:#333;font-weight:600;line-height:1.5;display:block;">Descargá y registrate hoy mismo. Probala y comprobá cómo funciona nuestro sistema de protección pericial sin costo.</span>
- </div>
-
- <!-- BOTÓN DE ACCESO AL ACTA JUDICIAL EN LA LANDING PAGE PRINCIPAL -->
+ <!-- BOTÓN GIGANTE PARA DESCARGAR ACTA EN LA LANDING PAGE (DORADO) -->
  <button class="btn" onclick="ir('login')" style="max-width:820px;margin-inline:auto;margin-top:25px;padding:25px;font-size:16px;box-shadow:var(--luzFuerte); letter-spacing: 5px;">📄 DESCARGAR ACTA PERICIAL P4</button>
 
- <!-- BOTÓN DE S.O.S REMOTO -->
- <button class="btn blanco" onclick="ir('recuperar')" style="max-width:520px;margin-inline:auto;margin-top:15px;box-shadow:var(--luz)">✦ ACTIVAR S.O.S. REMOTO ✦</button>
+ <!-- ACCESO DIRECTO AL S.O.S REMOTO (DORADO) -->
+ <div style="background:#FFFCF2;border:2px solid var(--oro);padding:22px;border-radius:12px;margin:25px auto;max-width:820px;box-shadow:var(--luz);">
+  <b style="color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:22px;letter-spacing:3px;display:block;margin-bottom:10px;text-shadow: 0 1px 2px rgba(212,175,55,0.2);">✦ DETONADOR S.O.S. REMOTO ✦</b>
+  <span style="font-size:15px;color:#333;font-weight:600;line-height:1.6;display:block;margin-bottom:15px;">
+    ¿Te acaban de robar el celular? Ingresá aquí desde el teléfono de un familiar. Cargá tu <b>Llave Maestra</b> para activar manualmente el sistema a distancia y rastrear tu equipo al instante.
+  </span>
+  <button class="btn" onclick="ir('recuperar')" style="max-width:100%; font-size: 14px; letter-spacing: 3px;">💥 ENTRAR AL PANEL DE EMERGENCIA 💥</button>
+ </div>
 
- <button class="btn blanco" onclick="leerVoz()" style="max-width:520px;margin-inline:auto;margin-top:15px;box-shadow:var(--luz)">✦ PRESENTACIÓN DE FUNCIONAMIENTO ✦</button>
+ <button class="btn blanco" onclick="leerVoz()" style="max-width:520px;margin-inline:auto;margin-top:15px;box-shadow:var(--luz)">✦ ESCUCHAR CÓMO FUNCIONA ✦</button>
  
  <div class="scroll-container top-marquee">
-  <div class="scroll-text">✦ ACTIVACIÓN INMEDIATA POR BOTÓN O IMPACTO 🇦🇷 RASTREO GPS SEGUNDO A SEGUNDO 🇦🇷 GRABACIÓN DE AUDIO OCULTA 🇦🇷 VIDEO HD COMO EVIDENCIA 🇦🇷 FOTOS AUTOMÁTICAS FRONTAL Y TRASERA 🇦🇷 ALERTA WHATSAPP A FAMILIARES 🇦🇷 BÚFER OFFLINE SIN SEÑAL 🇦🇷 S.O.S. REMOTO 🇦🇷</div>
+  <div class="scroll-text">✦ GATILLO A DISTANCIA INMEDIATO 🇦🇷 ACTIVACIÓN SILENCIOSA REMOTA 🇦🇷 SENSOR DE IMPACTO Y SACUDIDA 🇦🇷 RASTREO GPS SEGUNDO A SEGUNDO 🇦🇷 GRABACIÓN DE AUDIO OCULTA 🇦🇷 ALERTA WHATSAPP A FAMILIARES 🇦🇷 BÚFER OFFLINE SIN SEÑAL 🇦🇷 MODO SIGILO DOMÉSTICO 🇦🇷</div>
  </div>
 </div>
 </header>
@@ -230,39 +243,26 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 <section id="inicio" class="vista activa">
  <div id="zonaOk" style="display:none;padding-bottom:20px;">
   <div class="caja" style="background:#FFF3F5;border:1px solid #8B0000;padding:28px;">
-   <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">✦ PROTECCIÓN ACTIVA ✦</h3>
-   <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás registrada en el sistema.<br>Si sentís miedo o sospechás que corrés peligro, activá el botón manualmente aquí:</p>
-   <button class="btn rubi" onclick="irSOS()">✦ INGRESAR AL BOTÓN ANTIPÁNICO ✦</button>
+   <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">✦ SISTEMA EN GUARDIA ✦</h3>
+   <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">El teléfono está escuchando la señal de tu Llave Maestra por si te lo roban. Si corrés peligro ahora y lo tenés en la mano, activalo manualmente aquí:</p>
+   <button class="btn rubi" onclick="irSOS()">✦ DETONAR BOTÓN ANTIPÁNICO ✦</button>
   </div>
  </div>
  <div class="caja"><h3>✦ 5 PASOS PARA ACTIVAR ✦</h3>
   <div class="paso"><div class="n">I</div><div><b>NOMBRE Y APELLIDO</b><span>Datos de la persona a proteger</span></div></div>
   <div class="paso"><div class="n">II</div><div><b>IMEI *#06#</b><span>15 dígitos = Identidad legal del equipo</span></div></div>
   <div class="paso"><div class="n">III</div><div><b>2 CONTACTOS</b><span>Alerta automática a familiares por WhatsApp</span></div></div>
-  <div class="paso"><div class="n">IV</div><div><b>PAGO INTELIGENTE (IA)</b><span>Aprobación inmediata leyendo tu comprobante</span></div></div>
-  <div class="paso"><div class="n">V</div><div><b>LLAVE C4</b><span>Única · intransferible · válida judicialmente</span></div></div>
+  <div class="paso"><div class="n">IV</div><div><b>PAGO INTELIGENTE (IA)</b><span>Aprobación automática leyendo tu comprobante</span></div></div>
+  <div class="paso"><div class="n">V</div><div><b>LLAVE C4</b><span>Tu código secreto para activarlo a distancia</span></div></div>
  </div>
- <div class="caja"><h3>✦ LO QUE CUBRIMOS · LO QUE TE DEFIENDE ✦</h3>
+ <div class="caja"><h3>✦ MÓDULOS DE DEFENSA ✦</h3>
   <div class="grid2">
-   <div class="info-bloque"><b>⬩ VIOLENCIA DE GÉNERO</b><p>Ley 26.485 protección integral, medidas urgentes, prueba pericial lista.</p></div>
-   <div class="info-bloque"><b>⬩ MALTRATO Y AMENAZAS</b><p>Intrafamiliar, laboral, escolar o callejero. Audio continuo + foto automática.</p></div>
-   <div class="info-bloque"><b>⬩ SECUESTRO / PRIVACIÓN</b><p>Activación manual, remota o por temporizador. Ruta trazada segundo a segundo.</p></div>
-   <div class="info-bloque"><b>⬩ RIESGO DE MENOR</b><p>Protección de niñas, niños y adolescentes. Acta lista para fiscalía y familia.</p></div>
-   <div class="info-bloque"><b>⬩ PERSECUCIÓN Y ACOSO</b><p>Historial GPS completo, celda y redes, prueba irrefutable de desplazamiento.</p></div>
-   <div class="info-bloque"><b>⬩ DOMICILIO / CASA</b><p>Modo específico, intervalos cortos, alerta si sale o entra a zona definida.</p></div>
-  </div>
-  <div style="margin-top:15px;text-align:center">
-   <span class="ley">LEY 26.485</span><span class="ley">LEY 25.326</span><span class="ley">CÓDIGO PROCESAL PENAL</span>
-  </div>
- </div>
- <div class="caja"><h3>✦ MÓDULOS DE EVIDENCIA FORENSE ✦</h3>
-  <div class="grid2">
-   <div class="info-bloque"><b>⬩ BOTÓN ANTIPÁNICO</b><p>1 toque = todo activado. Pantalla apagada o bloqueada.</p></div>
-   <div class="info-bloque"><b>⬩ SENSOR DE IMPACTO</b><p>Detección de caídas bruscas o sacudidas que disparan la alarma.</p></div>
-   <div class="info-bloque"><b>⬩ S.O.S. REMOTO</b><p>Activación a distancia desde cualquier dispositivo en caso de robo.</p></div>
-   <div class="info-bloque"><b>⬩ GPS EN TIEMPO REAL</b><p>Trazado segundo a segundo. Si el celular se frena, fuerza un reporte.</p></div>
-   <div class="info-bloque"><b>⬩ AUDIO SEGURO</b><p>Grabación oculta cifrada con su propio hash de integridad judicial.</p></div>
-   <div class="info-bloque"><b>⬩ FOTOS AUTO</b><p>Captura fotográfica frontal y trasera de forma silenciosa.</p></div>
+   <div class="info-bloque"><b>⬩ GATILLO A DISTANCIA</b><p>Si te roban, un familiar detona tu teléfono remotamente con la Llave Maestra.</p></div>
+   <div class="info-bloque"><b>⬩ SENSOR DE SACUDIDA</b><p>Si tenés la app en pantalla, un sacudón brusco dispara la alarma a tus contactos.</p></div>
+   <div class="info-bloque"><b>⬩ MODO SIGILO (PREVENTIVO)</b><p>Oscurece la pantalla totalmente. Ideal si caminás por zonas peligrosas o sufrís violencia doméstica.</p></div>
+   <div class="info-bloque"><b>⬩ RASTREO GPS CONTINUO</b><p>Trazado segundo a segundo en vivo. Si el celular se frena, fuerza un reporte.</p></div>
+   <div class="info-bloque"><b>⬩ AUDIO FORENSE</b><p>Grabación ambiental cifrada con su propio hash de integridad judicial.</p></div>
+   <div class="info-bloque"><b>⬩ FOTOS AUTOMÁTICAS</b><p>Captura frontal y trasera para registrar el rostro del delincuente o agresor.</p></div>
   </div>
  </div>
  <button class="btn" onclick="ir('registro')">✦ ACTIVAR PROTECCIÓN ✦</button>
@@ -394,12 +394,19 @@ const LK = k => !k ? '' : k.toUpperCase().replace(/[\u2011-\u2015]/g,'-').replac
 const IM = i => (i||'').toString().replace(/\D/g,'').slice(0,15);
 
 // ==========================================
-// 2. NAVEGACIÓN Y BOTONES PRINCIPALES
+// 2. NAVEGACIÓN INTELIGENTE (SCROLL CORREGIDO)
 // ==========================================
 function ir(id) {
     document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
     document.getElementById(id).classList.add('activa');
-    window.scrollTo({top:0, behavior:'smooth'});
+    
+    // Desplazamiento inteligente: bajamos directo al contenido para evitar el logo gigante de arriba
+    const mainTag = document.querySelector('main');
+    if (mainTag) {
+        window.scrollTo({top: mainTag.offsetTop - 10, behavior: 'smooth'});
+    } else {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
     
     if(id === 'panel') {
         setTimeout(() => {
@@ -418,7 +425,7 @@ function irSOS() {
 function leerVoz() {
     try {
         speechSynthesis.cancel();
-        // GUION DE VENTA EXACTO PEDIDO POR EL USUARIO
+        // GUION EXACTO SOLICITADO
         const u = new SpeechSynthesisUtterance(`Nuestra aplicación está diseñada para proteger a las personas. Es un sistema integral de evidencia que opera de forma invisible: graba audio de forma continua, saca fotos, graba videos y rastrea tu ubicación por GPS segundo a segundo. Toda esta información construye tu Acta Pericial P4. Si te roban el celular, lo activás desde cualquier celular o de un familiar, y lo activás manual a distancia cargando tu Llave Maestra. El sistema recaba toda la información y en las setenta y dos horas, si no hay denuncia, queda todo borrado para garantizar tu privacidad. Este es un sistema con seguridad criptográfica para la justicia. Podés descargar el acta, la imprimís y la llevás a comisaría o fiscalía.`);
         u.lang = 'es-AR'; u.rate = 0.92; u.pitch = 1; u.volume = 1;
         speechSynthesis.speak(u);
@@ -571,7 +578,7 @@ async function borrarActa(id) {
 }
 
 // ==========================================
-// 4. REGISTRO (SIN EMAIL VISIBLE) E INTEGRACIÓN OPENAI
+// 4. REGISTRO E INTEGRACIÓN OPENAI
 // ==========================================
 async function alta(){
     const n = document.getElementById('rN').value.trim();
@@ -585,7 +592,6 @@ async function alta(){
     
     let waLimpio = w.replace(/\D/g, ''); 
 
-    // Autenticamos el correo trucho de seguridad atado a este IMEI en la base de datos
     await authTrucha(i);
 
     try {
@@ -788,7 +794,7 @@ function iniciarRealtime() {
         }, (payload) => {
             if (payload.new && payload.new.alarma_remota === true && !sosActivo) {
                 ir('sos');
-                disparoSOS('remoto'); // Indicamos origen remoto
+                disparoSOS('remoto'); 
             }
         })
         .subscribe();
