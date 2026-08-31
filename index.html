@@ -327,7 +327,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <button class="btn" onclick="validar()">✦ VER ACTAS / EVIDENCIA ✦</button></div>
 </section>
 
-<section id="sos" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER AL INICIO</button><h2 class="tit">SISTEMA DETONADO</h2>
+<section id="sos" class="vista"><button class="btn volver" onclick="volverSOS()">⟵ VOLVER AL INICIO</button><h2 class="tit">SISTEMA DETONADO</h2>
  <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
  
  <div class="estadoSOS" id="st">
@@ -422,11 +422,20 @@ function irSOS() {
     else ir('pago');
 }
 
+// NUEVA FUNCIÓN PARA EL BOTÓN ATRÁS EN S.O.S
+function volverSOS() {
+    if (sosActivo) {
+        pararConLlave();
+    } else {
+        ir('inicio');
+    }
+}
+
 function leerVoz() {
     try {
         speechSynthesis.cancel();
-        // GUION EXACTO SOLICITADO
-        const u = new SpeechSynthesisUtterance(`Nuestra aplicación está diseñada para proteger a las personas. Es un sistema integral de evidencia que opera de forma invisible: graba audio de forma continua, saca fotos, graba videos y rastrea tu ubicación por GPS segundo a segundo. Toda esta información construye tu Acta Pericial P4. Si te roban el celular, lo activás desde cualquier celular o de un familiar, y lo activás manual a distancia cargando tu Llave Maestra. El sistema recaba toda la información y en las setenta y dos horas, si no hay denuncia, queda todo borrado para garantizar tu privacidad. Este es un sistema con seguridad criptográfica para la justicia. Podés descargar el acta, la imprimís y la llevás a comisaría o fiscalía.`);
+        // GUION EXACTO SOLICITADO + EL AGREGADO DEL SACUDÓN Y MICRÓFONO
+        const u = new SpeechSynthesisUtterance(`Nuestra aplicación está diseñada para proteger a las personas. Es un sistema integral de evidencia que opera de forma invisible: graba audio de forma continua, saca fotos, graba videos y rastrea tu ubicación por GPS segundo a segundo. Toda esta información construye tu Acta Pericial P4. Si te roban el celular, lo activás desde cualquier celular o de un familiar, y lo activás manual a distancia cargando tu Llave Maestra. Además, si estás dentro de la aplicación, con un sacudón se activa automáticamente y le manda el mensaje de alerta a tus dos contactos. El sistema recaba toda la información y en las setenta y dos horas, si no hay denuncia, queda todo borrado para garantizar tu privacidad. Este es un sistema con seguridad criptográfica para la justicia. Podés descargar el acta, la imprimís y la llevás a comisaría o fiscalía.`);
         u.lang = 'es-AR'; u.rate = 0.92; u.pitch = 1; u.volume = 1;
         speechSynthesis.speak(u);
     } catch(e) {
@@ -1245,9 +1254,31 @@ function render(a){
 }
 
 // ==========================================
-// 9. INICIALIZACIÓN
+// 9. INICIALIZACIÓN Y EVENTOS PWA
 // ==========================================
+let promptInstalacion;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    promptInstalacion = e;
+    const btn = document.getElementById('btn-install-pwa');
+    if (btn) btn.style.display = 'flex';
+});
+
 window.addEventListener('DOMContentLoaded', async () => {
+    const btnInstall = document.getElementById('btn-install-pwa');
+    if (btnInstall) {
+        btnInstall.addEventListener('click', async () => {
+            if (promptInstalacion) {
+                promptInstalacion.prompt();
+                const { outcome } = await promptInstalacion.userChoice;
+                if (outcome === 'accepted') {
+                    btnInstall.style.display = 'none';
+                }
+                promptInstalacion = null;
+            }
+        });
+    }
+
     await cargarActasLocales(); 
     const savedImei = localStorage.getItem('imei');
     if(savedImei) {
