@@ -240,7 +240,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <div id="zonaOk" style="display:none;padding-bottom:20px;">
   <div class="caja" style="background:#FFF3F5;border:1px solid #8B0000;padding:28px;">
    <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">✦ PROTECCIÓN ACTIVA ✦</h3>
-   <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás registrada en el sistema.<br><b>Apretá el botón rojo ahora para que empiece a grabar la evidencia y enviar las alertas.</b></p>
+   <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás registrada en el sistema.<br>Si sentís miedo o sospechás que corrés peligro, activá el botón manualmente aquí:</p>
    <button class="btn rubi" onclick="irSOS()">✦ INGRESAR AL BOTÓN ANTIPÁNICO ✦</button>
   </div>
  </div>
@@ -410,25 +410,17 @@ const LK = k => {
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
 // =========================================================================
-// 🔥 AUTH NINJA: OPTIMIZADO (UNA SOLA PETICIÓN / MEMORIA LOCAL)
+// 🔥 AUTH NINJA: ENGAÑO A SUPABASE (RLS) - VERSIÓN DEFINITIVA
 // =========================================================================
 let currentJWT = null;
 
-async function authTrucha(imei, isRegistro = false) {
+async function authTrucha(imei) {
     if (!imei) return false;
-
-    let savedJWT = localStorage.getItem('c4_jwt_' + imei);
-    if (savedJWT && !isRegistro) {
-        currentJWT = savedJWT;
-        return true;
-    }
-
     const email = imei + '@c4judicial.com.ar';
     const password = 'C4_Sec2026!' + imei; 
-    let endpoint = isRegistro ? 'signup' : 'token?grant_type=password';
     
     try {
-        let res = await fetch(`${SUPA_URL}/auth/v1/${endpoint}`, {
+        let res = await fetch(`${SUPA_URL}/auth/v1/token?grant_type=password`, {
             method: 'POST',
             headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
@@ -436,29 +428,46 @@ async function authTrucha(imei, isRegistro = false) {
         
         let data = await res.json();
         
-        if (!res.ok && !isRegistro && (data.error_description?.includes('Invalid login') || data.msg?.includes('Invalid login'))) {
-             res = await fetch(`${SUPA_URL}/auth/v1/signup`, {
+        if (!res.ok) {
+            let regRes = await fetch(`${SUPA_URL}/auth/v1/signup`, {
                 method: 'POST',
                 headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
-            data = await res.json();
-        }
+            let regData = await regRes.json();
+            
+            if (!regRes.ok) {
+                const errorReal = regData.msg || regData.error_description || regData.error?.message || "Error desconocido en Supabase";
+                
+                if (errorReal.includes("User already registered") || errorReal.includes("already registered")) {
+                    alert(`🛑 USUARIO TRABADO EN SUPABASE\n\nEl correo ${email} quedó bloqueado de las pruebas anteriores (seguro por el Confirm Email).\n\nSOLUCIÓN OBLIGATORIA:\n1. Entrá a Supabase -> Authentication -> Users.\n2. BORRÁ ese usuario.\n3. Volvé a tocar el botón en la app.`);
+                    return false;
+                }
 
-        if (!res.ok) {
-            console.error("Error Ninja:", data);
-            return false;
-        }
+                alert("⚠️ ERROR AL CREAR USUARIO:\n" + errorReal);
+                return false;
+            }
 
-        let token = data.access_token || (data.session && data.session.access_token);
-        if (token) {
-            currentJWT = token;
-            localStorage.setItem('c4_jwt_' + imei, token); 
+            if ((regData.id || regData.user) && !regData.access_token && !regData.session) {
+                alert("⚠️ ATENCIÓN: Tenés activada la 'Confirmación de Email'.\nAndá a Supabase -> Authentication -> Providers -> Email y APAGÁ 'Confirm email' para que esto funcione.");
+                return false;
+            }
+
+            data = regData; 
+        }
+        
+        if (data.access_token) {
+            currentJWT = data.access_token;
+            return true;
+        } else if (data.session && data.session.access_token) {
+            currentJWT = data.session.access_token;
             return true;
         }
         
+        alert("Error crítico: Supabase conectó pero no devolvió el Token de acceso.");
         return false;
     } catch (e) {
+        alert("Error de red conectando con Supabase: " + e.message);
         return false;
     }
 }
@@ -567,14 +576,10 @@ const sigilo = () => {
 };
 
 async function sha256(message) {
-    try {
-        const msgBuffer = new TextEncoder().encode(message);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    } catch(e) {
-        return 'HASH-' + Math.random().toString(36).substr(2, 9).toUpperCase(); 
-    }
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 const initDB = () => new Promise((resolve) => {
@@ -654,7 +659,7 @@ async function alta(){
     const emailTrucho = i + '@c4judicial.com.ar';
 
     try {
-        const authOk = await authTrucha(i, true); 
+        const authOk = await authTrucha(i);
         if(!authOk) return; 
 
         const checkWA = await supaQuery('GET', `c4_suscripciones?select=*&whatsapp=eq.${waLimpio}`);
@@ -883,8 +888,10 @@ setInterval(async () => {
 }, 8000);
 
 // =========================================================================
-// 🔥 CONEXIÓN A VERCEL (PRODUCCIÓN LIMPIA Y SILENCIOSA)
+// 🔥 CONEXIÓN A GREEN API DIRECTA 🔥
 // =========================================================================
+const WA_INSTANCE = '710722723701';
+const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
 
 function formatArg(num) {
     let c = String(num).replace(/\D/g, '');
@@ -920,16 +927,17 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ *SISTEMA SEGURO* \nDesactivado a salvo.`;
     }
 
-    let urlVercel = `https://ni-una-menos-arg.vercel.app/api/whatsapp`; 
-
-    fetch(urlVercel, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            contactos: contactos, 
-            mensaje: msg 
-        })
-    }).catch(err => console.error("Error contactando a Vercel:", err));
+    for (let numero of contactos) {
+        if(!numero) continue;
+        let cel = formatArg(numero);
+        let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
+        
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
+        }).catch(err => {});
+    }
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
@@ -1000,7 +1008,7 @@ async function loopEvidencia(acta) {
 
     if(!sosActivo) return;
 
-    // 2. VIDEO SECUENCIAL
+    // 2. VIDEO SECUENCIAL (Acortado a 15 segundos para generar loop rápido)
     try {
         const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
         const videoRecorder = new MediaRecorder(videoStream);
@@ -1022,7 +1030,7 @@ async function loopEvidencia(acta) {
 
     if(!sosActivo) return;
 
-    // 3. AUDIO AMBIENTAL CONTINUO
+    // 3. AUDIO AMBIENTAL CONTINUO (Acortado a 15 segundos para generar loop rápido)
     try {
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioRecorder = new MediaRecorder(audioStream);
@@ -1075,11 +1083,9 @@ async function disparoSOS(){
  const id = 'P4-' + Date.now() + '-' + Math.random().toString(16).slice(2,8).toUpperCase();
  aid = id;
  
- // 🔥 CORRECCIÓN: Disparo en segundo plano para que el Acta se cree INSTANTÁNEAMENTE 🔥
  if (imei && imei !== 'SIN_IMEI') {
-     authTrucha(imei).then(ok => {
-         if(ok) supaQuery('POST', 'c4_emergencias', { imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() }).catch(()=>{});
-     });
+     await authTrucha(imei);
+     supaQuery('POST', 'c4_emergencias', { imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() }).catch(()=>{});
  }
 
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
@@ -1107,9 +1113,7 @@ async function disparoSOS(){
  const cores = navigator.hardwareConcurrency || 'Desc.';
  const pantalla = `${screen.width}x${screen.height}`;
 
- let hash;
- try { hash = await sha256(id+imei+Date.now()); } catch(e) { hash = 'HASH-LOCAL-OFFLINE'; }
- 
+ const hash = await sha256(id+imei+Date.now());
  let acta = {
      id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
      hora: new Date().toLocaleTimeString('es-AR'), fecha: new Date().toLocaleDateString('es-AR'),
@@ -1125,7 +1129,7 @@ async function disparoSOS(){
  if (acta.imei === currentImei) {
      const c = document.getElementById('alertas');
      if(c.innerHTML.includes('calma')) c.innerHTML='';
-     render(acta); // RENDERIZA AL INSTANTE
+     render(acta);
  }
 
  loopEvidencia(acta);
@@ -1215,10 +1219,12 @@ async function pararConLlave(){
     const llaveLocal = localStorage.getItem('llave_maestra');
     let esValida = false;
 
+    // Validación Local (Offline - Anti Arrebato Inmediato)
     if(llaveLocal && llaveLimpia === LK(llaveLocal)) {
         esValida = true;
     }
 
+    // Validación de respaldo Online
     if(!esValida) {
         try {
             const imeiActivo = localStorage.getItem('imei');
@@ -1240,7 +1246,7 @@ async function pararConLlave(){
     }
 
     alert('✅ Código verificado. Desactivando alarma...');
-    
+
     parar(); 
     sosActivo = false;
     document.getElementById('btnBigSOS').innerText = 'S.O.S';
