@@ -374,6 +374,18 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // ==========================================
+// 0. BLINDAJE ANTI-COPIA Y CONSOLA (MODO TANQUE)
+// ==========================================
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.onkeydown = function(e) {
+  if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
+  if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) { e.preventDefault(); return false; }
+  if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c' || e.keyCode === 67)) { e.preventDefault(); return false; }
+  if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) { e.preventDefault(); return false; }
+  if (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) { e.preventDefault(); return false; }
+};
+
+// ==========================================
 // 1. CONFIGURACIÓN SEGURA DE VARIABLES
 // ==========================================
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
@@ -400,7 +412,6 @@ function ir(id) {
     document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
     document.getElementById(id).classList.add('activa');
     
-    // Desplazamiento inteligente: bajamos directo al contenido para evitar el logo gigante de arriba
     const mainTag = document.querySelector('main');
     if (mainTag) {
         window.scrollTo({top: mainTag.offsetTop - 10, behavior: 'smooth'});
@@ -422,7 +433,6 @@ function irSOS() {
     else ir('pago');
 }
 
-// NUEVA FUNCIÓN PARA EL BOTÓN ATRÁS EN S.O.S
 function volverSOS() {
     if (sosActivo) {
         pararConLlave();
@@ -434,7 +444,6 @@ function volverSOS() {
 function leerVoz() {
     try {
         speechSynthesis.cancel();
-        // GUION EXACTO SOLICITADO + EL AGREGADO DEL SACUDÓN Y MICRÓFONO
         const u = new SpeechSynthesisUtterance(`Nuestra aplicación está diseñada para proteger a las personas. Es un sistema integral de evidencia que opera de forma invisible: graba audio de forma continua, saca fotos, graba videos y rastrea tu ubicación por GPS segundo a segundo. Toda esta información construye tu Acta Pericial P4. Si te roban el celular, lo activás desde cualquier celular o de un familiar, y lo activás manual a distancia cargando tu Llave Maestra. Además, si estás dentro de la aplicación, con un sacudón se activa automáticamente y le manda el mensaje de alerta a tus dos contactos. El sistema recaba toda la información y en las setenta y dos horas, si no hay denuncia, queda todo borrado para garantizar tu privacidad. Este es un sistema con seguridad criptográfica para la justicia. Podés descargar el acta, la imprimís y la llevás a comisaría o fiscalía.`);
         u.lang = 'es-AR'; u.rate = 0.92; u.pitch = 1; u.volume = 1;
         speechSynthesis.speak(u);
@@ -593,9 +602,12 @@ async function alta(){
     const n = document.getElementById('rN').value.trim();
     const i = IM(document.getElementById('rI').value);
     const w = document.getElementById('rW').value.trim();
-    const c1 = document.getElementById('cF1').value.trim();
-    const c2 = document.getElementById('cF2').value.trim();
-    const c = [c1, c2].filter(Boolean);
+    
+    // FILTRO ANTIPÍCARO (Evita que pongan el mismo contacto 2 veces)
+    const c1 = document.getElementById('cF1').value.trim().replace(/\D/g, '');
+    const c2 = document.getElementById('cF2').value.trim().replace(/\D/g, '');
+    let c = [c1, c2].filter(Boolean);
+    c = [...new Set(c)]; // Borra los duplicados matemáticamente
     
     if(!n || !/^\d{15}$/.test(i) || !w) return alert('Requiere Nombre completo, IMEI válido de 15 dígitos y tu número de WhatsApp.');
     
@@ -624,7 +636,7 @@ async function alta(){
         let fechaVencimiento = new Date();
         fechaVencimiento.setDate(fechaVencimiento.getDate() + 15);
 
-        // Agregamos todo a la base de datos (con el correo automático del sistema)
+        // Agregamos todo a la base de datos
         await supaQuery('POST', 'c4_suscripciones', { email: i+'@c4judicial.com.ar', imei: i, whatsapp: waLimpio, llave_acceso: k, tipo_plan: 'prueba_15', fecha_vencimiento: fechaVencimiento.toISOString(), activa: true, alarma_remota: false });
 
         localStorage.setItem('imei', i); 
@@ -638,6 +650,10 @@ async function alta(){
         document.getElementById('lk').textContent = k;
         localStorage.setItem('ok','1');
         
+        // INYECCIÓN: DISPARO DE BIENVENIDA / ANTI-BLOQUEO A TODOS LOS NÚMEROS INGRESADOS
+        let numerosBienvenida = [...new Set([waLimpio, ...c])];
+        enviarWhatsAppOculto(numerosBienvenida, n, null, null, null, 'bienvenida');
+
         pedirPermisosGlobalesYGPS(); 
         iniciarRealtime(); 
         ir('llave');
@@ -666,12 +682,15 @@ async function procesarComprobante(e) {
         const base64Image = ev.target.result;
         
         try {
-            const { data, error } = await supaClient.functions.invoke('validar-pago-ia', {
-                body: { imei: imeiActual, plan: planSeleccionado, imagen: base64Image }
+            const peticion = await fetch('/api/pagos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ local: imeiActual, fotoBase64: base64Image })
             });
+            const data = await peticion.json();
 
-            if(error || !data || data.valido === false) {
-                alert('❌ COMPROBANTE RECHAZADO: La Inteligencia Artificial determinó que el comprobante no es válido o el monto no coincide con el Plan ' + planSeleccionado.toUpperCase() + '.');
+            if(!data.success) {
+                alert('❌ COMPROBANTE RECHAZADO:\n' + (data.msg || 'La IA determinó que no es válido.'));
                 return;
             }
 
@@ -823,6 +842,9 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', ti
         contactos = miWa ? [miWa] : ['3816092676'];
     }
 
+    // FILTRO ANTIPÍCARO SEGUNDA CAPA (Por si se corrompió el caché)
+    contactos = [...new Set(contactos)];
+
     let msg = "";
     if (tipo === 'alerta') {
         if (tipo_disparo === 'sacudida') {
@@ -836,13 +858,16 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', ti
         msg = `📍 *GPS S.O.S* 📍\nhttps://maps.google.com/?q=${la},${ln}`;
     } else if (tipo === 'seguro') {
         msg = `✅ *SISTEMA SEGURO* \nDesactivado a salvo.`;
+    } else if (tipo === 'bienvenida') {
+        msg = `🛡️ *SISTEMA C4 - NI UNA MENOS* 🛡️\n\nHola. *${nombre}* te ha registrado en su red de seguridad.\n\n⚠️ *PASO OBLIGATORIO:*\nPara que nuestras alertas S.O.S (con audio y ubicación GPS en vivo) te lleguen inmediatamente en caso de emergencia y WhatsApp no las bloquee, necesitás hacer lo siguiente ahora mismo:\n\n1️⃣ Agendá este número en tus contactos.\n2️⃣ Respondé a este mensaje únicamente con la frase:\n\n*ni una menos*\n\nAl responder, el canal seguro quedará habilitado de por vida.`;
     }
 
-    if(supaClient) {
-        supaClient.functions.invoke('whatsapp-c4', {
-            body: { contactos: contactos, mensaje: msg }
-        }).catch(err => {});
-    }
+    // DISPARO A VERCEL API (Protegido por el filtro anti-duplicados superior)
+    fetch('/api/whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactos: contactos, mensaje: msg })
+    }).catch(err => console.error("Fallo al conectar con Green API:", err));
 }
 
 // ==========================================
@@ -1294,6 +1319,5 @@ window.addEventListener('DOMContentLoaded', async () => {
     if('serviceWorker'in navigator) {
         navigator.serviceWorker.register('sw.js?v=2026_v8').catch(()=>{});
     }
-    document.addEventListener('contextmenu', e => e.preventDefault());
 });
 </script></body></html>
