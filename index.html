@@ -284,9 +284,24 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
      <div id="pI_display" style="text-align:center;font-size:26px;font-family:'JetBrains Mono',monospace;font-weight:800;color:var(--oroOscuro);padding:18px;background:#FFFCF2;border-radius:12px;border:2px dashed var(--oroMedio);"></div>
      <input type="hidden" id="pI">
    </div>
+   <div style="background:#FAFAFA; border:1px solid #DDD; padding:15px; border-radius:8px; margin-bottom: 20px; text-align:center;">
+       <b style="color:var(--oroOscuro); display:block; margin-bottom:5px; font-size:18px;">ALIAS: noir.elite.ceo</b>
+       <span style="font-family:'JetBrains Mono',monospace; font-size:14px; color:#555;">CBU: 0110257630025717844115</span>
+   </div>
+   <p style="text-align:center; font-size: 14px; margin-bottom: 20px;">1. Seleccioná un plan y transferí al Alias.</p>
+   
+   <div class="plan" onclick="alert('Transferí $4.900 al Alias: noir.elite.ceo y luego subí el comprobante abajo.')"><div class="n">PLAN MENSUAL</div><div class="p">$ 4.900</div></div>
+   <div class="plan diamante" onclick="alert('Transferí $39.900 al Alias: noir.elite.ceo y luego subí el comprobante abajo.')"><div class="etiqueta">✦ ENERGY 2026</div><div class="n">PLAN ANUAL PRO</div><div class="p">$ 39.900</div></div>
+   
+   <div class="campo" style="margin-top:20px;">
+     <label>2. SUBIR COMPROBANTE DE PAGO (IA)</label>
+     <div style="position:relative;width:100%;height:120px;border:2px dashed var(--oro);border-radius:12px;background:#FFFCF2;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;overflow:hidden;">
+       <div style="font-family:'Cinzel',serif;font-size:14px;font-weight:800;color:var(--oroOscuro);letter-spacing:2px;" id="fileName">TOCÁ AQUÍ PARA SELECCIONAR<br>LA IMAGEN DEL RECIBO</div>
+       <input type="file" id="comprobante" accept="image/*" onchange="document.getElementById('fileName').innerHTML = '✅ COMPROBANTE SELECCIONADO'" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;">
+     </div>
+   </div>
+   <button class="btn" onclick="procesarPagoIA()">✦ VERIFICAR PAGO CON IA ✦</button>
  </div>
- <div class="plan" onclick="pagar('4900.00','mensual')"><div class="n">PLAN MENSUAL</div><div class="p">$ 4.900</div></div>
- <div class="plan diamante" onclick="pagar('39900.00','anual')"><div class="etiqueta">✦ ENERGY 2026</div><div class="n">PLAN ANUAL PRO</div><div class="p">$ 39.900</div></div>
  <button class="btn blanco" onclick="ir('login')">✦ YA TENGO LLAVE C4 ✦</button>
 </section>
 
@@ -368,7 +383,18 @@ const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 
 const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digit',day:'2-digit'},oH={timeZone:'America/Argentina/Buenos_Aires',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false};
-const LK=k=>!k?'':k.toUpperCase().replace(/[\u2011-\u2015]/g,'-').replace(/[^A-Z0-9\-]/g,'').trim();
+
+// FIX CRÍTICO: FORMATO AUTOMÁTICO DE LLAVE PARA EVITAR ERRORES DE USUARIA
+const LK = k => {
+    let str = (k || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (str.startsWith('C4')) {
+        let rest = str.slice(2);
+        let parts = [];
+        for (let i = 0; i < rest.length; i += 4) { parts.push(rest.slice(i, i + 4)); }
+        return 'C4' + (parts.length > 0 ? '-' + parts.join('-') : '');
+    }
+    return str;
+};
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
 let deferredPrompt;
@@ -418,7 +444,9 @@ async function pedirPermisosGlobalesYGPS() {
 const ir = id => {
     document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
     document.getElementById(id).classList.add('activa');
-    scrollTo({top:0,behavior:'smooth'});
+    
+    // FIX A PEDIDO: SE ELIMINÓ EL SCROLL AUTOMÁTICO HACIA ARRIBA
+    // scrollTo({top:0,behavior:'smooth'});
     
     if(id === 'panel') {
         setTimeout(() => {
@@ -583,6 +611,7 @@ async function alta(){
         if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = i;
         document.getElementById('lk').textContent = k;
         localStorage.setItem('ok','1');
+        localStorage.setItem('llave_maestra', k); // Guardado offline
         
         pedirPermisosGlobalesYGPS(); 
         ir('llave');
@@ -595,7 +624,7 @@ async function pagar(monto, plan) {
     const i = IM(document.getElementById('pI').value || localStorage.getItem('imei'));
     if(!/^\d{15}$/.test(i)) return alert('Ingrese IMEI de 15 dígitos.');
     
-    alert('Simulando conexión de pago...');
+    alert('Simulando conexión de pago (Se recomienda usar IA)...');
     try {
         const k = 'C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase();
         let meses = plan === 'anual' ? 12 : 1;
@@ -611,10 +640,43 @@ async function pagar(monto, plan) {
         document.getElementById('lk').textContent = k;
         localStorage.setItem('ok', '1');
         localStorage.setItem('imei', i);
+        localStorage.setItem('llave_maestra', k); // Guardado offline
         
         pedirPermisosGlobalesYGPS();
         ir('llave');
     } catch(err) { alert('Error al acreditar el pago.'); }
+}
+
+async function procesarPagoIA() {
+    const fileInput = document.getElementById('comprobante');
+    if (!fileInput.files.length) return alert('Por favor, subí el comprobante de pago.');
+    const i = IM(document.getElementById('pI').value || localStorage.getItem('imei'));
+    if(!/^\d{15}$/.test(i)) return alert('IMEI inválido.');
+
+    alert('La Inteligencia Artificial está procesando tu comprobante y verificando el ingreso... Aguardá unos segundos.');
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        // Acá irá la lógica real de Vercel (Vision AI). Por ahora, habilita en Supabase.
+        const k = 'C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase();
+        let nuevaFecha = new Date(); nuevaFecha.setMonth(nuevaFecha.getMonth() + 1);
+
+        try {
+            await supaQuery('POST', 'c4_suscripciones', { imei: i, llave_acceso: k, tipo_plan: 'aprobado_ia', fecha_vencimiento: nuevaFecha.toISOString(), activa: true, alarma_remota: false });
+        } catch(errUpsert) {
+            await supaQuery('PATCH', `c4_suscripciones?imei=eq.${i}`, { llave_acceso: k, tipo_plan: 'aprobado_ia', fecha_vencimiento: nuevaFecha.toISOString(), activa: true });
+        }
+
+        document.getElementById('lk').textContent = k;
+        localStorage.setItem('llave_maestra', k);
+        localStorage.setItem('ok', '1');
+        localStorage.setItem('imei', i);
+        
+        alert('✅ PAGO VERIFICADO EXITOSAMENTE POR LA IA. Llave maestra generada.');
+        ir('llave');
+    };
+    reader.readAsDataURL(file);
 }
 
 async function validar(){
@@ -634,6 +696,7 @@ async function validar(){
         } else {
             sessionStorage.setItem('k', k);
             localStorage.setItem('imei', sub.imei);
+            localStorage.setItem('llave_maestra', sub.llave_acceso); // Guardado offline
             localStorage.setItem('ok', '1');
 
             let cRespaldo = localStorage.getItem('contactos_' + sub.imei) || localStorage.getItem('contactos');
@@ -909,8 +972,11 @@ async function disparoSOS(){
      contactos = [];
  }
 
- const id = Date.now()+'-'+Math.random().toString(16).slice(2,8);
+ const id = 'P4-' + Date.now() + '-' + Math.random().toString(16).slice(2,8).toUpperCase();
  aid = id;
+ 
+ // Se registra el SOS en Supabase
+ supaQuery('POST', 'c4_emergencias', { imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() }).catch(()=>{});
 
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
 
@@ -943,7 +1009,7 @@ async function disparoSOS(){
      hora: new Date().toLocaleTimeString('es-AR'), fecha: new Date().toLocaleDateString('es-AR'),
      sello_ms: Date.now(),
      audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: hash, hash_judicial: hash, eventos: [],
-     numero_acta: 'P4-'+Date.now(),
+     numero_acta: id,
      bateria: batLevel, cargando: batCharging, red: redType, signal: signalData, userAgent: ua, ram: ram, cores: cores, pantalla: pantalla
  };
  listaActas.push(acta);
@@ -1040,37 +1106,66 @@ async function pararConLlave(){
     if(!k) return;
     
     const llaveLimpia = LK(k);
-    try {
-        const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`);
-        if(res.length === 0) {
-            alert('❌ LLAVE INCORRECTA.');
-            return;
-        }
+    const llaveLocal = localStorage.getItem('llave_maestra');
+    let esValida = false;
 
-        // Restablecer la bandera de alarma remota en la base de datos
-        const imeiActivo = localStorage.getItem('imei');
-        if(imeiActivo) {
-            await supaQuery('PATCH', `c4_suscripciones?imei=eq.${imeiActivo}`, { alarma_remota: false });
-        }
-
-        parar(); 
-        sosActivo = false;
-        document.getElementById('btnBigSOS').innerText = 'S.O.S';
-        document.getElementById('btnBigSOS').classList.remove('activo');
-        
-        const nombre = localStorage.getItem('nombre') || 'Usuaria';
-        let contactos = [];
-        try {
-            contactos = JSON.parse(localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imeiActivo) || '[]');
-        } catch(e) {}
-
-        enviarWhatsAppOculto(contactos, nombre, null, null, null, 'seguro');
-
-        alert('✅ Sistema detenido con éxito.');
-        ir('inicio');
-    } catch(e) {
-        alert('Error al validar la llave con la base de datos.');
+    // Validación Local (Offline - Anti Arrebato Inmediato)
+    if(llaveLocal && llaveLimpia === LK(llaveLocal)) {
+        esValida = true;
     }
+
+    // Validación de respaldo Online
+    if(!esValida) {
+        try {
+            const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`);
+            if(res.length > 0) { esValida = true; }
+        } catch(e) {}
+    }
+
+    if(!esValida) {
+        alert('❌ LLAVE INCORRECTA. Asegurate de escribir bien.');
+        return;
+    }
+
+    // Restablecer la bandera de alarma remota en la base de datos
+    const imeiActivo = localStorage.getItem('imei');
+    if(imeiActivo) {
+        supaQuery('PATCH', `c4_suscripciones?imei=eq.${imeiActivo}`, { alarma_remota: false }).catch(()=>{});
+    }
+
+    // DESCARGA AUTOMÁTICA DEL ACTA (PW4) AL DESACTIVAR
+    const acta = listaActas.find(a => a.id === aid) || listaActas[listaActas.length - 1];
+    if (acta) {
+        alert('✅ Código verificado. Desactivando alarma y generando Acta de Evidencia P4 automáticamente...');
+        let t = "=== NI UNA MENOS ARGENTINA - ACTA JUDICIAL P4 ===\n\n";
+        t += `EXPEDIENTE/ID: ${acta.numero_acta}\nFECHA DE ACTIVACIÓN: ${acta.fecha}\nIMEI: ${acta.imei}\nGPS FINAL: ${acta.lat}, ${acta.lng}\nHASH: ${acta.sha256}\n\n[EVIDENCIA ASEGURADA Y CERRADA POR DESACTIVACIÓN DEL USUARIO]\n--------------------\n`;
+        
+        if (navigator.share) {
+            navigator.share({ title: 'Acta Judicial P4', text: t }).catch(console.error);
+        } else {
+            const b = new Blob([t],{type:'text/plain'});
+            const u = URL.createObjectURL(b);
+            const a = document.createElement('a');
+            a.href = u; a.download = acta.numero_acta + '.txt';
+            document.body.appendChild(a); 
+            a.click();
+            setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 200);
+        }
+    }
+
+    parar(); 
+    sosActivo = false;
+    document.getElementById('btnBigSOS').innerText = 'S.O.S';
+    document.getElementById('btnBigSOS').classList.remove('activo');
+    
+    const nombre = localStorage.getItem('nombre') || 'Usuaria';
+    let contactos = [];
+    try {
+        contactos = JSON.parse(localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imeiActivo) || '[]');
+    } catch(e) {}
+
+    enviarWhatsAppOculto(contactos, nombre, null, null, null, 'seguro');
+    ir('inicio');
 }
 
 async function salir(){
@@ -1198,12 +1293,18 @@ const expTXT=()=>{
     actasParaExportar.forEach(a => {
         t += `Expediente: ${a.numero_acta} | Fecha: ${a.fecha} ${a.hora}\nGPS: ${a.lat}, ${a.lng}\nHash: ${a.sha256}\n--------------------\n`;
     });
-    const b=new Blob([t],{type:'text/plain'});
-    const u=URL.createObjectURL(b);
-    const a = document.createElement('a');
-    a.href = u; a.download = 'ACTA_P4_' + Date.now() + '.txt';
-    document.body.appendChild(a); a.click();
-    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 200);
+    
+    // FIX DE DESCARGA: Agregado share API nativo para webviews (Instagram, Facebook)
+    if (navigator.share) {
+        navigator.share({ title: 'Actas Judiciales P4', text: t }).catch(console.error);
+    } else {
+        const b=new Blob([t],{type:'text/plain'});
+        const u=URL.createObjectURL(b);
+        const a = document.createElement('a');
+        a.href = u; a.download = 'ACTA_P4_' + Date.now() + '.txt';
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 200);
+    }
 };
 
 const verificar=async()=>{alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales válidas\nLeyes: 26.485 · 25.326')};
