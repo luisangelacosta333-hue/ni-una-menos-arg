@@ -936,10 +936,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-        })
-        .then(res => res.json())
-        .then(data => console.log(`✅ WA enviado a ${cel}:`, data))
-        .catch(err => console.error(`❌ Error al enviar WA a ${cel}. Revisá la URL o el Token:`, err));
+        }).catch(err => {});
     }
 }
 
@@ -1011,7 +1008,7 @@ async function loopEvidencia(acta) {
 
     if(!sosActivo) return;
 
-    // 2. VIDEO SECUENCIAL (Aumentado a 60 segundos)
+    // 2. VIDEO SECUENCIAL 
     try {
         const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
         const videoRecorder = new MediaRecorder(videoStream);
@@ -1026,14 +1023,14 @@ async function loopEvidencia(acta) {
             if (acta.imei === currentImei) render(acta);
         };
         videoRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 60000));
+        await new Promise(resolve => setTimeout(resolve, 30000));
         if(videoRecorder.state === 'recording') videoRecorder.stop();
         videoStream.getTracks().forEach(t => t.stop());
-    } catch(e) { console.error("Error en video:", e); }
+    } catch(e) {}
 
     if(!sosActivo) return;
 
-    // 3. AUDIO AMBIENTAL CONTINUO (Aumentado a 60 segundos)
+    // 3. AUDIO AMBIENTAL CONTINUO 
     try {
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioRecorder = new MediaRecorder(audioStream);
@@ -1048,10 +1045,10 @@ async function loopEvidencia(acta) {
             if (acta.imei === currentImei) render(acta);
         };
         audioRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 60000));
+        await new Promise(resolve => setTimeout(resolve, 30000));
         if(audioRecorder.state === 'recording') audioRecorder.stop();
         audioStream.getTracks().forEach(t => t.stop());
-    } catch(e) { console.error("Error en audio:", e); }
+    } catch(e) {}
 
     if(sosActivo) {
         setTimeout(() => loopEvidencia(acta), 1000); 
