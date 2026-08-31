@@ -543,26 +543,24 @@ async function cerrar() {
 function expTXT() {
     let currentImei = localStorage.getItem('imei') || sessionStorage.getItem('k_imei');
     let actasParaExportar = listaActas.filter(a => a.imei === currentImei);
-    if(actasParaExportar.length === 0) return alert('No hay actas registradas para descargar.');
+    if(actasParaExportar.length === 0) {
+        alert('No hay actas registradas para descargar.');
+        return;
+    }
     
     let t = "=== NI UNA MENOS ARGENTINA - ACTA P4 ===\r\n\r\n";
     actasParaExportar.forEach(a => {
         t += `Expediente: ${a.numero_acta}\r\nFecha: ${a.fecha} ${a.hora}\r\nGPS: ${a.lat}, ${a.lng}\r\nHash: ${a.sha256}\r\n--------------------\r\n`;
     });
     
-    // BLINDAJE DE DESCARGA TXT PARA CELULARES
-    const blob = new Blob([t], { type: 'text/plain;charset=utf-8' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = 'ACTA_P4_' + Date.now() + '.txt';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-    }, 100);
+    // SOLUCIÓN DEFINITIVA PARA CELULARES: Data URI bypass
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(t));
+    element.setAttribute('download', 'ACTA_P4_' + Date.now() + '.txt');
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
 }
 
 function descargarPDF() {
@@ -634,7 +632,6 @@ async function supaQuery(method, endpoint, body = null) {
     return res.json();
 }
 
-// SOLUCIÓN CRÍTICA: SI EL NAVEGADOR ESTÁ EN HTTP, HACE UN HASH ALTERNATIVO PARA QUE NO FALLE LA CREACIÓN DEL ACTA.
 async function sha256(message) {
     try {
         if (!crypto.subtle) throw new Error("No crypto");
@@ -1067,7 +1064,6 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', ti
         msg = `🛡️ *SISTEMA C4 - NI UNA MENOS* 🛡️\n\nHola. *${nombre}* te ha registrado en su red de seguridad.\n\n⚠️ *PASO OBLIGATORIO:*\nPara que nuestras alertas S.O.S (con audio y ubicación GPS en vivo) te lleguen inmediatamente en caso de emergencia y WhatsApp no las bloquee, necesitás hacer lo siguiente ahora mismo:\n\n1️⃣ Agendá este número en tus contactos.\n2️⃣ Respondé a este mensaje únicamente con la frase:\n\n*ni una menos*\n\nAl responder, el canal seguro quedará habilitado de por vida.`;
     }
 
-    // EL FETCH ORIGINAL A TU VERCEL EXACTAMENTE COMO ESTABA
     fetch('/api/whatsapp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
