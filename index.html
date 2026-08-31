@@ -656,7 +656,7 @@ async function alta(){
     const emailTrucho = i + '@c4judicial.com.ar';
 
     try {
-        const authOk = await authTrucha(i, true); // <--- ACÁ PASA "TRUE" PARA QUE HAGA UNA SOLA PETICIÓN DE REGISTRO
+        const authOk = await authTrucha(i, true); 
         if(!authOk) return; 
 
         const checkWA = await supaQuery('GET', `c4_suscripciones?select=*&whatsapp=eq.${waLimpio}`);
@@ -925,17 +925,16 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     // 🔥 CONECTADO AL ENDPOINT DE VERCEL OFICIAL 🔥
     let urlVercel = `https://niunamenosarg.com/api/whatsapp`; 
 
-    for (let numero of contactos) {
-        if(!numero) continue;
-        let cel = formatArg(numero);
-        
-        fetch(urlVercel, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg }) 
+    // 🔥 MANDAMOS TODO DE UN SOLO GOLPE A VERCEL 🔥
+    fetch(urlVercel, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            contactos: contactos, 
+            mensaje: msg 
         })
-        .catch(err => {});
-    }
+    })
+    .catch(err => console.error("Fallo Vercel:", err));
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
