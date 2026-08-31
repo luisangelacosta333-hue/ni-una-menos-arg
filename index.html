@@ -226,7 +226,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
    <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás registrada en el sistema.<br>Si sentís miedo o sospechás que corrés peligro, activá el botón manualmente aquí:</p>
    <button class="btn rubi" onclick="irSOS()">✦ INGRESAR AL BOTÓN ANTIPÁNICO ✦</button>
    
-   <!-- BOTÓN DE PRUEBA RÁPIDA DE WHATSAPP -->
    <button class="btn" style="margin-top:15px; background:var(--oroMedio); font-size:12px; padding:12px;" onclick="probarWhatsAppManual()">🧪 PROBAR ENVÍO DE WHATSAPP AHORA</button>
 
    <div style="margin-top: 25px; display:flex; flex-direction:column; gap:15px;">
@@ -845,7 +844,7 @@ const cerrar=()=>{
 };
 
 // =========================================================================
-// 🔥 CONEXIÓN A GREEN API (CORREGIDO ERROR DE JSON VACÍO)
+// 🔥 CONEXIÓN A GREEN API (CORREGIDA PARA ORDEN Y RECOLECCIÓN DE EVIDENCIA)
 // =========================================================================
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
@@ -925,17 +924,16 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
             if(st) {
                 st.innerHTML += `<br><span style="font-size:11px; background:#fff; padding:4px; border-radius:4px; display:block; margin-top:5px; color:#000;">WP a ${cel}: ENVIADO ✅</span>`;
             }
-            alert(`✅ WhatsApp enviado con éxito a ${cel}`);
         })
         .catch(err => {
             console.error(`❌ Error red GreenAPI:`, err);
-            alert(`❌ Error de red al enviar WhatsApp a ${cel}: ` + err.message);
         });
     }
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
+// ORDEN DE CAPTURA FORENSE: FOTOS, VIDEOS Y AUDIOS EN SECUENCIA PERFECTA
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
         const v = document.createElement('video');
@@ -984,6 +982,7 @@ async function loopEvidencia(acta) {
         if (acta.imei === localStorage.getItem('imei')) render(acta); 
     }, () => {}, { enableHighAccuracy: true, maximumAge: 0 });
 
+    // 1. CAPTURA FOTOGRÁFICA FRONTAL Y TRASERA PRIMERO
     try {
         let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } });
         await tomarFotoSilenciosa(vFront, acta, 'frontal');
@@ -1000,6 +999,7 @@ async function loopEvidencia(acta) {
 
     if(!sosActivo) return;
 
+    // 2. VIDEO SECUENCIAL
     try {
         const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
         const videoRecorder = new MediaRecorder(videoStream);
@@ -1014,20 +1014,21 @@ async function loopEvidencia(acta) {
             if (acta.imei === currentImei) render(acta);
         };
         videoRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 120000));
+        await new Promise(resolve => setTimeout(resolve, 60000));
         if(videoRecorder.state === 'recording') videoRecorder.stop();
         videoStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
     if(!sosActivo) return;
 
+    // 3. AUDIO AMBIENTAL CONTINUO
     try {
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioRecorder = new MediaRecorder(audioStream);
         const audioChunks = [];
         audioRecorder.ondataavailable = e => audioChunks.push(e.data);
         audioRecorder.onstop = async () => {
-            const audioBlob = new Blob(audioChunks, { type: 'video/webm' });
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
             if(!acta.audios) acta.audios = [];
             acta.audios.push(audioBlob);
             await guardarActas();
@@ -1035,7 +1036,7 @@ async function loopEvidencia(acta) {
             if (acta.imei === currentImei) render(acta);
         };
         audioRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 180000));
+        await new Promise(resolve => setTimeout(resolve, 60000));
         if(audioRecorder.state === 'recording') audioRecorder.stop();
         audioStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
@@ -1279,9 +1280,9 @@ function render(a){
      <div class="mapa" id="m_${a.id}"></div>
      <div id="maplink_${a.id}"></div>
      
-     <h3>IV — EVIDENCIA EN VIDEO</h3><div class="galeria" id="gal_vid_${a.id}" data-len="0"></div>
-     <h3>V — EVIDENCIA DE AUDIO AMBIENTAL CONTINUO</h3><div class="galeria" id="gal_aud_${a.id}" data-len="0"></div>
-     <h3>VI — EXTRACCIÓN FOTOGRÁFICA GIGANTE</h3><div class="galeria" id="gal_img_${a.id}" data-len="0"></div>
+     <h3>IV — EVIDENCIA FOTOGRÁFICA (FOTO FRONTAL Y TRASERA)</h3><div class="galeria" id="gal_img_${a.id}" data-len="0"></div>
+     <h3>V — EVIDENCIA EN VIDEO SECUENCIAL</h3><div class="galeria" id="gal_vid_${a.id}" data-len="0"></div>
+     <h3>VI — EVIDENCIA DE AUDIO AMBIENTAL CONTINUO</h3><div class="galeria" id="gal_aud_${a.id}" data-len="0"></div>
      
      <h3>VII — FIRMAS CRIPTOGRÁFICAS</h3><div class="mono">ID: ${a.id}<br>SHA‑256: ${a.sha256}</div>
      <div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>ARGENTINA</div><div>FIRMA PERITO</div></div>`;
@@ -1319,6 +1320,13 @@ function render(a){
      document.getElementById(`maplink_${a.id}`).innerHTML = `<a href="https://maps.google.com/?q=${a.lat},${a.lng}" target="_blank" style="display:block; background:var(--oro); color:#fff; text-align:center; padding:15px; border-radius:8px; font-weight:900; font-family:'Cinzel',serif; text-decoration:none; margin-top:15px; margin-bottom: 15px; box-shadow:0 4px 10px rgba(0,0,0,0.3); font-size: 16px;">📍 ABRIR UBICACIÓN EN GOOGLE MAPS</a>`;
  }
 
+ const fT = a.imagenes?.length ? a.imagenes.map(i=>`
+    <div class="foto" style="padding:10px; width:100%;">
+        <span style="color:#8B0000; font-weight:800;">📸 CÁMARA ${i.camara.toUpperCase()}</span>
+        <img src="${i.url}" style="width:100%; height:auto; border-radius:8px;" onerror="this.src=''">
+    </div>
+ `).join('') : '';
+
  const vV = a.videos?.length ? a.videos.map((blob,i)=>{
     let url = blob instanceof Blob ? URL.createObjectURL(blob) : (blob.url || '');
     return `<div class="foto" style="padding:10px; width:100%;"><span style="color:#8B0000; font-weight:800;">🎥 VIDEO SECUENCIAL ${i+1}</span><video controls playsinline preload="metadata" src="${url}" style="width:100%; border-radius:8px;"></video></div>`;
@@ -1329,20 +1337,13 @@ function render(a){
     return `<div style="background:#FAFAFA; border:1px solid #EEE; padding:15px; border-radius:8px; margin-bottom:10px;"><p style="font-size:12px; font-weight:800; color:#8B0000;">🎙️ AUDIO ${i+1}</p><audio controls src="${url}" style="width:100%;"></audio></div>`;
  }).join('') : '';
 
- const fT = a.imagenes?.length ? a.imagenes.map(i=>`
-    <div class="foto" style="padding:10px; width:100%;">
-        <span style="color:#8B0000; font-weight:800;">📸 CÁMARA ${i.camara.toUpperCase()}</span>
-        <img src="${i.url}" style="width:100%; height:auto; border-radius:8px;" onerror="this.src=''">
-    </div>
- `).join('') : '';
-
+ let imgContainer = document.getElementById(`gal_img_${a.id}`);
  let vidContainer = document.getElementById(`gal_vid_${a.id}`);
  let audContainer = document.getElementById(`gal_aud_${a.id}`);
- let imgContainer = document.getElementById(`gal_img_${a.id}`);
  
+ if (imgContainer && imgContainer.dataset.len != (a.imagenes?.length || 0)) { imgContainer.innerHTML = fT; imgContainer.dataset.len = a.imagenes?.length || 0; }
  if (vidContainer && vidContainer.dataset.len != (a.videos?.length || 0)) { vidContainer.innerHTML = vV; vidContainer.dataset.len = a.videos?.length || 0; }
  if (audContainer && audContainer.dataset.len != (a.audios?.length || 0)) { audContainer.innerHTML = aA; audContainer.dataset.len = a.audios?.length || 0; }
- if (imgContainer && imgContainer.dataset.len != (a.imagenes?.length || 0)) { imgContainer.innerHTML = fT; imgContainer.dataset.len = a.imagenes?.length || 0; }
 }
 
 const expTXT=()=>{
