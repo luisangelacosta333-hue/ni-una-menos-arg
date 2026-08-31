@@ -462,10 +462,12 @@ function leerVoz(){
  speechSynthesis.speak(u);
 }
 
+// =========================================================================
+// ⏱️ MODO TRAYECTO (PERSISTENTE CON LOCALSTORAGE)
+// =========================================================================
 let trayectoInterval = null;
-let finTrayecto = 0;
 
-async function iniciarTrayecto() {
+function iniciarTrayecto() {
     let input = document.getElementById('minTrayecto');
     let m = parseInt(input.value);
     
@@ -475,41 +477,55 @@ async function iniciarTrayecto() {
     if(!p) return;
     
     const llaveLimpia = LK(p);
-    try {
-        const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`);
+    supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`).then(res => {
         if(res.length === 0) {
             return alert('❌ LLAVE INCORRECTA. Acceso denegado.');
         }
         
-        finTrayecto = Date.now() + m * 60000;
-        input.style.display = 'none';
-        document.getElementById('trayectoEstado').style.display = 'block';
+        let finTrayecto = Date.now() + m * 60000;
+        localStorage.setItem('c4_fin_trayecto', finTrayecto);
         
-        if(trayectoInterval) clearInterval(trayectoInterval);
-        
-        trayectoInterval = setInterval(() => {
-            let diff = finTrayecto - Date.now();
-            if(diff <= 0) {
-                clearInterval(trayectoInterval);
-                document.getElementById('trayectoEstado').innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S...";
-                irSOS();
-                disparoSOS();
-            } else {
-                let min = Math.floor(diff / 60000);
-                let sec = Math.floor((diff % 60000) / 1000);
-                document.getElementById('trayectoTiempo').innerText = `${min}:${sec.toString().padStart(2,'0')}`;
-            }
-        }, 1000);
+        activarBucleTrayecto();
+        alert("✅ Temporizador iniciado con éxito.");
+    }).catch(e => {
+        alert("Error al validar la llave con el servidor.");
+    });
+}
 
-        let btnAccion = document.getElementById('btnTrayectoAccion');
+function activarBucleTrayecto() {
+    let finTrayecto = localStorage.getItem('c4_fin_trayecto');
+    if(!finTrayecto) return;
+    
+    let input = document.getElementById('minTrayecto');
+    let estado = document.getElementById('trayectoEstado');
+    let btnAccion = document.getElementById('btnTrayectoAccion');
+    
+    if(input) input.style.display = 'none';
+    if(estado) estado.style.display = 'block';
+    if(btnAccion) {
         btnAccion.innerText = "CANCELAR TRAYECTO";
         btnAccion.style.background = "#8B0000";
         btnAccion.onclick = cancelarTrayecto;
-        
-        alert("✅ Temporizador iniciado con éxito.");
-    } catch(e) {
-        alert("Error al validar la llave con el servidor.");
     }
+    
+    if(trayectoInterval) clearInterval(trayectoInterval);
+    
+    trayectoInterval = setInterval(() => {
+        let diff = parseInt(localStorage.getItem('c4_fin_trayecto') || '0') - Date.now();
+        let tiempoSpan = document.getElementById('trayectoTiempo');
+        
+        if(diff <= 0) {
+            clearInterval(trayectoInterval);
+            localStorage.removeItem('c4_fin_trayecto');
+            if(estado) estado.innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S...";
+            irSOS();
+            disparoSOS();
+        } else {
+            let min = Math.floor(diff / 60000);
+            let sec = Math.floor((diff % 60000) / 1000);
+            if(tiempoSpan) tiempoSpan.innerText = `${min}:${sec.toString().padStart(2,'0')}`;
+        }
+    }, 1000);
 }
 
 async function cancelarTrayecto() {
@@ -523,14 +539,19 @@ async function cancelarTrayecto() {
             return alert('❌ LLAVE INCORRECTA. No se puede cancelar.');
         }
         clearInterval(trayectoInterval);
-        document.getElementById('minTrayecto').style.display = 'inline-block';
-        document.getElementById('minTrayecto').value = '';
-        document.getElementById('trayectoEstado').style.display = 'none';
+        localStorage.removeItem('c4_fin_trayecto');
+        
+        let input = document.getElementById('minTrayecto');
+        if(input) { input.style.display = 'inline-block'; input.value = ''; }
+        let estado = document.getElementById('trayectoEstado');
+        if(estado) estado.style.display = 'none';
         
         let btnAccion = document.getElementById('btnTrayectoAccion');
-        btnAccion.innerText = "INICIAR TRAYECTO";
-        btnAccion.style.background = "var(--bordeOro)";
-        btnAccion.onclick = iniciarTrayecto;
+        if(btnAccion) {
+            btnAccion.innerText = "INICIAR TRAYECTO";
+            btnAccion.style.background = "var(--bordeOro)";
+            btnAccion.onclick = iniciarTrayecto;
+        }
         
         alert("✅ Llegaste bien. Temporizador cancelado con éxito.");
     } catch(e) {
@@ -1373,6 +1394,10 @@ addEventListener('DOMContentLoaded', async ()=>{
  }
  if(localStorage.getItem('ok')==='1'){
     document.getElementById('zonaOk').style.display='block';
+    // RESTAURAR TEMPORIZADOR AL ABRIR LA APP SI ESTABA ACTIVO
+    if(localStorage.getItem('c4_fin_trayecto')) {
+        activarBucleTrayecto();
+    }
  }
  ir('inicio');
  if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v8').catch(()=>{}));
