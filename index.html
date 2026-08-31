@@ -1,4 +1,3 @@
-
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#FFFFFF">
@@ -637,7 +636,7 @@ async function alta(){
         let fechaVencimiento = new Date();
         fechaVencimiento.setDate(fechaVencimiento.getDate() + 15);
 
-        // Agregamos todo a la base de datos
+        // Agregamos todo a la base de datos (con el correo automático del sistema)
         await supaQuery('POST', 'c4_suscripciones', { email: i+'@c4judicial.com.ar', imei: i, whatsapp: waLimpio, llave_acceso: k, tipo_plan: 'prueba_15', fecha_vencimiento: fechaVencimiento.toISOString(), activa: true, alarma_remota: false });
 
         localStorage.setItem('imei', i); 
@@ -651,10 +650,6 @@ async function alta(){
         document.getElementById('lk').textContent = k;
         localStorage.setItem('ok','1');
         
-        // INYECCIÓN: DISPARO DE BIENVENIDA / ANTI-BLOQUEO A TODOS LOS NÚMEROS INGRESADOS
-        let numerosBienvenida = [...new Set([waLimpio, ...c])];
-        enviarWhatsAppOculto(numerosBienvenida, n, null, null, null, 'bienvenida');
-
         pedirPermisosGlobalesYGPS(); 
         iniciarRealtime(); 
         ir('llave');
@@ -859,8 +854,6 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta', ti
         msg = `📍 *GPS S.O.S* 📍\nhttps://maps.google.com/?q=${la},${ln}`;
     } else if (tipo === 'seguro') {
         msg = `✅ *SISTEMA SEGURO* \nDesactivado a salvo.`;
-    } else if (tipo === 'bienvenida') {
-        msg = `🛡️ *SISTEMA C4 - NI UNA MENOS* 🛡️\n\nHola. *${nombre}* te ha registrado en su red de seguridad.\n\n⚠️ *PASO OBLIGATORIO:*\nPara que nuestras alertas S.O.S (con audio y ubicación GPS en vivo) te lleguen inmediatamente en caso de emergencia y WhatsApp no las bloquee, necesitás hacer lo siguiente ahora mismo:\n\n1️⃣ Agendá este número en tus contactos.\n2️⃣ Respondé a este mensaje únicamente con la frase:\n\n*ni una menos*\n\nAl responder, el canal seguro quedará habilitado de por vida.`;
     }
 
     // DISPARO A VERCEL API (Protegido por el filtro anti-duplicados superior)
@@ -1322,4 +1315,3 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 });
 </script></body></html>
-
