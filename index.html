@@ -214,7 +214,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <button class="btn" onclick="leerVoz()" style="max-width:520px;margin-inline:auto;margin-top:15px;box-shadow:var(--luzFuerte)">✦ PRESENTACIÓN DE FUNCIONAMIENTO ✦</button>
  
  <div class="scroll-container top-marquee">
-  <div class="scroll-text">✦ ACTIVACIÓN INMEDIATA POR BOTÓN O IMPACTO 🇦🇷 RASTREO GPS SEGUNDO A SEGUNDO 🇦🇷 GRABACIÓN DE AUDIO OCULTA 🇦🇷 VIDEO HD COMO EVIDENCIA 🇦🇷 FOTOS AUTOMÁTICAS FRONTAL Y TRASERA 🇦🇷 ALERTA WHATSAPP A FAMILIARES 🇦🇷 BÚFER OFFLINE SIN SEÑAL 🇦🇷 MODO TRAYECTO 🇦🇷</div>
+  <div class="scroll-text">✦ ACTIVACIÓN INMEDIATA POR BOTÓN O IMPACTO 🇦🇷 RASTREO GPS SEGUNDO A SEGUNDO 🇦🇷 GRABACIÓN DE AUDIO OCULTA 🇦🇷 VIDEO HD COMO EVIDENCIA 🇦🇷 FOTOS AUTOMÁTICAS FRONTAL Y TRASERA 🇦🇷 ALERTA WHATSAPP A FAMILIARES 🇦🇷 BÚFER OFFLINE SIN SEÑAL 🇦🇷</div>
  </div>
 </div>
 </header>
@@ -225,22 +225,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
    <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">✦ PROTECCIÓN ACTIVA ✦</h3>
    <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás registrada en el sistema.<br>Si sentís miedo o sospechás que corrés peligro, activá el botón manualmente aquí:</p>
    <button class="btn rubi" onclick="irSOS()">✦ INGRESAR AL BOTÓN ANTIPÁNICO ✦</button>
-   
-   <div style="margin-top: 25px; display:flex; flex-direction:column; gap:15px;">
-        
-        <div style="background:#FFFFFF; border:1.5px solid var(--oro); padding:20px; border-radius:12px; box-shadow:var(--luz);">
-            <h4 style="font-family:'Cinzel'; color:var(--oroOscuro); font-size:16px; margin-bottom:10px; letter-spacing:2px; font-weight:800;">⏱️ MODO TRAYECTO (TEMPORIZADOR)</h4>
-            <p style="font-size:13px; margin-bottom:15px; color:#555; line-height:1.5;">Ideal para taxis o caminar sola. Si el tiempo llega a cero y no pusiste tu clave, el S.O.S se dispara solo.</p>
-            
-            <div style="display:flex; flex-direction:column; gap:12px;">
-                <input type="number" id="minTrayecto" placeholder="Minutos (ej: 15)" style="width:100%; padding:14px; border-radius:12px; border:1px solid #D4AF37; font-weight:bold; font-size:15px; text-align:center; box-sizing:border-box;" inputmode="numeric">
-                <button id="btnTrayectoAccion" class="btn" style="width:100%; padding:14px 20px; font-size:13px; letter-spacing:2px;" onclick="iniciarTrayecto()">INICIAR TRAYECTO</button>
-            </div>
-            
-            <div id="trayectoEstado" style="display:none; font-weight:900; color:#8B0000; font-size:18px; margin-top:15px; text-align:center;">Tiempo para reportarte:<br><span id="trayectoTiempo" style="font-size:24px;">--:--</span></div>
-        </div>
-        
-   </div>
   </div>
  </div>
  <div class="caja"><h3>✦ 5 PASOS PARA ACTIVAR ✦</h3>
@@ -266,7 +250,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <div class="caja"><h3>✦ MÓDULOS DE EVIDENCIA FORENSE ✦</h3>
   <div class="grid2">
    <div class="info-bloque"><b>⬩ BOTÓN ANTIPÁNICO</b><p>1 toque = todo activado. Pantalla apagada o bloqueada.</p></div>
-   <div class="info-bloque"><b>⬩ MODO TRAYECTO</b><p>Fijá un tiempo al tomar un taxi. Si no confirmás que llegaste bien, dispara S.O.S solo.</p></div>
    <div class="info-bloque"><b>⬩ SENSOR DE IMPACTO</b><p>Detección de caídas bruscas o golpes que disparan la alarma.</p></div>
    <div class="info-bloque"><b>⬩ GPS EN TIEMPO REAL</b><p>Trazado segundo a segundo. Si el celular se frena, fuerza un reporte.</p></div>
    <div class="info-bloque"><b>⬩ AUDIO SEGURO</b><p>Grabación oculta cifrada con su propio hash de integridad judicial.</p></div>
@@ -447,106 +430,9 @@ const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
 
 function leerVoz(){
  speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, automáticamente ante un impacto o caída fuerte, o si se agota el modo trayecto al viajar. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. En segundo plano y de manera indetectable, el sistema asegura tu evidencia grabando audio de manera continua, tomando múltiples fotografías con ambas cámaras, y rastreando tu ubicación por GPS segundo a segundo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema cien por ciento blindado y privado. Además, si no realizás una denuncia oficial, a las setenta y dos horas se elimina y destruye automáticamente toda la evidencia para garantizar tu privacidad total.`);
+ const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, automáticamente ante un impacto o caída fuerte. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. En segundo plano y de manera indetectable, el sistema asegura tu evidencia grabando audio de manera continua, tomando múltiples fotografías con ambas cámaras, y rastreando tu ubicación por GPS segundo a segundo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema cien por ciento blindado y privado. Además, si no realizás una denuncia oficial, a las setenta y dos horas se elimina y destruye automáticamente toda la evidencia para garantizar tu privacidad total.`);
  u.lang='es-AR';u.rate=.92;u.pitch=1;u.volume=1;
  speechSynthesis.speak(u);
-}
-
-// =========================================================================
-// ⏱️ MODO TRAYECTO (PERSISTENTE CON LOCALSTORAGE)
-// =========================================================================
-let trayectoInterval = null;
-
-function iniciarTrayecto() {
-    let input = document.getElementById('minTrayecto');
-    let m = parseInt(input.value);
-    
-    if(isNaN(m) || m <= 0) return alert("Por favor ingresá una cantidad de minutos válida (ej: 15).");
-    
-    let p = prompt("🔒 SEGURIDAD: Ingresá tu Llave Maestra C4 para autorizar el Trayecto:");
-    if(!p) return;
-    
-    const llaveLimpia = LK(p);
-    supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`).then(res => {
-        if(res.length === 0) {
-            return alert('❌ LLAVE INCORRECTA. Acceso denegado.');
-        }
-        
-        let finTrayecto = Date.now() + m * 60000;
-        localStorage.setItem('c4_fin_trayecto', finTrayecto);
-        
-        activarBucleTrayecto();
-        alert("✅ Temporizador iniciado con éxito.");
-    }).catch(e => {
-        alert("Error al validar la llave con el servidor.");
-    });
-}
-
-function activarBucleTrayecto() {
-    let finTrayecto = localStorage.getItem('c4_fin_trayecto');
-    if(!finTrayecto) return;
-    
-    let input = document.getElementById('minTrayecto');
-    let estado = document.getElementById('trayectoEstado');
-    let btnAccion = document.getElementById('btnTrayectoAccion');
-    
-    if(input) input.style.display = 'none';
-    if(estado) estado.style.display = 'block';
-    if(btnAccion) {
-        btnAccion.innerText = "CANCELAR TRAYECTO";
-        btnAccion.style.background = "#8B0000";
-        btnAccion.onclick = cancelarTrayecto;
-    }
-    
-    if(trayectoInterval) clearInterval(trayectoInterval);
-    
-    trayectoInterval = setInterval(() => {
-        let diff = parseInt(localStorage.getItem('c4_fin_trayecto') || '0') - Date.now();
-        let tiempoSpan = document.getElementById('trayectoTiempo');
-        
-        if(diff <= 0) {
-            clearInterval(trayectoInterval);
-            localStorage.removeItem('c4_fin_trayecto');
-            if(estado) estado.innerText = "¡TIEMPO AGOTADO! ACTIVANDO S.O.S...";
-            irSOS();
-            disparoSOS();
-        } else {
-            let min = Math.floor(diff / 60000);
-            let sec = Math.floor((diff % 60000) / 1000);
-            if(tiempoSpan) tiempoSpan.innerText = `${min}:${sec.toString().padStart(2,'0')}`;
-        }
-    }, 1000);
-}
-
-async function cancelarTrayecto() {
-    let p = prompt("Ingresá tu Llave Maestra C4 para avisar que llegaste bien:");
-    if(!p) return;
-    
-    const llaveLimpia = LK(p);
-    try {
-        const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`);
-        if(res.length === 0) {
-            return alert('❌ LLAVE INCORRECTA. No se puede cancelar.');
-        }
-        clearInterval(trayectoInterval);
-        localStorage.removeItem('c4_fin_trayecto');
-        
-        let input = document.getElementById('minTrayecto');
-        if(input) { input.style.display = 'inline-block'; input.value = ''; }
-        let estado = document.getElementById('trayectoEstado');
-        if(estado) estado.style.display = 'none';
-        
-        let btnAccion = document.getElementById('btnTrayectoAccion');
-        if(btnAccion) {
-            btnAccion.innerText = "INICIAR TRAYECTO";
-            btnAccion.style.background = "var(--bordeOro)";
-            btnAccion.onclick = iniciarTrayecto;
-        }
-        
-        alert("✅ Llegaste bien. Temporizador cancelado con éxito.");
-    } catch(e) {
-        alert("Error al validar la llave con el servidor.");
-    }
 }
 
 const sigilo = () => {
@@ -1275,10 +1161,6 @@ addEventListener('DOMContentLoaded', async ()=>{
  }
  if(localStorage.getItem('ok')==='1'){
     document.getElementById('zonaOk').style.display='block';
-    // RESTAURAR TEMPORIZADOR AL ABRIR LA APP SI ESTABA ACTIVO
-    if(localStorage.getItem('c4_fin_trayecto')) {
-        activarBucleTrayecto();
-    }
  }
  ir('inicio');
  if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v8').catch(()=>{}));
