@@ -240,7 +240,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <div id="zonaOk" style="display:none;padding-bottom:20px;">
   <div class="caja" style="background:#FFF3F5;border:1px solid #8B0000;padding:28px;">
    <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">✦ PROTECCIÓN ACTIVA ✦</h3>
-   <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás registrada en el sistema.<br>Si sentís miedo o sospechás que corrés peligro, activá el botón manualmente aquí:</p>
+   <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás registrada en el sistema.<br><b>Apretá el botón rojo ahora para que empiece a grabar la evidencia y enviar las alertas.</b></p>
    <button class="btn rubi" onclick="irSOS()">✦ INGRESAR AL BOTÓN ANTIPÁNICO ✦</button>
   </div>
  </div>
@@ -442,6 +442,12 @@ async function authTrucha(imei) {
             // Si Supabase tira un error real (ej: demasiados intentos), lo mostramos EXACTO
             if (!regRes.ok) {
                 const errorReal = regData.msg || regData.error_description || regData.error?.message || "Error desconocido en Supabase";
+                
+                if (errorReal.includes("User already registered") || errorReal.includes("already registered")) {
+                    alert(`🛑 USUARIO TRABADO EN SUPABASE\n\nEl correo ${email} quedó bloqueado de las pruebas anteriores (seguro por el Confirm Email).\n\nSOLUCIÓN OBLIGATORIA:\n1. Entrá a Supabase -> Authentication -> Users.\n2. BORRÁ ese usuario.\n3. Volvé a tocar el botón en la app.`);
+                    return false;
+                }
+
                 alert("⚠️ ERROR AL CREAR USUARIO:\n" + errorReal);
                 return false;
             }
@@ -1032,7 +1038,7 @@ async function loopEvidencia(acta) {
             if (acta.imei === currentImei) render(acta);
         };
         videoRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 60000));
+        await new Promise(resolve => setTimeout(resolve, 15000));
         if(videoRecorder.state === 'recording') videoRecorder.stop();
         videoStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
@@ -1054,7 +1060,7 @@ async function loopEvidencia(acta) {
             if (acta.imei === currentImei) render(acta);
         };
         audioRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 60000));
+        await new Promise(resolve => setTimeout(resolve, 15000));
         if(audioRecorder.state === 'recording') audioRecorder.stop();
         audioStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
