@@ -204,7 +204,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <h2>ARGENTINA · ENERGY 2026 · ACTA P4 JUDICIAL</h2>
  <div class="tag">MALTRATO ✦ VIOLENCIA ✦ SECUESTRO ✦ PROTECCIÓN DE MENORES</div>
  <p><strong style="display:block;color:var(--oroOscuro);font-weight:800;margin-bottom:10px">Protección integral forense que cubre lo que nadie cubre.</strong>
- Se activa al instante con el botón antipánico, por voz (AYUDA) o automáticamente ante un impacto. Alerta a sus contactos y asegura evidencia: GPS en tiempo real, audio continuo, fotos, métricas de red. Cuenta con doble firma <strong>SHA‑256 + SHA‑3</strong>, <strong>HMAC</strong>, Búfer Offline y Acta P4. <strong>Sistema 100% blindado y privado.</strong></p>
+ Se activa al instante con el botón antipánico o automáticamente ante un impacto. Alerta a sus contactos y asegura evidencia: GPS en tiempo real, audio continuo, fotos, métricas de red. Cuenta con doble firma <strong>SHA‑256 + SHA‑3</strong>, <strong>HMAC</strong>, Búfer Offline y Acta P4. <strong>Sistema 100% blindado y privado.</strong></p>
 
  <div style="background:#FFFCF2;border:1.5px solid var(--oro);padding:22px;border-radius:12px;margin:25px auto;max-width:820px;box-shadow:var(--luz);">
   <b style="color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:20px;letter-spacing:3px;display:block;margin-bottom:10px;">✦ 15 DÍAS GRATIS ✦</b>
@@ -214,7 +214,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <button class="btn" onclick="leerVoz()" style="max-width:520px;margin-inline:auto;margin-top:15px;box-shadow:var(--luzFuerte)">✦ PRESENTACIÓN DE FUNCIONAMIENTO ✦</button>
  
  <div class="scroll-container top-marquee">
-  <div class="scroll-text">✦ ACTIVACIÓN INMEDIATA POR BOTÓN O IMPACTO 🇦🇷 RASTREO GPS SEGUNDO A SEGUNDO 🇦🇷 GRABACIÓN DE AUDIO OCULTA 🇦🇷 VIDEO HD COMO EVIDENCIA 🇦🇷 FOTOS AUTOMÁTICAS FRONTAL Y TRASERA 🇦🇷 ALERTA WHATSAPP A FAMILIARES 🇦🇷 BÚFER OFFLINE SIN SEÑAL 🇦🇷 MODO TRAYECTO 🇦🇷 ACTIVACIÓN POR VOZ 🇦🇷</div>
+  <div class="scroll-text">✦ ACTIVACIÓN INMEDIATA POR BOTÓN O IMPACTO 🇦🇷 RASTREO GPS SEGUNDO A SEGUNDO 🇦🇷 GRABACIÓN DE AUDIO OCULTA 🇦🇷 VIDEO HD COMO EVIDENCIA 🇦🇷 FOTOS AUTOMÁTICAS FRONTAL Y TRASERA 🇦🇷 ALERTA WHATSAPP A FAMILIARES 🇦🇷 BÚFER OFFLINE SIN SEÑAL 🇦🇷 MODO TRAYECTO 🇦🇷</div>
  </div>
 </div>
 </header>
@@ -226,8 +226,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
    <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás registrada en el sistema.<br>Si sentís miedo o sospechás que corrés peligro, activá el botón manualmente aquí:</p>
    <button class="btn rubi" onclick="irSOS()">✦ INGRESAR AL BOTÓN ANTIPÁNICO ✦</button>
    
-   <button class="btn" style="margin-top:15px; background:var(--oroMedio); font-size:12px; padding:12px;" onclick="probarWhatsAppManual()">🧪 PROBAR ENVÍO DE WHATSAPP AHORA</button>
-
    <div style="margin-top: 25px; display:flex; flex-direction:column; gap:15px;">
         
         <div style="background:#FFFFFF; border:1.5px solid var(--oro); padding:20px; border-radius:12px; box-shadow:var(--luz);">
@@ -240,12 +238,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
             </div>
             
             <div id="trayectoEstado" style="display:none; font-weight:900; color:#8B0000; font-size:18px; margin-top:15px; text-align:center;">Tiempo para reportarte:<br><span id="trayectoTiempo" style="font-size:24px;">--:--</span></div>
-        </div>
-
-        <div style="background:#FFFFFF; border:1.5px solid var(--oro); padding:20px; border-radius:12px; box-shadow:var(--luz);">
-            <h4 style="font-family:'Cinzel'; color:var(--oroOscuro); font-size:16px; margin-bottom:10px; letter-spacing:2px; font-weight:800;">🗣️ ALARMA SECRETA POR VOZ</h4>
-            <p style="font-size:13px; margin-bottom:15px; color:#555; line-height:1.5;">Si el celular está en tu bolsillo y no podés tocarlo, gritá fuerte <b>"AYUDA SISTEMA"</b> o <b>"AUXILIO"</b> y se activará.</p>
-            <button id="btnVoz" class="btn" style="padding:15px; font-size:12px; letter-spacing:2px; background:var(--oroMedio);" onclick="toggleVoz()">🎙️ ACTIVAR RECONOCIMIENTO DE VOZ</button>
         </div>
         
    </div>
@@ -274,13 +266,11 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <div class="caja"><h3>✦ MÓDULOS DE EVIDENCIA FORENSE ✦</h3>
   <div class="grid2">
    <div class="info-bloque"><b>⬩ BOTÓN ANTIPÁNICO</b><p>1 toque = todo activado. Pantalla apagada o bloqueada.</p></div>
-   <div class="info-bloque"><b>⬩ MODO TRAYECTO (NUEVO)</b><p>Fijá un tiempo al tomar un taxi. Si no confirmás que llegaste bien, dispara S.O.S solo.</p></div>
-   <div class="info-bloque"><b>⬩ ALARMA POR VOZ (NUEVO)</b><p>Gritá "Ayuda Sistema" o "Auxilio" para que se active sin tocar el teléfono.</p></div>
+   <div class="info-bloque"><b>⬩ MODO TRAYECTO</b><p>Fijá un tiempo al tomar un taxi. Si no confirmás que llegaste bien, dispara S.O.S solo.</p></div>
    <div class="info-bloque"><b>⬩ SENSOR DE IMPACTO</b><p>Detección de caídas bruscas o golpes que disparan la alarma.</p></div>
    <div class="info-bloque"><b>⬩ GPS EN TIEMPO REAL</b><p>Trazado segundo a segundo. Si el celular se frena, fuerza un reporte.</p></div>
    <div class="info-bloque"><b>⬩ AUDIO SEGURO</b><p>Grabación oculta cifrada con su propio hash de integridad judicial.</p></div>
    <div class="info-bloque"><b>⬩ FOTOS AUTO</b><p>Captura fotográfica frontal y trasera de forma silenciosa.</p></div>
-   <div class="info-bloque"><b>⬩ BÚFER OFFLINE</b><p>Guarda la evidencia localmente sin señal y la sube al recuperar internet.</p></div>
   </div>
  </div>
  <button class="btn" onclick="ir('registro')">✦ ACTIVAR PROTECCIÓN ✦</button>
@@ -457,7 +447,7 @@ const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
 
 function leerVoz(){
  speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, mediante el comando de voz secreta gritando ayuda, automáticamente ante un impacto o caída fuerte, o si se agota el modo trayecto al viajar. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. En segundo plano y de manera indetectable, el sistema asegura tu evidencia grabando audio de manera continua, tomando múltiples fotografías con ambas cámaras, y rastreando tu ubicación por GPS segundo a segundo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema cien por ciento blindado y privado. Además, si no realizás una denuncia oficial, a las setenta y dos horas se elimina y destruye automáticamente toda la evidencia para garantizar tu privacidad total.`);
+ const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, automáticamente ante un impacto o caída fuerte, o si se agota el modo trayecto al viajar. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. En segundo plano y de manera indetectable, el sistema asegura tu evidencia grabando audio de manera continua, tomando múltiples fotografías con ambas cámaras, y rastreando tu ubicación por GPS segundo a segundo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema cien por ciento blindado y privado. Además, si no realizás una denuncia oficial, a las setenta y dos horas se elimina y destruye automáticamente toda la evidencia para garantizar tu privacidad total.`);
  u.lang='es-AR';u.rate=.92;u.pitch=1;u.volume=1;
  speechSynthesis.speak(u);
 }
@@ -554,89 +544,6 @@ async function cancelarTrayecto() {
         }
         
         alert("✅ Llegaste bien. Temporizador cancelado con éxito.");
-    } catch(e) {
-        alert("Error al validar la llave con el servidor.");
-    }
-}
-
-let recognition = null;
-let vozActiva = false;
-
-async function toggleVoz() {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        return alert("Tu navegador o teléfono no soporta el reconocimiento de voz en segundo plano.");
-    }
-    
-    let p = prompt("🔒 SEGURIDAD: Ingresá tu Llave Maestra C4 para autorizar el comando de voz:");
-    if(!p) return;
-    
-    const llaveLimpia = LK(p);
-    try {
-        const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`);
-        if(res.length === 0) {
-            return alert('❌ LLAVE INCORRECTA. Acceso denegado.');
-        }
-
-        let btnVoz = document.getElementById('btnVoz');
-
-        if(vozActiva) {
-            vozActiva = false;
-            if(recognition) recognition.stop();
-            if(window.silentMicStream) {
-                window.silentMicStream.getTracks().forEach(t => t.stop());
-                window.silentMicStream = null;
-            }
-            btnVoz.innerText = "🎙️ ACTIVAR RECONOCIMIENTO DE VOZ";
-            btnVoz.style.background = "var(--oroMedio)";
-            alert("✅ Reconocimiento de voz desactivado.");
-            return;
-        }
-        
-        if (!window.silentMicStream) {
-            try { window.silentMicStream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch(e) {}
-        }
-
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SpeechRecognition();
-        
-        recognition.continuous = true;
-        recognition.interimResults = false; 
-        recognition.lang = 'es-AR';
-        
-        recognition.onstart = function() {
-            vozActiva = true;
-            btnVoz.innerText = "ESCUCHANDO... (TOCAR PARA APAGAR)";
-            btnVoz.style.background = "#8B0000";
-        };
-        
-        recognition.onresult = function(event) {
-            let ultimaFrase = event.results[event.results.length - 1][0].transcript.toLowerCase();
-            
-            if(ultimaFrase.includes("ayuda sistema") || ultimaFrase.includes("auxilio") || ultimaFrase.includes("ayuda c4")) {
-                recognition.stop();
-                vozActiva = false;
-                if(window.silentMicStream) { window.silentMicStream.getTracks().forEach(t => t.stop()); window.silentMicStream = null; }
-                btnVoz.innerText = "🎙️ ACTIVAR RECONOCIMIENTO DE VOZ";
-                btnVoz.style.background = "var(--oroMedio)";
-                
-                activarAlarmaRobo();
-            }
-        };
-        
-        recognition.onerror = function(event) {
-            if(vozActiva && event.error !== 'not-allowed') {
-                setTimeout(() => { if(vozActiva) recognition.start(); }, 1500); 
-            }
-        };
-        
-        recognition.onend = function() {
-            if(vozActiva) {
-                setTimeout(() => { if(vozActiva) recognition.start(); }, 500);
-            }
-        };
-        
-        recognition.start();
-        alert("✅ Reconocimiento de voz activado en modo silencioso.");
     } catch(e) {
         alert("Error al validar la llave con el servidor.");
     }
@@ -865,7 +772,7 @@ const cerrar=()=>{
 };
 
 // =========================================================================
-// 🔥 CONEXIÓN A GREEN API (CORREGIDA PARA ORDEN Y RECOLECCIÓN DE EVIDENCIA)
+// 🔥 CONEXIÓN A GREEN API (PRODUCCIÓN LIMPIA Y SILENCIOSA)
 // =========================================================================
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
@@ -877,21 +784,6 @@ function formatArg(num) {
     if (c.startsWith('0')) c = c.substring(1);
     c = c.replace(/^(11|2\d{2}|3\d{2})15(\d+)$/, '$1$2'); 
     return '549' + c;
-}
-
-function probarWhatsAppManual() {
-    let imeiActual = localStorage.getItem('imei');
-    let raw = localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imeiActual) || '[]';
-    let contactos = [];
-    try { contactos = JSON.parse(raw); } catch(e){}
-    
-    if(contactos.length === 0) {
-        alert("⚠️ No hay contactos guardados en la memoria. Registralos nuevamente.");
-        return;
-    }
-    
-    alert("📤 Enviando prueba manual a: " + contactos.join(", "));
-    enviarWhatsAppOculto(contactos, localStorage.getItem('nombre') || 'Prueba', -26.8241, -65.2226, 'TEST-MANUAL', 'alerta');
 }
 
 function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
@@ -931,24 +823,13 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         })
         .then(async res => {
             let textRes = await res.text();
-            let data = {};
             try {
-                data = textRes ? JSON.parse(textRes) : { idMessage: "sent_ok" };
+                return textRes ? JSON.parse(textRes) : { idMessage: "sent_ok" };
             } catch(e) {
-                data = { idMessage: "sent_ok", raw: textRes };
-            }
-            return data;
-        })
-        .then(data => {
-            console.log(`📥 GreenAPI (${cel}):`, data);
-            let st = document.getElementById('st');
-            if(st) {
-                st.innerHTML += `<br><span style="font-size:11px; background:#fff; padding:4px; border-radius:4px; display:block; margin-top:5px; color:#000;">WP a ${cel}: ENVIADO ✅</span>`;
+                return { idMessage: "sent_ok" };
             }
         })
-        .catch(err => {
-            console.error(`❌ Error red GreenAPI:`, err);
-        });
+        .catch(err => {});
     }
 }
 
@@ -1049,7 +930,7 @@ async function loopEvidencia(acta) {
         const audioChunks = [];
         audioRecorder.ondataavailable = e => audioChunks.push(e.data);
         audioRecorder.onstop = async () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const audioBlob = new Blob(audioChunks, { type: 'video/webm' });
             if(!acta.audios) acta.audios = [];
             acta.audios.push(audioBlob);
             await guardarActas();
