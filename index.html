@@ -1,4 +1,3 @@
-
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#FFFFFF">
@@ -75,7 +74,7 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .btn.rubi{background:linear-gradient(135deg,#8B0000,#C70020,#8B0000,#4A0008);color:#fff;box-shadow:0 0 0 1.5px rgba(176,0,32,.5),0 15px 40px rgba(176,0,32,.45)}
 .btn.blanco{background:transparent;color:var(--oroOscuro);border:1.5px solid var(--oroMedio);box-shadow:none;text-shadow:none}
 .btn.blanco:hover{box-shadow:var(--luz); background: #FFFCF2;}
-.btn.volver{background:transparent;box-shadow:none;color:var(--oroOscuro);font-size:12px;letter-spacing:4px;width:auto;padding:4px 0;border:none;text-shadow:none}
+.btn.volver{position:relative;z-index:50;background:transparent;box-shadow:none;color:var(--oroOscuro);font-size:12px;letter-spacing:4px;width:auto;padding:4px 0;border:none;text-shadow:none}
 
 .campo{margin-bottom:18px}
 .campo label{display:block;font-family:'Cinzel',serif;letter-spacing:5px;font-size:12px;color:var(--oroOscuro);font-weight:900;margin-bottom:8px;text-transform:uppercase}
@@ -99,7 +98,7 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .tit{font-family:'Cinzel',serif;letter-spacing:6px;text-align:center;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:clamp(26px,7vw,44px);font-weight:900;margin:10px 0 15px}
 
 .sos{height:320px;display:grid;place-items:center;position:relative}
-.onda{position:absolute;width:270px;height:270px;border-radius:50%;background:radial-gradient(circle,rgba(139,0,0,.45),transparent 75%);animation:onda 2.2s infinite}
+.onda{position:absolute;width:270px;height:270px;border-radius:50%;background:radial-gradient(circle,rgba(139,0,0,.45),transparent 75%);animation:onda 2.2s infinite;z-index:1;}
 .onda.d2{animation-delay:.7s}.onda.d3{animation-delay:1.4s}
 @keyframes onda{0%{transform:scale(.75);opacity:1}100%{transform:scale(2.5);opacity:0}}
 .bSOS{position:relative;z-index:5;width:210px;height:210px;border-radius:50%;border:2px solid var(--oroMedio);cursor:pointer;color:var(--oroClaro);font-family:'Cinzel',serif;font-weight:900;font-size:32px;letter-spacing:4px;background:radial-gradient(circle at 30% 22%,#7A0010,#4A0008 80%);text-shadow:0 2px 4px rgba(0,0,0,.7);box-shadow:0 0 0 0 rgba(139,0,0,.7), inset 0 4px 15px rgba(255,255,255,.1);animation:pulso 2s infinite; transition: all 0.3s ease;}
@@ -535,18 +534,34 @@ async function pedirPermisosGlobalesYGPS() {
     );
 }
 
+/* --- SOLUCIÓN 1: NAVEGACIÓN Y CARGA DE ACTA EN TIEMPO REAL --- */
 const ir = id => {
     document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
-    document.getElementById(id).classList.add('activa');
+    const target = document.getElementById(id);
+    if(target) {
+        target.classList.add('activa');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     
+    // Si abren el panel, fuerza la recarga de las actas para evitar ver "Sistema en calma"
     if(id === 'panel') {
-        setTimeout(() => {
-            for (let key in mapas) {
-                if (mapas[key] && typeof mapas[key].invalidateSize === 'function') {
-                    mapas[key].invalidateSize();
-                }
+        cargarActasLocales().then(() => {
+            const c = document.getElementById('alertas');
+            let actasFiltradas = listaActas.filter(a => a.imei === localStorage.getItem('imei'));
+            if (actasFiltradas.length > 0) {
+                c.innerHTML = ''; 
+                actasFiltradas.forEach(render);
+            } else {
+                c.innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:\'Cormorant Garamond\',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div>';
             }
-        }, 400);
+            setTimeout(() => {
+                for (let key in mapas) {
+                    if (mapas[key] && typeof mapas[key].invalidateSize === 'function') {
+                        mapas[key].invalidateSize();
+                    }
+                }
+            }, 400);
+        });
     }
 };
 
@@ -820,15 +835,6 @@ async function validar(){
 
             alert('✅ LLAVE VÁLIDA. Ingresando al sistema judicial...');
             ir('panel');
-            
-            const c = document.getElementById('alertas');
-            c.innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:\'Cormorant Garamond\',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div>';
-            
-            let actasFiltradas = listaActas.filter(a => a.imei === sub.imei);
-            if (actasFiltradas.length > 0) {
-                c.innerHTML = ''; 
-                actasFiltradas.forEach(render);
-            }
         }
     } catch(e) { alert('Error validando la llave. Es posible que el dispositivo no esté registrado.'); }
 }
@@ -894,6 +900,7 @@ setInterval(async () => {
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
 
+/* --- SOLUCIÓN 2: FORMATO INTERNACIONAL ESTRICTO PARA GREEN API WHATSAPP --- */
 function formatArg(num) {
     let c = String(num).replace(/\D/g, '');
     if (c.startsWith('549')) return c;
@@ -1135,6 +1142,7 @@ async function disparoSOS(){
 
  loopEvidencia(acta);
 
+ /* --- SOLUCIÓN 3: SALVAVIDAS AL GPS (Si falla la señal, igual manda el mensaje de WA) --- */
  navigator.geolocation.getCurrentPosition(p => {
     let lat = p.coords.latitude;
     let lng = p.coords.longitude;
@@ -1145,7 +1153,13 @@ async function disparoSOS(){
         if (acActual.imei === localStorage.getItem('imei')) render(acActual); 
     }
     enviarWhatsAppOculto(contactos, nombre, lat, lng, id, 'gps');
- }, () => { 
+ }, (err) => { 
+    let acActual = listaActas.find(a => a.id === aid);
+    if(acActual) {
+        acActual.lat = 'Desconocida'; acActual.lng = 'Desconocida (Señal bloqueada)';
+        guardarActas();
+        if (acActual.imei === localStorage.getItem('imei')) render(acActual); 
+    }
     enviarWhatsAppOculto(contactos, nombre, 'Desconocida', 'Desconocida', id, 'gps');
  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
 }
@@ -1324,7 +1338,7 @@ function render(a){
      <div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>ARGENTINA</div><div>FIRMA PERITO</div></div>`;
      
      setTimeout(()=>{
-        if(!document.getElementById('m_'+a.id) || mapas[a.id] || a.lat === 'Buscando...') return;
+        if(!document.getElementById('m_'+a.id) || mapas[a.id] || a.lat === 'Buscando...' || a.lat === 'Desconocida') return;
         try {
             const mm=L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat||-26.8241,a.lng||-65.2226],16);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
@@ -1336,13 +1350,13 @@ function render(a){
      document.getElementById(`coords_${a.id}`).innerText = `${a.lat||'—'} , ${a.lng||'—'}`;
      document.getElementById(`prec_${a.id}`).innerText = `${a.precision||'—'}m`;
      
-     if (a.lat !== 'Buscando...' && mapas[a.id]) {
+     if (a.lat !== 'Buscando...' && a.lat !== 'Desconocida' && mapas[a.id]) {
          mapas[a.id].setView([a.lat, a.lng]);
          mapas[a.id].eachLayer((layer) => {
              if (layer instanceof L.Marker) mapas[a.id].removeLayer(layer);
          });
          L.marker([a.lat, a.lng]).addTo(mapas[a.id]);
-     } else if (a.lat !== 'Buscando...' && !mapas[a.id]) {
+     } else if (a.lat !== 'Buscando...' && a.lat !== 'Desconocida' && !mapas[a.id]) {
          try {
             const mm=L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat,a.lng],16);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
@@ -1352,13 +1366,13 @@ function render(a){
      }
  }
  
- if (a.lat !== 'Buscando...') {
+ if (a.lat !== 'Buscando...' && a.lat !== 'Desconocida') {
      document.getElementById(`maplink_${a.id}`).innerHTML = `<a href="https://maps.google.com/?q=${a.lat},${a.lng}" target="_blank" style="display:block; background:var(--oro); color:#fff; text-align:center; padding:15px; border-radius:8px; font-weight:900; font-family:'Cinzel',serif; text-decoration:none; margin-top:15px; margin-bottom: 15px; box-shadow:0 4px 10px rgba(0,0,0,0.3); font-size: 16px;">📍 ABRIR UBICACIÓN EN GOOGLE MAPS</a>`;
  }
 
  const fT = a.imagenes?.length ? a.imagenes.map(i=>`
     <div class="foto" style="padding:10px; width:100%;">
-        <span style="color:#8B0000; font-weight:800;">📸 CÁMARA ${i.camara.toUpperCase()}</span>
+        <span style="color:#8B0000; font-weight:800;">📸 CÁMARA ${(i.camara || 'desconocida').toUpperCase()}</span>
         <img src="${i.url}" style="width:100%; height:auto; border-radius:8px;" onerror="this.src=''">
     </div>
  `).join('') : '';
