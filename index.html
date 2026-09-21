@@ -409,9 +409,6 @@ const LK = k => {
 };
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
-// =========================================================================
-// 🔥 AUTH NINJA: ENGAÑO A SUPABASE (RLS) - VERSIÓN DEFINITIVA
-// =========================================================================
 let currentJWT = null;
 
 async function authTrucha(imei) {
@@ -437,19 +434,6 @@ async function authTrucha(imei) {
             let regData = await regRes.json();
             
             if (!regRes.ok) {
-                const errorReal = regData.msg || regData.error_description || regData.error?.message || "Error desconocido en Supabase";
-                
-                if (errorReal.includes("User already registered") || errorReal.includes("already registered")) {
-                    alert(`🛑 USUARIO TRABADO EN SUPABASE\n\nEl correo ${email} quedó bloqueado de las pruebas anteriores (seguro por el Confirm Email).\n\nSOLUCIÓN OBLIGATORIA:\n1. Entrá a Supabase -> Authentication -> Users.\n2. BORRÁ ese usuario.\n3. Volvé a tocar el botón en la app.`);
-                    return false;
-                }
-
-                alert("⚠️ ERROR AL CREAR USUARIO:\n" + errorReal);
-                return false;
-            }
-
-            if ((regData.id || regData.user) && !regData.access_token && !regData.session) {
-                alert("⚠️ ATENCIÓN: Tenés activada la 'Confirmación de Email'.\nAndá a Supabase -> Authentication -> Providers -> Email y APAGÁ 'Confirm email' para que esto funcione.");
                 return false;
             }
 
@@ -463,11 +447,8 @@ async function authTrucha(imei) {
             currentJWT = data.session.access_token;
             return true;
         }
-        
-        alert("Error crítico: Supabase conectó pero no devolvió el Token de acceso.");
         return false;
     } catch (e) {
-        alert("Error de red conectando con Supabase: " + e.message);
         return false;
     }
 }
@@ -488,7 +469,6 @@ async function supaQuery(method, endpoint, body = null) {
     if (!res.ok) throw new Error(await res.text());
     return res.json();
 }
-// =========================================================================
 
 let deferredPrompt;
 const installBtn = document.getElementById('btn-install-pwa');
@@ -534,7 +514,7 @@ async function pedirPermisosGlobalesYGPS() {
     );
 }
 
-/* --- SOLUCIÓN 1: NAVEGACIÓN Y CARGA DE ACTA EN TIEMPO REAL --- */
+// SOLUCIÓN: Carga de panel forzada para que el Acta aparezca al instante
 const ir = id => {
     document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
     const target = document.getElementById(id);
@@ -543,7 +523,6 @@ const ir = id => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
-    // Si abren el panel, fuerza la recarga de las actas para evitar ver "Sistema en calma"
     if(id === 'panel') {
         cargarActasLocales().then(() => {
             const c = document.getElementById('alertas');
@@ -900,7 +879,7 @@ setInterval(async () => {
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
 
-/* --- SOLUCIÓN 2: FORMATO INTERNACIONAL ESTRICTO PARA GREEN API WHATSAPP --- */
+// SOLUCIÓN: Formato estricto para WhatsApp (Siempre agrega 549 para Argentina, limpia espacios)
 function formatArg(num) {
     let c = String(num).replace(/\D/g, '');
     if (c.startsWith('549')) return c;
@@ -944,7 +923,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-        }).catch(err => {});
+        }).catch(err => console.error("Error WA:", err));
     }
 }
 
@@ -1063,6 +1042,7 @@ async function loopEvidencia(acta) {
     }
 }
 
+// SOLUCIÓN: Inicio Inmediato de Evidencia (sin bloqueos de red para evitar el bloqueo de cámara de Safari/Chrome)
 async function disparoSOS(){
  if(sosActivo) return; 
  sosActivo = true;
@@ -1075,7 +1055,7 @@ async function disparoSOS(){
  }
 
  speechSynthesis.cancel();
- try{if('wakeLock'in navigator)await navigator.wakeLock.request('screen')}catch{}
+ try{if('wakeLock'in navigator) navigator.wakeLock.request('screen')}catch{}
  
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
@@ -1091,11 +1071,7 @@ async function disparoSOS(){
  const id = 'P4-' + Date.now() + '-' + Math.random().toString(16).slice(2,8).toUpperCase();
  aid = id;
  
- if (imei && imei !== 'SIN_IMEI') {
-     await authTrucha(imei);
-     supaQuery('POST', 'c4_emergencias', { imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() }).catch(()=>{});
- }
-
+ // DISPARA WHATSAPP SIN ESPERAR AL SERVIDOR PARA GANAR TIEMPO
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
 
  let batLevel = 'Desc.', batCharging = 'Desc.';
@@ -1107,8 +1083,7 @@ async function disparoSOS(){
     }
  } catch(e){}
  
- let redType = 'Desc.';
- let signalData = 'No disponible';
+ let redType = 'Desc.', signalData = 'No disponible';
  try { 
     if(navigator.connection) {
         redType = navigator.connection.effectiveType || 'Desc.'; 
@@ -1121,28 +1096,41 @@ async function disparoSOS(){
  const cores = navigator.hardwareConcurrency || 'Desc.';
  const pantalla = `${screen.width}x${screen.height}`;
 
- const hash = await sha256(id+imei+Date.now());
  let acta = {
      id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
      hora: new Date().toLocaleTimeString('es-AR'), fecha: new Date().toLocaleDateString('es-AR'),
      sello_ms: Date.now(),
-     audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: hash, hash_judicial: hash, eventos: [],
+     audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: 'Calculando...', hash_judicial: 'Calculando...', eventos: [],
      numero_acta: id,
      bateria: batLevel, cargando: batCharging, red: redType, signal: signalData, userAgent: ua, ram: ram, cores: cores, pantalla: pantalla
  };
  listaActas.push(acta);
- await guardarActas();
  
  let currentImei = localStorage.getItem('imei');
  if (acta.imei === currentImei) {
      const c = document.getElementById('alertas');
-     if(c.innerHTML.includes('calma')) c.innerHTML='';
+     if(c && c.innerHTML.includes('calma')) c.innerHTML='';
      render(acta);
  }
 
+ // INICIA CÁMARA Y AUDIO DIRECTAMENTE ATADO AL CLIC PARA EVITAR BLOQUEO DE NAVEGADOR
  loopEvidencia(acta);
 
- /* --- SOLUCIÓN 3: SALVAVIDAS AL GPS (Si falla la señal, igual manda el mensaje de WA) --- */
+ // TAREAS PESADAS Y LENTAS AL FINAL Y EN SEGUNDO PLANO
+ sha256(id+imei+Date.now()).then(hash => {
+    acta.sha256 = hash;
+    acta.hash_judicial = hash;
+    guardarActas();
+    if (acta.imei === localStorage.getItem('imei')) render(acta);
+ }).catch(()=>{});
+
+ if (imei && imei !== 'SIN_IMEI') {
+     authTrucha(imei).then(() => {
+         supaQuery('POST', 'c4_emergencias', { imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() }).catch(()=>{});
+     }).catch(()=>{});
+ }
+
+ // RASTREO GPS CON SALVAVIDAS
  navigator.geolocation.getCurrentPosition(p => {
     let lat = p.coords.latitude;
     let lng = p.coords.longitude;
@@ -1153,14 +1141,14 @@ async function disparoSOS(){
         if (acActual.imei === localStorage.getItem('imei')) render(acActual); 
     }
     enviarWhatsAppOculto(contactos, nombre, lat, lng, id, 'gps');
- }, (err) => { 
+ }, () => { 
     let acActual = listaActas.find(a => a.id === aid);
     if(acActual) {
         acActual.lat = 'Desconocida'; acActual.lng = 'Desconocida (Señal bloqueada)';
         guardarActas();
         if (acActual.imei === localStorage.getItem('imei')) render(acActual); 
     }
-    enviarWhatsAppOculto(contactos, nombre, 'Desconocida', 'Desconocida', id, 'gps');
+    enviarWhatsAppOculto(contactos, nombre, 'Desconocida', 'Desconocida (Señal bloqueada)', id, 'gps');
  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
 }
 
