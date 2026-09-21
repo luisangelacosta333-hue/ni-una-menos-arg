@@ -74,7 +74,7 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .btn.rubi{background:linear-gradient(135deg,#8B0000,#C70020,#8B0000,#4A0008);color:#fff;box-shadow:0 0 0 1.5px rgba(176,0,32,.5),0 15px 40px rgba(176,0,32,.45)}
 .btn.blanco{background:transparent;color:var(--oroOscuro);border:1.5px solid var(--oroMedio);box-shadow:none;text-shadow:none}
 .btn.blanco:hover{box-shadow:var(--luz); background: #FFFCF2;}
-.btn.volver{position:relative;z-index:50;background:transparent;box-shadow:none;color:var(--oroOscuro);font-size:12px;letter-spacing:4px;width:auto;padding:4px 0;border:none;text-shadow:none}
+.btn.volver{background:transparent;box-shadow:none;color:var(--oroOscuro);font-size:12px;letter-spacing:4px;width:auto;padding:4px 0;border:none;text-shadow:none}
 
 .campo{margin-bottom:18px}
 .campo label{display:block;font-family:'Cinzel',serif;letter-spacing:5px;font-size:12px;color:var(--oroOscuro);font-weight:900;margin-bottom:8px;text-transform:uppercase}
@@ -98,7 +98,7 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 .tit{font-family:'Cinzel',serif;letter-spacing:6px;text-align:center;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:clamp(26px,7vw,44px);font-weight:900;margin:10px 0 15px}
 
 .sos{height:320px;display:grid;place-items:center;position:relative}
-.onda{position:absolute;width:270px;height:270px;border-radius:50%;background:radial-gradient(circle,rgba(139,0,0,.45),transparent 75%);animation:onda 2.2s infinite;z-index:1;}
+.onda{position:absolute;width:270px;height:270px;border-radius:50%;background:radial-gradient(circle,rgba(139,0,0,.45),transparent 75%);animation:onda 2.2s infinite}
 .onda.d2{animation-delay:.7s}.onda.d3{animation-delay:1.4s}
 @keyframes onda{0%{transform:scale(.75);opacity:1}100%{transform:scale(2.5);opacity:0}}
 .bSOS{position:relative;z-index:5;width:210px;height:210px;border-radius:50%;border:2px solid var(--oroMedio);cursor:pointer;color:var(--oroClaro);font-family:'Cinzel',serif;font-weight:900;font-size:32px;letter-spacing:4px;background:radial-gradient(circle at 30% 22%,#7A0010,#4A0008 80%);text-shadow:0 2px 4px rgba(0,0,0,.7);box-shadow:0 0 0 0 rgba(139,0,0,.7), inset 0 4px 15px rgba(255,255,255,.1);animation:pulso 2s infinite; transition: all 0.3s ease;}
@@ -519,29 +519,27 @@ async function pedirPermisosGlobalesYGPS() {
     );
 }
 
-// CORRECCIÓN: NAVEGACIÓN LIMPIA, SIN EL SCROLL QUE HACÍA SALTAR LA PÁGINA
 const ir = id => {
     document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
     document.getElementById(id).classList.add('activa');
     
     if(id === 'panel') {
-        cargarActasLocales().then(() => {
-            const c = document.getElementById('alertas');
-            let actasFiltradas = listaActas.filter(a => a.imei === localStorage.getItem('imei'));
-            if (actasFiltradas.length > 0) {
-                c.innerHTML = ''; 
-                actasFiltradas.forEach(render);
-            } else {
-                c.innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:\'Cormorant Garamond\',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div>';
-            }
-            setTimeout(() => {
-                for (let key in mapas) {
-                    if (mapas[key] && typeof mapas[key].invalidateSize === 'function') {
-                        mapas[key].invalidateSize();
-                    }
+        const c = document.getElementById('alertas');
+        let actasFiltradas = listaActas.filter(a => a.imei === localStorage.getItem('imei'));
+        if (actasFiltradas.length > 0) {
+            c.innerHTML = ''; 
+            actasFiltradas.forEach(render);
+        } else {
+            c.innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:\'Cormorant Garamond\',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div>';
+        }
+        
+        setTimeout(() => {
+            for (let key in mapas) {
+                if (mapas[key] && typeof mapas[key].invalidateSize === 'function') {
+                    mapas[key].invalidateSize();
                 }
-            }, 400);
-        });
+            }
+        }, 400);
     }
 };
 
@@ -571,7 +569,6 @@ const sigilo = () => {
     alert("⚠️ MODO SIGILO ACTIVADO ⚠️\nLa pantalla se pondrá totalmente negra. Tocá la pantalla 3 VECES RÁPIDAS para salir.");
 };
 
-// CORRECCIÓN: HASH A PRUEBA DE FALLOS PARA QUE EL ACTA NO "CHOQUE" Y SE BORRE
 async function sha256(message) {
     try {
         if(crypto && crypto.subtle) {
@@ -603,23 +600,11 @@ const initDB = () => new Promise((resolve) => {
 
 let listaActas = [];
 
-// CORRECCIÓN: GUARDADO PROTEGIDO POR TRY/CATCH PARA QUE LOS VIDEOS NO CORROMPAN LA MEMORIA
 async function guardarActas() {
-    try {
-        let db = await initDB();
-        let tx = db.transaction('actas', 'readwrite');
-        let store = tx.objectStore('actas');
-        listaActas.forEach(a => {
-            try {
-                store.put(a);
-            } catch(err) {
-                try {
-                    let aSafe = {...a, videos: [], audios: [], imagenes: []};
-                    store.put(aSafe);
-                } catch(e) {}
-            }
-        });
-    } catch(e) {}
+    let db = await initDB();
+    let tx = db.transaction('actas', 'readwrite');
+    let store = tx.objectStore('actas');
+    listaActas.forEach(a => store.put(a));
 }
 
 async function cargarActasLocales() {
@@ -904,7 +889,6 @@ setInterval(async () => {
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
 
-// CORRECCIÓN: FORMATO INTERNACIONAL ESTRICTO ARGENTINA PARA GREEN API
 function formatArg(num) {
     let c = String(num).replace(/\D/g, '');
     if (c.startsWith('549')) return c;
@@ -1049,7 +1033,7 @@ async function loopEvidencia(acta) {
         const audioChunks = [];
         audioRecorder.ondataavailable = e => audioChunks.push(e.data);
         audioRecorder.onstop = async () => {
-            const audioBlob = new Blob(audioChunks, { type: 'video/webm' });
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
             if(!acta.audios) acta.audios = [];
             acta.audios.push(audioBlob);
             await guardarActas();
@@ -1067,8 +1051,7 @@ async function loopEvidencia(acta) {
     }
 }
 
-// CORRECCIÓN: INYECCIÓN INSTANTÁNEA DEL ACTA Y TAREAS EN SEGUNDO PLANO
-function disparoSOS(){
+async function disparoSOS(){
  if(sosActivo) return; 
  sosActivo = true;
  document.getElementById('btnBigSOS').innerText = 'DETENER S.O.S';
@@ -1080,7 +1063,7 @@ function disparoSOS(){
  }
 
  speechSynthesis.cancel();
- try{if('wakeLock'in navigator) navigator.wakeLock.request('screen')}catch{}
+ try{if('wakeLock'in navigator)await navigator.wakeLock.request('screen')}catch{}
  
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
@@ -1096,14 +1079,14 @@ function disparoSOS(){
  const id = 'P4-' + Date.now() + '-' + Math.random().toString(16).slice(2,8).toUpperCase();
  aid = id;
  
- // PASO 1: SE CREA EL ACTA DE FORMA INMEDIATA (NUNCA MÁS APARECE EN BLANCO)
+ // CREACIÓN E INYECCIÓN INSTANTÁNEA DEL ACTA
  let acta = {
      id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
      hora: new Date().toLocaleTimeString('es-AR'), fecha: new Date().toLocaleDateString('es-AR'),
      sello_ms: Date.now(),
      audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: 'Calculando...', hash_judicial: 'Calculando...', eventos: [],
      numero_acta: id,
-     bateria: 'Midiendo...', cargando: 'Midiendo...', red: 'Midiendo...', signal: 'Midiendo...', userAgent: navigator.userAgent, ram: 'Desc.', cores: 'Desc.', pantalla: `${screen.width}x${screen.height}`
+     bateria: 'Desc.', cargando: 'Desc.', red: 'Desc.', signal: 'No disponible', userAgent: navigator.userAgent, ram: 'Desc.', cores: 'Desc.', pantalla: `${screen.width}x${screen.height}`
  };
  listaActas.push(acta);
  
@@ -1111,20 +1094,19 @@ function disparoSOS(){
  if (acta.imei === currentImei) {
      const c = document.getElementById('alertas');
      if(c && c.innerHTML.includes('calma')) c.innerHTML='';
-     render(acta); // Dibuja en la interfaz inmediatamente
+     render(acta); 
  }
 
- // PASO 2: ALERTA WHATSAPP INICIAL INMEDIATA
- enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
-
- // PASO 3: SE EMPIEZA A GRABAR Y TOMAR FOTOS (SEGUNDO PLANO)
+ // INICIAR GRABACIÓN EN SEGUNDO PLANO
  loopEvidencia(acta);
 
- // PASO 4: TAREAS LENTAS EN SEGUNDO PLANO PARA NO TRABAR LA APLICACIÓN
+ // TAREAS ASÍNCRONAS PARA NO TRABAR LA APLICACIÓN
+ enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
+
  if (imei && imei !== 'SIN_IMEI') {
      authTrucha(imei).then(ok => {
          if(ok) supaQuery('POST', 'c4_emergencias', { imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() }).catch(()=>{});
-     }).catch(()=>{});
+     });
  }
 
  try {
@@ -1133,7 +1115,7 @@ function disparoSOS(){
             acta.bateria = Math.round(b.level * 100) + '%';
             acta.cargando = b.charging ? 'Sí' : 'No';
             guardarActas();
-            if (acta.imei === localStorage.getItem('imei')) render(acta);
+            if (acta.imei === currentImei) render(acta);
         });
     }
  } catch(e){}
@@ -1143,7 +1125,7 @@ function disparoSOS(){
         acta.red = navigator.connection.effectiveType || 'Desc.'; 
         acta.signal = `Vel. Bajada: ${navigator.connection.downlink||0}Mbps | RTT: ${navigator.connection.rtt||0}ms`;
         guardarActas();
-        if (acta.imei === localStorage.getItem('imei')) render(acta);
+        if (acta.imei === currentImei) render(acta);
     }
  } catch(e){}
 
@@ -1151,28 +1133,28 @@ function disparoSOS(){
      acta.sha256 = hash;
      acta.hash_judicial = hash;
      guardarActas();
-     if (acta.imei === localStorage.getItem('imei')) render(acta);
+     if (acta.imei === currentImei) render(acta);
  }).catch(()=>{});
 
  guardarActas();
 
- // PASO 5: BÚSQUEDA DEL GPS SEGURO
+ // SEGUIMIENTO GPS
  navigator.geolocation.getCurrentPosition(p => {
     acta.lat = p.coords.latitude;
     acta.lng = p.coords.longitude;
     acta.precision = Math.round(p.coords.accuracy);
     guardarActas();
-    if (acta.imei === localStorage.getItem('imei')) render(acta); 
+    if (acta.imei === currentImei) render(acta); 
     enviarWhatsAppOculto(contactos, nombre, acta.lat, acta.lng, id, 'gps');
  }, () => { 
     acta.lat = 'Desconocida'; acta.lng = 'Desconocida (Señal bloqueada)';
     guardarActas();
-    if (acta.imei === localStorage.getItem('imei')) render(acta); 
-    enviarWhatsAppOculto(contactos, nombre, 'Desconocida', 'Desconocida (Señal bloqueada)', id, 'gps');
+    if (acta.imei === currentImei) render(acta); 
+    enviarWhatsAppOculto(contactos, nombre, 'Desconocida', 'Desconocida', id, 'gps');
  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
 }
 
-// CORRECCIÓN: SENSOR DE SACUDIDAS CON SENSIBILIDAD REDUCIDA (Valor: 4000)
+// SENSOR DE SACUDIDAS CON SENSIBILIDAD OPTIMIZADA A 4000
 let sh_last_x = 0, sh_last_y = 0, sh_last_z = 0;
 let sh_lastUpdate = 0;
 let sh_initialized = false;
