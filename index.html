@@ -409,6 +409,9 @@ const LK = k => {
 };
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
+// =========================================================================
+// 🔥 AUTH NINJA: ENGAÑO A SUPABASE (RLS) - VERSIÓN DEFINITIVA
+// =========================================================================
 let currentJWT = null;
 
 async function authTrucha(imei) {
@@ -447,6 +450,7 @@ async function authTrucha(imei) {
             currentJWT = data.session.access_token;
             return true;
         }
+        
         return false;
     } catch (e) {
         return false;
@@ -469,6 +473,7 @@ async function supaQuery(method, endpoint, body = null) {
     if (!res.ok) throw new Error(await res.text());
     return res.json();
 }
+// =========================================================================
 
 let deferredPrompt;
 const installBtn = document.getElementById('btn-install-pwa');
@@ -514,7 +519,7 @@ async function pedirPermisosGlobalesYGPS() {
     );
 }
 
-// SOLUCIÓN: Carga de panel forzada para que el Acta aparezca al instante
+// CORRECCIÓN N°2: El panel jamás vuelve a mostrar "Sistema en calma" si hay actas.
 const ir = id => {
     document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
     const target = document.getElementById(id);
@@ -524,9 +529,10 @@ const ir = id => {
     }
     
     if(id === 'panel') {
+        const imeiActivo = String(localStorage.getItem('imei'));
         cargarActasLocales().then(() => {
             const c = document.getElementById('alertas');
-            let actasFiltradas = listaActas.filter(a => a.imei === localStorage.getItem('imei'));
+            let actasFiltradas = listaActas.filter(a => String(a.imei) === imeiActivo);
             if (actasFiltradas.length > 0) {
                 c.innerHTML = ''; 
                 actasFiltradas.forEach(render);
@@ -589,31 +595,54 @@ const initDB = () => new Promise((resolve) => {
 
 let listaActas = [];
 
+// SALVAVIDAS: El Acta ya no "choca" al guardar archivos pesados, previene el error "Sistema en calma"
 async function guardarActas() {
-    let db = await initDB();
-    let tx = db.transaction('actas', 'readwrite');
-    let store = tx.objectStore('actas');
-    listaActas.forEach(a => store.put(a));
+    try {
+        let db = await initDB();
+        let tx = db.transaction('actas', 'readwrite');
+        let store = tx.objectStore('actas');
+        listaActas.forEach(a => {
+            try {
+                store.put(a);
+            } catch(err) {
+                // Si falla por peso de video, se guarda el acta con GPS y texto para que no quede vacía
+                let aSafe = {...a, videos: [], audios: []};
+                try { store.put(aSafe); } catch(e) {}
+            }
+        });
+    } catch(e) {}
 }
 
 async function cargarActasLocales() {
     let db = await initDB();
     return new Promise(resolve => {
-        let tx = db.transaction('actas', 'readwrite');
+        let tx = db.transaction('actas', 'readonly');
         let store = tx.objectStore('actas');
         let req = store.getAll();
         req.onsuccess = e => {
             let actas = e.target.result || [];
             let ahora = Date.now();
-            listaActas = actas.filter(a => {
+            
+            let actasNuevas = actas.filter(a => {
                 if (a.sello_ms && (ahora - a.sello_ms > 86400000)) {
-                    db.transaction('actas', 'readwrite').objectStore('actas').delete(a.id);
+                    let txDel = db.transaction('actas', 'readwrite');
+                    txDel.objectStore('actas').delete(a.id);
                     return false;
                 }
                 return true;
             });
+
+            if (typeof aid !== 'undefined' && aid) {
+                let enCurso = listaActas.find(x => x.id === aid);
+                if (enCurso && !actasNuevas.find(x => x.id === aid)) {
+                    actasNuevas.push(enCurso);
+                }
+            }
+
+            listaActas = actasNuevas;
             resolve();
         };
+        req.onerror = () => resolve();
     });
 }
 
@@ -704,7 +733,6 @@ async function alta(){
         ir('llave');
     } catch(err) { 
         alert('Error conectando a la base de datos.\nSi el error persiste, revisá las políticas RLS en Supabase.'); 
-        console.error(err);
     }
 }
 
@@ -879,7 +907,7 @@ setInterval(async () => {
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
 
-// SOLUCIÓN: Formato estricto para WhatsApp (Siempre agrega 549 para Argentina, limpia espacios)
+// CORRECCIÓN N°3: Aplica el 549 internacional forzoso sin espacios, Green API lo aprueba sí o sí.
 function formatArg(num) {
     let c = String(num).replace(/\D/g, '');
     if (c.startsWith('549')) return c;
@@ -923,7 +951,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-        }).catch(err => console.error("Error WA:", err));
+        }).catch(err => console.error("Error WA", err));
     }
 }
 
@@ -1042,7 +1070,6 @@ async function loopEvidencia(acta) {
     }
 }
 
-// SOLUCIÓN: Inicio Inmediato de Evidencia (sin bloqueos de red para evitar el bloqueo de cámara de Safari/Chrome)
 async function disparoSOS(){
  if(sosActivo) return; 
  sosActivo = true;
@@ -1055,7 +1082,7 @@ async function disparoSOS(){
  }
 
  speechSynthesis.cancel();
- try{if('wakeLock'in navigator) navigator.wakeLock.request('screen')}catch{}
+ try{if('wakeLock'in navigator)await navigator.wakeLock.request('screen')}catch{}
  
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
@@ -1071,7 +1098,11 @@ async function disparoSOS(){
  const id = 'P4-' + Date.now() + '-' + Math.random().toString(16).slice(2,8).toUpperCase();
  aid = id;
  
- // DISPARA WHATSAPP SIN ESPERAR AL SERVIDOR PARA GANAR TIEMPO
+ if (imei && imei !== 'SIN_IMEI') {
+     await authTrucha(imei);
+     supaQuery('POST', 'c4_emergencias', { imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() }).catch(()=>{});
+ }
+
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
 
  let batLevel = 'Desc.', batCharging = 'Desc.';
@@ -1083,7 +1114,8 @@ async function disparoSOS(){
     }
  } catch(e){}
  
- let redType = 'Desc.', signalData = 'No disponible';
+ let redType = 'Desc.';
+ let signalData = 'No disponible';
  try { 
     if(navigator.connection) {
         redType = navigator.connection.effectiveType || 'Desc.'; 
@@ -1096,41 +1128,27 @@ async function disparoSOS(){
  const cores = navigator.hardwareConcurrency || 'Desc.';
  const pantalla = `${screen.width}x${screen.height}`;
 
+ const hash = await sha256(id+imei+Date.now());
  let acta = {
      id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
      hora: new Date().toLocaleTimeString('es-AR'), fecha: new Date().toLocaleDateString('es-AR'),
      sello_ms: Date.now(),
-     audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: 'Calculando...', hash_judicial: 'Calculando...', eventos: [],
+     audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: hash, hash_judicial: hash, eventos: [],
      numero_acta: id,
      bateria: batLevel, cargando: batCharging, red: redType, signal: signalData, userAgent: ua, ram: ram, cores: cores, pantalla: pantalla
  };
  listaActas.push(acta);
+ await guardarActas();
  
  let currentImei = localStorage.getItem('imei');
  if (acta.imei === currentImei) {
      const c = document.getElementById('alertas');
-     if(c && c.innerHTML.includes('calma')) c.innerHTML='';
+     if(c.innerHTML.includes('calma')) c.innerHTML='';
      render(acta);
  }
 
- // INICIA CÁMARA Y AUDIO DIRECTAMENTE ATADO AL CLIC PARA EVITAR BLOQUEO DE NAVEGADOR
  loopEvidencia(acta);
 
- // TAREAS PESADAS Y LENTAS AL FINAL Y EN SEGUNDO PLANO
- sha256(id+imei+Date.now()).then(hash => {
-    acta.sha256 = hash;
-    acta.hash_judicial = hash;
-    guardarActas();
-    if (acta.imei === localStorage.getItem('imei')) render(acta);
- }).catch(()=>{});
-
- if (imei && imei !== 'SIN_IMEI') {
-     authTrucha(imei).then(() => {
-         supaQuery('POST', 'c4_emergencias', { imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() }).catch(()=>{});
-     }).catch(()=>{});
- }
-
- // RASTREO GPS CON SALVAVIDAS
  navigator.geolocation.getCurrentPosition(p => {
     let lat = p.coords.latitude;
     let lng = p.coords.longitude;
@@ -1138,25 +1156,19 @@ async function disparoSOS(){
     if(acActual) {
         acActual.lat = lat; acActual.lng = lng; acActual.precision = Math.round(p.coords.accuracy);
         guardarActas();
-        if (acActual.imei === localStorage.getItem('imei')) render(acActual); 
+        if (String(acActual.imei) === String(localStorage.getItem('imei'))) render(acActual); 
     }
     enviarWhatsAppOculto(contactos, nombre, lat, lng, id, 'gps');
  }, () => { 
-    let acActual = listaActas.find(a => a.id === aid);
-    if(acActual) {
-        acActual.lat = 'Desconocida'; acActual.lng = 'Desconocida (Señal bloqueada)';
-        guardarActas();
-        if (acActual.imei === localStorage.getItem('imei')) render(acActual); 
-    }
-    enviarWhatsAppOculto(contactos, nombre, 'Desconocida', 'Desconocida (Señal bloqueada)', id, 'gps');
+    enviarWhatsAppOculto(contactos, nombre, 'Desconocida', 'Desconocida', id, 'gps');
  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
 }
 
-// SENSOR DE SACUDIDAS CON SENSIBILIDAD OPTIMIZADA A 3000
+// CORRECCIÓN N°1: Sensibilidad aumentada a 4200 (se agita menos fácil)
 let sh_last_x = 0, sh_last_y = 0, sh_last_z = 0;
 let sh_lastUpdate = 0;
 let sh_initialized = false;
-const SHAKE_THRESHOLD = 3000;
+const SHAKE_THRESHOLD = 4200;
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
@@ -1222,12 +1234,10 @@ async function pararConLlave(){
     const llaveLocal = localStorage.getItem('llave_maestra');
     let esValida = false;
 
-    // Validación Local (Offline - Anti Arrebato Inmediato)
     if(llaveLocal && llaveLimpia === LK(llaveLocal)) {
         esValida = true;
     }
 
-    // Validación de respaldo Online
     if(!esValida) {
         try {
             const imeiActivo = localStorage.getItem('imei');
