@@ -397,7 +397,9 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 
-const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digit',day:'2-digit'},oH={timeZone:'America/Argentina/Buenos_Aires',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false};
+// FIX: Forzamos la hora a 24 horas (sin PM/AM)
+const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digit',day:'2-digit'};
+const oH={timeZone:'America/Argentina/Buenos_Aires',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false};
 
 const LK = k => {
     let str = (k || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -530,6 +532,7 @@ const ir = async id => {
         const c = document.getElementById('alertas');
         const currentImei = localStorage.getItem('imei');
         
+        // FIX ACTAS ZOMBIES: Renderiza solo las del dispositivo actual, ordenadas
         let actasFiltradas = listaActas.filter(a => !currentImei || a.imei === currentImei || a.imei === 'SIN_IMEI');
         
         if (actasFiltradas.length > 0) {
@@ -642,7 +645,9 @@ async function borrarActa(id) {
     let db = await initDB();
     let tx = db.transaction('actas', 'readwrite');
     tx.objectStore('actas').delete(id);
-    if(listaActas.filter(a => a.imei === localStorage.getItem('imei')).length === 0) {
+    
+    // Si se eliminó la última acta del dispositivo, muestra "en calma"
+    if(listaActas.filter(a => a.imei === localStorage.getItem('imei') || a.imei === 'SIN_IMEI').length === 0) {
         document.getElementById('alertas').innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:\'Cormorant Garamond\',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div>';
     }
 }
@@ -957,7 +962,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     }
 }
 
-// FIX: NUEVA FUNCIÓN DE ENVÍO DE EMAIL 100% SEGURA POR BACKEND (VERCEL)
+// FIX: Ruta absoluta para asegurar conexión con Vercel
 function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
     if (!email) return;
 
@@ -975,7 +980,7 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ SISTEMA SEGURO \n\nLa usuaria desactivó la alarma a salvo.`;
     }
 
-    fetch('/api/send-email', {
+    fetch('https://niunamenosarg.com/api/send-email', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -990,7 +995,7 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
-// ORDEN DE CAPTURA FORENSE: FOTOS, VIDEOS Y AUDIOS EN SECUENCIA PERFECTA
+// FIX: Reducción a 640x480 para fotos más livianas
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
         const v = document.createElement('video');
@@ -1000,15 +1005,16 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
             await v.play();
             setTimeout(() => { 
                 const cv = document.createElement('canvas');
-                cv.width = v.videoWidth || 1280; cv.height = v.videoHeight || 720;
+                cv.width = 640; 
+                cv.height = 480;
                 cv.getContext('2d').drawImage(v, 0, 0, cv.width, cv.height);
-                let b64Img = cv.toDataURL('image/jpeg', 0.8);
+                let b64Img = cv.toDataURL('image/jpeg', 0.5); // Mayor compresión para no saturar DB
                 if(acta) {
                     if(!acta.imagenes) acta.imagenes = [];
                     acta.imagenes.push({url: b64Img, camara: tipo, sha256: 'HASH-'+Date.now()});
                     guardarActas();
                     let currentImei = localStorage.getItem('imei');
-                    if (acta.imei === currentImei) render(acta);
+                    if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
                 }
                 resolve();
             }, 800); 
@@ -1017,8 +1023,12 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
     });
 }
 
+// FIX: Aumento de grabación a 30 segundos (30000ms) y Kill Switch antibugs
 async function loopEvidencia(acta) {
     if(!sosActivo || !acta) return;
+    
+    // KILL SWITCH: Evita revivir actas borradas desde la interfaz
+    if(!listaActas.find(a => a.id === acta.id)) return;
 
     if(Date.now() - (acta.sello_ms || Date.now()) > 86400000) { 
         sosActivo = false; 
@@ -1032,16 +1042,18 @@ async function loopEvidencia(acta) {
     }
 
     navigator.geolocation.getCurrentPosition(p => {
+        if(!listaActas.find(a => a.id === acta.id)) return;
         acta.lat = p.coords.latitude;
         acta.lng = p.coords.longitude;
         acta.precision = Math.round(p.coords.accuracy);
         guardarActas();
-        if (acta.imei === localStorage.getItem('imei')) render(acta); 
+        if (acta.imei === localStorage.getItem('imei') || acta.imei === 'SIN_IMEI') render(acta); 
     }, () => {}, { enableHighAccuracy: true, maximumAge: 0 });
 
-    // 1. CAPTURA FOTOGRÁFICA FRONTAL Y TRASERA PRIMERO
+    // 1. CAPTURA FOTOGRÁFICA FRONTAL Y TRASERA (Baja resolución)
     try {
-        let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } });
+        let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } });
+        if(!listaActas.find(a => a.id === acta.id)) { vFront.getTracks().forEach(t=>t.stop()); return; }
         await tomarFotoSilenciosa(vFront, acta, 'frontal');
         vFront.getTracks().forEach(t => t.stop());
     } catch(e) {}
@@ -1049,56 +1061,59 @@ async function loopEvidencia(acta) {
     if(!sosActivo) return;
 
     try {
-        let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
+        let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
+        if(!listaActas.find(a => a.id === acta.id)) { vBack.getTracks().forEach(t=>t.stop()); return; }
         await tomarFotoSilenciosa(vBack, acta, 'trasera');
         vBack.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
-    if(!sosActivo) return;
+    if(!sosActivo || !listaActas.find(a => a.id === acta.id)) return;
 
-    // 2. VIDEO SECUENCIAL (Acortado a 15 segundos para generar loop rápido)
+    // 2. VIDEO SECUENCIAL 30 SEGUNDOS (Resolución ligera)
     try {
         const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
         const videoRecorder = new MediaRecorder(videoStream);
         const videoChunks = [];
         videoRecorder.ondataavailable = e => videoChunks.push(e.data);
         videoRecorder.onstop = async () => {
+            if(!listaActas.find(a => a.id === acta.id)) return;
             const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
             if(!acta.videos) acta.videos = [];
             acta.videos.push(videoBlob);
             await guardarActas();
             let currentImei = localStorage.getItem('imei');
-            if (acta.imei === currentImei) render(acta);
+            if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
         };
         videoRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 15000));
+        await new Promise(resolve => setTimeout(resolve, 30000));
         if(videoRecorder.state === 'recording') videoRecorder.stop();
         videoStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
-    if(!sosActivo) return;
+    if(!sosActivo || !listaActas.find(a => a.id === acta.id)) return;
 
-    // 3. AUDIO AMBIENTAL CONTINUO (Acortado a 15 segundos para generar loop rápido)
+    // 3. AUDIO AMBIENTAL 30 SEGUNDOS
     try {
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioRecorder = new MediaRecorder(audioStream);
         const audioChunks = [];
         audioRecorder.ondataavailable = e => audioChunks.push(e.data);
         audioRecorder.onstop = async () => {
+            if(!listaActas.find(a => a.id === acta.id)) return;
             const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
             if(!acta.audios) acta.audios = [];
             acta.audios.push(audioBlob);
             await guardarActas();
             let currentImei = localStorage.getItem('imei');
-            if (acta.imei === currentImei) render(acta);
+            if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
         };
         audioRecorder.start();
-        await new Promise(resolve => setTimeout(resolve, 15000));
+        await new Promise(resolve => setTimeout(resolve, 30000));
         if(audioRecorder.state === 'recording') audioRecorder.stop();
         audioStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
-    if(sosActivo) {
+    if(sosActivo && listaActas.find(a => a.id === acta.id)) {
         setTimeout(() => loopEvidencia(acta), 1000); 
     }
 }
@@ -1136,7 +1151,8 @@ async function disparoSOS(){
  // CREACIÓN E INYECCIÓN INSTANTÁNEA DEL ACTA
  let acta = {
      id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
-     hora: new Date().toLocaleTimeString('es-AR'), fecha: new Date().toLocaleDateString('es-AR'),
+     // FIX HORA: Forzado formato de 24 horas
+     hora: new Date().toLocaleTimeString('es-AR', {hour12: false}), fecha: new Date().toLocaleDateString('es-AR'),
      sello_ms: Date.now(),
      audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: 'Calculando...', hash_judicial: 'Calculando...', eventos: [],
      numero_acta: id,
@@ -1145,7 +1161,7 @@ async function disparoSOS(){
  listaActas.push(acta);
  
  let currentImei = localStorage.getItem('imei');
- if (acta.imei === currentImei) {
+ if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') {
      const c = document.getElementById('alertas');
      if(c && c.innerHTML.includes('calma')) c.innerHTML='';
      render(acta); 
@@ -1167,45 +1183,50 @@ async function disparoSOS(){
  try {
     if(navigator.getBattery) {
         navigator.getBattery().then(b => {
+            if(!listaActas.find(a => a.id === acta.id)) return;
             acta.bateria = Math.round(b.level * 100) + '%';
             acta.cargando = b.charging ? 'Sí' : 'No';
             guardarActas();
-            if (acta.imei === currentImei) render(acta);
+            if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
         });
     }
  } catch(e){}
  
  try { 
     if(navigator.connection) {
+        if(!listaActas.find(a => a.id === acta.id)) return;
         acta.red = navigator.connection.effectiveType || 'Desc.'; 
         acta.signal = `Vel. Bajada: ${navigator.connection.downlink||0}Mbps | RTT: ${navigator.connection.rtt||0}ms`;
         guardarActas();
-        if (acta.imei === currentImei) render(acta);
+        if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
     }
  } catch(e){}
 
  sha256(id+imei+Date.now()).then(hash => {
+     if(!listaActas.find(a => a.id === acta.id)) return;
      acta.sha256 = hash;
      acta.hash_judicial = hash;
      guardarActas();
-     if (acta.imei === currentImei) render(acta);
+     if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
  }).catch(()=>{});
 
  guardarActas();
 
  // SEGUIMIENTO GPS
  navigator.geolocation.getCurrentPosition(p => {
+    if(!listaActas.find(a => a.id === acta.id)) return;
     acta.lat = p.coords.latitude;
     acta.lng = p.coords.longitude;
     acta.precision = Math.round(p.coords.accuracy);
     guardarActas();
-    if (acta.imei === currentImei) render(acta); 
+    if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta); 
     enviarWhatsAppOculto(contactos, nombre, acta.lat, acta.lng, id, 'gps');
     enviarEmailOculto(emailDestino, nombre, acta.lat, acta.lng, id, 'gps');
  }, () => { 
+    if(!listaActas.find(a => a.id === acta.id)) return;
     acta.lat = 'Desconocida'; acta.lng = 'Desconocida (Señal bloqueada)';
     guardarActas();
-    if (acta.imei === currentImei) render(acta); 
+    if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta); 
     enviarWhatsAppOculto(contactos, nombre, 'Desconocida', 'Desconocida', id, 'gps');
     enviarEmailOculto(emailDestino, nombre, 'Desconocida', 'Desconocida', id, 'gps');
  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
