@@ -923,16 +923,21 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ *SISTEMA SEGURO* \nDesactivado a salvo.`;
     }
 
-    for (let numero of contactos) {
-        if(!numero) continue;
-        let cel = formatArg(numero);
-        let url = `https://7107.api.greenapi.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
+    // FIX: URL corregida para evitar errores de subdominio y encolado de envíos (Rate Limit de API)
+    let url = `https://api.green-api.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
+
+    for (let i = 0; i < contactos.length; i++) {
+        if(!contactos[i]) continue;
+        let cel = formatArg(contactos[i]);
         
-        fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
-        }).catch(err => {});
+        // Retraso de medio segundo por contacto para evitar que WhatsApp bloquee por ráfaga de mensajes simultáneos
+        setTimeout(() => {
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chatId: `${cel}@c.us`, message: msg })
+            }).catch(err => console.error("Error Green API:", err));
+        }, i * 500);
     }
 }
 
@@ -1154,11 +1159,11 @@ async function disparoSOS(){
  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
 }
 
-// SENSOR DE SACUDIDAS CON SENSIBILIDAD OPTIMIZADA A 4000
+// FIX SENSOR: SACUDIDAS CON SENSIBILIDAD OPTIMIZADA A 5000
 let sh_last_x = 0, sh_last_y = 0, sh_last_z = 0;
 let sh_lastUpdate = 0;
 let sh_initialized = false;
-const SHAKE_THRESHOLD = 4000;
+const SHAKE_THRESHOLD = 5000;
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
@@ -1287,17 +1292,23 @@ async function salir(){
     }
 }
 
+// FIX: Función de Renderizado Inteligente para DOM / Mapa / Asíncronos
 function render(a){
- const c=document.getElementById('alertas');
+ const c = document.getElementById('alertas');
  let d = document.getElementById('a_'+a.id);
  
  if (!d) {
      d = document.createElement('div');
-     d.className='acta';
-     d.id='a_'+a.id;
+     d.className = 'acta';
+     d.id = 'a_'+a.id;
      c.prepend(d);
      
-     d.innerHTML=`<i></i><div style="position:absolute;top:12px;right:12px;width:70px;height:70px;border-radius:50%;border:2px solid #5A3E00;background:linear-gradient(145deg,#fff,#E6C76B);display:grid;place-items:center;font-family:Cinzel;font-weight:900;font-size:9px;text-align:center;transform:rotate(-6deg);box-shadow:var(--luzRelieve);z-index:4">NI<br>UNA<br>MENOS</div>
+     if(mapas[a.id]) {
+         mapas[a.id].remove();
+         delete mapas[a.id];
+     }
+     
+     d.innerHTML = `<i></i><div style="position:absolute;top:12px;right:12px;width:70px;height:70px;border-radius:50%;border:2px solid #5A3E00;background:linear-gradient(145deg,#fff,#E6C76B);display:grid;place-items:center;font-family:Cinzel;font-weight:900;font-size:9px;text-align:center;transform:rotate(-6deg);box-shadow:var(--luzRelieve);z-index:4">NI<br>UNA<br>MENOS</div>
      <div class="noimp" style="position:absolute;top:12px;left:12px;z-index:4"><button onclick="borrarActa('${a.id}')" style="width:36px;height:36px;border-radius:6px;border:none;background:#B00020;color:#fff;font-family:Cinzel;font-weight:bold;font-size:18px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.3);" title="Eliminar Acta">🗑️</button></div>
      <div style="text-align:center;padding-bottom:12px;border-bottom:3px double #000;margin-bottom:12px;position:relative;z-index:3">
         <h2 style="font-family:Cinzel;font-weight:900;letter-spacing:4px;font-size:18px">INFORME TÉCNICO PERICIAL P4</h2>
@@ -1312,7 +1323,7 @@ function render(a){
      <h3>II — HUELLA FORENSE DEL DISPOSITIVO</h3>
      <table class="t">
        <tr><th>NAVEGADOR / S.O.</th><td colspan="3" style="font-size:10px">${a.userAgent||'—'}</td></tr>
-       <tr><th>RED / ANTENA</th><td>${a.red||'—'} (${a.signal||'—'})</td><th>BATERÍA</th><td>${a.bateria||'—'}</td></tr>
+       <tr><th>RED / ANTENA</th><td id="red_${a.id}">${a.red||'—'} (${a.signal||'—'})</td><th>BATERÍA</th><td id="bat_${a.id}">${a.bateria||'—'}</td></tr>
      </table>
 
      <h3>III — GEOLOCALIZACIÓN Y SEGUIMIENTO</h3>
@@ -1324,13 +1335,13 @@ function render(a){
      <h3>V — EVIDENCIA EN VIDEO SECUENCIAL</h3><div class="galeria" id="gal_vid_${a.id}" data-len="0"></div>
      <h3>VI — EVIDENCIA DE AUDIO AMBIENTAL CONTINUO</h3><div class="galeria" id="gal_aud_${a.id}" data-len="0"></div>
      
-     <h3>VII — FIRMAS CRIPTOGRÁFICAS</h3><div class="mono">ID: ${a.id}<br>SHA‑256: ${a.sha256}</div>
+     <h3>VII — FIRMAS CRIPTOGRÁFICAS</h3><div class="mono">ID: ${a.id}<br>SHA‑256: <span id="sha_${a.id}">${a.sha256}</span></div>
      <div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>ARGENTINA</div><div>FIRMA PERITO</div></div>`;
      
      setTimeout(()=>{
         if(!document.getElementById('m_'+a.id) || mapas[a.id] || a.lat === 'Buscando...' || a.lat === 'Desconocida') return;
         try {
-            const mm=L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat||-26.8241,a.lng||-65.2226],16);
+            const mm = L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat||-26.8241,a.lng||-65.2226],16);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
             L.marker([a.lat||-26.8241,a.lng||-65.2226]).addTo(mm);
             mapas[a.id] = mm;
@@ -1340,6 +1351,15 @@ function render(a){
      document.getElementById(`coords_${a.id}`).innerText = `${a.lat||'—'} , ${a.lng||'—'}`;
      document.getElementById(`prec_${a.id}`).innerText = `${a.precision||'—'}m`;
      
+     const elRed = document.getElementById(`red_${a.id}`);
+     if(elRed) elRed.innerText = `${a.red||'—'} (${a.signal||'—'})`;
+     
+     const elBat = document.getElementById(`bat_${a.id}`);
+     if(elBat) elBat.innerText = `${a.bateria||'—'}`;
+     
+     const elSha = document.getElementById(`sha_${a.id}`);
+     if(elSha) elSha.innerText = `${a.sha256}`;
+     
      if (a.lat !== 'Buscando...' && a.lat !== 'Desconocida' && mapas[a.id]) {
          mapas[a.id].setView([a.lat, a.lng]);
          mapas[a.id].eachLayer((layer) => {
@@ -1348,7 +1368,7 @@ function render(a){
          L.marker([a.lat, a.lng]).addTo(mapas[a.id]);
      } else if (a.lat !== 'Buscando...' && a.lat !== 'Desconocida' && !mapas[a.id]) {
          try {
-            const mm=L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat,a.lng],16);
+            const mm = L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat,a.lng],16);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
             L.marker([a.lat,a.lng]).addTo(mm);
             mapas[a.id] = mm;
