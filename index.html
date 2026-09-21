@@ -285,8 +285,10 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
   <div class="campo"><label>NOMBRE Y APELLIDO</label><input id="rN"></div>
   <div class="campo"><label>IMEI 15 DÍGITOS</label><input id="rI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
   <div class="campo"><label>TU NÚMERO DE WHATSAPP</label><input id="rW" inputmode="tel" placeholder="Para validar registro único"></div>
-  <div class="campo"><label>CONTACTO FAMILIAR 1</label><input id="cF1" inputmode="tel" placeholder="WhatsApp para alerta SOS"></div>
-  <div class="campo"><label>CONTACTO FAMILIAR 2</label><input id="cF2" inputmode="tel" placeholder="WhatsApp para alerta SOS"></div>
+  
+  <div class="campo"><label>CONTACTO FAMILIAR 1 (WHATSAPP)</label><input id="cF1" inputmode="tel" placeholder="WhatsApp para alerta SOS"></div>
+  <div class="campo"><label>CONTACTO FAMILIAR 2 (EMAIL)</label><input id="cE1" type="email" placeholder="Email de respaldo para emergencia"></div>
+  
   <button class="btn" onclick="alta()">✦ OBTENER 15 DÍAS GRATIS ✦</button>
  </div>
 </section>
@@ -519,13 +521,17 @@ async function pedirPermisosGlobalesYGPS() {
     );
 }
 
-const ir = id => {
+const ir = async id => {
     document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
     document.getElementById(id).classList.add('activa');
     
     if(id === 'panel') {
+        await cargarActasLocales();
         const c = document.getElementById('alertas');
-        let actasFiltradas = listaActas.filter(a => a.imei === localStorage.getItem('imei'));
+        const currentImei = localStorage.getItem('imei');
+        
+        let actasFiltradas = listaActas.filter(a => !currentImei || a.imei === currentImei || a.imei === 'SIN_IMEI');
+        
         if (actasFiltradas.length > 0) {
             c.innerHTML = ''; 
             actasFiltradas.forEach(render);
@@ -656,8 +662,8 @@ async function alta(){
     const i = IM(document.getElementById('rI').value);
     const w = document.getElementById('rW').value.trim();
     const c1 = document.getElementById('cF1').value.trim();
-    const c2 = document.getElementById('cF2').value.trim();
-    const c = [c1, c2].filter(Boolean);
+    const cEmail = document.getElementById('cE1').value.trim();
+    const c = [c1].filter(Boolean); 
     
     if(!n || !/^\d{15}$/.test(i) || !w) return alert('Requiere Nombre completo, IMEI válido de 15 dígitos y tu número de WhatsApp.');
     
@@ -704,6 +710,11 @@ async function alta(){
         localStorage.setItem('mi_wa', waLimpio);
         localStorage.setItem('contactos', JSON.stringify(c));
         localStorage.setItem('contactos_' + i, JSON.stringify(c)); 
+        
+        if(cEmail) {
+            localStorage.setItem('contacto_email', cEmail);
+            localStorage.setItem('contacto_email_' + i, cEmail);
+        }
         
         document.getElementById('pI').value = i;
         if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = i;
@@ -788,7 +799,9 @@ async function validar(){
     const k = LK(document.getElementById('lkI').value);
     if(!k) return;
 
+    await cargarActasLocales(); 
     const llaveLocal = localStorage.getItem('llave_maestra');
+    
     if (llaveLocal && k === LK(llaveLocal)) {
         localStorage.setItem('ok', '1');
         ir('panel');
@@ -816,6 +829,11 @@ async function validar(){
             localStorage.setItem('imei', sub.imei);
             localStorage.setItem('llave_maestra', sub.llave_acceso); 
             localStorage.setItem('ok', '1');
+
+            listaActas.forEach(a => {
+                if(a.imei === 'SIN_IMEI') a.imei = sub.imei;
+            });
+            await guardarActas();
 
             let cRespaldo = localStorage.getItem('contactos_' + sub.imei) || localStorage.getItem('contactos');
             if (cRespaldo) {
@@ -923,14 +941,12 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ *SISTEMA SEGURO* \nDesactivado a salvo.`;
     }
 
-    // FIX: URL corregida para evitar errores de subdominio y encolado de envíos (Rate Limit de API)
     let url = `https://api.green-api.com/waInstance${WA_INSTANCE}/sendMessage/${WA_TOKEN}`;
 
     for (let i = 0; i < contactos.length; i++) {
         if(!contactos[i]) continue;
         let cel = formatArg(contactos[i]);
         
-        // Retraso de medio segundo por contacto para evitar que WhatsApp bloquee por ráfaga de mensajes simultáneos
         setTimeout(() => {
             fetch(url, {
                 method: 'POST',
@@ -939,6 +955,37 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
             }).catch(err => console.error("Error Green API:", err));
         }, i * 500);
     }
+}
+
+// FIX: NUEVA FUNCIÓN DE ENVÍO DE EMAIL 100% SEGURA POR BACKEND (VERCEL)
+function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
+    if (!email) return;
+
+    let asunto = "";
+    let msg = "";
+
+    if (tipo === 'alerta') {
+        asunto = `🚨 ALERTA S.O.S - ${nombre} activó el botón antipánico`;
+        msg = `🚨 ALERTA S.O.S - C4 🚨\n\nUsuaria: ${nombre || 'Usuaria'} activó el botón antipánico.\nID de Acta: ${id}\n\nEl sistema está recopilando evidencia (GPS, Audio, Video).`;
+    } else if (tipo === 'gps') {
+        asunto = `📍 GPS S.O.S - Ubicación de ${nombre}`;
+        msg = `📍 GPS S.O.S 📍\n\nUbicación actual:\nhttps://maps.google.com/?q=${la},${ln}\n\nID de Acta: ${id}`;
+    } else if (tipo === 'seguro') {
+        asunto = `✅ SISTEMA SEGURO - ${nombre}`;
+        msg = `✅ SISTEMA SEGURO \n\nLa usuaria desactivó la alarma a salvo.`;
+    }
+
+    fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            email: email,
+            asunto: asunto,
+            msg: msg
+        })
+    }).catch(err => console.error("Error enviando email:", err));
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
@@ -1081,6 +1128,8 @@ async function disparoSOS(){
      contactos = [];
  }
 
+ const emailDestino = localStorage.getItem('contacto_email') || localStorage.getItem('contacto_email_' + imei) || '';
+
  const id = 'P4-' + Date.now() + '-' + Math.random().toString(16).slice(2,8).toUpperCase();
  aid = id;
  
@@ -1107,6 +1156,7 @@ async function disparoSOS(){
 
  // TAREAS ASÍNCRONAS PARA NO TRABAR LA APLICACIÓN
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
+ enviarEmailOculto(emailDestino, nombre, null, null, id, 'alerta');
 
  if (imei && imei !== 'SIN_IMEI') {
      authTrucha(imei).then(ok => {
@@ -1151,19 +1201,21 @@ async function disparoSOS(){
     guardarActas();
     if (acta.imei === currentImei) render(acta); 
     enviarWhatsAppOculto(contactos, nombre, acta.lat, acta.lng, id, 'gps');
+    enviarEmailOculto(emailDestino, nombre, acta.lat, acta.lng, id, 'gps');
  }, () => { 
     acta.lat = 'Desconocida'; acta.lng = 'Desconocida (Señal bloqueada)';
     guardarActas();
     if (acta.imei === currentImei) render(acta); 
     enviarWhatsAppOculto(contactos, nombre, 'Desconocida', 'Desconocida', id, 'gps');
+    enviarEmailOculto(emailDestino, nombre, 'Desconocida', 'Desconocida', id, 'gps');
  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
 }
 
-// FIX SENSOR: SACUDIDAS CON SENSIBILIDAD OPTIMIZADA A 5000
+// FIX SENSOR: SACUDIDAS CON SENSIBILIDAD OPTIMIZADA A 4500
 let sh_last_x = 0, sh_last_y = 0, sh_last_z = 0;
 let sh_lastUpdate = 0;
 let sh_initialized = false;
-const SHAKE_THRESHOLD = 5000;
+const SHAKE_THRESHOLD = 4500;
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
@@ -1229,12 +1281,10 @@ async function pararConLlave(){
     const llaveLocal = localStorage.getItem('llave_maestra');
     let esValida = false;
 
-    // Validación Local (Offline - Anti Arrebato Inmediato)
     if(llaveLocal && llaveLimpia === LK(llaveLocal)) {
         esValida = true;
     }
 
-    // Validación de respaldo Online
     if(!esValida) {
         try {
             const imeiActivo = localStorage.getItem('imei');
@@ -1268,7 +1318,10 @@ async function pararConLlave(){
         contactos = JSON.parse(localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imeiActivo) || '[]');
     } catch(e) {}
 
+    const emailDestino = localStorage.getItem('contacto_email') || localStorage.getItem('contacto_email_' + imeiActivo) || '';
+
     enviarWhatsAppOculto(contactos, nombre, null, null, null, 'seguro');
+    enviarEmailOculto(emailDestino, nombre, null, null, null, 'seguro');
     ir('inicio');
 }
 
@@ -1292,7 +1345,6 @@ async function salir(){
     }
 }
 
-// FIX: Función de Renderizado Inteligente para DOM / Mapa / Asíncronos
 function render(a){
  const c = document.getElementById('alertas');
  let d = document.getElementById('a_'+a.id);
