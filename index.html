@@ -362,8 +362,8 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 
 <section id="sos" class="vista">
- <!-- FIX BOTÓN ATRÁS: Función segura que no se traba ni te deja varado -->
- <button class="btn volver" onclick="if(typeof sosActivo !== 'undefined' && sosActivo){ pararConLlave(); }else{ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa')); document.getElementById('inicio').classList.add('activa'); }">⟵ ATRÁS</button>
+ <!-- FIX BOTÓN ATRÁS: Ahora es 100% seguro y limpio -->
+ <button class="btn volver" onclick="if(sosActivo){pararConLlave();}else{ir('inicio');}">⟵ ATRÁS</button>
  <h2 class="tit">PROTECCIÓN ACTIVA</h2>
  <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
  
