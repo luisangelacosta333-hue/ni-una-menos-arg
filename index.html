@@ -173,7 +173,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
     box-shadow: var(--luzFuerte);
     cursor: pointer;
     z-index: 9999999;
-    display: none;
+    display: flex; /* CAMBIADO PARA QUE SIEMPRE ESTÉ VISIBLE */
     align-items: center;
     gap: 8px;
     text-shadow: 0 1px 2px rgba(0,0,0,0.5);
@@ -481,30 +481,16 @@ async function supaQuery(method, endpoint, body = null) {
     return res.json();
 }
 
-let deferredPrompt;
+// =========================================================================
+// 🔥 NUEVA LÓGICA DE BOTÓN PARA FORZAR DESCARGA DEL APK REAL
+// =========================================================================
 const installBtn = document.getElementById('btn-install-pwa');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if(installBtn) installBtn.style.display = 'flex';
-});
-
 if(installBtn) {
-    installBtn.addEventListener('click', async () => {
-        if (deferredPrompt) {
-            installBtn.style.display = 'none';
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            deferredPrompt = null;
-        }
+    installBtn.addEventListener('click', () => {
+        // Al tocar el botón "Instalar", descarga el archivo de verdad.
+        window.location.href = 'https://niunamenosarg.com/app.apk';
     });
 }
-
-window.addEventListener('appinstalled', () => {
-    if(installBtn) installBtn.style.display = 'none';
-    alert("¡Ni Una Menos instalada correctamente!");
-});
 
 let mapas = {};
 
@@ -514,7 +500,6 @@ let mapas = {};
 async function pedirPermisosGlobalesYGPS() {
     alert("⚠️ CONFIGURACIÓN DE SEGURIDAD ⚠️\nA continuación el sistema te pedirá acceso al GPS, Cámara y Micrófono. Es OBLIGATORIO que pongas 'Permitir todo el tiempo' para que funcione ante un robo o emergencia.");
     
-    // 1. Forzamos los popups nativos de Android si está instalado como APK
     if (window.cordova && cordova.plugins && cordova.plugins.permissions) {
         const p = cordova.plugins.permissions;
         const permisosNativos = [
@@ -530,7 +515,6 @@ async function pedirPermisosGlobalesYGPS() {
         });
     }
 
-    // 2. Activación para Web / Acelerómetro
     if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
         DeviceMotionEvent.requestPermission().catch(()=>{});
     }
@@ -584,9 +568,6 @@ function leerVoz(){
  speechSynthesis.speak(u);
 }
 
-// =========================================================================
-// 🔥 FIX WAKE LOCK + AUDIO INVISIBLE + VISIBILITY (Segundo Plano Real)
-// =========================================================================
 let wakeLockObj = null;
 let audioInvisible = null;
 let cooldownRobo = false; 
