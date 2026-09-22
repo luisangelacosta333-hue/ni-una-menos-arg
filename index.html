@@ -115,6 +115,10 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 
 .estadoSOS{display:none;padding:20px;border-radius:16px;background:#FFF3F5;border:1px solid #8B0000;color:#8B0000;text-align:center;font-weight:600;font-size:14px;line-height:1.6}
 
+/* ANIMACIÓN PARA EL RASTREADOR EN EL MAPA */
+.ruta-animada { stroke-dasharray: 12, 12; animation: dash 1s linear infinite; }
+@keyframes dash { to { stroke-dashoffset: -24; } }
+
 .acta{background:#FFFFFF;color:#333;padding:25px;font-family:'Cormorant Garamond',serif;font-weight:600;position:relative;box-shadow:0 15px 50px rgba(0,0,0,.08);border: 1px solid #EEE;border-radius:8px;margin-bottom:20px;transition: transform 0.3s; page-break-inside: avoid; width:100%; box-sizing:border-box;}
 .acta:hover{transform: translateY(-2px); box-shadow:0 20px 60px rgba(0,0,0,.12);}
 .acta::before{content:"NI UNA MENOS ARGENTINA · PODER JUDICIAL";position:absolute;inset:auto 0;top:42%;text-align:center;font-family:'Cinzel',serif;font-weight:900;font-size:45px;letter-spacing:10px;color:rgba(90,62,0,.04);transform:rotate(-18deg);pointer-events:none;z-index:0;}
@@ -244,6 +248,13 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
    <button class="btn rubi" onclick="irSOS()">✦ INGRESAR AL BOTÓN ANTIPÁNICO ✦</button>
   </div>
  </div>
+ 
+ <!-- INFO CLAVE SOBRE MODO SIGILO -->
+ <div style="background:#FFF3F5; border:1px solid #8B0000; padding:16px; border-radius:12px; margin-bottom:22px; text-align:left; box-shadow:var(--luz);">
+    <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">⚠️ REGLA DE ORO: MODO SIGILO</b>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Si vas a caminar por la calle o guardar el celular, <b>NO bloquees la pantalla con el botón físico</b>. Tocá el botón "MODO SIGILO" al final de esta página. La pantalla se apagará para no gastar batería, pero el sistema quedará 100% despierto en primer plano para detectar impactos al instante.</span>
+ </div>
+
  <div class="caja"><h3>✦ 5 PASOS PARA ACTIVAR ✦</h3>
   <div class="paso"><div class="n">I</div><div><b>NOMBRE Y APELLIDO</b><span>Datos de la persona a proteger</span></div></div>
   <div class="paso"><div class="n">II</div><div><b>IMEI *#06#</b><span>15 dígitos = Identidad legal del equipo</span></div></div>
@@ -397,7 +408,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 
-// FIX: Forzamos la hora a 24 horas (sin PM/AM)
 const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digit',day:'2-digit'};
 const oH={timeZone:'America/Argentina/Buenos_Aires',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false};
 
@@ -532,7 +542,6 @@ const ir = async id => {
         const c = document.getElementById('alertas');
         const currentImei = localStorage.getItem('imei');
         
-        // FIX ACTAS ZOMBIES: Renderiza solo las del dispositivo actual, ordenadas
         let actasFiltradas = listaActas.filter(a => !currentImei || a.imei === currentImei || a.imei === 'SIN_IMEI');
         
         if (actasFiltradas.length > 0) {
@@ -554,28 +563,49 @@ const ir = async id => {
 
 const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
 
+// ACTUALIZACIÓN LECTURA DE VOZ PARA ENSEÑAR MODO SIGILO
 function leerVoz(){
  speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, o automáticamente ante un impacto o caída fuerte. Además, en caso de un arrebato o robo donde no puedas tocar tu teléfono, podés activar el S.O.S a distancia ingresando tu Llave Maestra desde cualquier otro dispositivo en nuestra sección de recuperación judicial. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. En segundo plano y de manera indetectable, el sistema asegura tu evidencia grabando audio de manera continua, tomando múltiples fotografías con ambas cámaras, y rastreando tu ubicación por GPS segundo a segundo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema cien por ciento blindado y privado. Además, si no realizás una denuncia oficial, a las setenta y dos horas se elimina y destruye automáticamente toda la evidencia para garantizar tu privacidad total.`);
+ const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, o automáticamente ante un impacto o caída fuerte. Además, en caso de un arrebato o robo donde no puedas tocar tu teléfono, podés activar el S.O.S a distancia ingresando tu Llave Maestra desde cualquier otro dispositivo en nuestra sección de recuperación judicial. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. Recuerde la Regla de Oro: si va a caminar por la calle o guardar el celular, no bloquee la pantalla con el botón de su teléfono. Utilice siempre el botón de Modo Sigilo de la aplicación. Esto apagará falsamente su pantalla para no gastar batería, pero mantendrá al sistema cien por ciento despierto en primer plano para detectar el robo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema blindado y privado.`);
  u.lang='es-AR';u.rate=.92;u.pitch=1;u.volume=1;
  speechSynthesis.speak(u);
 }
 
-const sigilo = () => {
-    try { document.documentElement.requestFullscreen(); } catch(e){}
+// FIX WAKE LOCK: EVITA QUE LA PANTALLA Y EL SENSOR SE DUERMAN EN MODO SIGILO
+let wakeLockObj = null;
+const sigilo = async () => {
+    alert("⚠️ MODO SIGILO ARMADO ⚠️\nLa pantalla se pondrá totalmente negra y parecerá apagada, pero el sistema quedará 100% despierto escuchando el sensor de impacto.\n\nTocá la pantalla 3 VECES RÁPIDAS para salir de este modo.");
+    
+    try { 
+        document.documentElement.requestFullscreen(); 
+    } catch(e){}
+    
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLockObj = await navigator.wakeLock.request('screen');
+        }
+    } catch (err) {
+        console.log("Wake Lock falló", err);
+    }
+
     let s = document.createElement('div');
     s.id = 'pantalla-sigilo';
     s.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999999;display:flex;align-items:center;justify-content:center;';
     document.body.appendChild(s);
+    
     let t = 0;
     s.addEventListener('touchstart', () => {
-        t++; setTimeout(() => t=0, 1000);
+        t++; 
+        setTimeout(() => t=0, 1000);
         if(t >= 3) {
-            try{ document.exitFullscreen(); }catch(e){}
+            try { document.exitFullscreen(); } catch(e){}
+            if (wakeLockObj !== null) {
+                wakeLockObj.release();
+                wakeLockObj = null;
+            }
             s.remove();
         }
     });
-    alert("⚠️ MODO SIGILO ACTIVADO ⚠️\nLa pantalla se pondrá totalmente negra. Tocá la pantalla 3 VECES RÁPIDAS para salir.");
 };
 
 async function sha256(message) {
@@ -646,7 +676,6 @@ async function borrarActa(id) {
     let tx = db.transaction('actas', 'readwrite');
     tx.objectStore('actas').delete(id);
     
-    // Si se eliminó la última acta del dispositivo, muestra "en calma"
     if(listaActas.filter(a => a.imei === localStorage.getItem('imei') || a.imei === 'SIN_IMEI').length === 0) {
         document.getElementById('alertas').innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:\'Cormorant Garamond\',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div>';
     }
@@ -962,7 +991,6 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     }
 }
 
-// FIX: Ruta absoluta para asegurar conexión con Vercel
 function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
     if (!email) return;
 
@@ -995,7 +1023,6 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
-// FIX: Reducción a 640x480 para fotos más livianas
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
         const v = document.createElement('video');
@@ -1008,7 +1035,7 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
                 cv.width = 640; 
                 cv.height = 480;
                 cv.getContext('2d').drawImage(v, 0, 0, cv.width, cv.height);
-                let b64Img = cv.toDataURL('image/jpeg', 0.5); // Mayor compresión para no saturar DB
+                let b64Img = cv.toDataURL('image/jpeg', 0.5); 
                 if(acta) {
                     if(!acta.imagenes) acta.imagenes = [];
                     acta.imagenes.push({url: b64Img, camara: tipo, sha256: 'HASH-'+Date.now()});
@@ -1023,11 +1050,9 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
     });
 }
 
-// FIX: Aumento de grabación a 30 segundos (30000ms) y Kill Switch antibugs
 async function loopEvidencia(acta) {
     if(!sosActivo || !acta) return;
     
-    // KILL SWITCH: Evita revivir actas borradas desde la interfaz
     if(!listaActas.find(a => a.id === acta.id)) return;
 
     if(Date.now() - (acta.sello_ms || Date.now()) > 86400000) { 
@@ -1041,16 +1066,7 @@ async function loopEvidencia(acta) {
         return; 
     }
 
-    navigator.geolocation.getCurrentPosition(p => {
-        if(!listaActas.find(a => a.id === acta.id)) return;
-        acta.lat = p.coords.latitude;
-        acta.lng = p.coords.longitude;
-        acta.precision = Math.round(p.coords.accuracy);
-        guardarActas();
-        if (acta.imei === localStorage.getItem('imei') || acta.imei === 'SIN_IMEI') render(acta); 
-    }, () => {}, { enableHighAccuracy: true, maximumAge: 0 });
-
-    // 1. CAPTURA FOTOGRÁFICA FRONTAL Y TRASERA (Baja resolución)
+    // 1. CAPTURA FOTOGRÁFICA FRONTAL Y TRASERA
     try {
         let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } });
         if(!listaActas.find(a => a.id === acta.id)) { vFront.getTracks().forEach(t=>t.stop()); return; }
@@ -1069,7 +1085,7 @@ async function loopEvidencia(acta) {
 
     if(!sosActivo || !listaActas.find(a => a.id === acta.id)) return;
 
-    // 2. VIDEO SECUENCIAL 30 SEGUNDOS (Resolución ligera)
+    // 2. VIDEO SECUENCIAL 30 SEGUNDOS
     try {
         const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
         const videoRecorder = new MediaRecorder(videoStream);
@@ -1130,7 +1146,6 @@ async function disparoSOS(){
  }
 
  speechSynthesis.cancel();
- try{if('wakeLock'in navigator)await navigator.wakeLock.request('screen')}catch{}
  
  const imei = localStorage.getItem('imei') || 'SIN_IMEI';
  const nombre = localStorage.getItem('nombre') || 'Usuaria';
@@ -1144,18 +1159,16 @@ async function disparoSOS(){
  }
 
  const emailDestino = localStorage.getItem('contacto_email') || localStorage.getItem('contacto_email_' + imei) || '';
-
  const id = 'P4-' + Date.now() + '-' + Math.random().toString(16).slice(2,8).toUpperCase();
  aid = id;
  
- // CREACIÓN E INYECCIÓN INSTANTÁNEA DEL ACTA
+ // ACTA INICIAL CON RUTA VACÍA PARA EL RASTREADOR
  let acta = {
      id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
-     // FIX HORA: Forzado formato de 24 horas
      hora: new Date().toLocaleTimeString('es-AR', {hour12: false}), fecha: new Date().toLocaleDateString('es-AR'),
      sello_ms: Date.now(),
      audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: 'Calculando...', hash_judicial: 'Calculando...', eventos: [],
-     numero_acta: id,
+     numero_acta: id, ruta: [], // <-- AQUÍ SE GUARDARÁ EL RASTRO GPS
      bateria: 'Desc.', cargando: 'Desc.', red: 'Desc.', signal: 'No disponible', userAgent: navigator.userAgent, ram: 'Desc.', cores: 'Desc.', pantalla: `${screen.width}x${screen.height}`
  };
  listaActas.push(acta);
@@ -1169,10 +1182,6 @@ async function disparoSOS(){
 
  // INICIAR GRABACIÓN EN SEGUNDO PLANO
  loopEvidencia(acta);
-
- // TAREAS ASÍNCRONAS PARA NO TRABAR LA APLICACIÓN
- enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
- enviarEmailOculto(emailDestino, nombre, null, null, id, 'alerta');
 
  if (imei && imei !== 'SIN_IMEI') {
      authTrucha(imei).then(ok => {
@@ -1212,27 +1221,47 @@ async function disparoSOS(){
 
  guardarActas();
 
- // SEGUIMIENTO GPS
- navigator.geolocation.getCurrentPosition(p => {
-    if(!listaActas.find(a => a.id === acta.id)) return;
-    acta.lat = p.coords.latitude;
-    acta.lng = p.coords.longitude;
-    acta.precision = Math.round(p.coords.accuracy);
-    guardarActas();
-    if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta); 
-    enviarWhatsAppOculto(contactos, nombre, acta.lat, acta.lng, id, 'gps');
-    enviarEmailOculto(emailDestino, nombre, acta.lat, acta.lng, id, 'gps');
- }, () => { 
-    if(!listaActas.find(a => a.id === acta.id)) return;
-    acta.lat = 'Desconocida'; acta.lng = 'Desconocida (Señal bloqueada)';
-    guardarActas();
-    if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta); 
-    enviarWhatsAppOculto(contactos, nombre, 'Desconocida', 'Desconocida', id, 'gps');
-    enviarEmailOculto(emailDestino, nombre, 'Desconocida', 'Desconocida', id, 'gps');
- }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+ // -------------------------------------------------------------
+ // EL RASTREADOR: DIBUJARÁ LA RUTA EN EL MAPA SEGUNDO A SEGUNDO
+ // -------------------------------------------------------------
+ let esPrimerGPS = true;
+ if (navigator.geolocation) {
+     gps = navigator.geolocation.watchPosition(p => {
+        if(!listaActas.find(a => a.id === acta.id)) {
+            navigator.geolocation.clearWatch(gps);
+            return;
+        }
+        
+        acta.lat = p.coords.latitude;
+        acta.lng = p.coords.longitude;
+        acta.precision = Math.round(p.coords.accuracy);
+        
+        // Guardamos las coordenadas para armar la línea en el mapa
+        if (!acta.ruta) acta.ruta = [];
+        acta.ruta.push([acta.lat, acta.lng]);
+        
+        guardarActas();
+        if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta); 
+        
+        // Enviamos la alerta una vez que tenemos la primera ubicación
+        if (esPrimerGPS) {
+            esPrimerGPS = false;
+            enviarWhatsAppOculto(contactos, nombre, acta.lat, acta.lng, id, 'gps');
+            enviarEmailOculto(emailDestino, nombre, acta.lat, acta.lng, id, 'gps');
+        }
+     }, () => { 
+        if(esPrimerGPS) {
+           esPrimerGPS = false;
+           acta.lat = 'Desconocida'; acta.lng = 'Desconocida (Señal bloqueada)';
+           guardarActas();
+           if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta); 
+           enviarWhatsAppOculto(contactos, nombre, 'Desconocida', 'Desconocida', id, 'gps');
+           enviarEmailOculto(emailDestino, nombre, 'Desconocida', 'Desconocida', id, 'gps');
+        }
+     }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+ }
 }
 
-// FIX SENSOR: SACUDIDAS CON SENSIBILIDAD OPTIMIZADA A 4500
 let sh_last_x = 0, sh_last_y = 0, sh_last_z = 0;
 let sh_lastUpdate = 0;
 let sh_initialized = false;
@@ -1289,7 +1318,6 @@ function activarAlarmaRobo() {
 
 const parar = () => {
     if(gps) navigator.geolocation.clearWatch(gps);
-    if(la) clearInterval(la); if(lv) clearInterval(lv); if(l10) clearInterval(l10);
     document.getElementById('st').style.display='none';
     document.body.style.backgroundColor = '#FFFFFF';
 };
@@ -1416,6 +1444,12 @@ function render(a){
         try {
             const mm = L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat||-26.8241,a.lng||-65.2226],16);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
+            
+            // DIBUJAR RASTRO INICIAL SI YA EXISTE
+            if (a.ruta && a.ruta.length > 1) {
+                L.polyline(a.ruta, { color: '#8B0000', weight: 5, opacity: 0.8, className: 'ruta-animada' }).addTo(mm);
+            }
+            
             L.marker([a.lat||-26.8241,a.lng||-65.2226]).addTo(mm);
             mapas[a.id] = mm;
         } catch(e){}
@@ -1433,16 +1467,28 @@ function render(a){
      const elSha = document.getElementById(`sha_${a.id}`);
      if(elSha) elSha.innerText = `${a.sha256}`;
      
+     // ACTUALIZAR MAPA Y DIBUJAR RASTRO
      if (a.lat !== 'Buscando...' && a.lat !== 'Desconocida' && mapas[a.id]) {
          mapas[a.id].setView([a.lat, a.lng]);
+         
+         // Limpiar marcadores y líneas viejas
          mapas[a.id].eachLayer((layer) => {
-             if (layer instanceof L.Marker) mapas[a.id].removeLayer(layer);
+             if (layer instanceof L.Marker || layer instanceof L.Polyline) mapas[a.id].removeLayer(layer);
          });
+         
+         // Trazar línea animada del recorrido
+         if (a.ruta && a.ruta.length > 1) {
+             L.polyline(a.ruta, { color: '#8B0000', weight: 5, opacity: 0.8, className: 'ruta-animada' }).addTo(mapas[a.id]);
+         }
+         
          L.marker([a.lat, a.lng]).addTo(mapas[a.id]);
      } else if (a.lat !== 'Buscando...' && a.lat !== 'Desconocida' && !mapas[a.id]) {
          try {
             const mm = L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat,a.lng],16);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
+            if (a.ruta && a.ruta.length > 1) {
+                L.polyline(a.ruta, { color: '#8B0000', weight: 5, opacity: 0.8, className: 'ruta-animada' }).addTo(mm);
+            }
             L.marker([a.lat,a.lng]).addTo(mm);
             mapas[a.id] = mm;
         } catch(e){}
