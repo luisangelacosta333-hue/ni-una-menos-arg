@@ -288,7 +288,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <button class="btn" onclick="ir('registro')">✦ ACTIVAR PROTECCIÓN ✦</button>
  <button class="btn blanco" onclick="ir('pago')" style="margin-top:12px;">✦ PAGO / PLANES ✦</button>
  <button class="btn blanco" onclick="ir('recuperar')" style="margin-top:12px;">✦ RECUPERAR · S.O.S. REMOTO ✦</button>
- <button class="btn blanco" onclick="sigilo()" style="margin-top:12px;">✦ MODO SIGILO ✦</button>
+ <button class="btn blanco" onclick="window.sigilo()" style="margin-top:12px;">✦ MODO SIGILO ✦</button>
 </section>
 
 <section id="registro" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER</button><h2 class="tit">CARGA OFICIAL</h2>
@@ -362,7 +362,8 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 
 <section id="sos" class="vista">
- <button class="btn volver" onclick="retrocederDeSOS()">⟵ ATRÁS</button>
+ <!-- FIX BOTÓN ATRÁS SEGURO Y PRIORITARIO -->
+ <button class="btn volver" onclick="if(window.sosActivo){window.pararConLlave();}else{window.ir('inicio');}" style="position:relative; z-index:9999;">⟵ ATRÁS</button>
  <h2 class="tit">PROTECCIÓN ACTIVA</h2>
  <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
  
@@ -535,7 +536,8 @@ async function pedirPermisosGlobalesYGPS() {
     );
 }
 
-const ir = async id => {
+// DECLARACIÓN GLOBAL DE FUNCIONES DE NAVEGACIÓN
+window.ir = async id => {
     document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
     document.getElementById(id).classList.add('activa');
     
@@ -563,7 +565,7 @@ const ir = async id => {
     }
 };
 
-const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
+const irSOS=()=>localStorage.getItem('ok')==='1'?window.ir('sos'):window.ir('pago');
 
 function leerVoz(){
  speechSynthesis.cancel();
@@ -572,16 +574,18 @@ function leerVoz(){
  speechSynthesis.speak(u);
 }
 
-// FIX WAKE LOCK + AUDIO INVISIBLE: EVITA QUE LA PANTALLA Y EL SENSOR SE DUERMAN EN MODO SIGILO INCLUSO EN FACEBOOK
+// =========================================================================
+// 🔥 FIX WAKE LOCK + AUDIO INVISIBLE (Mantiene el sensor vivo en background)
+// =========================================================================
 let wakeLockObj = null;
 let audioInvisible = null;
+
 window.sigilo = async () => {
-    alert("⚠️ MODO SIGILO ARMADO ⚠️\nLa pantalla se pondrá negra. Podés usar Facebook o WhatsApp, el sistema seguirá activo de fondo escuchando sacudones.\n\nTocá la pantalla negra 3 VECES RÁPIDAS para salir.");
+    alert("⚠️ MODO SIGILO ARMADO ⚠️\nLa pantalla se pondrá negra. El sistema intentará seguir escuchando en segundo plano, por lo que podés usar otras apps.\n\nTocá la pantalla negra 3 VECES RÁPIDAS para salir de este modo.");
     
-    try { 
-        document.documentElement.requestFullscreen(); 
-    } catch(e){}
+    try { document.documentElement.requestFullscreen(); } catch(e){}
     
+    // 1. Evita que la pantalla física se apague en primer plano
     try {
         if ('wakeLock' in navigator) {
             wakeLockObj = await navigator.wakeLock.request('screen');
@@ -590,11 +594,12 @@ window.sigilo = async () => {
         console.log("Wake Lock falló", err);
     }
 
-    // HACK AUDIO SILENCIOSO PARA SEGUNDO PLANO
+    // 2. EL TRUCO PARA SEGUNDO PLANO: Audio en silencio infinito
+    // Esto engaña al navegador haciéndole creer que estás escuchando algo.
     if (!audioInvisible) {
         audioInvisible = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
         audioInvisible.loop = true;
-        audioInvisible.play().catch(e => console.log("Se requiere tocar la pantalla antes de iniciar el audio"));
+        audioInvisible.play().catch(e => console.log("Se requiere interacción para el audio"));
     }
 
     let s = document.createElement('div');
@@ -608,14 +613,8 @@ window.sigilo = async () => {
         setTimeout(() => t=0, 1000);
         if(t >= 3) {
             try { document.exitFullscreen(); } catch(e){}
-            if (wakeLockObj !== null) {
-                wakeLockObj.release();
-                wakeLockObj = null;
-            }
-            if (audioInvisible) {
-                audioInvisible.pause();
-                audioInvisible = null;
-            }
+            if (wakeLockObj !== null) { wakeLockObj.release(); wakeLockObj = null; }
+            if (audioInvisible) { audioInvisible.pause(); audioInvisible = null; }
             s.remove();
         }
     });
@@ -694,23 +693,24 @@ async function borrarActa(id) {
     }
 }
 
-let sosActivo = false;
+window.sosActivo = false;
 
-function toggleSOS() {
-    if(sosActivo) {
-        pararConLlave();
+window.toggleSOS = function() {
+    if(window.sosActivo) {
+        window.pararConLlave();
     } else {
         disparoSOS();
     }
 }
 
-function retrocederDeSOS() {
-    if(sosActivo) {
-        pararConLlave();
+// FIX: Función global de retroceso garantizado
+window.retrocederDeSOS = function() {
+    if(window.sosActivo) {
+        window.pararConLlave();
     } else {
-        ir('inicio');
+        window.ir('inicio');
     }
-}
+};
 
 async function alta(){
     const n = document.getElementById('rN').value.trim();
@@ -741,7 +741,7 @@ async function alta(){
             document.getElementById('pI').value = i;
             if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = i;
             localStorage.setItem('imei', i);
-            ir('pago');
+            window.ir('pago');
             return;
         }
 
@@ -778,7 +778,7 @@ async function alta(){
         localStorage.setItem('llave_maestra', k); 
         
         pedirPermisosGlobalesYGPS(); 
-        ir('llave');
+        window.ir('llave');
     } catch(err) { 
         alert('Error conectando a la base de datos.\nSi el error persiste, revisá las políticas RLS en Supabase.'); 
     }
@@ -811,7 +811,7 @@ async function pagar(monto, plan) {
         localStorage.setItem('llave_maestra', k); 
         
         pedirPermisosGlobalesYGPS();
-        ir('llave');
+        window.ir('llave');
     } catch(err) { alert('Error al acreditar el pago.'); }
 }
 
@@ -845,7 +845,7 @@ async function procesarPagoIA() {
         localStorage.setItem('imei', i);
         
         alert('✅ PAGO VERIFICADO EXITOSAMENTE POR LA IA. Llave maestra generada.');
-        ir('llave');
+        window.ir('llave');
     };
     reader.readAsDataURL(file);
 }
@@ -859,7 +859,7 @@ async function validar(){
     
     if (llaveLocal && k === LK(llaveLocal)) {
         localStorage.setItem('ok', '1');
-        ir('panel');
+        window.ir('panel');
         return;
     }
 
@@ -878,7 +878,7 @@ async function validar(){
             alert('❌ LLAVE VENCIDA. Debés abonar para renovar el servicio.');
             document.getElementById('pI').value = sub.imei;
             if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = sub.imei;
-            ir('pago');
+            window.ir('pago');
         } else {
             sessionStorage.setItem('k', k);
             localStorage.setItem('imei', sub.imei);
@@ -896,7 +896,7 @@ async function validar(){
             }
 
             alert('✅ LLAVE VÁLIDA. Ingresando al sistema judicial...');
-            ir('panel');
+            window.ir('panel');
         }
     } catch(e) { alert('Error validando la llave. Es posible que el dispositivo no esté registrado.'); }
 }
@@ -929,7 +929,7 @@ async function recuperar(accion) {
             localStorage.setItem('imei', i);
             localStorage.setItem('ok', '1');
             alert('✅ Sistema restaurado con éxito en este dispositivo.');
-            ir('panel');
+            window.ir('panel');
         } else if(accion === 'detonar') {
             if(confirm('⚠️ ¿Estás seguro de activar el S.O.S. a distancia para este dispositivo? Esto enviará la orden a la nube para disparar la alarma.')) {
                 await supaQuery('PATCH', `c4_suscripciones?imei=eq.${i}`, { alarma_remota: true });
@@ -944,12 +944,12 @@ async function recuperar(accion) {
 // COMPROBACIÓN AUTOMÁTICA EN SEGUNDO PLANO DE S.O.S. REMOTO DESDE LA NUBE
 setInterval(async () => {
     const imei = localStorage.getItem('imei');
-    if (imei && localStorage.getItem('ok') === '1' && !sosActivo) {
+    if (imei && localStorage.getItem('ok') === '1' && !window.sosActivo) {
         try {
             if (!currentJWT) await authTrucha(imei);
             const res = await supaQuery('GET', `c4_suscripciones?select=alarma_remota&imei=eq.${imei}`);
             if (res.length > 0 && res[0].alarma_remota === true) {
-                ir('sos');
+                window.ir('sos');
                 disparoSOS();
             }
         } catch(e) {}
@@ -1076,14 +1076,17 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
     });
 }
 
-// FIX CALIDAD VIDEO HD 720p 
+// FIX: Variable global para alternar la cámara de video en cada bucle
+if (typeof window.camaraVideo === 'undefined') window.camaraVideo = 'environment';
+
+// FIX CALIDAD VIDEO HD 720p Y ALTERNANCIA (FRONTAL/TRASERA)
 async function loopEvidencia(acta) {
-    if(!sosActivo || !acta) return;
+    if(!window.sosActivo || !acta) return;
     
     if(!listaActas.find(a => a.id === acta.id)) return;
 
     if(Date.now() - (acta.sello_ms || Date.now()) > 86400000) { 
-        sosActivo = false; 
+        window.sosActivo = false; 
         parar(); 
         let btn = document.getElementById('btnBigSOS');
         if(btn) { btn.innerText = 'S.O.S'; btn.classList.remove('activo'); }
@@ -1101,7 +1104,7 @@ async function loopEvidencia(acta) {
         vFront.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
-    if(!sosActivo) return;
+    if(!window.sosActivo) return;
 
     try {
         let vBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
@@ -1110,12 +1113,15 @@ async function loopEvidencia(acta) {
         vBack.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
-    if(!sosActivo || !listaActas.find(a => a.id === acta.id)) return;
+    if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
 
-    // 2. VIDEO SECUENCIAL 30 SEGUNDOS (AHORA EN HD 720p)
+    // 2. VIDEO SECUENCIAL 30 SEGUNDOS (AHORA EN HD 720p Y ALTERNANDO CÁMARA)
     try {
-        // Mejorada la calidad a 1280x720
-        const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
+        // Alternamos entre 'user' (Frontal) y 'environment' (Trasera)
+        window.camaraVideo = (window.camaraVideo === 'environment') ? 'user' : 'environment';
+        let nombreCamara = (window.camaraVideo === 'user') ? 'FRONTAL' : 'TRASERA';
+        
+        const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: window.camaraVideo, width: { ideal: 1280 }, height: { ideal: 720 } } });
         const videoRecorder = new MediaRecorder(videoStream);
         const videoChunks = [];
         videoRecorder.ondataavailable = e => videoChunks.push(e.data);
@@ -1123,7 +1129,8 @@ async function loopEvidencia(acta) {
             if(!listaActas.find(a => a.id === acta.id)) return;
             const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
             if(!acta.videos) acta.videos = [];
-            acta.videos.push(videoBlob);
+            // Guardamos un objeto con el blob y el nombre de la cámara
+            acta.videos.push({blob: videoBlob, camara: nombreCamara});
             await guardarActas();
             let currentImei = localStorage.getItem('imei');
             if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
@@ -1134,7 +1141,7 @@ async function loopEvidencia(acta) {
         videoStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
-    if(!sosActivo || !listaActas.find(a => a.id === acta.id)) return;
+    if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
 
     // 3. AUDIO AMBIENTAL 30 SEGUNDOS
     try {
@@ -1158,14 +1165,14 @@ async function loopEvidencia(acta) {
     } catch(e) {}
 
     // Volver a iniciar el bucle
-    if(sosActivo && listaActas.find(a => a.id === acta.id)) {
+    if(window.sosActivo && listaActas.find(a => a.id === acta.id)) {
         setTimeout(() => loopEvidencia(acta), 1000); 
     }
 }
 
 async function disparoSOS(){
- if(sosActivo) return; 
- sosActivo = true;
+ if(window.sosActivo) return; 
+ window.sosActivo = true;
  document.getElementById('btnBigSOS').innerText = 'DETENER S.O.S';
  document.getElementById('btnBigSOS').classList.add('activo');
  document.getElementById('st').style.display='block';
@@ -1324,7 +1331,7 @@ window.addEventListener('devicemotion', function (e) {
         let speed = Math.abs(x + y + z - sh_last_x - sh_last_y - sh_last_z) / diffTime * 10000;
         
         if (speed > SHAKE_THRESHOLD) {
-            if (localStorage.getItem('ok') === '1' && !sosActivo) {
+            if (localStorage.getItem('ok') === '1' && !window.sosActivo) {
                 activarAlarmaRobo();
             }
         }
@@ -1335,7 +1342,7 @@ window.addEventListener('devicemotion', function (e) {
 }, true);
 
 function activarAlarmaRobo() {
-    ir('sos');
+    window.ir('sos');
     if ("vibrate" in navigator) navigator.vibrate([500, 200, 500, 200, 1000]);
     let parpadeos = 0;
     let destello = setInterval(() => {
@@ -1355,7 +1362,7 @@ const parar = () => {
     document.body.style.backgroundColor = '#FFFFFF';
 };
 
-async function pararConLlave(){
+window.pararConLlave = async function(){
     const k = prompt('⚠️ SEGURIDAD ANTIRROBO\nPara detener la alerta, ingresá tu Llave Maestra C4:');
     if(!k) return;
     
@@ -1390,7 +1397,7 @@ async function pararConLlave(){
     alert('✅ Código verificado. Desactivando alarma...');
 
     parar(); 
-    sosActivo = false;
+    window.sosActivo = false;
     document.getElementById('btnBigSOS').innerText = 'S.O.S';
     document.getElementById('btnBigSOS').classList.remove('activo');
     
@@ -1404,8 +1411,8 @@ async function pararConLlave(){
 
     enviarWhatsAppOculto(contactos, nombre, null, null, null, 'seguro');
     enviarEmailOculto(emailDestino, nombre, null, null, null, 'seguro');
-    ir('inicio');
-}
+    window.ir('inicio');
+};
 
 async function salir(){
     const k = prompt('⚠️ DESVINCULACIÓN DEL SISTEMA\nIngresá tu Llave Maestra C4:');
@@ -1539,9 +1546,12 @@ function render(a){
     </div>
  `).join('') : '';
 
- const vV = a.videos?.length ? a.videos.map((blob,i)=>{
+ // FIX RENDERIZADO DE VIDEO: Lee la propiedad cámara para saber si es frontal o trasera
+ const vV = a.videos?.length ? a.videos.map((vid,i)=>{
+    let blob = vid.blob ? vid.blob : vid;
+    let cam = vid.camara ? vid.camara : 'TRASERA';
     let url = blob instanceof Blob ? URL.createObjectURL(blob) : (blob.url || '');
-    return `<div class="foto" style="padding:10px; width:100%;"><span style="color:#8B0000; font-weight:800;">🎥 VIDEO SECUENCIAL ${i+1}</span><video controls playsinline preload="metadata" src="${url}" style="width:100%; border-radius:8px;"></video></div>`;
+    return `<div class="foto" style="padding:10px; width:100%;"><span style="color:#8B0000; font-weight:800;">🎥 VIDEO SECUENCIAL ${i+1} (${cam})</span><video controls playsinline preload="metadata" src="${url}" style="width:100%; border-radius:8px;"></video></div>`;
  }).join('') : '';
 
  const aA = a.audios?.length ? a.audios.map((blob,i)=>{
@@ -1570,7 +1580,7 @@ addEventListener('DOMContentLoaded', async ()=>{
  if(localStorage.getItem('ok')==='1'){
     document.getElementById('zonaOk').style.display='block';
  }
- ir('inicio');
+ window.ir('inicio');
  if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v8').catch(()=>{}));
  document.addEventListener('contextmenu',e=>e.preventDefault());
 });
