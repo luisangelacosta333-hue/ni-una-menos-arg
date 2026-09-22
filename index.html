@@ -362,15 +362,15 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 
 <section id="sos" class="vista">
- <!-- FIX BOTÓN ATRÁS: Ahora es 100% seguro y limpio -->
- <button class="btn volver" onclick="if(sosActivo){pararConLlave();}else{ir('inicio');}">⟵ ATRÁS</button>
+ <!-- FIX BOTÓN ATRÁS SEGURO: Si la alarma está activa, te pide clave. Si no, vuelve al inicio -->
+ <button class="btn volver" onclick="if(typeof sosActivo !== 'undefined' && sosActivo){ pararConLlave(); }else{ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa')); document.getElementById('inicio').classList.add('activa'); }">⟵ ATRÁS</button>
  <h2 class="tit">PROTECCIÓN ACTIVA</h2>
  <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
  
  <div class="estadoSOS" id="st">
    <h2 style="font-size:18px; letter-spacing: 2px; margin-bottom: 8px;">¡SISTEMA ACTIVADO!</h2>
    ✦ EVIDENCIA Y ALERTAS ENVIADAS ✦<br>
-   GPS SEGUNDO A SEGUNDO · AUDIO · VIDEO · FOTOS · SENSORES · CELDA · WIFI · CADENA<br><br>
+   GPS SEGUNDO A SEGUNDO · AUDIO · VIDEO HD · FOTOS · SENSORES · CELDA · WIFI · CADENA<br><br>
    <span style="font-size:12px;color:#888;font-weight:400;">(Búfer Offline activo: la evidencia se resguarda sin señal)</span><br><br>
    <div style="background:#FFE79B;color:#5A3E00;padding:10px;border-radius:8px;font-weight:700;margin-top:12px;font-size:12px;line-height:1.4;">
     ⚠️ ¿FUE UNA ACTIVACIÓN ACCIDENTAL?<br>Tocá el botón "DETENER S.O.S" e ingresá tu Llave Maestra.
@@ -996,7 +996,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     }
 }
 
-// FIX CORREO: RUTA RELATIVA PARA EVITAR BLOQUEOS CORS
+// FIX CORREO: RUTA RELATIVA Y DISPARO INMEDIATO
 function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
     if (!email) return;
 
@@ -1006,7 +1006,7 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
 
     if (tipo === 'alerta') {
         asunto = `🚨 ALERTA S.O.S - ${nombre} activó el botón antipánico`;
-        msg = `🚨 ALERTA S.O.S - C4 🚨\n\nUsuaria: ${nombre || 'Usuaria'} activó el botón antipánico.\nID de Acta: ${id}\nIMEI del Dispositivo: ${imeiEnvio}\n\nEl sistema está recopilando evidencia (GPS, Audio, Video).`;
+        msg = `🚨 ALERTA S.O.S - C4 🚨\n\nUsuaria: ${nombre || 'Usuaria'} activó el botón antipánico.\nID de Acta: ${id}\nIMEI del Dispositivo: ${imeiEnvio}\n\nEl sistema está recopilando evidencia (GPS, Audio, Video). Se enviará un nuevo correo cuando se obtenga la ubicación satelital exacta.`;
     } else if (tipo === 'gps') {
         asunto = `📍 GPS S.O.S - Ubicación de ${nombre}`;
         msg = `📍 GPS S.O.S 📍\n\nUbicación actual:\nhttps://maps.google.com/?q=${la},${ln}\n\nID de Acta: ${id}\nIMEI: ${imeiEnvio}`;
@@ -1057,6 +1057,7 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
     });
 }
 
+// FIX CALIDAD VIDEO HD 720p 
 async function loopEvidencia(acta) {
     if(!sosActivo || !acta) return;
     
@@ -1092,9 +1093,10 @@ async function loopEvidencia(acta) {
 
     if(!sosActivo || !listaActas.find(a => a.id === acta.id)) return;
 
-    // 2. VIDEO SECUENCIAL 30 SEGUNDOS
+    // 2. VIDEO SECUENCIAL 30 SEGUNDOS (AHORA EN HD 720p)
     try {
-        const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } });
+        // Mejorada la calidad a 1280x720
+        const videoStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
         const videoRecorder = new MediaRecorder(videoStream);
         const videoChunks = [];
         videoRecorder.ondataavailable = e => videoChunks.push(e.data);
@@ -1136,6 +1138,7 @@ async function loopEvidencia(acta) {
         audioStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
+    // Volver a iniciar el bucle
     if(sosActivo && listaActas.find(a => a.id === acta.id)) {
         setTimeout(() => loopEvidencia(acta), 1000); 
     }
@@ -1186,6 +1189,10 @@ async function disparoSOS(){
      if(c && c.innerHTML.includes('calma')) c.innerHTML='';
      render(acta); 
  }
+
+ // FIX CORREO: DISPARO INMEDIATO SIN ESPERAR AL GPS
+ enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
+ enviarEmailOculto(emailDestino, nombre, null, null, id, 'alerta');
 
  // INICIAR GRABACIÓN EN SEGUNDO PLANO
  loopEvidencia(acta);
@@ -1250,7 +1257,7 @@ async function disparoSOS(){
         guardarActas();
         if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta); 
         
-        // Enviamos la alerta una vez que tenemos la primera ubicación
+        // Enviamos la alerta DE UBICACIÓN una vez que tenemos la primera ubicación
         if (esPrimerGPS) {
             esPrimerGPS = false;
             enviarWhatsAppOculto(contactos, nombre, acta.lat, acta.lng, id, 'gps');
