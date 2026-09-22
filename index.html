@@ -229,7 +229,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
   <span style="font-size:16px;color:#333;font-weight:600;line-height:1.5;display:block;">Descargá y registrate hoy mismo. Probala y comprobá cómo funciona nuestro sistema de protección pericial sin costo.</span>
  </div>
 
- <!-- BOTÓN DE ACCESO AL ACTA JUDICIAL EN LA LANDING PAGE PRINCIPAL -->
  <button class="btn blanco" onclick="ir('login')" style="max-width:520px;margin-inline:auto;margin-top:15px;box-shadow:var(--luz)">✦ CONSULTAR ACTAS / CENTRO JUDICIAL ✦</button>
 
  <button class="btn" onclick="leerVoz()" style="max-width:520px;margin-inline:auto;margin-top:15px;box-shadow:var(--luzFuerte)">✦ PRESENTACIÓN DE FUNCIONAMIENTO ✦</button>
@@ -249,7 +248,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
   </div>
  </div>
  
- <!-- INFO CLAVE SOBRE MODO SIGILO -->
  <div style="background:#FFF3F5; border:1px solid #8B0000; padding:16px; border-radius:12px; margin-bottom:22px; text-align:left; box-shadow:var(--luz);">
     <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">⚠️ REGLA DE ORO: MODO SIGILO</b>
     <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Si vas a caminar por la calle o guardar el celular, <b>NO bloquees la pantalla con el botón físico</b>. Tocá el botón "MODO SIGILO" al final de esta página. La pantalla se apagará para no gastar batería, pero el sistema quedará 100% despierto en primer plano para detectar impactos al instante.</span>
@@ -362,7 +360,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 
 <section id="sos" class="vista">
- <!-- FIX BOTÓN ATRÁS SEGURO Y PRIORITARIO -->
  <button class="btn volver" onclick="if(window.sosActivo){window.pararConLlave();}else{window.ir('inicio');}" style="position:relative; z-index:9999;">⟵ ATRÁS</button>
  <h2 class="tit">PROTECCIÓN ACTIVA</h2>
  <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
@@ -396,14 +393,12 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <div id="alertas"><div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div></div>
  <button class="btn blanco" onclick="cerrar()" style="margin-top:20px">CERRAR SESIÓN</button>
 </section>
-
 </main>
 
 <div class="footer-wrap">
  <div class="scroll-container"><div class="scroll-text">✦ NI UNA MENOS ARGENTINA 🇦🇷 niunamenosarg.com 🇦🇷 ACTA P4 🇦🇷 CADENA DE CUSTODIA 🇦🇷 LEY 26.485 🇦🇷 LEY 25.326 🇦🇷 CÓDIGO PROCESAL PENAL 🇦🇷 SHA‑256 + SHA‑3 + HMAC 🇦🇷 GPS 🇦🇷 AUDIO CONTINUO 🇦🇷 FOTOS GIGANTES 🇦🇷 SENSORES Y ANTENAS 🇦🇷 MODO SIGILO 🇦🇷 PAGO INTELIGENTE IA 🇦🇷</div></div>
  <footer><strong>NI UNA MENOS · ENERGY 2026</strong><br>niunamenosarg.com · Custodia Judicial Forense · Marco legal estricto<br>© MMXXVI · Hecho en la República Argentina 🇦🇷</footer>
 </div>
-
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -426,9 +421,6 @@ const LK = k => {
 };
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
-// =========================================================================
-// 🔥 AUTH NINJA: ENGAÑO A SUPABASE (RLS) - VERSIÓN DEFINITIVA
-// =========================================================================
 let currentJWT = null;
 
 async function authTrucha(imei) {
@@ -490,7 +482,6 @@ async function supaQuery(method, endpoint, body = null) {
     if (!res.ok) throw new Error(await res.text());
     return res.json();
 }
-// =========================================================================
 
 let deferredPrompt;
 const installBtn = document.getElementById('btn-install-pwa');
@@ -536,7 +527,6 @@ async function pedirPermisosGlobalesYGPS() {
     );
 }
 
-// DECLARACIÓN GLOBAL DE FUNCIONES DE NAVEGACIÓN
 window.ir = async id => {
     document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
     document.getElementById(id).classList.add('activa');
@@ -579,7 +569,7 @@ function leerVoz(){
 // =========================================================================
 let wakeLockObj = null;
 let audioInvisible = null;
-let cooldownRobo = false; // Evita falsos positivos al guardar el celular
+let cooldownRobo = false; 
 
 window.sigilo = async () => {
     alert("⚠️ MODO SIGILO ARMADO ⚠️\nLa pantalla se pondrá negra. Tenés 3 segundos para guardar el celular sin disparar la alarma.\n\nTocá la pantalla negra 3 VECES RÁPIDAS para salir.");
@@ -709,7 +699,6 @@ window.toggleSOS = function() {
     }
 }
 
-// FIX: Función global de retroceso garantizado
 window.retrocederDeSOS = function() {
     if(window.sosActivo) {
         window.pararConLlave();
