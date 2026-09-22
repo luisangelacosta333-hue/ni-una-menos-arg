@@ -362,8 +362,8 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 
 <section id="sos" class="vista">
- <!-- FIX BOTÓN ATRÁS: Si toca atrás cuando está la alarma activa, lo frena de golpe. -->
- <button class="btn volver" onclick="if(sosActivo) { pararConLlave(); } else { ir('inicio'); }">⟵ ATRÁS</button>
+ <!-- FIX BOTÓN ATRÁS: Función segura que no se traba ni te deja varado -->
+ <button class="btn volver" onclick="if(typeof sosActivo !== 'undefined' && sosActivo){ pararConLlave(); }else{ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa')); document.getElementById('inicio').classList.add('activa'); }">⟵ ATRÁS</button>
  <h2 class="tit">PROTECCIÓN ACTIVA</h2>
  <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
  
@@ -996,7 +996,7 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     }
 }
 
-// FIX IMEI INCLUIDO EN EL MAIL
+// FIX CORREO: RUTA RELATIVA PARA EVITAR BLOQUEOS CORS
 function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
     if (!email) return;
 
@@ -1015,7 +1015,7 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ SISTEMA SEGURO \n\nLa usuaria desactivó la alarma a salvo.`;
     }
 
-    fetch('https://niunamenosarg.com/api/send-email', {
+    fetch('/api/send-email', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
