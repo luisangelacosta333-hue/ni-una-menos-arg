@@ -361,7 +361,10 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <button class="btn" onclick="validar()">✦ INGRESAR ✦</button></div>
 </section>
 
-<section id="sos" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ ATRÁS</button><h2 class="tit">PROTECCIÓN ACTIVA</h2>
+<section id="sos" class="vista">
+ <!-- FIX BOTÓN ATRÁS: Si toca atrás cuando está la alarma activa, lo frena de golpe. -->
+ <button class="btn volver" onclick="if(sosActivo) { pararConLlave(); } else { ir('inicio'); }">⟵ ATRÁS</button>
+ <h2 class="tit">PROTECCIÓN ACTIVA</h2>
  <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
  
  <div class="estadoSOS" id="st">
@@ -563,7 +566,6 @@ const ir = async id => {
 
 const irSOS=()=>localStorage.getItem('ok')==='1'?ir('sos'):ir('pago');
 
-// ACTUALIZACIÓN LECTURA DE VOZ PARA ENSEÑAR MODO SIGILO
 function leerVoz(){
  speechSynthesis.cancel();
  const u=new SpeechSynthesisUtterance(`Bienvenidas y bienvenidos al sistema judicial Energy Argentina dos mil veintiséis. Presentamos la plataforma Ni Una Menos. Desarrollamos este software porque hacía falta tecnología forense y de seguridad real para protegerte. El sistema cuenta con múltiples módulos de protección: se activa al instante tocando el botón antipánico, o automáticamente ante un impacto o caída fuerte. Además, en caso de un arrebato o robo donde no puedas tocar tu teléfono, podés activar el S.O.S a distancia ingresando tu Llave Maestra desde cualquier otro dispositivo en nuestra sección de recuperación judicial. Al activarse, la pantalla entra en modo sigilo, mientras alerta inmediatamente a tus contactos por WhatsApp. Recuerde la Regla de Oro: si va a caminar por la calle o guardar el celular, no bloquee la pantalla con el botón de su teléfono. Utilice siempre el botón de Modo Sigilo de la aplicación. Esto apagará falsamente su pantalla para no gastar batería, pero mantendrá al sistema cien por ciento despierto en primer plano para detectar el robo. Toda la evidencia se encripta con firmas digitales judiciales. Es un sistema blindado y privado.`);
@@ -950,6 +952,7 @@ function formatArg(num) {
     return '549' + c;
 }
 
+// FIX IMEI INCLUIDO EN LAS ALERTAS
 function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     if (!contactos || !Array.isArray(contactos) || contactos.length === 0) {
         try {
@@ -966,9 +969,11 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
         contactos = miWa ? [miWa] : ['3816092676'];
     }
 
+    const imeiEnvio = localStorage.getItem('imei') || 'SIN_IMEI';
+
     let msg = "";
     if (tipo === 'alerta') {
-        msg = `🚨 *ALERTA S.O.S - C4* 🚨\nUsuaria: *${nombre || 'Usuaria'}* activó el botón antipánico.\nID: ${id}`;
+        msg = `🚨 *ALERTA S.O.S - C4* 🚨\nUsuaria: *${nombre || 'Usuaria'}* activó el botón antipánico.\nID: ${id}\n📱 IMEI: ${imeiEnvio}`;
     } else if (tipo === 'gps') {
         msg = `📍 *GPS S.O.S* 📍\nhttps://maps.google.com/?q=${la},${ln}`;
     } else if (tipo === 'seguro') {
@@ -991,18 +996,20 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     }
 }
 
+// FIX IMEI INCLUIDO EN EL MAIL
 function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
     if (!email) return;
 
     let asunto = "";
     let msg = "";
+    const imeiEnvio = localStorage.getItem('imei') || 'SIN_IMEI';
 
     if (tipo === 'alerta') {
         asunto = `🚨 ALERTA S.O.S - ${nombre} activó el botón antipánico`;
-        msg = `🚨 ALERTA S.O.S - C4 🚨\n\nUsuaria: ${nombre || 'Usuaria'} activó el botón antipánico.\nID de Acta: ${id}\n\nEl sistema está recopilando evidencia (GPS, Audio, Video).`;
+        msg = `🚨 ALERTA S.O.S - C4 🚨\n\nUsuaria: ${nombre || 'Usuaria'} activó el botón antipánico.\nID de Acta: ${id}\nIMEI del Dispositivo: ${imeiEnvio}\n\nEl sistema está recopilando evidencia (GPS, Audio, Video).`;
     } else if (tipo === 'gps') {
         asunto = `📍 GPS S.O.S - Ubicación de ${nombre}`;
-        msg = `📍 GPS S.O.S 📍\n\nUbicación actual:\nhttps://maps.google.com/?q=${la},${ln}\n\nID de Acta: ${id}`;
+        msg = `📍 GPS S.O.S 📍\n\nUbicación actual:\nhttps://maps.google.com/?q=${la},${ln}\n\nID de Acta: ${id}\nIMEI: ${imeiEnvio}`;
     } else if (tipo === 'seguro') {
         asunto = `✅ SISTEMA SEGURO - ${nombre}`;
         msg = `✅ SISTEMA SEGURO \n\nLa usuaria desactivó la alarma a salvo.`;
