@@ -362,8 +362,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 
 <section id="sos" class="vista">
- <!-- FIX BOTÓN ATRÁS SEGURO: Si la alarma está activa, te pide clave. Si no, vuelve al inicio -->
- <button class="btn volver" onclick="if(typeof sosActivo !== 'undefined' && sosActivo){ pararConLlave(); }else{ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa')); document.getElementById('inicio').classList.add('activa'); }">⟵ ATRÁS</button>
+ <button class="btn volver" onclick="retrocederDeSOS()">⟵ ATRÁS</button>
  <h2 class="tit">PROTECCIÓN ACTIVA</h2>
  <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
  
@@ -573,10 +572,11 @@ function leerVoz(){
  speechSynthesis.speak(u);
 }
 
-// FIX WAKE LOCK: EVITA QUE LA PANTALLA Y EL SENSOR SE DUERMAN EN MODO SIGILO
+// FIX WAKE LOCK + AUDIO INVISIBLE: EVITA QUE LA PANTALLA Y EL SENSOR SE DUERMAN EN MODO SIGILO INCLUSO EN FACEBOOK
 let wakeLockObj = null;
-const sigilo = async () => {
-    alert("⚠️ MODO SIGILO ARMADO ⚠️\nLa pantalla se pondrá totalmente negra y parecerá apagada, pero el sistema quedará 100% despierto escuchando el sensor de impacto.\n\nTocá la pantalla 3 VECES RÁPIDAS para salir de este modo.");
+let audioInvisible = null;
+window.sigilo = async () => {
+    alert("⚠️ MODO SIGILO ARMADO ⚠️\nLa pantalla se pondrá negra. Podés usar Facebook o WhatsApp, el sistema seguirá activo de fondo escuchando sacudones.\n\nTocá la pantalla negra 3 VECES RÁPIDAS para salir.");
     
     try { 
         document.documentElement.requestFullscreen(); 
@@ -588,6 +588,13 @@ const sigilo = async () => {
         }
     } catch (err) {
         console.log("Wake Lock falló", err);
+    }
+
+    // HACK AUDIO SILENCIOSO PARA SEGUNDO PLANO
+    if (!audioInvisible) {
+        audioInvisible = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+        audioInvisible.loop = true;
+        audioInvisible.play().catch(e => console.log("Se requiere tocar la pantalla antes de iniciar el audio"));
     }
 
     let s = document.createElement('div');
@@ -604,6 +611,10 @@ const sigilo = async () => {
             if (wakeLockObj !== null) {
                 wakeLockObj.release();
                 wakeLockObj = null;
+            }
+            if (audioInvisible) {
+                audioInvisible.pause();
+                audioInvisible = null;
             }
             s.remove();
         }
@@ -690,6 +701,14 @@ function toggleSOS() {
         pararConLlave();
     } else {
         disparoSOS();
+    }
+}
+
+function retrocederDeSOS() {
+    if(sosActivo) {
+        pararConLlave();
+    } else {
+        ir('inicio');
     }
 }
 
