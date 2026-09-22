@@ -575,30 +575,30 @@ function leerVoz(){
 }
 
 // =========================================================================
-// 🔥 FIX WAKE LOCK + AUDIO INVISIBLE (Mantiene el sensor vivo en background)
+// 🔥 FIX WAKE LOCK + AUDIO INVISIBLE + VISIBILITY (Segundo Plano Real)
 // =========================================================================
 let wakeLockObj = null;
 let audioInvisible = null;
+let cooldownRobo = false; // Evita falsos positivos al guardar el celular
 
 window.sigilo = async () => {
-    alert("⚠️ MODO SIGILO ARMADO ⚠️\nLa pantalla se pondrá negra. El sistema intentará seguir escuchando en segundo plano, por lo que podés usar otras apps.\n\nTocá la pantalla negra 3 VECES RÁPIDAS para salir de este modo.");
+    alert("⚠️ MODO SIGILO ARMADO ⚠️\nLa pantalla se pondrá negra. Tenés 3 segundos para guardar el celular sin disparar la alarma.\n\nTocá la pantalla negra 3 VECES RÁPIDAS para salir.");
     
+    cooldownRobo = true;
+    setTimeout(() => cooldownRobo = false, 3000);
+
     try { document.documentElement.requestFullscreen(); } catch(e){}
     
-    // 1. Evita que la pantalla física se apague en primer plano
     try {
         if ('wakeLock' in navigator) {
             wakeLockObj = await navigator.wakeLock.request('screen');
         }
-    } catch (err) {
-        console.log("Wake Lock falló", err);
-    }
+    } catch (err) { console.log("Wake Lock falló", err); }
 
-    // 2. EL TRUCO PARA SEGUNDO PLANO: Audio en silencio infinito
-    // Esto engaña al navegador haciéndole creer que estás escuchando algo.
     if (!audioInvisible) {
         audioInvisible = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
         audioInvisible.loop = true;
+        audioInvisible.setAttribute('playsinline', ''); 
         audioInvisible.play().catch(e => console.log("Se requiere interacción para el audio"));
     }
 
@@ -619,6 +619,12 @@ window.sigilo = async () => {
         }
     });
 };
+
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden && audioInvisible && document.getElementById('pantalla-sigilo')) {
+        audioInvisible.play().catch(()=>{});
+    }
+});
 
 async function sha256(message) {
     try {
@@ -1302,10 +1308,13 @@ async function disparoSOS(){
  }
 }
 
+// =========================================================================
+// 🔥 SENSOR DE IMPACTO / SACUDÓN OPTIMIZADO
+// =========================================================================
 let sh_last_x = 0, sh_last_y = 0, sh_last_z = 0;
 let sh_lastUpdate = 0;
 let sh_initialized = false;
-const SHAKE_THRESHOLD = 4500;
+const SHAKE_THRESHOLD = 3200; // Sensibilidad ajustada para bolsillo/cartera
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
@@ -1317,9 +1326,7 @@ window.addEventListener('devicemotion', function (e) {
     let z = acc.z;
 
     if (!sh_initialized) {
-        sh_last_x = x;
-        sh_last_y = y;
-        sh_last_z = z;
+        sh_last_x = x; sh_last_y = y; sh_last_z = z;
         sh_initialized = true;
         return;
     }
@@ -1330,14 +1337,13 @@ window.addEventListener('devicemotion', function (e) {
         
         let speed = Math.abs(x + y + z - sh_last_x - sh_last_y - sh_last_z) / diffTime * 10000;
         
-        if (speed > SHAKE_THRESHOLD) {
+        // Solo dispara si supera el umbral y NO está en el cooldown de guardado
+        if (speed > SHAKE_THRESHOLD && !cooldownRobo) {
             if (localStorage.getItem('ok') === '1' && !window.sosActivo) {
                 activarAlarmaRobo();
             }
         }
-        sh_last_x = x;
-        sh_last_y = y;
-        sh_last_z = z;
+        sh_last_x = x; sh_last_y = y; sh_last_z = z;
     }
 }, true);
 
