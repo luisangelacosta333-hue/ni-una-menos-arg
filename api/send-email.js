@@ -25,7 +25,7 @@ export default async function handler(req, res) {
                 'Authorization': `Bearer ${process.env.RESEND_TOKEN}` 
             },
             body: JSON.stringify({
-                from: 'C4 Alertas S.O.S <alertas@niunamenosarg.com>', // Tu dominio verificado
+                from: 'C4 Alertas S.O.S <alertas@niunamenosarg.com>', 
                 to: [email],
                 subject: asunto,
                 text: msg
