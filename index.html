@@ -115,7 +115,6 @@ body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgb
 
 .estadoSOS{display:none;padding:20px;border-radius:16px;background:#FFF3F5;border:1px solid #8B0000;color:#8B0000;text-align:center;font-weight:600;font-size:14px;line-height:1.6}
 
-/* ANIMACIÓN PARA EL RASTREADOR EN EL MAPA */
 .ruta-animada { stroke-dasharray: 12, 12; animation: dash 1s linear infinite; }
 @keyframes dash { to { stroke-dashoffset: -24; } }
 
@@ -197,7 +196,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
   .acta .mono { background: #fff !important; border-color: #000 !important; }
 }
 
-/* FILE UPLOAD STYLES PARA PAGO IA */
 .file-upload-wrapper {
   position: relative; width: 100%; height: 120px; border: 2px dashed var(--oro);
   border-radius: 12px; background: #FFFCF2; display: flex; align-items: center; justify-content: center;
@@ -510,11 +508,33 @@ window.addEventListener('appinstalled', () => {
 
 let mapas = {};
 
+// =========================================================================
+// 🔥 DISPARADOR DE PERMISOS NATIVOS AUTOMÁTICOS
+// =========================================================================
 async function pedirPermisosGlobalesYGPS() {
-    alert("⚠️ CONFIGURACIÓN DE SEGURIDAD ⚠️\nA continuación el sistema te pedirá acceso al GPS, Cámara y Micrófono. Es OBLIGATORIO que pongas 'Permitir' en todo para que funcione ante un robo o emergencia.");
+    alert("⚠️ CONFIGURACIÓN DE SEGURIDAD ⚠️\nA continuación el sistema te pedirá acceso al GPS, Cámara y Micrófono. Es OBLIGATORIO que pongas 'Permitir todo el tiempo' para que funcione ante un robo o emergencia.");
+    
+    // 1. Forzamos los popups nativos de Android si está instalado como APK
+    if (window.cordova && cordova.plugins && cordova.plugins.permissions) {
+        const p = cordova.plugins.permissions;
+        const permisosNativos = [
+            p.CAMERA,
+            p.RECORD_AUDIO,
+            p.ACCESS_FINE_LOCATION,
+            p.ACCESS_BACKGROUND_LOCATION
+        ];
+        p.requestPermissions(permisosNativos, (status) => {
+            console.log('Permisos nativos solicitados:', status);
+        }, () => {
+            console.error('Error al pedir permisos nativos');
+        });
+    }
+
+    // 2. Activación para Web / Acelerómetro
     if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
         DeviceMotionEvent.requestPermission().catch(()=>{});
     }
+    
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
         stream.getTracks().forEach(track => track.stop());
@@ -902,9 +922,6 @@ const cerrar=()=>{
     location.reload();
 };
 
-// =========================================================================
-// 🔥 RECUPERACIÓN Y S.O.S. REMOTO (NUBE SUPABASE)
-// =========================================================================
 async function recuperar(accion) {
     const i = IM(document.getElementById('rrI').value);
     const l = LK(document.getElementById('rrL').value);
@@ -936,7 +953,6 @@ async function recuperar(accion) {
     }
 }
 
-// COMPROBACIÓN AUTOMÁTICA EN SEGUNDO PLANO DE S.O.S. REMOTO DESDE LA NUBE
 setInterval(async () => {
     const imei = localStorage.getItem('imei');
     if (imei && localStorage.getItem('ok') === '1' && !window.sosActivo) {
@@ -951,9 +967,6 @@ setInterval(async () => {
     }
 }, 8000);
 
-// =========================================================================
-// 🔥 CONEXIÓN A GREEN API DIRECTA 🔥
-// =========================================================================
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
 
@@ -966,7 +979,6 @@ function formatArg(num) {
     return '549' + c;
 }
 
-// FIX IMEI INCLUIDO EN LAS ALERTAS
 function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     if (!contactos || !Array.isArray(contactos) || contactos.length === 0) {
         try {
@@ -1010,7 +1022,6 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     }
 }
 
-// FIX CORREO: RUTA RELATIVA Y DISPARO INMEDIATO
 function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
     if (!email) return;
 
@@ -1071,10 +1082,8 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
     });
 }
 
-// FIX: Variable global para alternar la cámara de video en cada bucle
 if (typeof window.camaraVideo === 'undefined') window.camaraVideo = 'environment';
 
-// FIX CALIDAD VIDEO HD 720p Y ALTERNANCIA (FRONTAL/TRASERA)
 async function loopEvidencia(acta) {
     if(!window.sosActivo || !acta) return;
     
@@ -1091,7 +1100,6 @@ async function loopEvidencia(acta) {
         return; 
     }
 
-    // 1. CAPTURA FOTOGRÁFICA FRONTAL Y TRASERA
     try {
         let vFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } });
         if(!listaActas.find(a => a.id === acta.id)) { vFront.getTracks().forEach(t=>t.stop()); return; }
@@ -1110,9 +1118,7 @@ async function loopEvidencia(acta) {
 
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
 
-    // 2. VIDEO SECUENCIAL 30 SEGUNDOS (AHORA EN HD 720p Y ALTERNANDO CÁMARA)
     try {
-        // Alternamos entre 'user' (Frontal) y 'environment' (Trasera)
         window.camaraVideo = (window.camaraVideo === 'environment') ? 'user' : 'environment';
         let nombreCamara = (window.camaraVideo === 'user') ? 'FRONTAL' : 'TRASERA';
         
@@ -1124,7 +1130,6 @@ async function loopEvidencia(acta) {
             if(!listaActas.find(a => a.id === acta.id)) return;
             const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
             if(!acta.videos) acta.videos = [];
-            // Guardamos un objeto con el blob y el nombre de la cámara
             acta.videos.push({blob: videoBlob, camara: nombreCamara});
             await guardarActas();
             let currentImei = localStorage.getItem('imei');
@@ -1138,7 +1143,6 @@ async function loopEvidencia(acta) {
 
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
 
-    // 3. AUDIO AMBIENTAL 30 SEGUNDOS
     try {
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioRecorder = new MediaRecorder(audioStream);
@@ -1159,7 +1163,6 @@ async function loopEvidencia(acta) {
         audioStream.getTracks().forEach(t => t.stop());
     } catch(e) {}
 
-    // Volver a iniciar el bucle
     if(window.sosActivo && listaActas.find(a => a.id === acta.id)) {
         setTimeout(() => loopEvidencia(acta), 1000); 
     }
@@ -1193,13 +1196,12 @@ async function disparoSOS(){
  const id = 'P4-' + Date.now() + '-' + Math.random().toString(16).slice(2,8).toUpperCase();
  aid = id;
  
- // ACTA INICIAL CON RUTA VACÍA PARA EL RASTREADOR
  let acta = {
      id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
      hora: new Date().toLocaleTimeString('es-AR', {hour12: false}), fecha: new Date().toLocaleDateString('es-AR'),
      sello_ms: Date.now(),
      audios: [], imagenes: [], videos: [], sensores: [], sello_inicio: new Date().toISOString(), sha256: 'Calculando...', hash_judicial: 'Calculando...', eventos: [],
-     numero_acta: id, ruta: [], // <-- AQUÍ SE GUARDARÁ EL RASTRO GPS
+     numero_acta: id, ruta: [],
      bateria: 'Desc.', cargando: 'Desc.', red: 'Desc.', signal: 'No disponible', userAgent: navigator.userAgent, ram: 'Desc.', cores: 'Desc.', pantalla: `${screen.width}x${screen.height}`
  };
  listaActas.push(acta);
@@ -1211,11 +1213,9 @@ async function disparoSOS(){
      render(acta); 
  }
 
- // FIX CORREO: DISPARO INMEDIATO SIN ESPERAR AL GPS
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
  enviarEmailOculto(emailDestino, nombre, null, null, id, 'alerta');
 
- // INICIAR GRABACIÓN EN SEGUNDO PLANO
  loopEvidencia(acta);
 
  if (imei && imei !== 'SIN_IMEI') {
@@ -1256,9 +1256,6 @@ async function disparoSOS(){
 
  guardarActas();
 
- // -------------------------------------------------------------
- // EL RASTREADOR: DIBUJARÁ LA RUTA EN EL MAPA SEGUNDO A SEGUNDO
- // -------------------------------------------------------------
  let esPrimerGPS = true;
  if (navigator.geolocation) {
      gps = navigator.geolocation.watchPosition(p => {
@@ -1271,14 +1268,12 @@ async function disparoSOS(){
         acta.lng = p.coords.longitude;
         acta.precision = Math.round(p.coords.accuracy);
         
-        // Guardamos las coordenadas para armar la línea en el mapa
         if (!acta.ruta) acta.ruta = [];
         acta.ruta.push([acta.lat, acta.lng]);
         
         guardarActas();
         if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta); 
         
-        // Enviamos la alerta DE UBICACIÓN una vez que tenemos la primera ubicación
         if (esPrimerGPS) {
             esPrimerGPS = false;
             enviarWhatsAppOculto(contactos, nombre, acta.lat, acta.lng, id, 'gps');
@@ -1297,13 +1292,10 @@ async function disparoSOS(){
  }
 }
 
-// =========================================================================
-// 🔥 SENSOR DE IMPACTO / SACUDÓN OPTIMIZADO
-// =========================================================================
 let sh_last_x = 0, sh_last_y = 0, sh_last_z = 0;
 let sh_lastUpdate = 0;
 let sh_initialized = false;
-const SHAKE_THRESHOLD = 3200; // Sensibilidad ajustada para bolsillo/cartera
+const SHAKE_THRESHOLD = 3200; 
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
@@ -1326,7 +1318,6 @@ window.addEventListener('devicemotion', function (e) {
         
         let speed = Math.abs(x + y + z - sh_last_x - sh_last_y - sh_last_z) / diffTime * 10000;
         
-        // Solo dispara si supera el umbral y NO está en el cooldown de guardado
         if (speed > SHAKE_THRESHOLD && !cooldownRobo) {
             if (localStorage.getItem('ok') === '1' && !window.sosActivo) {
                 activarAlarmaRobo();
@@ -1480,7 +1471,6 @@ function render(a){
             const mm = L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat||-26.8241,a.lng||-65.2226],16);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
             
-            // DIBUJAR RASTRO INICIAL SI YA EXISTE
             if (a.ruta && a.ruta.length > 1) {
                 L.polyline(a.ruta, { color: '#8B0000', weight: 5, opacity: 0.8, className: 'ruta-animada' }).addTo(mm);
             }
@@ -1502,16 +1492,13 @@ function render(a){
      const elSha = document.getElementById(`sha_${a.id}`);
      if(elSha) elSha.innerText = `${a.sha256}`;
      
-     // ACTUALIZAR MAPA Y DIBUJAR RASTRO
      if (a.lat !== 'Buscando...' && a.lat !== 'Desconocida' && mapas[a.id]) {
          mapas[a.id].setView([a.lat, a.lng]);
          
-         // Limpiar marcadores y líneas viejas
          mapas[a.id].eachLayer((layer) => {
              if (layer instanceof L.Marker || layer instanceof L.Polyline) mapas[a.id].removeLayer(layer);
          });
          
-         // Trazar línea animada del recorrido
          if (a.ruta && a.ruta.length > 1) {
              L.polyline(a.ruta, { color: '#8B0000', weight: 5, opacity: 0.8, className: 'ruta-animada' }).addTo(mapas[a.id]);
          }
@@ -1541,7 +1528,6 @@ function render(a){
     </div>
  `).join('') : '';
 
- // FIX RENDERIZADO DE VIDEO: Lee la propiedad cámara para saber si es frontal o trasera
  const vV = a.videos?.length ? a.videos.map((vid,i)=>{
     let blob = vid.blob ? vid.blob : vid;
     let cam = vid.camara ? vid.camara : 'TRASERA';
@@ -1565,6 +1551,9 @@ function render(a){
 
 const verificar=async()=>{alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales válidas\nLeyes: 26.485 · 25.326')};
 
+// =========================================================================
+// 🔥 INICIALIZACIÓN MODO SEGUNDO PLANO
+// =========================================================================
 addEventListener('DOMContentLoaded', async ()=>{
  await cargarActasLocales(); 
  const savedImei = localStorage.getItem('imei');
@@ -1575,6 +1564,14 @@ addEventListener('DOMContentLoaded', async ()=>{
  if(localStorage.getItem('ok')==='1'){
     document.getElementById('zonaOk').style.display='block';
  }
+ 
+ if (window.cordova && window.cordova.plugins && window.cordova.plugins.backgroundMode) {
+    cordova.plugins.backgroundMode.enable();
+    cordova.plugins.backgroundMode.on('activate', function() {
+        cordova.plugins.backgroundMode.disableWebViewOptimizations();
+    });
+ }
+
  window.ir('inicio');
  if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v8').catch(()=>{}));
  document.addEventListener('contextmenu',e=>e.preventDefault());
