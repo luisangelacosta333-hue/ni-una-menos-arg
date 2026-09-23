@@ -365,14 +365,19 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <div class="caja" style="width:100%"><div class="llave" id="lk">C4‑XXXX‑XXXX</div>
   <p style="font-weight:600;color:#555;margin-top:18px;font-size:15px; letter-spacing:1px;">ÚNICA · INTRANSFERIBLE · VÁLIDA JUDICIALMENTE</p>
   
-  <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-top:22px;text-align:left;box-shadow:var(--luz);">
+  <div style="background:#E6F4EA;border:1px solid #34A853;padding:16px;border-radius:12px;margin-top:22px;text-align:left;box-shadow:var(--luz);">
+    <b style="color:#0D652D;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">📲 PASO FINAL: INSTALAR APK</b>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Tocá el botón "INSTALAR" arriba a la derecha. Una vez que abras la app instalada, <b>ingresá tu IMEI y esta Llave Maestra</b> en el menú "Consultar Actas" para enlazar el sistema y habilitar tu botón antipánico.</span>
+  </div>
+
+  <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-top:12px;text-align:left;box-shadow:var(--luz);">
     <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">💡 INSTRUCCIÓN VITAL</b>
-    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Si activás el sistema por accidente, tocá "Detener S.O.S". Por seguridad antirrobo, <b>te pedirá que ingreses esta Llave Maestra</b> para confirmar que sos vos y no un ladrón quien intenta apagarlo. <b>MEMORIZALA.</b></span>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Si activás el sistema por accidente, tocá "Detener S.O.S". Por seguridad antirrobo, te pedirá que ingreses esta Llave Maestra para confirmar que sos vos. <b>MEMORIZALA.</b></span>
   </div>
 
   <div style="background:#FFFCF2;border:1px solid #D4AF37;padding:16px;border-radius:12px;margin-top:12px;text-align:left;box-shadow:var(--luz);">
     <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">⚠️ OBLIGATORIO: AGENDAR NÚMERO</b>
-    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Para recibir la evidencia y asegurar que WhatsApp no bloquee el sistema, <b>es obligatorio agendar este número en tus contactos ahora mismo: 381 60 92 676</b>.</span>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Para recibir la evidencia, <b>es obligatorio agendar este número en tus contactos ahora mismo: 381 60 92 676</b>.</span>
   </div>
 
   <div style="display:flex;gap:12px;margin-top:25px;flex-wrap:wrap;justify-content:center">
@@ -383,14 +388,23 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <button class="btn" onclick="ir('login')">✦ INGRESAR AL PANEL ✦</button>
 </section>
 
-<section id="login" class="vista"><button class="btn volver" onclick="ir('pago')">⟵ VOLVER</button><h2 class="tit">ACCESO JUDICIAL</h2>
+<!-- 🔥 SECCIÓN DE LOGIN CON IMEI + BOTÓN PEGAR 🔥 -->
+<section id="login" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER</button><h2 class="tit">ACCESO JUDICIAL</h2>
  <div class="caja">
-  <!-- 🔥 CAMPO DE TEXTO CON BOTÓN PEGAR NATIVO 🔥 -->
-  <div class="campo" style="position:relative;">
-    <input id="lkI" placeholder="C4‑XXXX‑XXXX" style="text-align:center;font-size:20px;letter-spacing:4px;text-transform:uppercase; font-weight:800; padding-right:85px;">
-    <button onclick="pegarLlave()" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:var(--oro); color:#fff; border:none; padding:10px 15px; border-radius:8px; font-weight:900; cursor:pointer; font-family:'Cinzel',serif; font-size:12px;">PEGAR</button>
+  <p style="text-align:center; font-size:14px; margin-bottom:15px; color:#555; font-weight:600;">Para enlazar la App instalada con la nube, ingresá tu IMEI y Llave.</p>
+  
+  <div class="campo">
+    <label>IMEI DEL EQUIPO</label>
+    <input id="lkImei" inputmode="numeric" maxlength="15" placeholder="Tu IMEI de 15 dígitos">
   </div>
- <button class="btn" onclick="validar()">✦ INGRESAR ✦</button>
+  
+  <div class="campo" style="position:relative;">
+    <label>LLAVE MAESTRA C4</label>
+    <input id="lkI" placeholder="C4‑XXXX‑XXXX" style="text-align:center;font-size:20px;letter-spacing:4px;text-transform:uppercase; font-weight:800; padding-right:85px;">
+    <button onclick="pegarLlave()" style="position:absolute; right:8px; top:36px; background:var(--oro); color:#fff; border:none; padding:10px 15px; border-radius:8px; font-weight:900; cursor:pointer; font-family:'Cinzel',serif; font-size:12px;">PEGAR</button>
+  </div>
+  
+ <button class="btn" onclick="validar()">✦ ENLAZAR SISTEMA ✦</button>
  </div>
 </section>
 
@@ -910,27 +924,33 @@ async function procesarPagoIA() {
     reader.readAsDataURL(file);
 }
 
+// =========================================================================
+// 🔥 VALIDACIÓN CORREGIDA CON IMEI PARA LA APK EN BLANCO 🔥
+// =========================================================================
 async function validar(){
     const k = LK(document.getElementById('lkI').value);
+    const inputImei = IM(document.getElementById('lkImei').value);
     if(!k) return;
 
     await cargarActasLocales(); 
     const llaveLocal = localStorage.getItem('llave_maestra');
+    const imeiLocal = localStorage.getItem('imei');
     
-    if (llaveLocal && k === LK(llaveLocal)) {
+    // Si ya está vinculada y coincide
+    if (llaveLocal && k === LK(llaveLocal) && (!inputImei || inputImei === imeiLocal)) {
         localStorage.setItem('ok', '1');
-        window.ir('panel');
+        window.ir('inicio'); // Redirige al inicio para que vea el botón activo
         return;
     }
 
-    try {
-        const storedImei = localStorage.getItem('imei');
-        if(storedImei) {
-            await authTrucha(storedImei);
-        }
+    const storedImei = inputImei || imeiLocal;
+    if(!storedImei || storedImei.length < 15) return alert('Por seguridad, la App recién instalada necesita tu IMEI de 15 dígitos para conectarse a la nube.');
 
-        const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${k}`);
-        if(res.length === 0) return alert('Acceso Denegado.');
+    try {
+        await authTrucha(storedImei);
+
+        const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${k}&imei=eq.${storedImei}`);
+        if(res.length === 0) return alert('Acceso Denegado. La Llave o el IMEI no coinciden en la base de datos.');
         
         const sub = res[0];
         if(new Date() > new Date(sub.fecha_vencimiento)) {
@@ -955,10 +975,10 @@ async function validar(){
                 localStorage.setItem('contactos', cRespaldo);
             }
 
-            alert('✅ LLAVE VÁLIDA. Ingresando al sistema judicial...');
-            window.ir('panel');
+            alert('✅ LLAVE VÁLIDA. Sistema judicial enlazado a la APK.');
+            window.ir('inicio'); // Redirige directo al inicio para ver el botón S.O.S
         }
-    } catch(e) { alert('Error validando la llave. Es posible que el dispositivo no esté registrado.'); }
+    } catch(e) { alert('Error validando la llave. Asegurate de tener internet.'); }
 }
 
 const cerrar=()=>{
