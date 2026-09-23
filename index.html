@@ -180,10 +180,39 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
     animation: entrar .5s ease both;
 }
 
+/* BOTÓN ANTIPÁNICO FLOTANTE */
+#btn-flotante-sos {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 75px;
+    height: 75px;
+    background: radial-gradient(circle at 30% 22%, #D00000, #8B0000 80%);
+    color: #fff;
+    border-radius: 50%;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 16px;
+    border: 2px solid #FF8888;
+    box-shadow: 0 5px 20px rgba(139,0,0,0.6);
+    cursor: pointer;
+    z-index: 9999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulsoSOS 2s infinite;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+@keyframes pulsoSOS {
+    0% { box-shadow: 0 0 0 0 rgba(139,0,0,0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(139,0,0,0); }
+    100% { box-shadow: 0 0 0 0 rgba(139,0,0,0); }
+}
+
 @media print {
   @page { size: A4; margin: 10mm; }
   body { background: #fff !important; color: #000 !important; }
-  .btn, .footer-wrap, .noimp, .vista:not(.activa), header, .scroll-container, #btn-install-pwa { display: none !important; }
+  .btn, .footer-wrap, .noimp, .vista:not(.activa), header, .scroll-container, #btn-install-pwa, #btn-flotante-sos { display: none !important; }
   .vista { padding: 0 !important; max-width: 100% !important; display: block !important; }
   #panel { display: block !important; }
   #alertas { display: block !important; width: 100%; }
@@ -211,6 +240,8 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </style></head><body>
 
 <button id="btn-install-pwa"><span style="font-size: 1.2rem;">📲</span> INSTALAR</button>
+
+<button id="btn-flotante-sos" onclick="irSOS()">S.O.S</button>
 
 <div class="app">
 <header>
