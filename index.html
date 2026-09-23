@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#FFFFFF">
-<meta name="description" content="NI UNA MENOS ARGENTINA · Acta P4 · Cadena de Custodia Judicial · Maltrato · Violencia · Secuestro · Ley 26.485, Ley 25.326, Código Procesal Penal">
+<meta name="description" content="NI UNA MENOS ARGENTINA · Acta P4 · Cadena de Custodia Judicial · Maltrato · Violencia · Secuestro">
 <meta property="og:title" content="NI UNA MENOS ARGENTINA">
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
 <meta http-equiv="Strict-Transport-Security" content="max-age=31536000;preload">
@@ -180,9 +180,9 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
     animation: entrar .5s ease both;
 }
 
-/* 🔥 BOTÓN ANTIPÁNICO FLOTANTE (AHORA INVISIBLE POR DEFECTO) 🔥 */
+/* 🔥 BOTÓN ANTIPÁNICO FLOTANTE 🔥 */
 #btn-flotante-sos {
-    display: none; /* SOLO APARECE SI ESTÁ REGISTRADO */
+    display: none; 
     position: fixed;
     bottom: 25px;
     right: 25px;
@@ -365,12 +365,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <div class="caja" style="width:100%"><div class="llave" id="lk">C4‑XXXX‑XXXX</div>
   <p style="font-weight:600;color:#555;margin-top:18px;font-size:15px; letter-spacing:1px;">ÚNICA · INTRANSFERIBLE · VÁLIDA JUDICIALMENTE</p>
   
-  <div style="background:#E6F4EA;border:1px solid #34A853;padding:16px;border-radius:12px;margin-top:22px;text-align:left;box-shadow:var(--luz);">
-    <b style="color:#0D652D;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">📲 PASO FINAL: INSTALAR APK</b>
-    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Tocá el botón "INSTALAR" arriba a la derecha. Una vez que abras la app instalada, <b>ingresá tu IMEI y esta Llave Maestra</b> en el menú "Consultar Actas" para enlazar el sistema y habilitar tu botón antipánico.</span>
-  </div>
-
-  <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-top:12px;text-align:left;box-shadow:var(--luz);">
+  <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-top:22px;text-align:left;box-shadow:var(--luz);">
     <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">💡 INSTRUCCIÓN VITAL</b>
     <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Si activás el sistema por accidente, tocá "Detener S.O.S". Por seguridad antirrobo, te pedirá que ingreses esta Llave Maestra para confirmar que sos vos. <b>MEMORIZALA.</b></span>
   </div>
@@ -388,10 +383,10 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  <button class="btn" onclick="ir('login')">✦ INGRESAR AL PANEL ✦</button>
 </section>
 
-<!-- 🔥 SECCIÓN DE LOGIN CON IMEI + BOTÓN PEGAR 🔥 -->
+<!-- 🔥 LOGIN LIMPIO 🔥 -->
 <section id="login" class="vista"><button class="btn volver" onclick="ir('inicio')">⟵ VOLVER</button><h2 class="tit">ACCESO JUDICIAL</h2>
  <div class="caja">
-  <p style="text-align:center; font-size:14px; margin-bottom:15px; color:#555; font-weight:600;">Para enlazar la App instalada con la nube, ingresá tu IMEI y Llave.</p>
+  <p style="text-align:center; font-size:14px; margin-bottom:15px; color:#555; font-weight:600;">Ingresá tu IMEI y Llave para acceder a tus actas.</p>
   
   <div class="campo">
     <label>IMEI DEL EQUIPO</label>
@@ -404,7 +399,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
     <button onclick="pegarLlave('lkI')" style="position:absolute; right:8px; top:36px; background:var(--oro); color:#fff; border:none; padding:10px 15px; border-radius:8px; font-weight:900; cursor:pointer; font-family:'Cinzel',serif; font-size:12px;">PEGAR</button>
   </div>
   
- <button class="btn" onclick="validar()">✦ ENLAZAR SISTEMA ✦</button>
+ <button class="btn" onclick="validar()">✦ INGRESAR AL PANEL ✦</button>
  </div>
 </section>
 
@@ -441,10 +436,11 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
  </div>
  <div id="alertas"><div class="caja" style="text-align:center;padding:50px 12px; border:none; box-shadow:none;"><p style="color:#999;font-weight:400; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px;">Sistema en calma · Sin emergencias</p></div></div>
  <button class="btn blanco" onclick="cerrar()" style="margin-top:20px">CERRAR SESIÓN</button>
+ <button class="btn volver" onclick="ir('inicio')" style="margin-top:20px; font-weight: bold;">⟵ VOLVER AL INICIO</button>
 </section>
 </main>
 
-<!-- 🔥 MODAL PARA DETENER ALARMA Y RESETEAR EN CASO DE ERROR 🔥 -->
+<!-- 🔥 MODAL PARA DETENER ALARMA LIMPIO 🔥 -->
 <div id="modalStop" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:9999999; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
    <h3 style="color:#FFF; font-family:'Cinzel',serif; margin-bottom:20px; font-size:24px; letter-spacing:3px;">⚠️ DETENER ALARMA ⚠️</h3>
    <p style="color:#DDD; text-align:center; margin-bottom:25px; font-size:15px; font-weight:600;">Ingresá tu Llave Maestra para confirmar identidad y desactivar el sistema.</p>
@@ -454,7 +450,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
    </div>
    <button class="btn rubi" onclick="confirmarParar()" style="margin-top:25px; width:100%; max-width:400px;">✦ CONFIRMAR ✦</button>
    <button class="btn blanco" onclick="document.getElementById('modalStop').style.display='none'" style="margin-top:15px; width:100%; max-width:400px; background:rgba(255,255,255,0.1); color:#FFF; border-color:#FFF;">CANCELAR</button>
-   <button class="btn rubi" onclick="if(confirm('¿Seguro que querés resetear la app a cero y apagar la alarma? Usá esto si cambiaste de llave y la alarma no se apaga.')) { localStorage.clear(); sessionStorage.clear(); window.location.reload(); }" style="margin-top:35px; width:100%; max-width:400px; background:#4A0008; border: 1px dashed #ff4444; font-size:11px; letter-spacing:2px;">FORZAR APAGADO Y RESETEAR</button>
 </div>
 
 <div class="footer-wrap">
@@ -940,20 +935,21 @@ async function validar(){
     const llaveLocal = localStorage.getItem('llave_maestra');
     const imeiLocal = localStorage.getItem('imei');
     
+    // REDIRECCIÓN CORRECTA: Si ya está validado, va directo al PANEL de Actas
     if (llaveLocal && k === LK(llaveLocal) && (!inputImei || inputImei === imeiLocal)) {
         localStorage.setItem('ok', '1');
         activarBotonesSeguridad();
-        window.ir('inicio');
+        window.ir('panel');
         return;
     }
 
     const storedImei = inputImei || imeiLocal;
-    if(!storedImei || storedImei.length < 15) return alert('Por seguridad, la App recién instalada necesita tu IMEI de 15 dígitos para conectarse a la nube.');
+    if(!storedImei || storedImei.length < 15) return alert('Por seguridad, ingresá tu IMEI de 15 dígitos.');
 
     try {
         await authTrucha(storedImei);
         const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${k}&imei=eq.${storedImei}`);
-        if(res.length === 0) return alert('Acceso Denegado. La Llave o el IMEI no coinciden en la base de datos.');
+        if(res.length === 0) return alert('Acceso Denegado. La Llave o el IMEI son incorrectos.');
         
         const sub = res[0];
         if(new Date() > new Date(sub.fecha_vencimiento)) {
@@ -979,8 +975,8 @@ async function validar(){
             }
 
             activarBotonesSeguridad();
-            alert('✅ LLAVE VÁLIDA. Sistema judicial enlazado a la APK.');
-            window.ir('inicio');
+            // REDIRECCIÓN CORRECTA: Después de loguearse exitosamente, va directo al PANEL
+            window.ir('panel');
         }
     } catch(e) { alert('Error validando la llave. Asegurate de tener internet.'); }
 }
@@ -1466,7 +1462,7 @@ window.confirmarParar = async function(){
     }
 
     if(!esValida) {
-        alert('❌ LLAVE INCORRECTA O SIN CONEXIÓN.\n\nSi estás trabado porque tu celular recuerda una sesión vieja: Tocá el botón rojo de abajo que dice "FORZAR APAGADO Y RESETEAR"');
+        alert('❌ LLAVE INCORRECTA.');
         return;
     }
 
@@ -1676,3 +1672,4 @@ addEventListener('DOMContentLoaded', async ()=>{
  document.addEventListener('contextmenu',e=>e.preventDefault());
 });
 </script></body></html>
+
