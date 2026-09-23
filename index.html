@@ -180,8 +180,9 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
     animation: entrar .5s ease both;
 }
 
-/* 🔥 BOTÓN ANTIPÁNICO FLOTANTE GLOBAL 🔥 */
+/* 🔥 BOTÓN ANTIPÁNICO FLOTANTE (AHORA INVISIBLE POR DEFECTO) 🔥 */
 #btn-flotante-sos {
+    display: none; /* SOLO APARECE SI ESTÁ REGISTRADO */
     position: fixed;
     bottom: 25px;
     right: 25px;
@@ -197,7 +198,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
     box-shadow: 0 5px 20px rgba(139,0,0,0.6);
     cursor: pointer;
     z-index: 9999999;
-    display: flex;
     align-items: center;
     justify-content: center;
     animation: pulsoSOS 2s infinite;
@@ -241,7 +241,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 
 <button id="btn-install-pwa"><span style="font-size: 1.2rem;">📲</span> INSTALAR</button>
 
-<button id="btn-flotante-sos" onclick="if(localStorage.getItem('ok')==='1'){ window.ir('sos'); disparoSOS(); } else { alert('Debes activar la protección primero.'); window.ir('inicio'); }">S.O.S</button>
+<button id="btn-flotante-sos" onclick="window.ir('sos'); disparoSOS();">S.O.S</button>
 
 <div class="app">
 <header>
@@ -444,7 +444,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 </main>
 
-<!-- 🔥 MODAL PARA DETENER ALARMA DE FORMA SEGURA Y NATIVA 🔥 -->
+<!-- 🔥 MODAL PARA DETENER ALARMA Y RESETEAR EN CASO DE ERROR 🔥 -->
 <div id="modalStop" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:9999999; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
    <h3 style="color:#FFF; font-family:'Cinzel',serif; margin-bottom:20px; font-size:24px; letter-spacing:3px;">⚠️ DETENER ALARMA ⚠️</h3>
    <p style="color:#DDD; text-align:center; margin-bottom:25px; font-size:15px; font-weight:600;">Ingresá tu Llave Maestra para confirmar identidad y desactivar el sistema.</p>
@@ -454,6 +454,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
    </div>
    <button class="btn rubi" onclick="confirmarParar()" style="margin-top:25px; width:100%; max-width:400px;">✦ CONFIRMAR ✦</button>
    <button class="btn blanco" onclick="document.getElementById('modalStop').style.display='none'" style="margin-top:15px; width:100%; max-width:400px; background:rgba(255,255,255,0.1); color:#FFF; border-color:#FFF;">CANCELAR</button>
+   <button class="btn rubi" onclick="if(confirm('¿Seguro que querés resetear la app a cero y apagar la alarma? Usá esto si cambiaste de llave y la alarma no se apaga.')) { localStorage.clear(); sessionStorage.clear(); window.location.reload(); }" style="margin-top:35px; width:100%; max-width:400px; background:#4A0008; border: 1px dashed #ff4444; font-size:11px; letter-spacing:2px;">FORZAR APAGADO Y RESETEAR</button>
 </div>
 
 <div class="footer-wrap">
@@ -482,7 +483,6 @@ const LK = k => {
 };
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
-// Auto-formato en el campo de parar alarma
 document.getElementById('lkStop').addEventListener('input', function(e){ this.value = LK(this.value); });
 document.getElementById('lkI').addEventListener('input', function(e){ this.value = LK(this.value); });
 
@@ -550,9 +550,6 @@ if(installBtn) {
     });
 }
 
-// =========================================================================
-// 🔥 FUNCIÓN PARA PEGAR LA LLAVE NATIVAMENTE (FLEXIBLE) 🔥
-// =========================================================================
 async function pegarLlave(inputId) {
     try {
         const text = await navigator.clipboard.readText();
@@ -587,6 +584,20 @@ async function pedirPermisosGlobalesYGPS() {
         () => alert("❌ RECHAZASTE EL GPS. El sistema no podrá enviar tu ubicación en una emergencia."),
         {enableHighAccuracy: true}
     );
+}
+
+function activarBotonesSeguridad() {
+    let z = document.getElementById('zonaOk');
+    let b = document.getElementById('btn-flotante-sos');
+    if(z) z.style.display = 'block';
+    if(b) b.style.display = 'flex';
+}
+
+function ocultarBotonesSeguridad() {
+    let z = document.getElementById('zonaOk');
+    let b = document.getElementById('btn-flotante-sos');
+    if(z) z.style.display = 'none';
+    if(b) b.style.display = 'none';
 }
 
 window.ir = async id => {
@@ -844,6 +855,7 @@ async function alta(){
         localStorage.setItem('ok','1');
         localStorage.setItem('llave_maestra', k); 
         
+        activarBotonesSeguridad();
         pedirPermisosGlobalesYGPS(); 
         window.ir('llave');
     } catch(err) { 
@@ -877,6 +889,7 @@ async function pagar(monto, plan) {
         localStorage.setItem('imei', i);
         localStorage.setItem('llave_maestra', k); 
         
+        activarBotonesSeguridad();
         pedirPermisosGlobalesYGPS();
         window.ir('llave');
     } catch(err) { alert('Error al acreditar el pago.'); }
@@ -911,6 +924,7 @@ async function procesarPagoIA() {
         localStorage.setItem('ok', '1');
         localStorage.setItem('imei', i);
         
+        activarBotonesSeguridad();
         alert('✅ PAGO VERIFICADO EXITOSAMENTE POR LA IA. Llave maestra generada.');
         window.ir('llave');
     };
@@ -928,6 +942,7 @@ async function validar(){
     
     if (llaveLocal && k === LK(llaveLocal) && (!inputImei || inputImei === imeiLocal)) {
         localStorage.setItem('ok', '1');
+        activarBotonesSeguridad();
         window.ir('inicio');
         return;
     }
@@ -963,6 +978,7 @@ async function validar(){
                 localStorage.setItem('contactos', cRespaldo);
             }
 
+            activarBotonesSeguridad();
             alert('✅ LLAVE VÁLIDA. Sistema judicial enlazado a la APK.');
             window.ir('inicio');
         }
@@ -971,7 +987,9 @@ async function validar(){
 
 const cerrar=()=>{
     localStorage.removeItem('imei'); 
+    localStorage.setItem('ok', '0');
     sessionStorage.clear();
+    ocultarBotonesSeguridad();
     location.reload();
 };
 
@@ -993,6 +1011,7 @@ async function recuperar(accion) {
         if(accion === 'restaurar') {
             localStorage.setItem('imei', i);
             localStorage.setItem('ok', '1');
+            activarBotonesSeguridad();
             alert('✅ Sistema restaurado con éxito en este dispositivo.');
             window.ir('panel');
         } else if(accion === 'detonar') {
@@ -1425,9 +1444,6 @@ const parar = () => {
     document.body.style.backgroundColor = '#FFFFFF';
 };
 
-// =========================================================================
-// 🔥 NUEVA LÓGICA DE APAGADO DE EMERGENCIA 🔥
-// =========================================================================
 window.confirmarParar = async function(){
     const k = document.getElementById('lkStop').value;
     if(!k) return;
@@ -1450,7 +1466,7 @@ window.confirmarParar = async function(){
     }
 
     if(!esValida) {
-        alert('❌ LLAVE INCORRECTA O SIN CONEXIÓN.\n\nSi estás trabado porque tu celular recuerda una sesión vieja: andá a Ajustes del Teléfono > Aplicaciones > Ni Una Menos > Almacenamiento > "BORRAR DATOS". Eso apagará el sistema de raíz.');
+        alert('❌ LLAVE INCORRECTA O SIN CONEXIÓN.\n\nSi estás trabado porque tu celular recuerda una sesión vieja: Tocá el botón rojo de abajo que dice "FORZAR APAGADO Y RESETEAR"');
         return;
     }
 
@@ -1643,7 +1659,7 @@ addEventListener('DOMContentLoaded', async ()=>{
     if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = savedImei;
  }
  if(localStorage.getItem('ok')==='1'){
-    document.getElementById('zonaOk').style.display='block';
+    activarBotonesSeguridad();
  }
  
  if (window.cordova && window.cordova.plugins && window.cordova.plugins.backgroundMode) {
