@@ -401,7 +401,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
   <div class="campo" style="position:relative;">
     <label>LLAVE MAESTRA C4</label>
     <input id="lkI" placeholder="C4‑XXXX‑XXXX" style="text-align:center;font-size:20px;letter-spacing:4px;text-transform:uppercase; font-weight:800; padding-right:85px;">
-    <button onclick="pegarLlave()" style="position:absolute; right:8px; top:36px; background:var(--oro); color:#fff; border:none; padding:10px 15px; border-radius:8px; font-weight:900; cursor:pointer; font-family:'Cinzel',serif; font-size:12px;">PEGAR</button>
+    <button onclick="pegarLlave('lkI')" style="position:absolute; right:8px; top:36px; background:var(--oro); color:#fff; border:none; padding:10px 15px; border-radius:8px; font-weight:900; cursor:pointer; font-family:'Cinzel',serif; font-size:12px;">PEGAR</button>
   </div>
   
  <button class="btn" onclick="validar()">✦ ENLAZAR SISTEMA ✦</button>
@@ -409,7 +409,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 
 <section id="sos" class="vista">
- <button class="btn volver" onclick="if(window.sosActivo){window.pararConLlave();}else{window.ir('inicio');}" style="position:relative; z-index:9999;">⟵ ATRÁS</button>
+ <button class="btn volver" onclick="if(window.sosActivo){ document.getElementById('modalStop').style.display='flex'; document.getElementById('lkStop').value=''; }else{window.ir('inicio');}" style="position:relative; z-index:9999;">⟵ ATRÁS</button>
  <h2 class="tit">PROTECCIÓN ACTIVA</h2>
  <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
  
@@ -444,6 +444,18 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 </main>
 
+<!-- 🔥 MODAL PARA DETENER ALARMA DE FORMA SEGURA Y NATIVA 🔥 -->
+<div id="modalStop" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:9999999; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+   <h3 style="color:#FFF; font-family:'Cinzel',serif; margin-bottom:20px; font-size:24px; letter-spacing:3px;">⚠️ DETENER ALARMA ⚠️</h3>
+   <p style="color:#DDD; text-align:center; margin-bottom:25px; font-size:15px; font-weight:600;">Ingresá tu Llave Maestra para confirmar identidad y desactivar el sistema.</p>
+   <div class="campo" style="position:relative; width:100%; max-width:400px; margin-bottom:0;">
+     <input id="lkStop" placeholder="C4-XXXX-XXXX" style="text-align:center;font-size:20px;letter-spacing:4px;text-transform:uppercase; font-weight:800; padding-right:85px; width:100%; border:2px solid var(--oro);">
+     <button onclick="pegarLlave('lkStop')" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:var(--oro); color:#fff; border:none; padding:10px 15px; border-radius:8px; font-weight:900; cursor:pointer; font-family:'Cinzel',serif; font-size:12px;">PEGAR</button>
+   </div>
+   <button class="btn rubi" onclick="confirmarParar()" style="margin-top:25px; width:100%; max-width:400px;">✦ CONFIRMAR ✦</button>
+   <button class="btn blanco" onclick="document.getElementById('modalStop').style.display='none'" style="margin-top:15px; width:100%; max-width:400px; background:rgba(255,255,255,0.1); color:#FFF; border-color:#FFF;">CANCELAR</button>
+</div>
+
 <div class="footer-wrap">
  <div class="scroll-container"><div class="scroll-text">✦ NI UNA MENOS ARGENTINA 🇦🇷 niunamenosarg.com 🇦🇷 ACTA P4 🇦🇷 CADENA DE CUSTODIA 🇦🇷 LEY 26.485 🇦🇷 LEY 25.326 🇦🇷 CÓDIGO PROCESAL PENAL 🇦🇷 SHA‑256 + SHA‑3 + HMAC 🇦🇷 GPS 🇦🇷 AUDIO CONTINUO 🇦🇷 FOTOS GIGANTES 🇦🇷 SENSORES Y ANTENAS 🇦🇷 MODO SIGILO 🇦🇷 PAGO INTELIGENTE IA 🇦🇷</div></div>
  <footer><strong>NI UNA MENOS · ENERGY 2026</strong><br>niunamenosarg.com · Custodia Judicial Forense · Marco legal estricto<br>© MMXXVI · Hecho en la República Argentina 🇦🇷</footer>
@@ -470,6 +482,10 @@ const LK = k => {
 };
 const IM=i=>(i||'').toString().replace(/\D/g,'').slice(0,15);
 
+// Auto-formato en el campo de parar alarma
+document.getElementById('lkStop').addEventListener('input', function(e){ this.value = LK(this.value); });
+document.getElementById('lkI').addEventListener('input', function(e){ this.value = LK(this.value); });
+
 let currentJWT = null;
 
 async function authTrucha(imei) {
@@ -493,11 +509,7 @@ async function authTrucha(imei) {
                 body: JSON.stringify({ email, password })
             });
             let regData = await regRes.json();
-            
-            if (!regRes.ok) {
-                return false;
-            }
-
+            if (!regRes.ok) return false;
             data = regData; 
         }
         
@@ -508,7 +520,6 @@ async function authTrucha(imei) {
             currentJWT = data.session.access_token;
             return true;
         }
-        
         return false;
     } catch (e) {
         return false;
@@ -532,9 +543,6 @@ async function supaQuery(method, endpoint, body = null) {
     return res.json();
 }
 
-// =========================================================================
-// 🔥 LÓGICA DE BOTÓN PARA FORZAR DESCARGA DEL APK REAL DESDE GITHUB 🔥
-// =========================================================================
 const installBtn = document.getElementById('btn-install-pwa');
 if(installBtn) {
     installBtn.addEventListener('click', () => {
@@ -543,12 +551,12 @@ if(installBtn) {
 }
 
 // =========================================================================
-// 🔥 FUNCIÓN PARA PEGAR LA LLAVE NATIVAMENTE 🔥
+// 🔥 FUNCIÓN PARA PEGAR LA LLAVE NATIVAMENTE (FLEXIBLE) 🔥
 // =========================================================================
-async function pegarLlave() {
+async function pegarLlave(inputId) {
     try {
         const text = await navigator.clipboard.readText();
-        document.getElementById('lkI').value = text;
+        document.getElementById(inputId).value = LK(text);
     } catch(e) {
         alert('No se pudo pegar automáticamente. Mantené presionado el cuadro de texto y seleccioná "Pegar".');
     }
@@ -556,25 +564,13 @@ async function pegarLlave() {
 
 let mapas = {};
 
-// =========================================================================
-// 🔥 DISPARADOR DE PERMISOS NATIVOS AUTOMÁTICOS
-// =========================================================================
 async function pedirPermisosGlobalesYGPS() {
     alert("⚠️ CONFIGURACIÓN DE SEGURIDAD ⚠️\nA continuación el sistema te pedirá acceso al GPS, Cámara y Micrófono. Es OBLIGATORIO que pongas 'Permitir' en todo para que funcione ante un robo o emergencia.");
     
     if (window.cordova && cordova.plugins && cordova.plugins.permissions) {
         const p = cordova.plugins.permissions;
-        const permisosNativos = [
-            p.CAMERA,
-            p.RECORD_AUDIO,
-            p.ACCESS_FINE_LOCATION,
-            p.ACCESS_BACKGROUND_LOCATION
-        ];
-        p.requestPermissions(permisosNativos, (status) => {
-            console.log('Permisos nativos solicitados:', status);
-        }, () => {
-            console.error('Error al pedir permisos nativos');
-        });
+        const permisosNativos = [p.CAMERA, p.RECORD_AUDIO, p.ACCESS_FINE_LOCATION, p.ACCESS_BACKGROUND_LOCATION];
+        p.requestPermissions(permisosNativos, (status) => {}, () => {});
     }
 
     if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
@@ -634,15 +630,10 @@ let wakeLockObj = null;
 let audioInvisible = null;
 let cooldownRobo = false; 
 
-// =========================================================================
-// 🔥 MODO SIGILO: ENGAÑO A ANDROID PARA MANTENER LA CÁMARA 🔥
-// =========================================================================
 window.sigilo = async () => {
     if (window.cordova && cordova.plugins && cordova.plugins.permissions) {
         const p = cordova.plugins.permissions;
-        p.requestPermissions([
-            p.CAMERA, p.RECORD_AUDIO, p.ACCESS_FINE_LOCATION, p.ACCESS_BACKGROUND_LOCATION
-        ], () => console.log('Permisos OK'), () => console.log('Error permisos'));
+        p.requestPermissions([p.CAMERA, p.RECORD_AUDIO, p.ACCESS_FINE_LOCATION, p.ACCESS_BACKGROUND_LOCATION], () => {}, () => {});
     }
     
     navigator.geolocation.getCurrentPosition(()=>{}, ()=>{}, {enableHighAccuracy: true});
@@ -668,7 +659,7 @@ window.sigilo = async () => {
         audioInvisible = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
         audioInvisible.loop = true;
         audioInvisible.setAttribute('playsinline', ''); 
-        audioInvisible.play().catch(e => console.log("Se requiere interacción para el audio"));
+        audioInvisible.play().catch(e => {});
     }
 
     let s = document.createElement('div');
@@ -772,7 +763,8 @@ window.sosActivo = false;
 
 window.toggleSOS = function() {
     if(window.sosActivo) {
-        window.pararConLlave();
+        document.getElementById('modalStop').style.display='flex';
+        document.getElementById('lkStop').value='';
     } else {
         disparoSOS();
     }
@@ -780,7 +772,8 @@ window.toggleSOS = function() {
 
 window.retrocederDeSOS = function() {
     if(window.sosActivo) {
-        window.pararConLlave();
+        document.getElementById('modalStop').style.display='flex';
+        document.getElementById('lkStop').value='';
     } else {
         window.ir('inicio');
     }
@@ -924,9 +917,6 @@ async function procesarPagoIA() {
     reader.readAsDataURL(file);
 }
 
-// =========================================================================
-// 🔥 VALIDACIÓN CORREGIDA CON IMEI PARA LA APK EN BLANCO 🔥
-// =========================================================================
 async function validar(){
     const k = LK(document.getElementById('lkI').value);
     const inputImei = IM(document.getElementById('lkImei').value);
@@ -936,10 +926,9 @@ async function validar(){
     const llaveLocal = localStorage.getItem('llave_maestra');
     const imeiLocal = localStorage.getItem('imei');
     
-    // Si ya está vinculada y coincide
     if (llaveLocal && k === LK(llaveLocal) && (!inputImei || inputImei === imeiLocal)) {
         localStorage.setItem('ok', '1');
-        window.ir('inicio'); // Redirige al inicio para que vea el botón activo
+        window.ir('inicio');
         return;
     }
 
@@ -948,7 +937,6 @@ async function validar(){
 
     try {
         await authTrucha(storedImei);
-
         const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${k}&imei=eq.${storedImei}`);
         if(res.length === 0) return alert('Acceso Denegado. La Llave o el IMEI no coinciden en la base de datos.');
         
@@ -976,7 +964,7 @@ async function validar(){
             }
 
             alert('✅ LLAVE VÁLIDA. Sistema judicial enlazado a la APK.');
-            window.ir('inicio'); // Redirige directo al inicio para ver el botón S.O.S
+            window.ir('inicio');
         }
     } catch(e) { alert('Error validando la llave. Asegurate de tener internet.'); }
 }
@@ -1049,9 +1037,6 @@ function formatArg(num) {
     return '549' + c;
 }
 
-// =========================================================================
-// 🔥 GATILLO DE WHATSAPP GLOBAL
-// =========================================================================
 function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     if (!contactos || !Array.isArray(contactos) || contactos.length === 0) {
         try {
@@ -1095,9 +1080,6 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     }
 }
 
-// =========================================================================
-// 🔥 GATILLO DE EMAIL GLOBAL
-// =========================================================================
 function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
     if (!email) return;
 
@@ -1131,20 +1113,16 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
-// =========================================================================
-// 🔥 CAPTURA DE CÁMARA CORREGIDA PARA CÓDIGO NATIVO CORDOVA 🔥
-// =========================================================================
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
         const v = document.createElement('video');
         v.muted = true; v.playsInline = true; v.autoplay = true;
-        // EL TRUCO DEFINITIVO PARA CORDOVA Y ANDROID
         v.style.position = 'fixed';
         v.style.top = '10px'; v.style.left = '10px';
         v.style.width = '10px'; v.style.height = '10px';
-        v.style.opacity = '0.01'; // 1% visible, el ojo humano no lo ve, el sistema sí
-        v.style.zIndex = '999999'; // Por encima de todo para que no se des-renderice
-        v.style.pointerEvents = 'none'; // Para que no estorbe si tocás la pantalla
+        v.style.opacity = '0.01'; 
+        v.style.zIndex = '999999'; 
+        v.style.pointerEvents = 'none'; 
         document.body.appendChild(v);
         
         v.srcObject = stream;
@@ -1166,7 +1144,7 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
                 v.srcObject = null;
                 document.body.removeChild(v);
                 resolve();
-            }, 1500); // 1.5s para asegurar que Cordova enfoque bien la cámara
+            }, 1500); 
         };
         v.onerror = () => { document.body.removeChild(v); resolve(); };
     });
@@ -1388,10 +1366,7 @@ let sh_last_x = 0, sh_last_y = 0, sh_last_z = 0;
 let sh_lastUpdate = 0;
 let sh_initialized = false;
 
-// =========================================================================
-// 🔥 SENSIBILIDAD DEL SACUDÓN CORREGIDA PARA DISPARAR MÁS FÁCIL 🔥
-// =========================================================================
-const SHAKE_THRESHOLD = 1500; // ANTES 3200. AHORA DISPARA CON UN SACUDÓN NORMAL.
+const SHAKE_THRESHOLD = 1500; 
 
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
@@ -1424,7 +1399,6 @@ window.addEventListener('devicemotion', function (e) {
 }, true);
 
 function activarAlarmaRobo() {
-    // FORZAR LA APP AL FRENTE PARA SALTAR EL BLOQUEO DE CÁMARA DE ANDROID
     if (window.cordova && cordova.plugins && cordova.plugins.backgroundMode) {
         cordova.plugins.backgroundMode.wakeUp();
         cordova.plugins.backgroundMode.unlock();
@@ -1451,8 +1425,11 @@ const parar = () => {
     document.body.style.backgroundColor = '#FFFFFF';
 };
 
-window.pararConLlave = async function(){
-    const k = prompt('⚠️ SEGURIDAD ANTIRROBO\nPara detener la alerta, ingresá tu Llave Maestra C4:');
+// =========================================================================
+// 🔥 NUEVA LÓGICA DE APAGADO DE EMERGENCIA 🔥
+// =========================================================================
+window.confirmarParar = async function(){
+    const k = document.getElementById('lkStop').value;
     if(!k) return;
     
     const llaveLimpia = LK(k);
@@ -1468,12 +1445,12 @@ window.pararConLlave = async function(){
             const imeiActivo = localStorage.getItem('imei');
             if (imeiActivo) await authTrucha(imeiActivo);
             const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${llaveLimpia}&activa=eq.true`);
-            if(res.length > 0) { esValida = true; }
-        } catch(e) {}
+            if(res && res.length > 0) { esValida = true; }
+        } catch(e) { console.log(e); }
     }
 
     if(!esValida) {
-        alert('❌ LLAVE INCORRECTA. Asegurate de escribir bien.');
+        alert('❌ LLAVE INCORRECTA O SIN CONEXIÓN.\n\nSi estás trabado porque tu celular recuerda una sesión vieja: andá a Ajustes del Teléfono > Aplicaciones > Ni Una Menos > Almacenamiento > "BORRAR DATOS". Eso apagará el sistema de raíz.');
         return;
     }
 
@@ -1483,6 +1460,7 @@ window.pararConLlave = async function(){
         supaQuery('PATCH', `c4_suscripciones?imei=eq.${imeiActivo}`, { alarma_remota: false }).catch(()=>{});
     }
 
+    document.getElementById('modalStop').style.display='none';
     alert('✅ Código verificado. Desactivando alarma...');
 
     parar(); 
