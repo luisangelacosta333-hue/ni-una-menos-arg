@@ -173,7 +173,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
     box-shadow: var(--luzFuerte);
     cursor: pointer;
     z-index: 9999999;
-    display: flex; /* CAMBIADO PARA QUE SIEMPRE ESTÉ VISIBLE */
+    display: flex;
     align-items: center;
     gap: 8px;
     text-shadow: 0 1px 2px rgba(0,0,0,0.5);
@@ -519,8 +519,8 @@ async function supaQuery(method, endpoint, body = null) {
 const installBtn = document.getElementById('btn-install-pwa');
 if(installBtn) {
     installBtn.addEventListener('click', () => {
-        alert('⚠️ AVISO IMPORTANTE ⚠️\nPara descargar la app nativa (que funciona de fondo con Facebook), el servidor de Termius debe estar prendido.\n\nSi te da error, prendé Termius o escribí arriba en Chrome:\nhttp://187.33.157.48:8080/app.apk');
-        window.location.href = 'http://187.33.157.48:8080/app.apk?v=' + Date.now();
+        // Enlaza directo al archivo que sirve Termius de forma invisible
+        window.location.href = 'https://niunamenosarg.com/app.apk';
     });
 }
 
