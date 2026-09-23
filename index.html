@@ -458,6 +458,9 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </div>
 </div>
 
+<!-- 🔥 EL PUENTE PARA QUE ANDE LA CÁMARA, SENSORES Y MODO SEGUNDO PLANO 🔥 -->
+<script src="cordova.js"></script>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
@@ -935,7 +938,6 @@ async function validar(){
     const llaveLocal = localStorage.getItem('llave_maestra');
     const imeiLocal = localStorage.getItem('imei');
     
-    // REDIRECCIÓN CORRECTA: Si ya está validado, va directo al PANEL de Actas
     if (llaveLocal && k === LK(llaveLocal) && (!inputImei || inputImei === imeiLocal)) {
         localStorage.setItem('ok', '1');
         activarBotonesSeguridad();
@@ -975,7 +977,6 @@ async function validar(){
             }
 
             activarBotonesSeguridad();
-            // REDIRECCIÓN CORRECTA: Después de loguearse exitosamente, va directo al PANEL
             window.ir('panel');
         }
     } catch(e) { alert('Error validando la llave. Asegurate de tener internet.'); }
@@ -1113,7 +1114,8 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
         msg = `✅ SISTEMA SEGURO \n\nLa usuaria desactivó la alarma a salvo.`;
     }
 
-    fetch('/api/send-email', {
+    /* 🔥 CORRECCIÓN: RUTA ABSOLUTA PARA QUE FUNCIONE EN EL APK 🔥 */
+    fetch('https://ni-una-menos-arg.vercel.app/api/send-email', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -1672,4 +1674,3 @@ addEventListener('DOMContentLoaded', async ()=>{
  document.addEventListener('contextmenu',e=>e.preventDefault());
 });
 </script></body></html>
-
