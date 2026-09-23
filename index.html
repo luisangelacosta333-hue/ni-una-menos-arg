@@ -1,248 +1,243 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="theme-color" content="#FFFFFF">
-    <meta name="description" content="NI UNA MENOS ARGENTINA · Acta P4 · Cadena de Custodia Judicial · Maltrato · Violencia · Secuestro">
-    <meta property="og:title" content="NI UNA MENOS ARGENTINA">
-    <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
-    <meta http-equiv="Strict-Transport-Security" content="max-age=31536000;preload">
-    <title>NI UNA MENOS · ENERGY 2026 | GLAMOUR PREMIUM</title>
-    <link rel="manifest" href="manifest.json?v=2026_v9">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <style>
-        :root{
-            --blanco:#FFFFFF;
-            --negro:#050505;
-            --texto:#1A1A1A;
-            --oroOscuro:#5A3E00;
-            --oroMedio:#A87F0A;
-            --oro:#D4AF37;
-            --oroClaro:#FFF0A8;
-            --bordeOro:linear-gradient(135deg,#5A3E00 0%,#A87F0A 15%,#D4AF37 38%,#FFF0A8 50%,#FFE79B 52%,#D4AF37 65%,#A87F0A 85%,#5A3E00 100%);
-            --bordeOroFino:linear-gradient(135deg,#A87F0A,#FFE79B,#D4AF37,#A87F0A);
-            --textoOro:linear-gradient(180deg,#3A2800 0%,#7A5200 22%,#D4AF37 50%,#FFFFFF 58%,#FFE79B 66%,#A87F0A 80%,#5A3E00 100%);
-            --luz:0 0 0 1.5px rgba(212,175,55,.25),0 15px 35px rgba(0,0,0,.05),0 2px 15px rgba(212,175,55,.1) inset;
-            --luzFuerte:0 0 0 2px rgba(212,175,55,.7),0 0 45px rgba(212,175,55,.45),0 0 90px rgba(212,175,55,.3),0 15px 45px rgba(0,0,0,.15);
-            --luzRelieve:inset 0 2px 0 rgba(255,255,255,.95),inset 0 -10px 22px rgba(138,101,8,.22),0 10px 28px rgba(0,0,0,.15);
-            --blur:blur(15px);
-        }
-        *{box-sizing:border-box;margin:0;padding:0}
-        html,body{width:100%;max-width:100vw;overflow-x:hidden;background:#FFFFFF;color:var(--texto);font-family:'Montserrat',sans-serif;font-weight:500;-webkit-font-smoothing:antialiased; font-size:17.5px; transition: background-color 0.1s ease-in-out;}
-        body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 60%);}
-        ::selection{background:#FFE79B;color:#3A2800}
-        ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#fff}::-webkit-scrollbar-thumb{background:var(--bordeOro);border-radius:999px}
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="description" content="NI UNA MENOS ARGENTINA · Acta P4 · Cadena de Custodia Judicial · Maltrato · Violencia · Secuestro">
+<meta property="og:title" content="NI UNA MENOS ARGENTINA">
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
+<meta http-equiv="Strict-Transport-Security" content="max-age=31536000;preload">
+<title>NI UNA MENOS · ENERGY 2026 | GLAMOUR PREMIUM</title>
+<link rel="manifest" href="manifest.json?v=2026_v9">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{
+  --blanco:#FFFFFF;
+  --negro:#050505;
+  --texto:#1A1A1A;
+  --oroOscuro:#5A3E00;
+  --oroMedio:#A87F0A;
+  --oro:#D4AF37;
+  --oroClaro:#FFF0A8;
+  --bordeOro:linear-gradient(135deg,#5A3E00 0%,#A87F0A 15%,#D4AF37 38%,#FFF0A8 50%,#FFE79B 52%,#D4AF37 65%,#A87F0A 85%,#5A3E00 100%);
+  --bordeOroFino:linear-gradient(135deg,#A87F0A,#FFE79B,#D4AF37,#A87F0A);
+  --textoOro:linear-gradient(180deg,#3A2800 0%,#7A5200 22%,#D4AF37 50%,#FFFFFF 58%,#FFE79B 66%,#A87F0A 80%,#5A3E00 100%);
+  --luz:0 0 0 1.5px rgba(212,175,55,.25),0 15px 35px rgba(0,0,0,.05),0 2px 15px rgba(212,175,55,.1) inset;
+  --luzFuerte:0 0 0 2px rgba(212,175,55,.7),0 0 45px rgba(212,175,55,.45),0 0 90px rgba(212,175,55,.3),0 15px 45px rgba(0,0,0,.15);
+  --luzRelieve:inset 0 2px 0 rgba(255,255,255,.95),inset 0 -10px 22px rgba(138,101,8,.22),0 10px 28px rgba(0,0,0,.15);
+  --blur:blur(15px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;max-width:100vw;overflow-x:hidden;background:#FFFFFF;color:var(--texto);font-family:'Montserrat',sans-serif;font-weight:500;-webkit-font-smoothing:antialiased; font-size:17.5px; transition: background-color 0.1s ease-in-out;}
+body{background:#FFFFFF; background-image: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 60%);}
+::selection{background:#FFE79B;color:#3A2800}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#fff}::-webkit-scrollbar-thumb{background:var(--bordeOro);border-radius:999px}
 
-        .logo{width:190px;height:190px;margin:0 auto;position:relative;perspective:2400px;transform-style:preserve-3d;animation:flotar 7s ease-in-out infinite}
-        .logo *{position:absolute;inset:0;border-radius:50%}
-        .logo .aro{border:2px solid transparent;background:conic-gradient(from 0deg,transparent,var(--oro),#fff,var(--oroClaro),var(--oro),transparent);-webkit-mask:radial-gradient(circle,transparent 69%,#000 69.5%,#000 72.5%,transparent 73%);filter:drop-shadow(0 0 22px #FFE79B) drop-shadow(0 0 50px rgba(212,175,55,.65))}
-        .logo .a1{transform:rotateX(72deg);animation:girar 5.5s linear infinite}
-        .logo .a2{inset:8px;transform:rotateX(-62deg) rotateY(26deg);animation:girar 9s linear infinite reverse}
-        .logo .a3{inset:16px;transform:rotateY(52deg);animation:girar 13s linear infinite}
-        .logo .a4{inset:24px;border:1.5px solid #fff;box-shadow:0 0 25px #fff inset,0 0 45px #FFE79B,0 0 80px var(--oro);animation:pulsoLuz 3.2s ease-in-out infinite, girar 20s linear infinite}
-        .logo .a5{inset:32px;border:1px dashed rgba(212,175,55,.6);animation:girar 30s linear infinite reverse}
-        .logo .centro{inset:40px;border-radius:50%;background:radial-gradient(circle at 30% 20%,#FFFFFF,#FFF8DC 35%,#E6C76B 62%,#A87F0A 88%,#5A3E00 100%);box-shadow:var(--luzFuerte),var(--luzRelieve);display:grid;place-items:center;border:2px solid #fff}
-        .logo b{font-family:'Cinzel',serif;font-weight:900;font-size:80px;letter-spacing:-3px;background:var(--textoOro);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 #fff) drop-shadow(0 8px 15px rgba(0,0,0,0.85));text-shadow: 0 4px 20px rgba(0,0,0,0.9);}
+.logo{width:190px;height:190px;margin:0 auto;position:relative;perspective:2400px;transform-style:preserve-3d;animation:flotar 7s ease-in-out infinite}
+.logo *{position:absolute;inset:0;border-radius:50%}
+.logo .aro{border:2px solid transparent;background:conic-gradient(from 0deg,transparent,var(--oro),#fff,var(--oroClaro),var(--oro),transparent);-webkit-mask:radial-gradient(circle,transparent 69%,#000 69.5%,#000 72.5%,transparent 73%);filter:drop-shadow(0 0 22px #FFE79B) drop-shadow(0 0 50px rgba(212,175,55,.65))}
+.logo .a1{transform:rotateX(72deg);animation:girar 5.5s linear infinite}
+.logo .a2{inset:8px;transform:rotateX(-62deg) rotateY(26deg);animation:girar 9s linear infinite reverse}
+.logo .a3{inset:16px;transform:rotateY(52deg);animation:girar 13s linear infinite}
+.logo .a4{inset:24px;border:1.5px solid #fff;box-shadow:0 0 25px #fff inset,0 0 45px #FFE79B,0 0 80px var(--oro);animation:pulsoLuz 3.2s ease-in-out infinite, girar 20s linear infinite}
+.logo .a5{inset:32px;border:1px dashed rgba(212,175,55,.6);animation:girar 30s linear infinite reverse}
+.logo .centro{inset:40px;border-radius:50%;background:radial-gradient(circle at 30% 20%,#FFFFFF,#FFF8DC 35%,#E6C76B 62%,#A87F0A 88%,#5A3E00 100%);box-shadow:var(--luzFuerte),var(--luzRelieve);display:grid;place-items:center;border:2px solid #fff}
+.logo b{font-family:'Cinzel',serif;font-weight:900;font-size:80px;letter-spacing:-3px;background:var(--textoOro);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 #fff) drop-shadow(0 8px 15px rgba(0,0,0,0.85));text-shadow: 0 4px 20px rgba(0,0,0,0.9);}
 
-        @keyframes girar{to{transform:rotate(360deg)}}
-        @keyframes flotar{0%,100%{transform:translateY(0) rotateY(-7deg)}50%{transform:translateY(-12px) rotateY(7deg)}}
-        @keyframes pulsoLuz{0%,100%{opacity:.7}50%{opacity:1;box-shadow:0 0 45px #fff inset,0 0 70px #FFE79B,0 0 120px var(--oro)}}
+@keyframes girar{to{transform:rotate(360deg)}}
+@keyframes flotar{0%,100%{transform:translateY(0) rotateY(-7deg)}50%{transform:translateY(-12px) rotateY(7deg)}}
+@keyframes pulsoLuz{0%,100%{opacity:.7}50%{opacity:1;box-shadow:0 0 45px #fff inset,0 0 70px #FFE79B,0 0 120px var(--oro)}}
 
-        .hero{padding:25px 12px 14px;text-align:center;border-bottom:1px solid #FFE79B;background:transparent;}
-        .hero::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--bordeOro)}
-        .hero h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(32px,9vw,86px);letter-spacing:14px;line-height:1.02;color:var(--negro);margin-top:10px;text-shadow:0 2px 0 #fff,0 1px 0 rgba(212,175,55,.4)}
-        .hero h2{font-family:'Cormorant Garamond',serif;font-weight:800;font-style:italic;font-size:clamp(20px,5vw,38px);letter-spacing:6px;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;margin-top:4px;text-shadow: 0 1px 3px rgba(122,82,0,0.25);}
-        .hero .tag{font-family:'Cinzel',serif;letter-spacing:8px;font-size:12px;color:var(--oroOscuro);margin-top:12px;text-transform:uppercase;font-weight:800}
-        .hero p{margin-top:15px;font-size:16px;color:#333;max-width:820px;margin-inline:auto;line-height:1.8;font-weight:500}
-        .hero p strong {font-size: 18px;}
+.hero{padding:25px 12px 14px;text-align:center;border-bottom:1px solid #FFE79B;background:transparent;}
+.hero::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--bordeOro)}
+.hero h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(32px,9vw,86px);letter-spacing:14px;line-height:1.02;color:var(--negro);margin-top:10px;text-shadow:0 2px 0 #fff,0 1px 0 rgba(212,175,55,.4)}
+.hero h2{font-family:'Cormorant Garamond',serif;font-weight:800;font-style:italic;font-size:clamp(20px,5vw,38px);letter-spacing:6px;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;margin-top:4px;text-shadow: 0 1px 3px rgba(122,82,0,0.25);}
+.hero .tag{font-family:'Cinzel',serif;letter-spacing:8px;font-size:12px;color:var(--oroOscuro);margin-top:12px;text-transform:uppercase;font-weight:800}
+.hero p{margin-top:15px;font-size:16px;color:#333;max-width:820px;margin-inline:auto;line-height:1.8;font-weight:500}
+.hero p strong {font-size: 18px;}
 
-        .caja{position:relative;background:rgba(255,255,255,0.85);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-radius:20px;padding:28px 20px;margin-bottom:20px;box-shadow:var(--luz);transition:.45s;border: 1px solid rgba(212, 175, 55, 0.15);}
-        .caja:hover{transform:translateY(-3px);box-shadow:var(--luzFuerte); border-color:rgba(212, 175, 55, 0.4);}
-        .caja h3{font-family:'Cinzel',serif;letter-spacing:6px;font-size:20px;text-align:center;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:18px;font-weight:900; text-shadow: 0 0 15px rgba(212,175,55,0.3);}
+.caja{position:relative;background:rgba(255,255,255,0.85);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-radius:20px;padding:28px 20px;margin-bottom:20px;box-shadow:var(--luz);transition:.45s;border: 1px solid rgba(212, 175, 55, 0.15);}
+.caja:hover{transform:translateY(-3px);box-shadow:var(--luzFuerte); border-color:rgba(212, 175, 55, 0.4);}
+.caja h3{font-family:'Cinzel',serif;letter-spacing:6px;font-size:20px;text-align:center;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:18px;font-weight:900; text-shadow: 0 0 15px rgba(212,175,55,0.3);}
 
-        .paso{display:flex;gap:15px;padding:15px 0;border-bottom:1px dashed rgba(212,175,55,.2);align-items:flex-start}
-        .paso:last-child{border-bottom:none;}
-        .paso .n{width:38px;height:38px;border-radius:50%;background:var(--bordeOro);color:#FFFFFF;font-family:'Cinzel',serif;font-weight:900;font-size:18px;display:grid;place-items:center;flex:none;box-shadow:var(--luzRelieve);text-shadow:0 1px 2px rgba(0,0,0,.3)}
-        .paso b{display:block;font-family:'Cinzel',serif;letter-spacing:2px;font-size:15px;color:var(--negro);font-weight:800;text-transform:uppercase}
-        .paso span{color:#555;font-size:14px;font-weight:400;margin-top:4px;line-height:1.6;display:block}
+.paso{display:flex;gap:15px;padding:15px 0;border-bottom:1px dashed rgba(212,175,55,.2);align-items:flex-start}
+.paso:last-child{border-bottom:none;}
+.paso .n{width:38px;height:38px;border-radius:50%;background:var(--bordeOro);color:#FFFFFF;font-family:'Cinzel',serif;font-weight:900;font-size:18px;display:grid;place-items:center;flex:none;box-shadow:var(--luzRelieve);text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.paso b{display:block;font-family:'Cinzel',serif;letter-spacing:2px;font-size:15px;color:var(--negro);font-weight:800;text-transform:uppercase}
+.paso span{color:#555;font-size:14px;font-weight:400;margin-top:4px;line-height:1.6;display:block}
 
-        .btn{position:relative;width:100%;max-width:700px;margin:0 auto;display:flex;align-items:center;justify-content:center;padding:20px 24px;border-radius:999px;border:none;cursor:pointer;font-family:'Cinzel',serif;font-weight:900;letter-spacing:4.5px;font-size:13.5px;text-transform:uppercase;background:var(--bordeOro);color:#FFFFFF;text-shadow:0 1px 2px rgba(0,0,0,.3);box-shadow:var(--luz);overflow:hidden;transition:.4s}
-        .btn::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 22%,rgba(255,255,255,0.8) 50%,transparent 78%);transform:translateX(-130%);transition:1s}
-        .btn:hover{transform:translateY(-2px);box-shadow:var(--luzFuerte);letter-spacing:5.5px}
-        .btn:hover::before{transform:translateX(130%)}
-        .btn:active{transform:scale(.98)}
-        .btn.rubi{background:linear-gradient(135deg,#8B0000,#C70020,#8B0000,#4A0008);color:#fff;box-shadow:0 0 0 1.5px rgba(176,0,32,.5),0 15px 40px rgba(176,0,32,.45)}
-        .btn.blanco{background:transparent;color:var(--oroOscuro);border:1.5px solid var(--oroMedio);box-shadow:none;text-shadow:none}
-        .btn.blanco:hover{box-shadow:var(--luz); background: #FFFCF2;}
-        .btn.volver{background:transparent;box-shadow:none;color:var(--oroOscuro);font-size:12px;letter-spacing:4px;width:auto;padding:4px 0;border:none;text-shadow:none}
+.btn{position:relative;width:100%;max-width:700px;margin:0 auto;display:flex;align-items:center;justify-content:center;padding:20px 24px;border-radius:999px;border:none;cursor:pointer;font-family:'Cinzel',serif;font-weight:900;letter-spacing:4.5px;font-size:13.5px;text-transform:uppercase;background:var(--bordeOro);color:#FFFFFF;text-shadow:0 1px 2px rgba(0,0,0,.3);box-shadow:var(--luz);overflow:hidden;transition:.4s}
+.btn::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 22%,rgba(255,255,255,0.8) 50%,transparent 78%);transform:translateX(-130%);transition:1s}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--luzFuerte);letter-spacing:5.5px}
+.btn:hover::before{transform:translateX(130%)}
+.btn:active{transform:scale(.98)}
+.btn.rubi{background:linear-gradient(135deg,#8B0000,#C70020,#8B0000,#4A0008);color:#fff;box-shadow:0 0 0 1.5px rgba(176,0,32,.5),0 15px 40px rgba(176,0,32,.45)}
+.btn.blanco{background:transparent;color:var(--oroOscuro);border:1.5px solid var(--oroMedio);box-shadow:none;text-shadow:none}
+.btn.blanco:hover{box-shadow:var(--luz); background: #FFFCF2;}
+.btn.volver{background:transparent;box-shadow:none;color:var(--oroOscuro);font-size:12px;letter-spacing:4px;width:auto;padding:4px 0;border:none;text-shadow:none}
 
-        .campo{margin-bottom:18px}
-        .campo label{display:block;font-family:'Cinzel',serif;letter-spacing:5px;font-size:12px;color:var(--oroOscuro);font-weight:900;margin-bottom:8px;text-transform:uppercase}
-        .campo input{width:100%;padding:18px;border-radius:12px;background:#FAFAFA;border:1px solid rgba(212,175,55,0.3);color:var(--negro);font-size:17px;font-weight:600;outline:none;transition:.35s;box-sizing:border-box;}
-        .campo input:focus{background:#FFF;border-color:var(--oro);box-shadow:0 0 0 3px rgba(212,175,55,.15),0 0 25px rgba(212,175,55,.2);transform:translateY(-1px)}
-        .mono,.campo input[inputmode="numeric"]{font-family:'JetBrains Mono',monospace;font-weight:600;letter-spacing:3px}
+.campo{margin-bottom:18px}
+.campo label{display:block;font-family:'Cinzel',serif;letter-spacing:5px;font-size:12px;color:var(--oroOscuro);font-weight:900;margin-bottom:8px;text-transform:uppercase}
+.campo input{width:100%;padding:18px;border-radius:12px;background:#FAFAFA;border:1px solid rgba(212,175,55,0.3);color:var(--negro);font-size:17px;font-weight:600;outline:none;transition:.35s;box-sizing:border-box;}
+.campo input:focus{background:#FFF;border-color:var(--oro);box-shadow:0 0 0 3px rgba(212,175,55,.15),0 0 25px rgba(212,175,55,.2);transform:translateY(-1px)}
+.mono,.campo input[inputmode="numeric"]{font-family:'JetBrains Mono',monospace;font-weight:600;letter-spacing:3px}
 
-        .plan{position:relative;padding:28px 18px;border-radius:18px;background:rgba(255,255,255,0.9);box-shadow:var(--luz);margin-bottom:15px;cursor:pointer;transition:.4s; border:1px solid rgba(212,175,55,0.2);}
-        .plan:hover{transform:translateY(-3px);box-shadow:var(--luzFuerte); border-color:var(--oro);}
-        .plan.diamante{transform:scale(1.02);background:linear-gradient(180deg,#FFFCF2,#FFFFFF); border: 1px solid var(--oro);}
-        .plan .n{font-family:'Cinzel',serif;font-weight:900;letter-spacing:3.5px;color:var(--negro);font-size:15px;text-align:center;text-transform:uppercase}
-        .plan .p{font-family:'Cinzel',serif;font-weight:900;font-size:42px;letter-spacing:.5px;text-align:center;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;margin:8px 0 0 0;line-height:1.1; text-shadow: 0 2px 10px rgba(212,175,55,0.15);}
-        .plan.diamante .p{font-size:48px}
-        .plan .etiqueta{position:absolute;top:-10px;right:15px;background:var(--blanco);color:var(--oroOscuro);border:1px solid var(--oro);font-family:'Cinzel',serif;font-weight:900;letter-spacing:2px;font-size:10px;padding:6px 14px;border-radius:999px;box-shadow:0 4px 10px rgba(212,175,55,0.15);}
+.plan{position:relative;padding:28px 18px;border-radius:18px;background:rgba(255,255,255,0.9);box-shadow:var(--luz);margin-bottom:15px;cursor:pointer;transition:.4s; border:1px solid rgba(212,175,55,0.2);}
+.plan:hover{transform:translateY(-3px);box-shadow:var(--luzFuerte); border-color:var(--oro);}
+.plan.diamante{transform:scale(1.02);background:linear-gradient(180deg,#FFFCF2,#FFFFFF); border: 1px solid var(--oro);}
+.plan .n{font-family:'Cinzel',serif;font-weight:900;letter-spacing:3.5px;color:var(--negro);font-size:15px;text-align:center;text-transform:uppercase}
+.plan .p{font-family:'Cinzel',serif;font-weight:900;font-size:42px;letter-spacing:.5px;text-align:center;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;margin:8px 0 0 0;line-height:1.1; text-shadow: 0 2px 10px rgba(212,175,55,0.15);}
+.plan.diamante .p{font-size:48px}
+.plan .etiqueta{position:absolute;top:-10px;right:15px;background:var(--blanco);color:var(--oroOscuro);border:1px solid var(--oro);font-family:'Cinzel',serif;font-weight:900;letter-spacing:2px;font-size:10px;padding:6px 14px;border-radius:999px;box-shadow:0 4px 10px rgba(212,175,55,0.15);}
 
-        .llave{font-family:'JetBrains Mono',monospace;font-size:28px;letter-spacing:8px;text-align:center;padding:25px;border-radius:12px;border:1px solid var(--oro);background:#FAFAFA;color:var(--oroOscuro);font-weight:600;box-shadow:var(--luz);word-break:break-all;}
+.llave{font-family:'JetBrains Mono',monospace;font-size:28px;letter-spacing:8px;text-align:center;padding:25px;border-radius:12px;border:1px solid var(--oro);background:#FAFAFA;color:var(--oroOscuro);font-weight:600;box-shadow:var(--luz);word-break:break-all;}
 
-        .vista{display:none;flex-direction:column;gap:15px;width:100%;max-width:820px;margin:0 auto;padding:20px 12px 60px}
-        .vista.activa{display:flex;animation:entrar .6s ease both}
-        @keyframes entrar{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-        .tit{font-family:'Cinzel',serif;letter-spacing:6px;text-align:center;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:clamp(26px,7vw,44px);font-weight:900;margin:10px 0 15px}
+.vista{display:none;flex-direction:column;gap:15px;width:100%;max-width:820px;margin:0 auto;padding:20px 12px 60px}
+.vista.activa{display:flex;animation:entrar .6s ease both}
+@keyframes entrar{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.tit{font-family:'Cinzel',serif;letter-spacing:6px;text-align:center;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:clamp(26px,7vw,44px);font-weight:900;margin:10px 0 15px}
 
-        .sos{height:320px;display:grid;place-items:center;position:relative}
-        .onda{position:absolute;width:270px;height:270px;border-radius:50%;background:radial-gradient(circle,rgba(139,0,0,.45),transparent 75%);animation:onda 2.2s infinite}
-        .onda.d2{animation-delay:.7s}.onda.d3{animation-delay:1.4s}
-        @keyframes onda{0%{transform:scale(.75);opacity:1}100%{transform:scale(2.5);opacity:0}}
-        .bSOS{position:relative;z-index:5;width:210px;height:210px;border-radius:50%;border:2px solid var(--oroMedio);cursor:pointer;color:var(--oroClaro);font-family:'Cinzel',serif;font-weight:900;font-size:32px;letter-spacing:4px;background:radial-gradient(circle at 30% 22%,#7A0010,#4A0008 80%);text-shadow:0 2px 4px rgba(0,0,0,.7);box-shadow:0 0 0 0 rgba(139,0,0,.7), inset 0 4px 15px rgba(255,255,255,.1);animation:pulso 2s infinite; transition: all 0.3s ease;}
-        @keyframes pulso{to{box-shadow:0 0 0 48px rgba(139,0,0,0), inset 0 4px 15px rgba(255,255,255,.1)}}
-        .bSOS.activo {
-            background: radial-gradient(circle at 30% 22%, #FFE79B, #D4AF37 80%);
-            color: #5A3E00;
-            border-color: #5A3E00;
-            text-shadow: none;
-            font-size: 20px;
-            animation: none;
-            box-shadow: 0 4px 15px rgba(212,175,55,.4), inset 0 4px 15px rgba(255,255,255,.4);
-        }
+.sos{height:320px;display:grid;place-items:center;position:relative}
+.onda{position:absolute;width:270px;height:270px;border-radius:50%;background:radial-gradient(circle,rgba(139,0,0,.45),transparent 75%);animation:onda 2.2s infinite}
+.onda.d2{animation-delay:.7s}.onda.d3{animation-delay:1.4s}
+@keyframes onda{0%{transform:scale(.75);opacity:1}100%{transform:scale(2.5);opacity:0}}
+.bSOS{position:relative;z-index:5;width:210px;height:210px;border-radius:50%;border:2px solid var(--oroMedio);cursor:pointer;color:var(--oroClaro);font-family:'Cinzel',serif;font-weight:900;font-size:32px;letter-spacing:4px;background:radial-gradient(circle at 30% 22%,#7A0010,#4A0008 80%);text-shadow:0 2px 4px rgba(0,0,0,.7);box-shadow:0 0 0 0 rgba(139,0,0,.7), inset 0 4px 15px rgba(255,255,255,.1);animation:pulso 2s infinite; transition: all 0.3s ease;}
+@keyframes pulso{to{box-shadow:0 0 0 48px rgba(139,0,0,0), inset 0 4px 15px rgba(255,255,255,.1)}}
+.bSOS.activo {
+    background: radial-gradient(circle at 30% 22%, #FFE79B, #D4AF37 80%);
+    color: #5A3E00;
+    border-color: #5A3E00;
+    text-shadow: none;
+    font-size: 20px;
+    animation: none;
+    box-shadow: 0 4px 15px rgba(212,175,55,.4), inset 0 4px 15px rgba(255,255,255,.4);
+}
 
-        .estadoSOS{display:none;padding:20px;border-radius:16px;background:#FFF3F5;border:1px solid #8B0000;color:#8B0000;text-align:center;font-weight:600;font-size:14px;line-height:1.6}
+.estadoSOS{display:none;padding:20px;border-radius:16px;background:#FFF3F5;border:1px solid #8B0000;color:#8B0000;text-align:center;font-weight:600;font-size:14px;line-height:1.6}
 
-        .ruta-animada { stroke-dasharray: 12, 12; animation: dash 1s linear infinite; }
-        @keyframes dash { to { stroke-dashoffset: -24; } }
+.ruta-animada { stroke-dasharray: 12, 12; animation: dash 1s linear infinite; }
+@keyframes dash { to { stroke-dashoffset: -24; } }
 
-        .acta{background:#FFFFFF;color:#333;padding:25px;font-family:'Cormorant Garamond',serif;font-weight:600;position:relative;box-shadow:0 15px 50px rgba(0,0,0,.08);border: 1px solid #EEE;border-radius:8px;margin-bottom:20px;transition: transform 0.3s; page-break-inside: avoid; width:100%; box-sizing:border-box;}
-        .acta:hover{transform: translateY(-2px); box-shadow:0 20px 60px rgba(0,0,0,.12);}
-        .acta::before{content:"NI UNA MENOS ARGENTINA · PODER JUDICIAL";position:absolute;inset:auto 0;top:42%;text-align:center;font-family:'Cinzel',serif;font-weight:900;font-size:45px;letter-spacing:10px;color:rgba(90,62,0,.04);transform:rotate(-18deg);pointer-events:none;z-index:0;}
-        .acta h3{font-family:'Cinzel',serif;font-weight:800;letter-spacing:3px;font-size:15px;border-bottom:1px solid #DDD;margin:15px 0 8px;text-transform:uppercase;color:var(--oroOscuro);position:relative;z-index:3;}
-        .acta .t{width:100%;border-collapse:collapse;font-size:14px;font-weight:500;position:relative;z-index:3;}
-        .acta .t th,.acta .t td{border:1px solid #EEE;padding:8px}
-        .acta .t th{background:#FAFAFA;font-family:'Cinzel',serif;color:var(--oroOscuro)}
-        .acta .mono{font-family:'JetBrains Mono',monospace;font-size:12px;background:#FAFAFA;padding:10px;border:1px solid #EEE;word-break:break-all;color:#555;font-weight:500;position:relative;z-index:3;}
-        .acta .nroExpediente{font-family:'JetBrains Mono',monospace;color:var(--oroOscuro);font-weight:900; font-size: 15px; margin-bottom:4px;}
-        .acta .firmas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:30px;text-align:center;position:relative;z-index:3;}
-        .acta .firmas div{border-top:1px solid #CCC;padding-top:14px;font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:#555;font-weight:700}
-        .mapa{height:250px;width:100%;border:1px solid #EEE;position:relative;z-index:3; border-radius:8px;}
+.acta{background:#FFFFFF;color:#333;padding:25px;font-family:'Cormorant Garamond',serif;font-weight:600;position:relative;box-shadow:0 15px 50px rgba(0,0,0,.08);border: 1px solid #EEE;border-radius:8px;margin-bottom:20px;transition: transform 0.3s; page-break-inside: avoid; width:100%; box-sizing:border-box;}
+.acta:hover{transform: translateY(-2px); box-shadow:0 20px 60px rgba(0,0,0,.12);}
+.acta::before{content:"NI UNA MENOS ARGENTINA · PODER JUDICIAL";position:absolute;inset:auto 0;top:42%;text-align:center;font-family:'Cinzel',serif;font-weight:900;font-size:45px;letter-spacing:10px;color:rgba(90,62,0,.04);transform:rotate(-18deg);pointer-events:none;z-index:0;}
+.acta h3{font-family:'Cinzel',serif;font-weight:800;letter-spacing:3px;font-size:15px;border-bottom:1px solid #DDD;margin:15px 0 8px;text-transform:uppercase;color:var(--oroOscuro);position:relative;z-index:3;}
+.acta .t{width:100%;border-collapse:collapse;font-size:14px;font-weight:500;position:relative;z-index:3;}
+.acta .t th,.acta .t td{border:1px solid #EEE;padding:8px}
+.acta .t th{background:#FAFAFA;font-family:'Cinzel',serif;color:var(--oroOscuro)}
+.acta .mono{font-family:'JetBrains Mono',monospace;font-size:12px;background:#FAFAFA;padding:10px;border:1px solid #EEE;word-break:break-all;color:#555;font-weight:500;position:relative;z-index:3;}
+.acta .nroExpediente{font-family:'JetBrains Mono',monospace;color:var(--oroOscuro);font-weight:900; font-size: 15px; margin-bottom:4px;}
+.acta .firmas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:30px;text-align:center;position:relative;z-index:3;}
+.acta .firmas div{border-top:1px solid #CCC;padding-top:14px;font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:#555;font-weight:700}
+.mapa{height:250px;width:100%;border:1px solid #EEE;position:relative;z-index:3; border-radius:8px;}
 
-        .galeria{display:flex;flex-direction:column;gap:20px;position:relative;z-index:3; width:100%;}
-        .foto{background:#FAFAFA;border:1px solid #EEE;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#999;font-family:'Cinzel',serif;font-size:10px;overflow:hidden;position:relative; width:100%; padding:15px; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.05);}
-        .foto img,.foto video{width:100%;height:auto;object-fit:contain;border-radius:8px;}
-        .foto .hash-overlay {background:rgba(0,0,0,0.8);color:#fff;font-size:13px;font-family:'JetBrains Mono',monospace;padding:8px;text-align:center;font-weight:700; width:100%; margin-top:10px; border-radius:6px;}
+.galeria{display:flex;flex-direction:column;gap:20px;position:relative;z-index:3; width:100%;}
+.foto{background:#FAFAFA;border:1px solid #EEE;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#999;font-family:'Cinzel',serif;font-size:10px;overflow:hidden;position:relative; width:100%; padding:15px; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.05);}
+.foto img,.foto video{width:100%;height:auto;object-fit:contain;border-radius:8px;}
+.foto .hash-overlay {background:rgba(0,0,0,0.8);color:#fff;font-size:13px;font-family:'JetBrains Mono',monospace;padding:8px;text-align:center;font-weight:700; width:100%; margin-top:10px; border-radius:6px;}
 
-        .scroll-container{width:100%;overflow:hidden;mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent)}
-        .scroll-text{display:inline-block;white-space:nowrap;font-family:'Cinzel',serif;font-weight:800;}
-        @keyframes marq{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
-        .top-marquee{margin-top:20px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.08),transparent);padding:14px 0;border-top:1px solid rgba(212,175,55,0.2);border-bottom:1px solid rgba(212,175,55,0.2)}
-        .top-marquee .scroll-text{font-size:14px;letter-spacing:5px;color:var(--oroOscuro);animation:marq 60s linear infinite;} 
+.scroll-container{width:100%;overflow:hidden;mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent)}
+.scroll-text{display:inline-block;white-space:nowrap;font-family:'Cinzel',serif;font-weight:800;}
+@keyframes marq{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+.top-marquee{margin-top:20px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.08),transparent);padding:14px 0;border-top:1px solid rgba(212,175,55,0.2);border-bottom:1px solid rgba(212,175,55,0.2)}
+.top-marquee .scroll-text{font-size:14px;letter-spacing:5px;color:var(--oroOscuro);animation:marq 60s linear infinite;} 
 
-        .footer-wrap{background:#FFFFFF;border-top:1px solid rgba(212,175,55,0.2);padding:24px 0; margin-top: 40px;}
-        .footer-wrap .scroll-container{padding:12px 0;}
-        .footer-wrap .scroll-text{font-size:13px;letter-spacing:6px;color:var(--oroOscuro);animation:marq 75s linear infinite;} 
-        footer{text-align:center;padding-top:20px;color:#888;font-family:'Montserrat',sans-serif;letter-spacing:3px;font-size:12px;font-weight:500;line-height:2}
-        footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro); font-size:15px; letter-spacing:4px;}
+.footer-wrap{background:#FFFFFF;border-top:1px solid rgba(212,175,55,0.2);padding:24px 0; margin-top: 40px;}
+.footer-wrap .scroll-container{padding:12px 0;}
+.footer-wrap .scroll-text{font-size:13px;letter-spacing:6px;color:var(--oroOscuro);animation:marq 75s linear infinite;} 
+footer{text-align:center;padding-top:20px;color:#888;font-family:'Montserrat',sans-serif;letter-spacing:3px;font-size:12px;font-weight:500;line-height:2}
+footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro); font-size:15px; letter-spacing:4px;}
 
-        .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-        .info-bloque{padding:12px 0;border-bottom:1px solid rgba(212,175,55,.15)}
-        .info-bloque:last-child{border-bottom:none}
-        .info-bloque b{color:var(--oroOscuro);font-family:'Cinzel',serif;letter-spacing:2.5px;font-size:18px;font-weight:900;display:block;margin-bottom:8px; text-shadow: 0 1px 2px rgba(212,175,55,0.2);}
-        .info-bloque p{font-size:15px;line-height:1.8;color:#555;font-weight:500}
-        .ley{display:inline-block;padding:5px 12px;margin:4px;border-radius:999px;border:1px solid var(--oroMedio);color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;font-weight:700;background:#FFFCF2}
-        @media(max-width:640px){.grid2{grid-template-columns:1fr}}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.info-bloque{padding:12px 0;border-bottom:1px solid rgba(212,175,55,.15)}
+.info-bloque:last-child{border-bottom:none}
+.info-bloque b{color:var(--oroOscuro);font-family:'Cinzel',serif;letter-spacing:2.5px;font-size:18px;font-weight:900;display:block;margin-bottom:8px; text-shadow: 0 1px 2px rgba(212,175,55,0.2);}
+.info-bloque p{font-size:15px;line-height:1.8;color:#555;font-weight:500}
+.ley{display:inline-block;padding:5px 12px;margin:4px;border-radius:999px;border:1px solid var(--oroMedio);color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;font-weight:700;background:#FFFCF2}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
 
-        /* BOTÓN INSTALAR PWA */
-        #btn-install-pwa {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            background: var(--oro);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-family: 'Cinzel', serif;
-            font-weight: 900;
-            font-size: 13px;
-            letter-spacing: 2px;
-            border: 1px solid var(--oroClaro);
-            box-shadow: var(--luzFuerte);
-            cursor: pointer;
-            z-index: 9999999;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-            animation: entrar .5s ease both;
-        }
+/* BOTÓN INSTALAR PWA */
+#btn-install-pwa {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background: var(--oro);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 2px;
+    border: 1px solid var(--oroClaro);
+    box-shadow: var(--luzFuerte);
+    cursor: pointer;
+    z-index: 9999999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    animation: entrar .5s ease both;
+}
 
-        /* 🔥 BOTÓN ANTIPÁNICO FLOTANTE 🔥 */
-        #btn-flotante-sos {
-            display: none; 
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 75px;
-            height: 75px;
-            background: radial-gradient(circle at 30% 22%, #D00000, #8B0000 80%);
-            color: #fff;
-            border-radius: 50%;
-            font-family: 'Cinzel', serif;
-            font-weight: 900;
-            font-size: 16px;
-            border: 2px solid #FF8888;
-            box-shadow: 0 5px 20px rgba(139,0,0,0.6);
-            cursor: pointer;
-            z-index: 9999999;
-            align-items: center;
-            justify-content: center;
-            animation: pulsoSOS 2s infinite;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-        @keyframes pulsoSOS {
-            0% { box-shadow: 0 0 0 0 rgba(139,0,0,0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(139,0,0,0); }
-            100% { box-shadow: 0 0 0 0 rgba(139,0,0,0); }
-        }
+/* 🔥 BOTÓN ANTIPÁNICO FLOTANTE 🔥 */
+#btn-flotante-sos {
+    display: none; 
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 75px;
+    height: 75px;
+    background: radial-gradient(circle at 30% 22%, #D00000, #8B0000 80%);
+    color: #fff;
+    border-radius: 50%;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 16px;
+    border: 2px solid #FF8888;
+    box-shadow: 0 5px 20px rgba(139,0,0,0.6);
+    cursor: pointer;
+    z-index: 9999999;
+    align-items: center;
+    justify-content: center;
+    animation: pulsoSOS 2s infinite;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+@keyframes pulsoSOS {
+    0% { box-shadow: 0 0 0 0 rgba(139,0,0,0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(139,0,0,0); }
+    100% { box-shadow: 0 0 0 0 rgba(139,0,0,0); }
+}
 
-        @media print {
-          @page { size: A4; margin: 10mm; }
-          body { background: #fff !important; color: #000 !important; }
-          .btn, .footer-wrap, .noimp, .vista:not(.activa), header, .scroll-container, #btn-install-pwa, #btn-flotante-sos { display: none !important; }
-          .vista { padding: 0 !important; max-width: 100% !important; display: block !important; }
-          #panel { display: block !important; }
-          #alertas { display: block !important; width: 100%; }
-          .acta { 
-            position: relative !important; left: auto !important; top: auto !important; width: 100% !important; border: none !important; box-shadow: none !important; page-break-inside: avoid; page-break-after: always; margin: 0 0 20px 0 !important;
-          }
-          .acta h3, .acta th, .acta td, .acta div { color: #000 !important; -webkit-text-fill-color: #000 !important; }
-          .acta::after { border-color: #000 !important; }
-          .acta .t th { background: #eee !important; }
-          .acta .mono { background: #fff !important; border-color: #000 !important; }
-        }
+@media print {
+  @page { size: A4; margin: 10mm; }
+  body { background: #fff !important; color: #000 !important; }
+  .btn, .footer-wrap, .noimp, .vista:not(.activa), header, .scroll-container, #btn-install-pwa, #btn-flotante-sos { display: none !important; }
+  .vista { padding: 0 !important; max-width: 100% !important; display: block !important; }
+  #panel { display: block !important; }
+  #alertas { display: block !important; width: 100%; }
+  .acta { 
+    position: relative !important; left: auto !important; top: auto !important; width: 100% !important; border: none !important; box-shadow: none !important; page-break-inside: avoid; page-break-after: always; margin: 0 0 20px 0 !important;
+  }
+  .acta h3, .acta th, .acta td, .acta div { color: #000 !important; -webkit-text-fill-color: #000 !important; }
+  .acta::after { border-color: #000 !important; }
+  .acta .t th { background: #eee !important; }
+  .acta .mono { background: #fff !important; border-color: #000 !important; }
+}
 
-        .file-upload-wrapper {
-          position: relative; width: 100%; height: 120px; border: 2px dashed var(--oro);
-          border-radius: 12px; background: #FFFCF2; display: flex; align-items: center; justify-content: center;
-          text-align: center; cursor: pointer; overflow: hidden; margin-top: 10px;
-        }
-        .file-upload-wrapper input[type="file"] {
-          position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
-        }
-        .file-upload-text {
-          font-family: 'Cinzel', serif; font-size: 14px; font-weight: 800; color: var(--oroOscuro);
-          letter-spacing: 2px;
-        }
-    </style>
-</head>
+.file-upload-wrapper {
+  position: relative; width: 100%; height: 120px; border: 2px dashed var(--oro);
+  border-radius: 12px; background: #FFFCF2; display: flex; align-items: center; justify-content: center;
+  text-align: center; cursor: pointer; overflow: hidden; margin-top: 10px;
+}
+.file-upload-wrapper input[type="file"] {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
+}
+.file-upload-text {
+  font-family: 'Cinzel', serif; font-size: 14px; font-weight: 800; color: var(--oroOscuro);
+  letter-spacing: 2px;
+}
+</style></head>
 <body>
 
 <button id="btn-install-pwa"><span style="font-size: 1.2rem;">📲</span> INSTALAR</button>
@@ -466,11 +461,11 @@
 
 <!-- 🔥 EL PUENTE PARA QUE ANDE LA CÁMARA, SENSORES Y MODO SEGUNDO PLANO 🔥 -->
 <script src="cordova.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // ============================================================
-// 🔥 CONFIGURACIÓN GLOBAL - PRODUCCIÓN
+// 🔥 CONFIGURACIÓN GLOBAL
 // ============================================================
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
@@ -478,9 +473,15 @@ const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 const oF={timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digit',day:'2-digit'};
 const oH={timeZone:'America/Argentina/Buenos_Aires',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false};
 
-// 🔥 SENSIBILIDAD DEL SACUDÓN (BAJADA PARA MAYOR DETECCIÓN)
-const SHAKE_THRESHOLD = 800;
+// 🔥 MODIFICADO: UMBRAL DE SACUDÓN NUEVO (más sensible y preciso)
+const SHAKE_THRESHOLD = 12; // Fuerza en G (antes era 1500 en escala vieja)
+const SHAKE_COOLDOWN = 3000;
 let cooldownRobo = false;
+let sensoresActivos = false;
+
+// Variables para filtro de acelerómetro
+let gravedad = [0, 0, 0];
+const FILTRO_GRAVEDAD = 0.8;
 
 const LK = k => {
     let str = (k || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -572,53 +573,32 @@ async function pegarLlave(inputId) {
 
 let mapas = {};
 
-// ============================================================
-// 🔥 SOLICITUD DE PERMISOS AGRESIVA (OBLIGATORIA PARA APK)
-// ============================================================
 async function pedirPermisosGlobalesYGPS() {
-    alert("⚠️ CONFIGURACIÓN DE SEGURIDAD ⚠️\nA continuación el sistema te pedirá acceso al GPS, Cámara y Micrófono. Es OBLIGATORIO que pongas 'Permitir' en todo para que funcione ante un robo o emergencia.");
+    alert("⚠️ CONFIGURACIÓN DE SEGURIDAD ⚠️\nA continuación el sistema te pedirá acceso al GPS, Cámara y Micrófono. Es OBLIGATORIO que pongas 'Permitir' en todo.");
     
     if (window.cordova && cordova.plugins && cordova.plugins.permissions) {
         const p = cordova.plugins.permissions;
-        const permisosNativos = [
-            p.CAMERA, 
-            p.RECORD_AUDIO, 
-            p.ACCESS_FINE_LOCATION, 
-            p.ACCESS_BACKGROUND_LOCATION,
-            p.FOREGROUND_SERVICE,
-            p.WAKE_LOCK
-        ];
-        
-        for (const permiso of permisosNativos) {
-            try {
-                await new Promise((resolve) => {
-                    p.requestPermission(permiso, () => resolve(), () => resolve());
-                });
-            } catch(e) {}
-        }
+        const permisosNativos = [p.CAMERA, p.RECORD_AUDIO, p.ACCESS_FINE_LOCATION, p.ACCESS_BACKGROUND_LOCATION];
+        p.requestPermissions(permisosNativos, (status) => {}, () => {});
     }
 
     if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
-        try { await DeviceMotionEvent.requestPermission(); } catch(e) {}
+        DeviceMotionEvent.requestPermission().catch(()=>{});
     }
     
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            audio: true, 
-            video: { facingMode: 'environment' } 
-        });
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
         stream.getTracks().forEach(track => track.stop());
     } catch(e) {}
     
     navigator.geolocation.getCurrentPosition(
-        () => alert("✅ Sensores vinculados correctamente. Tu sistema está blindado."),
-        () => alert("❌ RECHAZASTE EL GPS. El sistema no podrá enviar tu ubicación en una emergencia."),
-        {enableHighAccuracy: true, timeout: 15000}
+        () => alert("✅ Sensores vinculados correctamente."),
+        () => alert("❌ RECHAZASTE EL GPS."),
+        {enableHighAccuracy: true}
     );
     
-    if (window.cordova && cordova.plugins && cordova.plugins.backgroundMode) {
-        cordova.plugins.backgroundMode.disableBatteryOptimizations();
-    }
+    // 🔥 MODIFICADO: Activar sensores de sacudón
+    activarSensoresSacudon();
 }
 
 function activarBotonesSeguridad() {
@@ -675,9 +655,6 @@ function leerVoz(){
 let wakeLockObj = null;
 let audioInvisible = null;
 
-// ============================================================
-// 🔥 MODO SIGILO MEJORADO
-// ============================================================
 window.sigilo = async () => {
     if (window.cordova && cordova.plugins && cordova.plugins.permissions) {
         const p = cordova.plugins.permissions;
@@ -690,11 +667,12 @@ window.sigilo = async () => {
         stream.getTracks().forEach(track => track.stop());
     } catch(e) {}
 
-    alert("⚠️ MODO SIGILO ARMADO ⚠️\nLa pantalla se pondrá negra. El sistema intentará seguir escuchando en segundo plano, por lo que podés usar otras apps.\n\nTocá la pantalla negra 3 VECES RÁPIDAS para salir de este modo.");
+    alert("⚠️ MODO SIGILO ARMADO ⚠️\nLa pantalla se pondrá negra. Tocala 3 VECES RÁPIDAS para salir.");
     
     cooldownRobo = true;
     setTimeout(() => cooldownRobo = false, 3000);
 
+    // 🔥 MODIFICADO: Activar Background Mode ANTES
     if (window.cordova && cordova.plugins && cordova.plugins.backgroundMode) {
         cordova.plugins.backgroundMode.moveToForeground();
     }
@@ -850,13 +828,13 @@ async function alta(){
 
         const checkWA = await supaQuery('GET', `c4_suscripciones?select=*&whatsapp=eq.${waLimpio}`);
         if(checkWA && checkWA.length > 0) {
-            alert('🛑 ¡SISTEMA ANTI-PÍCARO ACTIVADO!\nEste número de WhatsApp ya se encuentra registrado en la base de datos.');
+            alert('🛑 ¡SISTEMA ANTI-PÍCARO ACTIVADO!\nEste número de WhatsApp ya se encuentra registrado.');
             return;
         }
 
         const checkImei = await supaQuery('GET', `c4_suscripciones?select=*&imei=eq.${i}`);
         if(checkImei && checkImei.length > 0) {
-            alert('⚠️ SISTEMA DE SEGURIDAD:\nEste equipo (IMEI) ya agotó los 15 días de prueba o ya está registrado.');
+            alert('⚠️ SISTEMA DE SEGURIDAD:\nEste equipo ya agotó los 15 días de prueba.');
             document.getElementById('pI').value = i;
             if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = i;
             localStorage.setItem('imei', i);
@@ -900,7 +878,7 @@ async function alta(){
         pedirPermisosGlobalesYGPS(); 
         window.ir('llave');
     } catch(err) { 
-        alert('Error conectando a la base de datos.\nSi el error persiste, revisá las políticas RLS en Supabase.'); 
+        alert('Error conectando a la base de datos.'); 
     }
 }
 
@@ -908,7 +886,7 @@ async function pagar(monto, plan) {
     const i = IM(document.getElementById('pI').value || localStorage.getItem('imei'));
     if(!/^\d{15}$/.test(i)) return alert('Ingrese IMEI de 15 dígitos.');
     
-    alert('Simulando conexión de pago (Se recomienda usar IA)...');
+    alert('Simulando conexión de pago...');
     try {
         const k = 'C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase();
         let meses = plan === 'anual' ? 12 : 1;
@@ -942,7 +920,7 @@ async function procesarPagoIA() {
     const i = IM(document.getElementById('pI').value || localStorage.getItem('imei'));
     if(!/^\d{15}$/.test(i)) return alert('IMEI inválido.');
 
-    alert('La Inteligencia Artificial está procesando tu comprobante y verificando el ingreso... Aguardá unos segundos.');
+    alert('La IA está procesando tu comprobante...');
 
     const file = fileInput.files[0];
     const reader = new FileReader();
@@ -966,7 +944,7 @@ async function procesarPagoIA() {
         localStorage.setItem('imei', i);
         
         activarBotonesSeguridad();
-        alert('✅ PAGO VERIFICADO EXITOSAMENTE POR LA IA. Llave maestra generada.');
+        alert('✅ PAGO VERIFICADO. Llave maestra generada.');
         window.ir('llave');
     };
     reader.readAsDataURL(file);
@@ -984,6 +962,8 @@ async function validar(){
     if (llaveLocal && k === LK(llaveLocal) && (!inputImei || inputImei === imeiLocal)) {
         localStorage.setItem('ok', '1');
         activarBotonesSeguridad();
+        // 🔥 MODIFICADO: Activar sensores al iniciar sesión
+        activarSensoresSacudon();
         window.ir('panel');
         return;
     }
@@ -994,12 +974,12 @@ async function validar(){
     try {
         await authTrucha(storedImei);
         const res = await supaQuery('GET', `c4_suscripciones?select=*&llave_acceso=eq.${k}&imei=eq.${storedImei}`);
-        if(res.length === 0) return alert('Acceso Denegado. La Llave o el IMEI son incorrectos.');
+        if(res.length === 0) return alert('Acceso Denegado.');
         
         const sub = res[0];
         if(new Date() > new Date(sub.fecha_vencimiento)) {
             await supaQuery('PATCH', `c4_suscripciones?id=eq.${sub.id}`, { activa: false });
-            alert('❌ LLAVE VENCIDA. Debés abonar para renovar el servicio.');
+            alert('❌ LLAVE VENCIDA.');
             document.getElementById('pI').value = sub.imei;
             if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = sub.imei;
             window.ir('pago');
@@ -1020,9 +1000,11 @@ async function validar(){
             }
 
             activarBotonesSeguridad();
+            // 🔥 MODIFICADO: Activar sensores al iniciar sesión
+            activarSensoresSacudon();
             window.ir('panel');
         }
-    } catch(e) { alert('Error validando la llave. Asegurate de tener internet.'); }
+    } catch(e) { alert('Error validando la llave.'); }
 }
 
 const cerrar=()=>{
@@ -1037,7 +1019,7 @@ async function recuperar(accion) {
     const i = IM(document.getElementById('rrI').value);
     const l = LK(document.getElementById('rrL').value);
     
-    if(!/^\d{15}$/.test(i) || !l) return alert('Por favor ingresá un IMEI válido de 15 dígitos y tu Llave Maestra C4.');
+    if(!/^\d{15}$/.test(i) || !l) return alert('Por favor ingresá un IMEI válido y tu Llave Maestra.');
     
     try {
         const authOk = await authTrucha(i);
@@ -1045,27 +1027,27 @@ async function recuperar(accion) {
 
         const res = await supaQuery('GET', `c4_suscripciones?select=*&imei=eq.${i}&llave_acceso=eq.${l}&activa=eq.true`);
         if(res.length === 0) {
-            return alert('❌ DATOS INCORRECTOS. IMEI o Llave Maestra no válidos.');
+            return alert('❌ DATOS INCORRECTOS.');
         }
         
         if(accion === 'restaurar') {
             localStorage.setItem('imei', i);
             localStorage.setItem('ok', '1');
             activarBotonesSeguridad();
-            alert('✅ Sistema restaurado con éxito en este dispositivo.');
+            activarSensoresSacudon(); // 🔥 MODIFICADO
+            alert('✅ Sistema restaurado.');
             window.ir('panel');
         } else if(accion === 'detonar') {
-            if(confirm('⚠️ ¿Estás seguro de activar el S.O.S. a distancia para este dispositivo? Esto enviará la orden a la nube para disparar la alarma.')) {
+            if(confirm('⚠️ ¿Activar S.O.S. a distancia?')) {
                 await supaQuery('PATCH', `c4_suscripciones?imei=eq.${i}`, { alarma_remota: true });
-                alert('🚨 ORDEN REMOTA ENVIADA. En cuanto el dispositivo tenga conexión, se activará la alarma, las cámaras y el rastreo GPS.');
+                alert('🚨 ORDEN REMOTA ENVIADA.');
             }
         }
     } catch(e) {
-        alert('Error al conectar con el servidor judicial.');
+        alert('Error al conectar con el servidor.');
     }
 }
 
-// 🔥 Verificación de alarma remota cada 5 segundos
 setInterval(async () => {
     const imei = localStorage.getItem('imei');
     if (imei && localStorage.getItem('ok') === '1' && !window.sosActivo) {
@@ -1149,10 +1131,10 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
 
     if (tipo === 'alerta') {
         asunto = `🚨 ALERTA S.O.S - ${nombre} activó el botón antipánico`;
-        msg = `🚨 ALERTA S.O.S - C4 🚨\n\nUsuaria: ${nombre || 'Usuaria'} activó el botón antipánico.\nID de Acta: ${id}\nIMEI del Dispositivo: ${imeiEnvio}\n\nEl sistema está recopilando evidencia (GPS, Audio, Video). Se enviará un nuevo correo cuando se obtenga la ubicación satelital exacta.`;
+        msg = `🚨 ALERTA S.O.S - C4 🚨\n\nUsuaria: ${nombre || 'Usuaria'} activó el botón antipánico.\nID de Acta: ${id}\nIMEI: ${imeiEnvio}`;
     } else if (tipo === 'gps') {
         asunto = `📍 GPS S.O.S - Ubicación de ${nombre}`;
-        msg = `📍 GPS S.O.S 📍\n\nUbicación actual:\nhttps://maps.google.com/?q=${la},${ln}\n\nID de Acta: ${id}\nIMEI: ${imeiEnvio}`;
+        msg = `📍 GPS S.O.S 📍\n\nUbicación actual:\nhttps://maps.google.com/?q=${la},${ln}\n\nID: ${id}`;
     } else if (tipo === 'seguro') {
         asunto = `✅ SISTEMA SEGURO - ${nombre}`;
         msg = `✅ SISTEMA SEGURO \n\nLa usuaria desactivó la alarma a salvo.`;
@@ -1162,7 +1144,7 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, asunto: asunto, msg: msg })
-    }).catch(err => console.error("Error enviando email:", err));
+    }).catch(err => console.error("Error email:", err));
 }
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
@@ -1297,7 +1279,6 @@ async function disparoSOS(){
  document.getElementById('btnBigSOS').classList.add('activo');
  document.getElementById('st').style.display='block';
  
- // 🔥 Traer la app al frente inmediatamente
  if (window.cordova && cordova.plugins && cordova.plugins.backgroundMode) {
     cordova.plugins.backgroundMode.wakeUp();
     cordova.plugins.backgroundMode.unlock();
@@ -1422,73 +1403,85 @@ async function disparoSOS(){
 }
 
 // ============================================================
-// 🔥 DETECCIÓN DE SACUDÓN - DOBLE SISTEMA (NATIVO + WEB)
+// 🔥 MODIFICADO: NUEVA DETECCIÓN DE SACUDÓN - ROBUSTA Y PRECISA
 // ============================================================
-let sh_last_x = 0, sh_last_y = 0, sh_last_z = 0;
-let sh_lastUpdate = 0;
-let sh_initialized = false;
-
-// 🔥 SISTEMA 1: Plugin nativo Cordova Shake (FUNCIONA EN SEGUNDO PLANO)
-document.addEventListener('deviceready', function() {
-    console.log('✅ Cordova listo');
+function procesarAceleracion(x, y, z) {
+    // Filtrar la gravedad para obtener solo el movimiento
+    gravedad[0] = FILTRO_GRAVEDAD * gravedad[0] + (1 - FILTRO_GRAVEDAD) * x;
+    gravedad[1] = FILTRO_GRAVEDAD * gravedad[1] + (1 - FILTRO_GRAVEDAD) * y;
+    gravedad[2] = FILTRO_GRAVEDAD * gravedad[2] + (1 - FILTRO_GRAVEDAD) * z;
     
-    if (window.shake) {
-        console.log('✅ Plugin Shake nativo detectado');
-        window.shake.startWatch(
-            () => {
-                if (localStorage.getItem('ok') === '1' && !window.sosActivo && !cooldownRobo) {
-                    console.log('🔥 SACUDÓN DETECTADO (NATIVO)');
-                    activarAlarmaRobo();
-                }
-            },
-            (err) => console.error('❌ Error plugin Shake:', err),
-            { sensitivity: 30 }
-        );
-    } else {
-        console.log('⚠️ Plugin Shake no disponible, usando fallback Web');
+    const accX = x - gravedad[0];
+    const accY = y - gravedad[1];
+    const accZ = z - gravedad[2];
+    
+    // Calcular fuerza en G
+    const fuerza = Math.sqrt(accX*accX + accY*accY + accZ*accZ) / 9.81;
+    
+    // 🔥 DETECCIÓN
+    if (fuerza > SHAKE_THRESHOLD && !cooldownRobo && localStorage.getItem('ok') === '1' && !window.sosActivo) {
+        console.log(`🔥 SACUDÓN DETECTADO! Fuerza: ${fuerza.toFixed(2)}G`);
+        cooldownRobo = true;
+        setTimeout(() => { cooldownRobo = false; }, SHAKE_COOLDOWN);
+        activarAlarmaRobo();
+        return true;
     }
-}, false);
+    return false;
+}
 
-// 🔥 SISTEMA 2: Fallback Web (funciona en primer plano)
-window.addEventListener('devicemotion', function (e) {
-    if (window.shake) return; // Si el plugin nativo funciona, no usamos este
+function activarSensoresSacudon() {
+    if (sensoresActivos) return;
+    console.log('🔧 Activando sensores de sacudón...');
     
-    let acc = e.accelerationIncludingGravity || e.acceleration;
-    if(!acc || acc.x === null) return;
-    
-    let currTime = Date.now();
-    let x = acc.x;
-    let y = acc.y;
-    let z = acc.z;
-
-    if (!sh_initialized) {
-        sh_last_x = x; sh_last_y = y; sh_last_z = z;
-        sh_initialized = true;
+    // Método 1: Plugin nativo Cordova Device Motion (si está instalado)
+    if (navigator.accelerometer) {
+        navigator.accelerometer.watchAcceleration(
+            (acc) => {
+                sensoresActivos = true;
+                procesarAceleracion(acc.x, acc.y, acc.z);
+            },
+            (err) => {
+                console.warn('❌ Error plugin nativo, usando Web API:', err);
+                activarSensoresWeb();
+            },
+            { frequency: 60 } // 🔥 60Hz = muy rápido
+        );
         return;
     }
+    
+    // Método 2: Web API DeviceMotion
+    activarSensoresWeb();
+}
 
-    if ((currTime - sh_lastUpdate) > 100) {
-        let diffTime = (currTime - sh_lastUpdate);
-        sh_lastUpdate = currTime;
-        
-        let speed = Math.abs(x + y + z - sh_last_x - sh_last_y - sh_last_z) / diffTime * 10000;
-        
-        if (speed > SHAKE_THRESHOLD && !cooldownRobo) {
-            if (localStorage.getItem('ok') === '1' && !window.sosActivo) {
-                console.log('🔥 SACUDÓN DETECTADO (WEB)');
-                activarAlarmaRobo();
-            }
+async function activarSensoresWeb() {
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+        try {
+            await DeviceMotionEvent.requestPermission();
+        } catch (e) {
+            console.error('❌ Permiso sensores denegado');
+            return;
         }
-        sh_last_x = x; sh_last_y = y; sh_last_z = z;
     }
-}, true);
+    
+    if (typeof DeviceMotionEvent !== 'undefined') {
+        window.addEventListener('devicemotion', (e) => {
+            const acc = e.accelerationIncludingGravity;
+            if (acc && acc.x !== null) {
+                sensoresActivos = true;
+                procesarAceleracion(acc.x, acc.y, acc.z);
+            }
+        }, true);
+        
+        // 🔥 Forzar actualización cada 16ms para mantener viva la WebView
+        setInterval(() => {
+            window.dispatchEvent(new Event('devicemotion'));
+        }, 16);
+        
+        console.log('✅ Sensores Web activados a 60fps');
+    }
+}
 
-// 🔥 Mantener la frecuencia de sensores alta
-setInterval(() => {
-    if (typeof DeviceMotionEvent !== 'undefined' && !window.shake) {
-        window.dispatchEvent(new Event('devicemotion'));
-    }
-}, 50);
+// Eliminada la detección vieja que no funcionaba
 
 function activarAlarmaRobo() {
     if (window.cordova && cordova.plugins && cordova.plugins.backgroundMode) {
@@ -1586,7 +1579,7 @@ async function salir(){
         parar();
         localStorage.clear(); sessionStorage.clear(); location.reload();
     } catch(e) {
-        alert('Error validando la llave con el servidor.');
+        alert('Error validando la llave.');
     }
 }
 
@@ -1722,78 +1715,60 @@ function render(a){
 const verificar=async()=>{alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales válidas\nLeyes: 26.485 · 25.326')};
 
 // ============================================================
-// 🔥 INICIALIZACIÓN PRINCIPAL - PRODUCCIÓN
+// 🔥 MODIFICADO: INICIALIZACIÓN BACKGROUND MODE MEJORADA
 // ============================================================
 addEventListener('DOMContentLoaded', async ()=>{
-    console.log('🚀 Sistema C4 inicializado');
+ await cargarActasLocales(); 
+ const savedImei = localStorage.getItem('imei');
+ if(savedImei) {
+    document.getElementById('pI').value = savedImei;
+    if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = savedImei;
+ }
+ if(localStorage.getItem('ok')==='1'){
+    activarBotonesSeguridad();
+ }
+ 
+ // 🔥 BACKGROUND MODE CONFIGURACIÓN DEFINITIVA
+ if (window.cordova && window.cordova.plugins && window.cordova.plugins.backgroundMode) {
+    console.log('✅ Background Mode detectado');
     
-    await cargarActasLocales(); 
+    cordova.plugins.backgroundMode.setDefaults({
+        title: '🛡️ Sistema C4 Activo',
+        text: 'Protección en segundo plano - Ni Una Menos',
+        icon: 'icon',
+        color: '8B0000',
+        allowClose: false,
+        hidden: false,
+        bigText: true,
+        priority: 'max', // 🔥 Prioridad máxima
+        channelName: 'Protección C4',
+        visibility: 'public',
+        launch: true
+    });
+
+    cordova.plugins.backgroundMode.enable();
+    cordova.plugins.backgroundMode.overrideBackButton();
     
-    const savedImei = localStorage.getItem('imei');
-    if(savedImei) {
-        document.getElementById('pI').value = savedImei;
-        if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = savedImei;
-    }
-    
-    if(localStorage.getItem('ok')==='1'){
-        activarBotonesSeguridad();
-    }
-    
-    // 🔥 CONFIGURACIÓN DEFINITIVA BACKGROUND MODE CORDOVA
-    if (window.cordova && window.cordova.plugins && window.cordova.plugins.backgroundMode) {
-        console.log('✅ Background Mode detectado');
+    cordova.plugins.backgroundMode.on('activate', function() {
+        console.log('🔥 Modo segundo plano ACTIVADO');
+        cordova.plugins.backgroundMode.disableWebViewOptimizations();
+        cordova.plugins.backgroundMode.disableBatteryOptimizations();
+        cordova.plugins.backgroundMode.moveToForeground();
         
-        cordova.plugins.backgroundMode.setDefaults({
-            title: '🛡️ Sistema C4 Activo',
-            text: 'Protección en segundo plano - Ni Una Menos',
-            icon: 'icon',
-            color: '8B0000',
-            allowClose: false,
-            hidden: false,
-            bigText: true,
-            priority: 'max',
-            channelName: 'Protección C4',
-            channelDescription: 'Sistema de protección Ni Una Menos Argentina',
-            visibility: 'public',
-            launch: true
-        });
+        // Reactivar sensores si están armados
+        if (localStorage.getItem('ok') === '1') {
+            activarSensoresSacudon();
+        }
+    });
 
-        cordova.plugins.backgroundMode.enable();
-        cordova.plugins.backgroundMode.overrideBackButton();
-        
-        cordova.plugins.backgroundMode.on('activate', function() {
-            console.log('🔥 Modo segundo plano ACTIVADO');
-            cordova.plugins.backgroundMode.disableWebViewOptimizations();
-            cordova.plugins.backgroundMode.disableBatteryOptimizations();
-            cordova.plugins.backgroundMode.moveToForeground();
-        });
+    cordova.plugins.backgroundMode.on('deactivate', function() {
+        console.log('⚠️ Background Mode desactivado, reactivando...');
+        setTimeout(() => cordova.plugins.backgroundMode.enable(), 500);
+    });
+ }
 
-        cordova.plugins.backgroundMode.on('deactivate', function() {
-            console.log('⚠️ Modo segundo plano desactivado, reactivando...');
-            setTimeout(() => {
-                cordova.plugins.backgroundMode.enable();
-            }, 500);
-        });
-
-        cordova.plugins.backgroundMode.on('failure', function(error) {
-            console.error('❌ Background Mode falló:', error);
-        });
-    }
-
-    window.ir('inicio');
-    
-    // Registrar Service Worker
-    if('serviceWorker' in navigator) {
-        addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js?v=2026_v8').catch(err => {
-                console.warn('Service Worker no registrado:', err);
-            });
-        });
-    }
-    
-    // Desactivar menú contextual
-    document.addEventListener('contextmenu', e => e.preventDefault());
+ window.ir('inicio');
+ if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=2026_v8').catch(()=>{}));
+ document.addEventListener('contextmenu',e=>e.preventDefault());
 });
-</script>
-</body>
-</html>
+</script></body></html>
