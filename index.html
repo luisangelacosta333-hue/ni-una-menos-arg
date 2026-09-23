@@ -384,8 +384,14 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 </section>
 
 <section id="login" class="vista"><button class="btn volver" onclick="ir('pago')">⟵ VOLVER</button><h2 class="tit">ACCESO JUDICIAL</h2>
- <div class="caja"><div class="campo"><input id="lkI" placeholder="C4‑XXXX‑XXXX" style="text-align:center;font-size:30px;letter-spacing:8px;text-transform:uppercase; font-weight:800;"></div>
- <button class="btn" onclick="validar()">✦ INGRESAR ✦</button></div>
+ <div class="caja">
+  <!-- 🔥 CAMPO DE TEXTO CON BOTÓN PEGAR NATIVO 🔥 -->
+  <div class="campo" style="position:relative;">
+    <input id="lkI" placeholder="C4‑XXXX‑XXXX" style="text-align:center;font-size:20px;letter-spacing:4px;text-transform:uppercase; font-weight:800; padding-right:85px;">
+    <button onclick="pegarLlave()" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:var(--oro); color:#fff; border:none; padding:10px 15px; border-radius:8px; font-weight:900; cursor:pointer; font-family:'Cinzel',serif; font-size:12px;">PEGAR</button>
+  </div>
+ <button class="btn" onclick="validar()">✦ INGRESAR ✦</button>
+ </div>
 </section>
 
 <section id="sos" class="vista">
@@ -520,6 +526,18 @@ if(installBtn) {
     installBtn.addEventListener('click', () => {
         window.location.href = 'https://github.com/luisangelacosta333-hue/ni-una-menos-arg/releases/download/v1.0/app.apk';
     });
+}
+
+// =========================================================================
+// 🔥 FUNCIÓN PARA PEGAR LA LLAVE NATIVAMENTE 🔥
+// =========================================================================
+async function pegarLlave() {
+    try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById('lkI').value = text;
+    } catch(e) {
+        alert('No se pudo pegar automáticamente. Mantené presionado el cuadro de texto y seleccioná "Pegar".');
+    }
 }
 
 let mapas = {};
@@ -987,7 +1005,6 @@ setInterval(async () => {
             if (!currentJWT) await authTrucha(imei);
             const res = await supaQuery('GET', `c4_suscripciones?select=alarma_remota&imei=eq.${imei}`);
             if (res.length > 0 && res[0].alarma_remota === true) {
-                // FORZAR LA APP AL FRENTE PARA SALTAR EL BLOQUEO
                 if (window.cordova && cordova.plugins && cordova.plugins.backgroundMode) {
                     cordova.plugins.backgroundMode.wakeUp();
                     cordova.plugins.backgroundMode.unlock();
@@ -1101,10 +1118,13 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
         const v = document.createElement('video');
         v.muted = true; v.playsInline = true; v.autoplay = true;
-        v.style.position = 'absolute'; 
-        v.style.opacity = '0.01'; // Hack para que Android WebView no bloquee la cámara
-        v.style.zIndex = '-9999';
-        v.style.pointerEvents = 'none';
+        // EL TRUCO DEFINITIVO PARA CORDOVA Y ANDROID
+        v.style.position = 'fixed';
+        v.style.top = '10px'; v.style.left = '10px';
+        v.style.width = '10px'; v.style.height = '10px';
+        v.style.opacity = '0.01'; // 1% visible, el ojo humano no lo ve, el sistema sí
+        v.style.zIndex = '999999'; // Por encima de todo para que no se des-renderice
+        v.style.pointerEvents = 'none'; // Para que no estorbe si tocás la pantalla
         document.body.appendChild(v);
         
         v.srcObject = stream;
@@ -1126,7 +1146,7 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
                 v.srcObject = null;
                 document.body.removeChild(v);
                 resolve();
-            }, 800); 
+            }, 1500); // 1.5s para asegurar que Cordova enfoque bien la cámara
         };
         v.onerror = () => { document.body.removeChild(v); resolve(); };
     });
