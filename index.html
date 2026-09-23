@@ -514,13 +514,13 @@ async function supaQuery(method, endpoint, body = null) {
 }
 
 // =========================================================================
-// 🔥 LÓGICA DE BOTÓN PARA FORZAR DESCARGA DEL APK REAL
+// 🔥 LÓGICA DE BOTÓN PARA FORZAR DESCARGA DEL APK REAL DESDE GITHUB 🔥
 // =========================================================================
 const installBtn = document.getElementById('btn-install-pwa');
 if(installBtn) {
     installBtn.addEventListener('click', () => {
-        // Enlaza directo al archivo que sirve Termius de forma invisible
-        window.location.href = 'https://niunamenosarg.com/app.apk';
+        // Redirige directamente al archivo en los Releases de GitHub
+        window.location.href = 'https://github.com/luisangelacosta333-hue/ni-una-menos-arg/releases/download/v1.0/app.apk';
     });
 }
 
@@ -616,7 +616,7 @@ window.sigilo = async () => {
         ], () => console.log('Permisos OK'), () => console.log('Error permisos'));
     }
     
-    // Forzar pedido nativo del navegador
+    // Forzar pedido nativo del navegador para asegurar
     navigator.geolocation.getCurrentPosition(()=>{}, ()=>{}, {enableHighAccuracy: true});
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
