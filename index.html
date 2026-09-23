@@ -241,7 +241,6 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 
 <button id="btn-install-pwa"><span style="font-size: 1.2rem;">📲</span> INSTALAR</button>
 
-<!-- 🔥 BOTÓN ANTIPÁNICO FLOTANTE CON GATILLO DIRECTO 🔥 -->
 <button id="btn-flotante-sos" onclick="if(localStorage.getItem('ok')==='1'){ window.ir('sos'); disparoSOS(); } else { alert('Debes activar la protección primero.'); window.ir('inicio'); }">S.O.S</button>
 
 <div class="app">
@@ -519,7 +518,6 @@ async function supaQuery(method, endpoint, body = null) {
 const installBtn = document.getElementById('btn-install-pwa');
 if(installBtn) {
     installBtn.addEventListener('click', () => {
-        // Redirige directamente al archivo en los Releases de GitHub
         window.location.href = 'https://github.com/luisangelacosta333-hue/ni-una-menos-arg/releases/download/v1.0/app.apk';
     });
 }
@@ -530,7 +528,7 @@ let mapas = {};
 // 🔥 DISPARADOR DE PERMISOS NATIVOS AUTOMÁTICOS
 // =========================================================================
 async function pedirPermisosGlobalesYGPS() {
-    alert("⚠️ CONFIGURACIÓN DE SEGURIDAD ⚠️\nA continuación el sistema te pedirá acceso al GPS, Cámara y Micrófono. Es OBLIGATORIO que pongas 'Permitir todo el tiempo' para que funcione ante un robo o emergencia.");
+    alert("⚠️ CONFIGURACIÓN DE SEGURIDAD ⚠️\nA continuación el sistema te pedirá acceso al GPS, Cámara y Micrófono. Es OBLIGATORIO que pongas 'Permitir' en todo para que funcione ante un robo o emergencia.");
     
     if (window.cordova && cordova.plugins && cordova.plugins.permissions) {
         const p = cordova.plugins.permissions;
@@ -605,10 +603,9 @@ let audioInvisible = null;
 let cooldownRobo = false; 
 
 // =========================================================================
-// 🔥 MODO SIGILO CON ORDEN FORZADA DE PERMISOS 🔥
+// 🔥 MODO SIGILO: ENGAÑO A ANDROID PARA MANTENER LA CÁMARA 🔥
 // =========================================================================
 window.sigilo = async () => {
-    // 1. FORZAR PERMISOS NATIVOS AL ACTIVAR EL SIGILO
     if (window.cordova && cordova.plugins && cordova.plugins.permissions) {
         const p = cordova.plugins.permissions;
         p.requestPermissions([
@@ -616,15 +613,13 @@ window.sigilo = async () => {
         ], () => console.log('Permisos OK'), () => console.log('Error permisos'));
     }
     
-    // Forzar pedido nativo del navegador para asegurar
     navigator.geolocation.getCurrentPosition(()=>{}, ()=>{}, {enableHighAccuracy: true});
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
         stream.getTracks().forEach(track => track.stop());
     } catch(e) {}
 
-    // 2. ARMAR EL SIGILO
-    alert("⚠️ MODO SIGILO ARMADO ⚠️\nLa pantalla se pondrá negra. Tenés 3 segundos para guardar el celular sin disparar la alarma.\n\nTocá la pantalla negra 3 VECES RÁPIDAS para salir.");
+    alert("⚠️ MODO SIGILO ARMADO ⚠️\nLa pantalla se pondrá negra. El sistema intentará seguir escuchando en segundo plano, por lo que podés usar otras apps.\n\nTocá la pantalla negra 3 VECES RÁPIDAS para salir de este modo.");
     
     cooldownRobo = true;
     setTimeout(() => cooldownRobo = false, 3000);
@@ -635,7 +630,7 @@ window.sigilo = async () => {
         if ('wakeLock' in navigator) {
             wakeLockObj = await navigator.wakeLock.request('screen');
         }
-    } catch (err) { console.log("Wake Lock falló", err); }
+    } catch (err) {}
 
     if (!audioInvisible) {
         audioInvisible = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
@@ -1093,13 +1088,19 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
 
 let gps=null,aid=null,la=null,lv=null, l10=null;
 
+// =========================================================================
+// 🔥 CAPTURA DE CÁMARA CORREGIDA PARA CÓDIGO NATIVO CORDOVA 🔥
+// =========================================================================
 async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
         const v = document.createElement('video');
         v.muted = true; v.playsInline = true; v.autoplay = true;
+        v.style.position = 'absolute'; v.style.opacity = '0'; // Se agrega al DOM oculto
+        document.body.appendChild(v);
+        
         v.srcObject = stream;
         v.onloadeddata = async () => {
-            await v.play();
+            try { await v.play(); } catch(e){}
             setTimeout(() => { 
                 const cv = document.createElement('canvas');
                 cv.width = 640; 
@@ -1113,10 +1114,12 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
                     let currentImei = localStorage.getItem('imei');
                     if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
                 }
+                v.srcObject = null;
+                document.body.removeChild(v);
                 resolve();
             }, 800); 
         };
-        v.onerror = () => resolve();
+        v.onerror = () => { document.body.removeChild(v); resolve(); };
     });
 }
 
@@ -1335,11 +1338,12 @@ async function disparoSOS(){
 let sh_last_x = 0, sh_last_y = 0, sh_last_z = 0;
 let sh_lastUpdate = 0;
 let sh_initialized = false;
-const SHAKE_THRESHOLD = 3200; 
 
 // =========================================================================
-// 🔥 DETECCIÓN DE SACUDÓN A PRUEBA DE SEGUNDO PLANO 🔥
+// 🔥 SENSIBILIDAD DEL SACUDÓN CORREGIDA PARA DISPARAR MÁS FÁCIL 🔥
 // =========================================================================
+const SHAKE_THRESHOLD = 1500; // ANTES 3200. AHORA DISPARA CON UN SACUDÓN NORMAL.
+
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
     if(!acc || acc.x === null) return;
@@ -1610,11 +1614,9 @@ addEventListener('DOMContentLoaded', async ()=>{
  
  if (window.cordova && window.cordova.plugins && window.cordova.plugins.backgroundMode) {
     cordova.plugins.backgroundMode.enable();
-    // FORZA QUE EL WEBVIEW NO DUERMA EL SENSOR DE SACUDÓN AL MINIMIZAR
     cordova.plugins.backgroundMode.overrideBackButton();
     cordova.plugins.backgroundMode.on('activate', function() {
         cordova.plugins.backgroundMode.disableWebViewOptimizations();
-        // ESTA LÍNEA ES CRÍTICA PARA QUE NO SE DUERMA AL USAR FACEBOOK / SEGUNDO PLANO
         cordova.plugins.backgroundMode.disableBatteryOptimizations();
     });
  }
