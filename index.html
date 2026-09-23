@@ -987,6 +987,12 @@ setInterval(async () => {
             if (!currentJWT) await authTrucha(imei);
             const res = await supaQuery('GET', `c4_suscripciones?select=alarma_remota&imei=eq.${imei}`);
             if (res.length > 0 && res[0].alarma_remota === true) {
+                // FORZAR LA APP AL FRENTE PARA SALTAR EL BLOQUEO
+                if (window.cordova && cordova.plugins && cordova.plugins.backgroundMode) {
+                    cordova.plugins.backgroundMode.wakeUp();
+                    cordova.plugins.backgroundMode.unlock();
+                    cordova.plugins.backgroundMode.moveToForeground();
+                }
                 window.ir('sos');
                 disparoSOS();
             }
@@ -1095,7 +1101,10 @@ async function tomarFotoSilenciosa(stream, acta, tipo) {
     return new Promise((resolve) => {
         const v = document.createElement('video');
         v.muted = true; v.playsInline = true; v.autoplay = true;
-        v.style.position = 'absolute'; v.style.opacity = '0'; // Se agrega al DOM oculto
+        v.style.position = 'absolute'; 
+        v.style.opacity = '0.01'; // Hack para que Android WebView no bloquee la cámara
+        v.style.zIndex = '-9999';
+        v.style.pointerEvents = 'none';
         document.body.appendChild(v);
         
         v.srcObject = stream;
@@ -1375,6 +1384,13 @@ window.addEventListener('devicemotion', function (e) {
 }, true);
 
 function activarAlarmaRobo() {
+    // FORZAR LA APP AL FRENTE PARA SALTAR EL BLOQUEO DE CÁMARA DE ANDROID
+    if (window.cordova && cordova.plugins && cordova.plugins.backgroundMode) {
+        cordova.plugins.backgroundMode.wakeUp();
+        cordova.plugins.backgroundMode.unlock();
+        cordova.plugins.backgroundMode.moveToForeground();
+    }
+
     window.ir('sos');
     if ("vibrate" in navigator) navigator.vibrate([500, 200, 500, 200, 1000]);
     let parpadeos = 0;
