@@ -180,7 +180,7 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
     animation: entrar .5s ease both;
 }
 
-/* BOTÓN ANTIPÁNICO FLOTANTE */
+/* 🔥 BOTÓN ANTIPÁNICO FLOTANTE GLOBAL 🔥 */
 #btn-flotante-sos {
     position: fixed;
     bottom: 25px;
@@ -241,7 +241,8 @@ footer strong{font-family:'Cinzel',serif; font-weight:800; color:var(--oroOscuro
 
 <button id="btn-install-pwa"><span style="font-size: 1.2rem;">📲</span> INSTALAR</button>
 
-<button id="btn-flotante-sos" onclick="irSOS()">S.O.S</button>
+<!-- 🔥 BOTÓN ANTIPÁNICO FLOTANTE CON GATILLO DIRECTO 🔥 -->
+<button id="btn-flotante-sos" onclick="if(localStorage.getItem('ok')==='1'){ window.ir('sos'); disparoSOS(); } else { alert('Debes activar la protección primero.'); window.ir('inicio'); }">S.O.S</button>
 
 <div class="app">
 <header>
@@ -513,12 +514,11 @@ async function supaQuery(method, endpoint, body = null) {
 }
 
 // =========================================================================
-// 🔥 NUEVA LÓGICA DE BOTÓN PARA FORZAR DESCARGA DEL APK REAL
+// 🔥 LÓGICA DE BOTÓN PARA FORZAR DESCARGA DEL APK REAL
 // =========================================================================
 const installBtn = document.getElementById('btn-install-pwa');
 if(installBtn) {
     installBtn.addEventListener('click', () => {
-        // Al tocar el botón "Instalar", descarga el archivo de verdad.
         window.location.href = 'https://niunamenosarg.com/app.apk';
     });
 }
@@ -603,7 +603,26 @@ let wakeLockObj = null;
 let audioInvisible = null;
 let cooldownRobo = false; 
 
+// =========================================================================
+// 🔥 MODO SIGILO CON ORDEN FORZADA DE PERMISOS 🔥
+// =========================================================================
 window.sigilo = async () => {
+    // 1. FORZAR PERMISOS NATIVOS AL ACTIVAR EL SIGILO
+    if (window.cordova && cordova.plugins && cordova.plugins.permissions) {
+        const p = cordova.plugins.permissions;
+        p.requestPermissions([
+            p.CAMERA, p.RECORD_AUDIO, p.ACCESS_FINE_LOCATION, p.ACCESS_BACKGROUND_LOCATION
+        ], () => console.log('Permisos OK'), () => console.log('Error permisos'));
+    }
+    
+    // Forzar pedido nativo del navegador
+    navigator.geolocation.getCurrentPosition(()=>{}, ()=>{}, {enableHighAccuracy: true});
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        stream.getTracks().forEach(track => track.stop());
+    } catch(e) {}
+
+    // 2. ARMAR EL SIGILO
     alert("⚠️ MODO SIGILO ARMADO ⚠️\nLa pantalla se pondrá negra. Tenés 3 segundos para guardar el celular sin disparar la alarma.\n\nTocá la pantalla negra 3 VECES RÁPIDAS para salir.");
     
     cooldownRobo = true;
@@ -991,6 +1010,9 @@ function formatArg(num) {
     return '549' + c;
 }
 
+// =========================================================================
+// 🔥 GATILLO DE WHATSAPP GLOBAL
+// =========================================================================
 function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     if (!contactos || !Array.isArray(contactos) || contactos.length === 0) {
         try {
@@ -1034,6 +1056,9 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo = 'alerta') {
     }
 }
 
+// =========================================================================
+// 🔥 GATILLO DE EMAIL GLOBAL
+// =========================================================================
 function enviarEmailOculto(email, nombre, la, ln, id, tipo = 'alerta') {
     if (!email) return;
 
@@ -1225,6 +1250,7 @@ async function disparoSOS(){
      render(acta); 
  }
 
+ // 🔥 GATILLO DIRECTO: ENVÍA LAS ALERTAS EN SEGUNDO PLANO
  enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
  enviarEmailOculto(emailDestino, nombre, null, null, id, 'alerta');
 
@@ -1288,6 +1314,7 @@ async function disparoSOS(){
         
         if (esPrimerGPS) {
             esPrimerGPS = false;
+            // 🔥 GATILLO DIRECTO: ENVÍA EL MAPA APENAS FIJA EL GPS
             enviarWhatsAppOculto(contactos, nombre, acta.lat, acta.lng, id, 'gps');
             enviarEmailOculto(emailDestino, nombre, acta.lat, acta.lng, id, 'gps');
         }
@@ -1309,6 +1336,9 @@ let sh_lastUpdate = 0;
 let sh_initialized = false;
 const SHAKE_THRESHOLD = 3200; 
 
+// =========================================================================
+// 🔥 DETECCIÓN DE SACUDÓN A PRUEBA DE SEGUNDO PLANO 🔥
+// =========================================================================
 window.addEventListener('devicemotion', function (e) {
     let acc = e.accelerationIncludingGravity || e.acceleration;
     if(!acc || acc.x === null) return;
@@ -1564,7 +1594,7 @@ function render(a){
 const verificar=async()=>{alert('VERIFICACIÓN OFICIAL\nTodas las firmas locales válidas\nLeyes: 26.485 · 25.326')};
 
 // =========================================================================
-// 🔥 INICIALIZACIÓN MODO SEGUNDO PLANO
+// 🔥 INICIALIZACIÓN MODO SEGUNDO PLANO FORZADO 🔥
 // =========================================================================
 addEventListener('DOMContentLoaded', async ()=>{
  await cargarActasLocales(); 
@@ -1579,6 +1609,8 @@ addEventListener('DOMContentLoaded', async ()=>{
  
  if (window.cordova && window.cordova.plugins && window.cordova.plugins.backgroundMode) {
     cordova.plugins.backgroundMode.enable();
+    // FORZA QUE EL WEBVIEW NO DUERMA EL SENSOR DE SACUDÓN AL MINIMIZAR
+    cordova.plugins.backgroundMode.overrideBackButton();
     cordova.plugins.backgroundMode.on('activate', function() {
         cordova.plugins.backgroundMode.disableWebViewOptimizations();
     });
