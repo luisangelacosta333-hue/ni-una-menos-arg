@@ -868,10 +868,6 @@ async function disparoSOS(origen = 'manual'){
         render(acta); 
     }
     
-    // Si no es un rastreo remoto, manda SMS. Si es remoto, solo manda el correo.
-    if (origen !== 'remoto') {
-        enviarSMSOculto(contactos, nombre, null, null, id, 'alerta');
-    }
     enviarEmailOculto(emailDestino, nombre, null, null, id, 'alerta');
     loopEvidencia(acta); // Inicia el ciclo continuo
     
@@ -926,7 +922,8 @@ async function disparoSOS(origen = 'manual'){
             if (esPrimerGPS) {
                 esPrimerGPS = false;
                 if (window.origenSOS !== 'remoto') {
-                    enviarSMSOculto(contactos, nombre, acta.lat, acta.lng, id, 'gps');
+                    // Un solo SMS con alerta y mapa
+                    enviarSMSOculto(contactos, nombre, acta.lat, acta.lng, id, 'alerta_gps');
                 }
                 enviarEmailOculto(emailDestino, nombre, acta.lat, acta.lng, id, 'gps');
             }
@@ -936,7 +933,8 @@ async function disparoSOS(origen = 'manual'){
                 acta.lat = 'Desconocida'; acta.lng = 'Desconocida (Señal bloqueada)';
                 guardarActas();
                 if (window.origenSOS !== 'remoto') {
-                    enviarSMSOculto(contactos, nombre, 'Desconocida', 'Desconocida', id, 'gps');
+                    // SMS de alerta si falla el GPS
+                    enviarSMSOculto(contactos, nombre, 'Desconocida', 'Desconocida', id, 'alerta_sin_gps');
                 }
                 enviarEmailOculto(emailDestino, nombre, 'Desconocida', 'Desconocida', id, 'gps');
             }
@@ -1116,10 +1114,7 @@ window.confirmarParar = async function(){
     try { contactos = JSON.parse(localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imeiActivo) || '[]'); } catch(e) {}
     const emailDestino = localStorage.getItem('contacto_email') || localStorage.getItem('contacto_email_' + imeiActivo) || '';
     
-    // Si la alarma no fue remota, enviamos SMS de cancelación
-    if (window.origenSOS !== 'remoto') {
-        enviarSMSOculto(contactos, nombre, null, null, aid || 'EXP-CERRADO', 'seguro');
-    }
+    // 0 mensajes SMS al detener la alarma. Solo un correo silencioso.
     enviarEmailOculto(emailDestino, nombre, null, null, aid || 'EXP-CERRADO', 'seguro');
     window.ir('inicio');
 };
@@ -1381,17 +1376,17 @@ function enviarSMSOculto(contactos, nombre, la, ln, id, tipo) {
     }
     
     let msg = "";
-    if (tipo === 'alerta') {
-        msg = "ALERTA SOS - C4: " + (nombre || 'Usuaria') + " en peligro. Modo perito judicial activado. Evidencia en proceso. Exp: " + id;
-    } else if (tipo === 'gps') {
-        msg = "GPS C4 (" + (nombre || 'Usuaria') + "): https://maps.google.com/?q=" + la + "," + ln;
-    } else if (tipo === 'seguro') {
-        msg = "ALERTA C4 CANCELADA: " + (nombre || 'Usuaria') + " esta a salvo. Sistema desactivado mediante llave maestra.";
+    if (tipo === 'alerta_gps') {
+        msg = "ALERTA SOS - C4: " + (nombre || 'Usuaria') + " en peligro. Exp: " + id + " - Mapa: https://maps.google.com/?q=" + la + "," + ln;
+    } else if (tipo === 'alerta_sin_gps') {
+        msg = "ALERTA SOS - C4: " + (nombre || 'Usuaria') + " en peligro. Exp: " + id + " (Senal bloqueada)";
+    } else {
+        return; // Por seguridad, si es otro tipo no manda SMS.
     }
     
     let contactosLimpios = contactos.map(c => formatSMS(c));
     
-    debugLog('Despachando SMS OFICIAL vía Vercel...');
+    debugLog('Despachando 1 SOLO SMS COMBINADO vía Vercel...');
     
     fetch('/api/enviar-sms', {
         method: 'POST',
