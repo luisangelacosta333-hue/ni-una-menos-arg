@@ -177,7 +177,8 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 <body>
 
 <button id="btn-install-pwa">INSTALAR APP</button>
-<button id="btn-flotante-sos" onclick="window.ir('sos'); disparoSOS();">S.O.S</button>
+<!-- CANDADO APLICADO: El botón flotante solo abre la pantalla SOS, y si no está activo, dispara la alarma -->
+<button id="btn-flotante-sos" onclick="if(window.sosActivo){window.ir('sos');}else{window.ir('sos'); disparoSOS();}">S.O.S</button>
 <div class="debug-panel" id="debugPanel"></div>
 
 <div class="app">
@@ -332,9 +333,11 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 </section>
 
 <section id="sos" class="vista">
+ <!-- CANDADO APLICADO: Al tocar atrás, si está activo, pide la clave en vez de hacer nada raro -->
  <button class="btn volver" onclick="if(window.sosActivo){ document.getElementById('modalStop').style.display='flex'; document.getElementById('lkStop').value=''; }else{window.ir('inicio');}" style="position:relative;z-index:9999;">ATRAS</button>
  <h2 class="tit">PROTECCION ACTIVA</h2>
- <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="toggleSOS()">S.O.S</button></div>
+ <!-- CANDADO APLICADO: El botón principal no puede disparar dos veces el SOS. Solo permite detenerlo -->
+ <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="if(!window.sosActivo){disparoSOS();}else{document.getElementById('modalStop').style.display='flex'; document.getElementById('lkStop').value='';}">S.O.S</button></div>
  <div class="estadoSOS" id="st">
    <h2 style="font-size:18px;letter-spacing:2px;margin-bottom:8px;">¡SISTEMA ACTIVADO!</h2>
    NUESTRA EMPRESA ESTÁ RECABANDO LA EVIDENCIA<br>
@@ -396,8 +399,8 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 
-const SHAKE_THRESHOLD = 2.5; // Antes 12. Ahora un sacudón firme lo activa.
-const SHAKE_COOLDOWN = 4000; // Bloqueo de 4000ms entre sacudones para evitar spam.
+const SHAKE_THRESHOLD = 2.5; 
+const SHAKE_COOLDOWN = 4000; 
 
 let cooldownRobo = false;
 let sensoresActivos = false;
@@ -531,7 +534,7 @@ async function solicitarTodosLosPermisos() {
             debugLog('Pidiendo cámara + micrófono...');
             const stream = await navigator.mediaDevices.getUserMedia({ 
                 audio: true, 
-                video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } 
+                video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } } 
             });
             stream.getTracks().forEach(track => track.stop());
             debugLog('Cámara + micrófono OK');
@@ -548,7 +551,7 @@ async function solicitarTodosLosPermisos() {
 }
 
 // ============================================================
-// CAPTURA DE MEDIOS - WEB API PURA
+// CAPTURA DE MEDIOS - EVIDENCIA FULL HD
 // ============================================================
 async function capturarFoto(cameraDirection) {
     return new Promise(async (resolve, reject) => {
@@ -562,8 +565,9 @@ async function capturarFoto(cameraDirection) {
             video.style.opacity = '0.001'; video.style.zIndex = '-1';
             document.body.appendChild(video);
             
+            // Resolución 1080p
             stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: cameraDirection === 'front' ? 'user' : 'environment', width: { ideal: 640 }, height: { ideal: 480 } },
+                video: { facingMode: cameraDirection === 'front' ? 'user' : 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
                 audio: false
             });
             video.srcObject = stream;
@@ -571,19 +575,19 @@ async function capturarFoto(cameraDirection) {
             await new Promise(r => setTimeout(r, 800));
             
             const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
+            canvas.width = video.videoWidth || 1920;
+            canvas.height = video.videoHeight || 1080;
             const ctx = canvas.getContext('2d');
             if (cameraDirection === 'front') { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8); // Mayor calidad
             
             stream.getTracks().forEach(t => t.stop());
             document.body.removeChild(video);
-            debugLog('Foto capturada: ' + (dataUrl.length / 1024).toFixed(0) + 'KB');
+            debugLog('Foto capturada en HD: ' + (dataUrl.length / 1024).toFixed(0) + 'KB');
             resolve(dataUrl);
         } catch(e) {
-            debugLog('Error de foto: ' + e.message);
+            debugLog('Error de foto HD: ' + e.message);
             if(stream) stream.getTracks().forEach(t => t.stop());
             reject(e);
         }
@@ -621,11 +625,11 @@ async function capturarAudio(duracionMs) {
 
 async function capturarVideo(duracionMs, cameraDirection) {
     return new Promise(async (resolve, reject) => {
-        debugLog('Grabando video: ' + cameraDirection);
+        debugLog('Grabando video HD: ' + cameraDirection);
         let stream = null;
         try {
             stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: cameraDirection === 'front' ? 'user' : 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+                video: { facingMode: cameraDirection === 'front' ? 'user' : 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
                 audio: true
             });
             const mimeTypes = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'];
@@ -638,7 +642,7 @@ async function capturarVideo(duracionMs, cameraDirection) {
             recorder.onstop = () => {
                 const blob = new Blob(chunks, { type: mimeType || 'video/webm' });
                 stream.getTracks().forEach(t => t.stop());
-                debugLog('Video OK: ' + (blob.size / 1024).toFixed(0) + 'KB');
+                debugLog('Video HD OK: ' + (blob.size / 1024).toFixed(0) + 'KB');
                 resolve(blob);
             };
             recorder.start();
@@ -813,17 +817,13 @@ async function borrarActa(id) {
 }
 
 // ============================================================
-// S.O.S. - NUCLEO DEL SISTEMA
+// S.O.S. - NUCLEO DEL SISTEMA (CON CANDADO)
 // ============================================================
-window.toggleSOS = function() {
-    if(window.sosActivo) {
-        document.getElementById('modalStop').style.display = 'flex';
-        document.getElementById('lkStop').value = '';
-    } else { disparoSOS(); }
-};
-
 async function disparoSOS(){
-    if(window.sosActivo) return; 
+    if(window.sosActivo) { 
+        debugLog('SOS ya está activo. Ignorando doble toque accidental.');
+        return; 
+    } 
     window.sosActivo = true;
     document.getElementById('btnBigSOS').innerText = 'DETENER S.O.S';
     document.getElementById('btnBigSOS').classList.add('activo');
@@ -866,7 +866,7 @@ async function disparoSOS(){
     
     enviarWhatsAppOculto(contactos, nombre, null, null, id, 'alerta');
     enviarEmailOculto(emailDestino, nombre, null, null, id, 'alerta');
-    loopEvidencia(acta);
+    loopEvidencia(acta); // Inicia el ciclo continuo
     
     if (imei && imei !== 'SIN_IMEI') {
         authTrucha(imei).then(ok => {
@@ -934,7 +934,7 @@ async function disparoSOS(){
 }
 
 // ============================================================
-// LOOP DE EVIDENCIA
+// LOOP DE EVIDENCIA CONTINUO
 // ============================================================
 async function loopEvidencia(acta) {
     if(!window.sosActivo || !acta) return;
@@ -948,7 +948,7 @@ async function loopEvidencia(acta) {
         return; 
     }
     
-    debugLog('Ciclo evidencia corporativa - recabando...');
+    debugLog('Ciclo evidencia corporativa - recabando FHD...');
     
     // FOTO FRONTAL
     try {
@@ -980,7 +980,7 @@ async function loopEvidencia(acta) {
     
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
     
-    // VIDEO 15 SEGUNDOS
+    // VIDEO ALTERNADO 15 SEGUNDOS
     try {
         const direccion = (acta.videos && acta.videos.length % 2 === 0) ? 'environment' : 'user';
         const video = await capturarVideo(15000, direccion);
@@ -1011,6 +1011,7 @@ async function loopEvidencia(acta) {
         }
     } catch(e) { debugLog('Audio fallo: ' + e.message); }
     
+    // Repetición garantizada del ciclo
     if(window.sosActivo && listaActas.find(a => a.id === acta.id)) {
         setTimeout(() => loopEvidencia(acta), 2000);
     }
@@ -1325,9 +1326,11 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo) {
         } catch(e) { contactos = []; }
     }
     if (!contactos || contactos.length === 0) {
+        debugLog('❌ ERROR: No hay contactos de WhatsApp en la memoria (Registrá de nuevo).');
         const miWa = localStorage.getItem('mi_wa');
         contactos = miWa ? [miWa] : ['3816092676'];
     }
+    
     const imeiEnvio = localStorage.getItem('imei') || 'SIN_IMEI';
     let msg = "";
     
@@ -1366,8 +1369,8 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo) {
 }
 
 function enviarEmailOculto(email, nombre, la, ln, id, tipo) {
-    if (!email) {
-        debugLog('⚠️ Envío de Email cancelado: No hay cuenta de correo guardada.');
+    if (!email || email.trim() === '') {
+        debugLog('❌ ERROR: No hay Email configurado en la memoria (Registrá de nuevo).');
         return;
     }
     let asunto = "", msg = "";
