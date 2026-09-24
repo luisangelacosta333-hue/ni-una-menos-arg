@@ -350,11 +350,11 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  <button class="btn volver" onclick="ir('inicio')">VOLVER</button>
  <h2 class="tit">RECUPERACION Y S.O.S. REMOTO</h2>
  <div class="caja">
-  <p style="font-size:14px;color:#555;margin-bottom:15px;text-align:center;line-height:1.6;">Si te arrebataron el celular y no pudiste activar el botón, un familiar o vos desde cualquier otro dispositivo podéis ingresar vuestro IMEI y Llave Maestra para activar el S.O.S. a distancia. El teléfono robado empezará a recabar fotos, audios y GPS de forma invisible para que veas quién lo tiene.</p>
-  <div class="campo"><label>IMEI DEL EQUIPO ROBADO</label><input id="rrI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
+  <p style="font-size:14px;color:#555;margin-bottom:15px;text-align:center;line-height:1.6;">Si te arrebataron el celular o un familiar no contesta y sospechás que está en peligro, podés usar el S.O.S Remoto. Ingresá su IMEI y su Llave Maestra abajo para activar la alarma a distancia. El teléfono rastreado empezará a recabar fotos, audios y GPS de forma invisible, sin que nadie se dé cuenta.</p>
+  <div class="campo"><label>IMEI DEL EQUIPO RASTREADO</label><input id="rrI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
   <div class="campo"><label>LLAVE MAESTRA C4</label><input id="rrL" placeholder="C4-XXXX-XXXX" style="text-transform:uppercase"></div>
   <button class="btn" onclick="recuperar('restaurar')">RESTAURAR ACCESO AL PANEL</button>
-  <button class="btn rubi" onclick="recuperar('detonar')" style="margin-top:18px">ACTIVAR S.O.S. AL LADRON (INVISIBLE)</button>
+  <button class="btn rubi" onclick="recuperar('detonar')" style="margin-top:18px">ACTIVAR RASTREO SILENCIOSO REMOTO</button>
  </div>
 </section>
 
@@ -700,8 +700,9 @@ const irSOS = () => localStorage.getItem('ok') === '1' ? window.ir('sos') : wind
 
 function leerVoz(){
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance('Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis. Plataforma corporativa Ni Una Menos. Estamos respaldándote las 24 horas. Ante una amenaza o robo, activá el S.O.S y ponelo en modo sigilo. El sistema recabará fotos del rostro del agresor, audio del entorno y trazará su escape por GPS sin que se dé cuenta. Toda la evidencia está blindada y custodiada por nuestra empresa.');
-    u.lang = 'es-AR'; u.rate = .92; u.pitch = 1; u.volume = 1;
+    const textoMensaje = 'Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis. Plataforma corporativa Ni Una Menos. Esta aplicación está diseñada para tu protección total. En caso de sufrir un arrebato de celular o un secuestro, el sistema recabará fotos del rostro del agresor, video, audio del entorno y ubicación en vivo. Además, si sentís que tu familiar no contesta los mensajes o está en peligro, podés usar la función de S.O.S. remoto. Solo ingresá su IMEI y su Llave Maestra en la sección Recuperar, y podrás rastrear su teléfono de manera silenciosa, obteniendo fotos y ubicación sin que nadie se dé cuenta. Tu seguridad está blindada y custodiada por nuestra empresa.';
+    const u = new SpeechSynthesisUtterance(textoMensaje);
+    u.lang = 'es-AR'; u.rate = 0.92; u.pitch = 1; u.volume = 1;
     speechSynthesis.speak(u);
 }
 
@@ -1330,11 +1331,11 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo) {
     let msg = "";
     
     if (tipo === 'alerta') {
-        msg = `🚨 ALERTA S.O.S. JUDICIAL - SISTEMA C4 🚨\nEMPRESA NI UNA MENOS - ENERGY 2026\n\nAtención: La usuaria ${nombre || 'protegida'} ha activado el botón de pánico.\nNo te preocupes, nuestra empresa ya está respaldándola. El dispositivo entró en Modo Sigilo y se convirtió en un perito judicial oculto.\n\nEstamos recabando:\n📸 Fotos de los rostros (Cámara oculta)\n🎤 Grabación de audio del entorno\n📍 Rastreo GPS en vivo\n\nNº Expediente: ${id}\nIMEI: ${imeiEnvio}\nToda la información está siendo blindada en nuestros servidores.`;
+        msg = "🚨 ALERTA S.O.S. JUDICIAL - SISTEMA C4 🚨\nEMPRESA NI UNA MENOS - ENERGY 2026\n\nAtención: La usuaria " + (nombre || 'protegida') + " ha activado el botón de pánico.\nNo te preocupes, nuestra empresa ya está respaldándola. El dispositivo entró en Modo Sigilo y se convirtió en un perito judicial oculto.\n\nEstamos recabando:\n📸 Fotos de los rostros (Cámara oculta)\n🎤 Grabación de audio del entorno\n📍 Rastreo GPS en vivo\n\nNº Expediente: " + id + "\nIMEI: " + imeiEnvio + "\nToda la información está siendo blindada en nuestros servidores.";
     } else if (tipo === 'gps') {
-        msg = `📍 ACTUALIZACIÓN GPS - EVIDENCIA C4\nNuestra empresa ha capturado la ubicación en vivo del dispositivo de ${nombre || 'la usuaria'}.\n\nRuta de rastreo forense:\nhttps://maps.google.com/?q=${la},${ln}`;
+        msg = "📍 ACTUALIZACIÓN GPS - EVIDENCIA C4\nNuestra empresa ha capturado la ubicación en vivo del dispositivo de " + (nombre || 'la usuaria') + ".\n\nRuta de rastreo forense:\nhttps://maps.google.com/?q=" + la + "," + ln;
     } else if (tipo === 'seguro') {
-        msg = `✅ SISTEMA C4 - ALERTA DESACTIVADA ✅\nEMPRESA NI UNA MENOS - ENERGY 2026\n\nEstimado contacto de confianza:\nTe informamos de manera oficial que ${nombre || 'la usuaria'} ha desactivado la alerta S.O.S de forma segura mediante su Llave Maestra judicial verificada.\n\nEl dispositivo y la persona se encuentran a salvo. Nuestra empresa ha sellado la evidencia recolectada y la cadena de custodia ha sido archivada con éxito.\nGracias por formar parte de nuestra red de protección ciudadana.`;
+        msg = "✅ SISTEMA C4 - ALERTA DESACTIVADA ✅\nEMPRESA NI UNA MENOS - ENERGY 2026\n\nEstimado contacto de confianza:\nTe informamos de manera oficial que " + (nombre || 'la usuaria') + " ha desactivado la alerta S.O.S de forma segura mediante su Llave Maestra judicial verificada.\n\nEl dispositivo y la persona se encuentran a salvo. Nuestra empresa ha sellado la evidencia recolectada y la cadena de custodia ha sido archivada con éxito.\nGracias por formar parte de nuestra red de protección ciudadana.";
     }
     
     let url = 'https://7107.api.greenapi.com/waInstance' + WA_INSTANCE + '/sendMessage/' + WA_TOKEN;
@@ -1351,35 +1352,48 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo) {
                 body: JSON.stringify({ chatId: cel + '@c.us', message: msg })
             })
             .then(async res => {
-                if(!res.ok) debugLog('❌ Falla WA: ' + await res.text());
-                else debugLog('✅ Alerta WA enviada a ' + cel);
+                if(!res.ok) {
+                    let txt = await res.text();
+                    debugLog('❌ Falla WA (' + cel + '): ' + txt);
+                } else {
+                    debugLog('✅ Alerta WA enviada a ' + cel);
+                }
             })
-            .catch(err => debugLog('❌ Error crítico WA: ' + err.message));
+            .catch(err => debugLog('❌ Error crítico WA (' + cel + '): ' + err.message));
         }, i * 1500); 
     }
 }
 
 function enviarEmailOculto(email, nombre, la, ln, id, tipo) {
-    if (!email) return;
+    if (!email) {
+        debugLog('⚠️ Envío de Email cancelado: No hay cuenta de correo guardada.');
+        return;
+    }
     let asunto = "", msg = "";
     const imeiEnvio = localStorage.getItem('imei') || 'SIN_IMEI';
     
     if (tipo === 'alerta') { 
         asunto = '🚨 ALERTA S.O.S C4 - ' + nombre; 
-        msg = `ALERTA DE EMERGENCIA C4\n\nNuestra empresa de protección informa que la usuaria ${nombre || 'protegida'} ha disparado la alerta S.O.S.\nEl dispositivo se encuentra en modo recolección forense (capturando audio, foto y GPS de manera silenciosa).\n\nExpediente: ${id}\nIMEI: ${imeiEnvio}\n\nNi Una Menos - Energy 2026 está resguardando toda la evidencia.`;
+        msg = "ALERTA DE EMERGENCIA C4\n\nNuestra empresa de protección informa que la usuaria " + (nombre || 'protegida') + " ha disparado la alerta S.O.S.\nEl dispositivo se encuentra en modo recolección forense (capturando audio, foto y GPS de manera silenciosa).\n\nExpediente: " + id + "\nIMEI: " + imeiEnvio + "\n\nNi Una Menos - Energy 2026 está resguardando toda la evidencia en sus servidores privados.";
     } else if (tipo === 'gps') { 
         asunto = '📍 GPS RASTREO C4 - ' + nombre; 
-        msg = `El sistema C4 ha capturado un punto de ubicación en el rastreo de ${nombre || 'la usuaria'}.\n\nUbicación satelital:\nhttps://maps.google.com/?q=${la},${ln}`; 
+        msg = "El sistema C4 ha capturado un punto de ubicación en el rastreo en vivo de " + (nombre || 'la usuaria') + ".\n\nUbicación satelital:\nhttps://maps.google.com/?q=" + la + "," + ln; 
     } else if (tipo === 'seguro') { 
         asunto = '✅ SISTEMA C4 DESACTIVADO - ' + nombre; 
-        msg = `ALERTA C4 CANCELADA\n\nInformamos que ${nombre || 'la usuaria'} ha verificado su identidad y ha desactivado el sistema de protección de manera segura.\nNuestra empresa ha cerrado y encriptado la evidencia recolectada.\n\nNi Una Menos - Energy 2026.`; 
+        msg = "ALERTA C4 CANCELADA\n\nInformamos que " + (nombre || 'la usuaria') + " ha verificado su identidad mediante llave maestra y ha desactivado el sistema de protección de manera segura.\nNuestra empresa ha cerrado y encriptado la evidencia recolectada.\n\nProtección Corporativa - Ni Una Menos Energy 2026."; 
     }
     
+    debugLog('Despachando Email corporativo a: ' + email);
     fetch('https://ni-una-menos-arg.vercel.app/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, asunto: asunto, msg: msg })
-    }).catch(err => debugLog('Email error: ' + err.message));
+    })
+    .then(res => {
+        if(res.ok) debugLog('✅ Email enviado correctamente.');
+        else debugLog('❌ Falló el envío del Email.');
+    })
+    .catch(err => debugLog('❌ Error crítico en el servidor de Email: ' + err.message));
 }
 
 // ============================================================
