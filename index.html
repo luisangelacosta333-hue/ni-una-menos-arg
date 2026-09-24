@@ -142,7 +142,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 .info-bloque:last-child{border-bottom:none}
 .info-bloque b{color:var(--oroOscuro);font-family:'Cinzel',serif;letter-spacing:2.5px;font-size:18px;font-weight:900;display:block;margin-bottom:8px;}
 .info-bloque p{font-size:15px;line-height:1.8;color:#555;font-weight:500}
-.ley{display:inline-block;padding:5px 12px;margin:4px;border-radius:999px;border:1px solid var(--oroMedio);color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;font-weight:700;background:#FFFCF2}
+.ley{display:inline-block;padding:5px 12px;margin:4px;border-radius:999px;border:1px solid var(--oroMedio);color:var(--oroOscuro);font-family:'Cinzel',serif;font-weight:700;background:#FFFCF2}
 @media(max-width:640px){.grid2{grid-template-columns:1fr}}
 
 /* FORZAMOS LA VISTA DEL BOTÓN FLOTANTE AL REGISTRARSE */
@@ -178,7 +178,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 <body>
 
 <button id="btn-install-pwa">INSTALAR APP</button>
-<!-- FRENO: El botón llama a la función pero si ya está activo adentro lo rebota -->
+<!-- CANDADO APLICADO: El botón flotante no interrumpe el loop de evidencia si ya está activo -->
 <button id="btn-flotante-sos" onclick="if(window.sosActivo){ document.getElementById('modalStop').style.display='flex'; document.getElementById('lkStop').value=''; }else{ window.ir('sos'); disparoSOS('manual'); }">S.O.S</button>
 <div class="debug-panel" id="debugPanel"></div>
 
@@ -306,11 +306,6 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
     <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Si activas el sistema por accidente, tocá "Detener S.O.S". Por seguridad antirrobo, te pedirá que ingreses esta Llave Maestra para confirmar que sos vos. <b>MEMORIZALA.</b></span>
   </div>
 
-  <div style="background:#FFFCF2;border:1px solid #D4AF37;padding:16px;border-radius:12px;margin-top:12px;text-align:left;box-shadow:var(--luz);">
-    <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">OBLIGATORIO: AGENDAR NUMERO</b>
-    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Para recibir la evidencia corporativa de nuestra empresa, <b>es obligatorio agendar este número en tus contactos ahora mismo: 381 60 92 676</b>.</span>
-  </div>
-
   <div style="display:flex;gap:12px;margin-top:25px;flex-wrap:wrap;justify-content:center">
    <button class="btn blanco" onclick="navigator.clipboard.writeText(document.getElementById('lk').textContent).then(()=>alert('Copiada correctamente'))">COPIAR</button>
    <button class="btn" onclick="navigator.share?.({text:document.getElementById('lk').textContent})">COMPARTIR</button>
@@ -401,8 +396,8 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 
-// Ajustado a 2.6 a pedido del usuario, el punto medio exacto de hardware
-const SHAKE_THRESHOLD = 2.6; 
+// Restaurado a 2.8 como solicitó el usuario para requerir un sacudón más firme
+const SHAKE_THRESHOLD = 2.8; 
 const SHAKE_COOLDOWN = 4000; 
 
 let cooldownRobo = false;
@@ -417,7 +412,8 @@ let mapas = {};
 
 // Candados Globales de Evidencia
 window.sosActivo = false;
-window.origenSOS = 'manual'; // Controla si manda o no el SMS
+window.bloqueoDisparo = false; // FRENO: Impide el doble disparo
+window.origenSOS = 'manual'; 
 let gps=null, aid=null;
 
 // Lógica de Instalación PWA Nativa
@@ -831,10 +827,11 @@ async function borrarActa(id) {
 // ============================================================
 async function disparoSOS(origen = 'manual'){
     // FRENO GLOBAL DE EVIDENCIA: Si el sistema ya está grabando por un sacudón u otro motivo, ignora nuevos toques manuales
-    if(window.sosActivo) { 
+    if(window.sosActivo || window.bloqueoDisparo) { 
         debugLog('Freno activo: El sistema ya está grabando evidencia. Ignorando doble toque.');
         return; 
     } 
+    window.bloqueoDisparo = true;
     window.sosActivo = true;
     
     window.origenSOS = origen; // Guardamos cómo se activó para el ahorro de SMS
@@ -877,6 +874,10 @@ async function disparoSOS(origen = 'manual'){
         render(acta); 
     }
     
+    // Si no es un rastreo remoto, manda SMS. Si es remoto, solo manda el correo.
+    if (origen !== 'remoto') {
+        enviarSMSOculto(contactos, nombre, null, null, id, 'alerta');
+    }
     enviarEmailOculto(emailDestino, nombre, null, null, id, 'alerta');
     loopEvidencia(acta); // Inicia el ciclo continuo
     
@@ -1089,7 +1090,7 @@ const parar = () => {
     if(gps) navigator.geolocation.clearWatch(gps);
     document.getElementById('st').style.display = 'none';
     document.body.style.backgroundColor = '#FFFFFF';
-    window.sosActivo = false; 
+    window.bloqueoDisparo = false; // Se levanta el freno recién cuando está desactivado el sistema
 };
 
 window.confirmarParar = async function(){
