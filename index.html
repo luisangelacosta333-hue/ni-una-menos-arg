@@ -12,9 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script>
-(function(){
-    var css = `
+<style>
 :root{
   --blanco:#FFFFFF;--negro:#050505;--texto:#1A1A1A;
   --oroOscuro:#5A3E00;--oroMedio:#A87F0A;--oro:#D4AF37;--oroClaro:#FFF0A8;
@@ -166,12 +164,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 #modalStop {display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999999;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
 #pantalla-sigilo {position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999999;display:flex;align-items:center;justify-content:center;}
 .debug-panel {position:fixed;bottom:5px;left:5px;background:rgba(0,0,0,0.85);color:#0f0;font-family:'JetBrains Mono',monospace;font-size:10px;padding:8px;border-radius:6px;z-index:99999999;max-width:200px;max-height:120px;overflow-y:auto;display:none;}
-    `;
-    var s = document.createElement('style');
-    s.textContent = css;
-    document.head.appendChild(s);
-})();
-</script>
+</style>
 </head>
 <body>
 
@@ -421,9 +414,6 @@ let mapas = {};
 window.sosActivo = false;
 let gps=null, aid=null;
 
-// ============================================================
-// PANEL DE DIAGNOSTICO
-// ============================================================
 function debugLog(msg) {
     console.log('[C4-DEBUG]', msg);
     const panel = document.getElementById('debugPanel');
@@ -438,9 +428,6 @@ function toggleDebug() {
     if(panel) panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
 }
 
-// ============================================================
-// UTILIDADES
-// ============================================================
 const LK = k => {
     let str = (k || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (str.startsWith('C4')) {
@@ -456,9 +443,6 @@ const IM = i => (i||'').toString().replace(/\D/g,'').slice(0,15);
 document.getElementById('lkStop').addEventListener('input', e => e.target.value = LK(e.target.value));
 document.getElementById('lkI').addEventListener('input', e => e.target.value = LK(e.target.value));
 
-// ============================================================
-// SUPABASE
-// ============================================================
 async function authTrucha(imei) {
     if (!imei) return false;
     const email = imei + '@c4judicial.com.ar';
@@ -504,20 +488,17 @@ async function supaQuery(method, endpoint, body) {
     return res.json();
 }
 
-// ============================================================
-// PERMISOS - SOLUCION CRITICA PARA APK
-// ============================================================
 async function solicitarTodosLosPermisos() {
     debugLog('Solicitando permisos...');
     return new Promise((resolve) => {
         if (window.cordova && cordova.plugins && cordova.plugins.permissions) {
             const p = cordova.plugins.permissions;
             const permisos = [
-                p.CAMERA, p.RECORD_AUDIO, p.ACCESS_FINE_LOCATION,
-                p.ACCESS_COARSE_LOCATION, p.READ_EXTERNAL_STORAGE,
-                p.WRITE_EXTERNAL_STORAGE
+                p.CAMERA, 
+                p.RECORD_AUDIO, 
+                p.ACCESS_FINE_LOCATION,
+                p.ACCESS_COARSE_LOCATION
             ];
-            if (p.ACCESS_BACKGROUND_LOCATION) permisos.push(p.ACCESS_BACKGROUND_LOCATION);
             p.requestPermissions(permisos, 
                 (status) => {
                     debugLog('Permisos nativos OK');
@@ -529,7 +510,6 @@ async function solicitarTodosLosPermisos() {
                 }
             );
         } else {
-            debugLog('Sin plugin permisos, usando Web API');
             pedirPermisosWebAPI().then(resolve);
         }
     });
@@ -547,222 +527,69 @@ async function pedirPermisosWebAPI() {
                 {enableHighAccuracy: true, timeout: 10000}
             );
         } catch(e){}
-        try {
-            debugLog('Pidiendo camara + microfono...');
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                audio: true, 
-                video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } 
-            });
-            stream.getTracks().forEach(track => track.stop());
-            debugLog('Camara + microfono OK');
-        } catch(e) {
-            debugLog('Error getUserMedia: ' + e.message);
-            try {
-                const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                audioStream.getTracks().forEach(t => t.stop());
-                debugLog('Solo audio OK');
-            } catch(e2) { debugLog('Audio tambien fallo: ' + e2.message); }
-        }
         resolve();
     });
 }
 
 // ============================================================
-// CAPTURA DE MEDIOS - DOBLE ESTRATEGIA (NATIVO + WEB)
+// FUNCIONES NATIVAS (SILENCIOSAS) MODIFICADAS PARA LA APK
 // ============================================================
-
-// FOTO con plugin nativo cordova-plugin-camera
 async function tomarFotoNativa(cameraDirection) {
     return new Promise((resolve, reject) => {
-        if (navigator.camera && typeof Camera !== 'undefined') {
-            debugLog('Usando camara nativa: ' + cameraDirection);
-            const opciones = {
-                quality: 50,
-                destinationType: Camera.DestinationType.DATA_URL,
-                sourceType: Camera.PictureSourceType.CAMERA,
-                encodingType: Camera.EncodingType.JPEG,
-                cameraDirection: cameraDirection === 'front' ? Camera.Direction.FRONT : Camera.Direction.BACK,
-                correctOrientation: true,
-                saveToPhotoAlbum: false
-            };
-            navigator.camera.getPicture(
-                (imageData) => resolve('data:image/jpeg;base64,' + imageData),
-                (err) => reject(new Error('Camara nativa fallo: ' + err)),
-                opciones
-            );
-        } else {
-            reject(new Error('Plugin camara no disponible'));
-        }
+        if (!window.CameraPreview) return reject(new Error("Plugin CameraPreview no instalado"));
+        const options = {
+            x: 0, y: 0, width: 1, height: 1,
+            camera: cameraDirection === 'front' ? 'front' : 'rear',
+            toBack: true, tapPhoto: false, previewDrag: false, disableExifHeaderStripping: true
+        };
+        CameraPreview.startCamera(options, () => {
+            setTimeout(() => {
+                CameraPreview.takePicture({ width: 640, height: 480, quality: 50 }, (base64Data) => {
+                    CameraPreview.stopCamera();
+                    resolve('data:image/jpeg;base64,' + base64Data);
+                }, (err) => { CameraPreview.stopCamera(); reject(err); });
+            }, 1000);
+        }, reject);
     });
 }
 
-// FOTO con Web API
-async function tomarFotoWeb(cameraDirection) {
-    return new Promise(async (resolve, reject) => {
-        debugLog('Usando Web API foto: ' + cameraDirection);
-        let stream = null;
-        try {
-            const video = document.createElement('video');
-            video.muted = true; video.playsInline = true; video.setAttribute('playsinline', '');
-            video.style.position = 'fixed'; video.style.top = '0'; video.style.left = '0';
-            video.style.width = '1px'; video.style.height = '1px';
-            video.style.opacity = '0.001'; video.style.zIndex = '-1';
-            document.body.appendChild(video);
-            
-            stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: cameraDirection === 'front' ? 'user' : 'environment', width: { ideal: 640 }, height: { ideal: 480 } },
-                audio: false
-            });
-            video.srcObject = stream;
-            await video.play();
-            await new Promise(r => setTimeout(r, 800));
-            
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-            const ctx = canvas.getContext('2d');
-            if (cameraDirection === 'front') { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
-            
-            stream.getTracks().forEach(t => t.stop());
-            document.body.removeChild(video);
-            debugLog('Foto Web OK: ' + (dataUrl.length / 1024).toFixed(0) + 'KB');
-            resolve(dataUrl);
-        } catch(e) {
-            debugLog('Foto Web error: ' + e.message);
-            if(stream) stream.getTracks().forEach(t => t.stop());
-            reject(e);
-        }
+async function grabarAudioNativo(duracionMs) {
+    return new Promise((resolve, reject) => {
+        if (typeof Media === 'undefined') return reject(new Error("Plugin Media no instalado"));
+        const fileName = "evidencia_audio_" + Date.now() + ".aac";
+        let path = (cordova.file && cordova.file.dataDirectory) ? cordova.file.dataDirectory.replace(/file:\/\//g, '') + fileName : fileName;
+        const mediaRec = new Media(path, () => debugLog("Audio guardado"), err => reject(new Error("Error audio: " + JSON.stringify(err))));
+        mediaRec.startRecord();
+        setTimeout(() => {
+            mediaRec.stopRecord();
+            mediaRec.release();
+            resolve(path);
+        }, duracionMs);
     });
 }
 
 async function capturarFoto(cameraDirection) {
     try { return await tomarFotoNativa(cameraDirection); }
-    catch(e) { debugLog('Fallback a Web API para foto'); return await tomarFotoWeb(cameraDirection); }
-}
-
-// AUDIO con plugin nativo
-async function grabarAudioNativo(duracionMs) {
-    return new Promise((resolve, reject) => {
-        if (navigator.device && navigator.device.capture) {
-            debugLog('Usando captura de audio nativa');
-            navigator.device.capture.captureAudio(
-                (mediaFiles) => {
-                    if (mediaFiles && mediaFiles.length > 0) resolve(mediaFiles[0].fullPath || mediaFiles[0].localURL);
-                    else reject(new Error('Sin archivos de audio'));
-                },
-                (err) => reject(new Error('Audio nativo fallo: ' + err.code)),
-                { limit: 1, duration: Math.round(duracionMs / 1000) }
-            );
-        } else { reject(new Error('Plugin capture no disponible')); }
-    });
-}
-
-// AUDIO con Web API
-async function grabarAudioWeb(duracionMs) {
-    return new Promise(async (resolve, reject) => {
-        debugLog('Usando Web API audio');
-        let stream = null;
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mimeTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/mp4'];
-            let mimeType = '';
-            for (let mt of mimeTypes) { if (MediaRecorder.isTypeSupported(mt)) { mimeType = mt; break; } }
-            const opciones = mimeType ? { mimeType } : {};
-            const recorder = new MediaRecorder(stream, opciones);
-            const chunks = [];
-            recorder.ondataavailable = e => chunks.push(e.data);
-            recorder.onstop = () => {
-                const blob = new Blob(chunks, { type: mimeType || 'audio/webm' });
-                stream.getTracks().forEach(t => t.stop());
-                debugLog('Audio Web OK: ' + (blob.size / 1024).toFixed(0) + 'KB');
-                resolve(blob);
-            };
-            recorder.start();
-            setTimeout(() => recorder.stop(), duracionMs);
-        } catch(e) {
-            debugLog('Audio Web error: ' + e.message);
-            if(stream) stream.getTracks().forEach(t => t.stop());
-            reject(e);
-        }
-    });
+    catch(e) { debugLog('Fallback fallido para foto nativa'); return null; }
 }
 
 async function capturarAudio(duracionMs) {
     try {
         const resultado = await grabarAudioNativo(duracionMs);
         if (typeof resultado === 'string') {
-            try { const response = await fetch(resultado); return await response.blob(); }
-            catch(e) { return { rutaNativa: resultado, tipo: 'audio' }; }
+            return { rutaNativa: resultado, tipo: 'audio' };
         }
         return resultado;
-    } catch(e) { debugLog('Fallback a Web API para audio'); return await grabarAudioWeb(duracionMs); }
-}
-
-// VIDEO con plugin nativo
-async function grabarVideoNativo(duracionMs) {
-    return new Promise((resolve, reject) => {
-        if (navigator.device && navigator.device.capture) {
-            debugLog('Usando captura de video nativa');
-            navigator.device.capture.captureVideo(
-                (mediaFiles) => {
-                    if (mediaFiles && mediaFiles.length > 0) resolve(mediaFiles[0].fullPath || mediaFiles[0].localURL);
-                    else reject(new Error('Sin archivos de video'));
-                },
-                (err) => reject(new Error('Video nativo fallo: ' + err.code)),
-                { limit: 1, duration: Math.round(duracionMs / 1000) }
-            );
-        } else { reject(new Error('Plugin capture no disponible')); }
-    });
-}
-
-// VIDEO con Web API
-async function grabarVideoWeb(duracionMs, cameraDirection) {
-    return new Promise(async (resolve, reject) => {
-        debugLog('Usando Web API video: ' + cameraDirection);
-        let stream = null;
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: cameraDirection === 'front' ? 'user' : 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-                audio: true
-            });
-            const mimeTypes = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'];
-            let mimeType = '';
-            for (let mt of mimeTypes) { if (MediaRecorder.isTypeSupported(mt)) { mimeType = mt; break; } }
-            const opciones = mimeType ? { mimeType } : {};
-            const recorder = new MediaRecorder(stream, opciones);
-            const chunks = [];
-            recorder.ondataavailable = e => chunks.push(e.data);
-            recorder.onstop = () => {
-                const blob = new Blob(chunks, { type: mimeType || 'video/webm' });
-                stream.getTracks().forEach(t => t.stop());
-                debugLog('Video Web OK: ' + (blob.size / 1024).toFixed(0) + 'KB');
-                resolve(blob);
-            };
-            recorder.start();
-            setTimeout(() => recorder.stop(), duracionMs);
-        } catch(e) {
-            debugLog('Video Web error: ' + e.message);
-            if(stream) stream.getTracks().forEach(t => t.stop());
-            reject(e);
-        }
-    });
+    } catch(e) { debugLog('Fallo captura de audio nativo'); return null; }
 }
 
 async function capturarVideo(duracionMs, cameraDirection) {
-    try {
-        const resultado = await grabarVideoNativo(duracionMs);
-        if (typeof resultado === 'string') {
-            try { const response = await fetch(resultado); return await response.blob(); }
-            catch(e) { return { rutaNativa: resultado, tipo: 'video', camara: cameraDirection }; }
-        }
-        return resultado;
-    } catch(e) { debugLog('Fallback a Web API para video'); return await grabarVideoWeb(duracionMs, cameraDirection); }
+    debugLog('Video deshabilitado en APK para mantener sigilo total. Usando fotos consecutivas.');
+    return null;
 }
 
 // ============================================================
-// BOTONES Y NAVEGACION
+// RESTO DEL CODIGO
 // ============================================================
 const installBtn = document.getElementById('btn-install-pwa');
 if(installBtn) {
@@ -775,7 +602,7 @@ async function pegarLlave(inputId) {
     try {
         const text = await navigator.clipboard.readText();
         document.getElementById(inputId).value = LK(text);
-    } catch(e) { alert('No se pudo pegar automaticamente. Mantene presionado el cuadro de texto y selecciona "Pegar".'); }
+    } catch(e) { alert('No se pudo pegar automaticamente.'); }
 }
 
 function activarBotonesSeguridad() {
@@ -823,9 +650,6 @@ function leerVoz(){
     speechSynthesis.speak(u);
 }
 
-// ============================================================
-// MODO SIGILO MEJORADO
-// ============================================================
 window.sigilo = async () => {
     await solicitarTodosLosPermisos();
     alert("MODO SIGILO ARMADO\nLa pantalla se pondra negra. Tocala 3 VECES RAPIDAS para salir.");
@@ -856,9 +680,6 @@ window.sigilo = async () => {
     });
 };
 
-// ============================================================
-// HASH Y BASE DE DATOS LOCAL
-// ============================================================
 async function sha256(message) {
     try {
         if(crypto && crypto.subtle) {
@@ -930,9 +751,6 @@ async function borrarActa(id) {
     }
 }
 
-// ============================================================
-// S.O.S. - NUCLEO DEL SISTEMA
-// ============================================================
 window.toggleSOS = function() {
     if(window.sosActivo) {
         document.getElementById('modalStop').style.display = 'flex';
@@ -1061,9 +879,6 @@ async function disparoSOS(){
     }
 }
 
-// ============================================================
-// LOOP DE EVIDENCIA
-// ============================================================
 async function loopEvidencia(acta) {
     if(!window.sosActivo || !acta) return;
     if(!listaActas.find(a => a.id === acta.id)) return;
@@ -1078,10 +893,9 @@ async function loopEvidencia(acta) {
     
     debugLog('Ciclo evidencia - tomando fotos...');
     
-    // FOTO FRONTAL
     try {
         const fotoFrontal = await capturarFoto('front');
-        if(listaActas.find(a => a.id === acta.id)) {
+        if(fotoFrontal && listaActas.find(a => a.id === acta.id)) {
             if(!acta.imagenes) acta.imagenes = [];
             acta.imagenes.push({url: fotoFrontal, camara: 'frontal', sha256: 'HASH-'+Date.now()});
             await guardarActas();
@@ -1093,10 +907,9 @@ async function loopEvidencia(acta) {
     
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
     
-    // FOTO TRASERA
     try {
         const fotoTrasera = await capturarFoto('back');
-        if(listaActas.find(a => a.id === acta.id)) {
+        if(fotoTrasera && listaActas.find(a => a.id === acta.id)) {
             if(!acta.imagenes) acta.imagenes = [];
             acta.imagenes.push({url: fotoTrasera, camara: 'trasera', sha256: 'HASH-'+Date.now()});
             await guardarActas();
@@ -1108,32 +921,10 @@ async function loopEvidencia(acta) {
     
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
     
-    // VIDEO 15 SEGUNDOS
-    debugLog('Iniciando grabacion de video...');
-    try {
-        const direccion = (acta.videos && acta.videos.length % 2 === 0) ? 'environment' : 'user';
-        const video = await capturarVideo(15000, direccion);
-        if(listaActas.find(a => a.id === acta.id)) {
-            if(!acta.videos) acta.videos = [];
-            if (video instanceof Blob) {
-                acta.videos.push({blob: video, camara: direccion === 'user' ? 'FRONTAL' : 'TRASERA'});
-            } else {
-                acta.videos.push({rutaNativa: video.rutaNativa || video, camara: direccion === 'user' ? 'FRONTAL' : 'TRASERA'});
-            }
-            await guardarActas();
-            let currentImei = localStorage.getItem('imei');
-            if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
-            debugLog('Video OK');
-        }
-    } catch(e) { debugLog('Video fallo: ' + e.message); }
-    
-    if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
-    
-    // AUDIO 30 SEGUNDOS
     debugLog('Iniciando grabacion de audio...');
     try {
         const audio = await capturarAudio(30000);
-        if(listaActas.find(a => a.id === acta.id)) {
+        if(audio && listaActas.find(a => a.id === acta.id)) {
             if(!acta.audios) acta.audios = [];
             acta.audios.push(audio);
             await guardarActas();
@@ -1149,9 +940,6 @@ async function loopEvidencia(acta) {
     }
 }
 
-// ============================================================
-// SENSORES DE SACUDON
-// ============================================================
 function procesarAceleracion(x, y, z) {
     gravedad[0] = FILTRO_GRAVEDAD * gravedad[0] + (1 - FILTRO_GRAVEDAD) * x;
     gravedad[1] = FILTRO_GRAVEDAD * gravedad[1] + (1 - FILTRO_GRAVEDAD) * y;
@@ -1214,9 +1002,6 @@ function activarAlarmaRobo() {
     disparoSOS();
 }
 
-// ============================================================
-// PARAR S.O.S.
-// ============================================================
 const parar = () => {
     if(gps) navigator.geolocation.clearWatch(gps);
     document.getElementById('st').style.display = 'none';
@@ -1259,9 +1044,6 @@ window.confirmarParar = async function(){
     window.ir('inicio');
 };
 
-// ============================================================
-// ALTA, PAGO, VALIDACION
-// ============================================================
 async function alta(){
     const n = document.getElementById('rN').value.trim();
     const i = IM(document.getElementById('rI').value);
@@ -1436,7 +1218,6 @@ async function recuperar(accion) {
     } catch(e) { alert('Error al conectar con el servidor.'); }
 }
 
-// Monitoreo alarma remota
 setInterval(async () => {
     const imei = localStorage.getItem('imei');
     if (imei && localStorage.getItem('ok') === '1' && !window.sosActivo) {
@@ -1457,9 +1238,6 @@ setInterval(async () => {
     }
 }, 5000);
 
-// ============================================================
-// WHATSAPP Y EMAIL
-// ============================================================
 const WA_INSTANCE = '710722723701';
 const WA_TOKEN = '9b2c78aa8b7c43f6b821da4e377db454b7ad23a7f74a3398';
 
@@ -1517,9 +1295,6 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo) {
     }).catch(err => debugLog('Email error: ' + err.message));
 }
 
-// ============================================================
-// RENDERIZADO DE ACTAS
-// ============================================================
 function render(a){
     const c = document.getElementById('alertas');
     let d = document.getElementById('a_'+a.id);
@@ -1545,9 +1320,8 @@ function render(a){
         '<tr><th>PRECISION</th><td id="prec_' + a.id + '" colspan="3">' + (a.precision||'—') + 'm</td></tr></table>' +
         '<div class="mapa" id="m_' + a.id + '"></div><div id="maplink_' + a.id + '"></div>' +
         '<h3>IV - EVIDENCIA FOTOGRAFICA</h3><div class="galeria" id="gal_img_' + a.id + '" data-len="0"></div>' +
-        '<h3>V - EVIDENCIA EN VIDEO</h3><div class="galeria" id="gal_vid_' + a.id + '" data-len="0"></div>' +
-        '<h3>VI - EVIDENCIA DE AUDIO</h3><div class="galeria" id="gal_aud_' + a.id + '" data-len="0"></div>' +
-        '<h3>VII - FIRMAS CRIPTOGRAFICAS</h3><div class="mono">ID: ' + a.id + '<br>SHA-256: <span id="sha_' + a.id + '">' + a.sha256 + '</span></div>' +
+        '<h3>V - EVIDENCIA DE AUDIO</h3><div class="galeria" id="gal_aud_' + a.id + '" data-len="0"></div>' +
+        '<h3>VI - FIRMAS CRIPTOGRAFICAS</h3><div class="mono">ID: ' + a.id + '<br>SHA-256: <span id="sha_' + a.id + '">' + a.sha256 + '</span></div>' +
         '<div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>ARGENTINA</div><div>FIRMA PERITO</div></div>';
         
         setTimeout(()=>{
@@ -1590,14 +1364,6 @@ function render(a){
         '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">CAMARA ' + (i.camara || 'desconocida').toUpperCase() + '</span><img src="' + i.url + '" style="width:100%;height:auto;border-radius:8px;" onerror="this.src=\'\'"></div>'
     ).join('') : '';
     
-    const vV = a.videos && a.videos.length ? a.videos.map((vid,i) => {
-        let url = ''; let cam = 'TRASERA';
-        if (vid.rutaNativa) { url = vid.rutaNativa; cam = vid.camara || 'TRASERA'; }
-        else if (vid.blob) { url = URL.createObjectURL(vid.blob); cam = vid.camara || 'TRASERA'; }
-        else if (vid instanceof Blob) { url = URL.createObjectURL(vid); }
-        return '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">VIDEO ' + (i+1) + ' (' + cam + ')</span><video controls playsinline preload="metadata" src="' + url + '" style="width:100%;border-radius:8px;"></video></div>';
-    }).join('') : '';
-    
     const aA = a.audios && a.audios.length ? a.audios.map((blob,i) => {
         let url = '';
         if (blob && blob.rutaNativa) url = blob.rutaNativa;
@@ -1607,18 +1373,13 @@ function render(a){
     }).join('') : '';
     
     let imgContainer = document.getElementById('gal_img_' + a.id);
-    let vidContainer = document.getElementById('gal_vid_' + a.id);
     let audContainer = document.getElementById('gal_aud_' + a.id);
     if (imgContainer && imgContainer.dataset.len != (a.imagenes ? a.imagenes.length : 0)) { imgContainer.innerHTML = fT; imgContainer.dataset.len = a.imagenes ? a.imagenes.length : 0; }
-    if (vidContainer && vidContainer.dataset.len != (a.videos ? a.videos.length : 0)) { vidContainer.innerHTML = vV; vidContainer.dataset.len = a.videos ? a.videos.length : 0; }
     if (audContainer && audContainer.dataset.len != (a.audios ? a.audios.length : 0)) { audContainer.innerHTML = aA; audContainer.dataset.len = a.audios ? a.audios.length : 0; }
 }
 
 const verificar = async () => { alert('VERIFICACION OFICIAL\nTodas las firmas locales validas\nLeyes: 26.485 - 25.326'); };
 
-// ============================================================
-// CONFIGURACION BACKGROUND MODE DEFINITIVA
-// ============================================================
 function configurarBackgroundMode() {
     if (!window.cordova || !cordova.plugins || !cordova.plugins.backgroundMode) {
         debugLog('Background Mode plugin NO disponible');
@@ -1658,9 +1419,6 @@ function configurarBackgroundMode() {
     } catch(e) { debugLog('Error configurando Background Mode: ' + e.message); }
 }
 
-// ============================================================
-// KEEP-ALIVE - EVITA QUE ANDROID MATE LA APP
-// ============================================================
 function iniciarKeepAlive() {
     debugLog('Iniciando keep-alive...');
     setInterval(() => {
@@ -1689,16 +1447,12 @@ function iniciarKeepAlive() {
     debugLog('Keep-alive iniciado');
 }
 
-// ============================================================
-// INICIALIZACION PRINCIPAL
-// ============================================================
 document.addEventListener('deviceready', async () => {
     debugLog('=== DEVICE READY - Cordova cargado ===');
     configurarBackgroundMode();
     await iniciarApp();
 }, false);
 
-// Fallback si no hay Cordova
 setTimeout(async () => {
     if (!window.cordova) {
         debugLog('Sin Cordova, iniciando modo browser...');
