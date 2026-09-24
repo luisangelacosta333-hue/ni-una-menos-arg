@@ -215,8 +215,8 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  </div>
  
  <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-bottom:22px;text-align:left;box-shadow:var(--luz);">
-    <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">REGLA DE ORO: MODO SIGILO (ANTI-ROBO)</b>
-    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Si te van a arrebatar el equipo, <b>NO lo bloquees con el botón físico</b>. Toca el botón "MODO SIGILO" al final de esta página. La pantalla se pondrá negra simulando estar apagada, pero el sistema quedará 100% alerta para detectar el golpe, sacar fotos al delincuente y trazar su ruta de escape en tiempo real.</span>
+    <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">MODO SIGILO ACTIVO</b>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Para proteger tu integridad sin llamar la atención, tocá el botón <b>"MODO SIGILO"</b> al final de esta página. La pantalla se pondrá negra simulando estar apagada, pero el sistema quedará 100% alerta en segundo plano, listo para recabar evidencia, detectar impactos y enviar tu ubicación.</span>
  </div>
 
  <div class="caja"><h3>5 PASOS PARA ACTIVAR</h3>
@@ -700,7 +700,7 @@ const irSOS = () => localStorage.getItem('ok') === '1' ? window.ir('sos') : wind
 
 function leerVoz(){
     speechSynthesis.cancel();
-    const textoMensaje = 'Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis. Plataforma corporativa Ni Una Menos. Esta aplicación está diseñada para tu protección total. En caso de sufrir un arrebato de celular o un secuestro, el sistema recabará fotos del rostro del agresor, video, audio del entorno y ubicación en vivo. Además, si sentís que tu familiar no contesta los mensajes o está en peligro, podés usar la función de S.O.S. remoto. Solo ingresá su IMEI y su Llave Maestra en la sección Recuperar, y podrás rastrear su teléfono de manera silenciosa, obteniendo fotos y ubicación sin que nadie se dé cuenta. Tu seguridad está blindada y custodiada por nuestra empresa.';
+    const textoMensaje = 'Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis. Plataforma corporativa Ni Una Menos. Esta aplicación está diseñada para tu protección total utilizando tecnología criptográfica de punta. Al activarse, el sistema despacha inmediatamente mensajes de alerta, WhatsApp y correos electrónicos a tus familiares. De forma totalmente silenciosa, recabará evidencia vital: sacará fotos, filmará videos, grabará el audio del entorno y trazará tu ubicación GPS. Toda esta información se compila en un acta pericial blindada, lista para presentar en la fiscalía y hacer la denuncia formal. Además, cuenta con rastreo remoto: si un familiar no contesta el teléfono y sospechás que está en peligro, podés ingresar su IMEI y su Llave Maestra para activar el sistema a distancia, accediendo a su cámara y micrófono sin que nadie lo note. Tu seguridad está en manos de profesionales.';
     const u = new SpeechSynthesisUtterance(textoMensaje);
     u.lang = 'es-AR'; u.rate = 0.92; u.pitch = 1; u.volume = 1;
     speechSynthesis.speak(u);
@@ -1331,11 +1331,11 @@ function enviarWhatsAppOculto(contactos, nombre, la, ln, id, tipo) {
     let msg = "";
     
     if (tipo === 'alerta') {
-        msg = "🚨 ALERTA S.O.S. JUDICIAL - SISTEMA C4 🚨\nEMPRESA NI UNA MENOS - ENERGY 2026\n\nAtención: La usuaria " + (nombre || 'protegida') + " ha activado el botón de pánico.\nNo te preocupes, nuestra empresa ya está respaldándola. El dispositivo entró en Modo Sigilo y se convirtió en un perito judicial oculto.\n\nEstamos recabando:\n📸 Fotos de los rostros (Cámara oculta)\n🎤 Grabación de audio del entorno\n📍 Rastreo GPS en vivo\n\nNº Expediente: " + id + "\nIMEI: " + imeiEnvio + "\nToda la información está siendo blindada en nuestros servidores.";
+        msg = "🚨 ALERTA S.O.S. JUDICIAL - SISTEMA C4 🚨\nEMPRESA ENERGY 2026 - NI UNA MENOS\n\nAtención: La usuaria " + (nombre || 'protegida') + " ha activado el botón de pánico.\nNo te preocupes, nuestra empresa ya está respaldándola. El dispositivo entró en Modo Sigilo y se convirtió en un perito judicial oculto.\n\nEstamos recabando:\n📸 Fotos de los rostros (Cámara oculta)\n🎤 Grabación de audio del entorno\n📍 Rastreo GPS en vivo\n\nNº Expediente: " + id + "\nIMEI: " + imeiEnvio + "\nToda la información está siendo blindada en nuestros servidores.";
     } else if (tipo === 'gps') {
         msg = "📍 ACTUALIZACIÓN GPS - EVIDENCIA C4\nNuestra empresa ha capturado la ubicación en vivo del dispositivo de " + (nombre || 'la usuaria') + ".\n\nRuta de rastreo forense:\nhttps://maps.google.com/?q=" + la + "," + ln;
     } else if (tipo === 'seguro') {
-        msg = "✅ SISTEMA C4 - ALERTA DESACTIVADA ✅\nEMPRESA NI UNA MENOS - ENERGY 2026\n\nEstimado contacto de confianza:\nTe informamos de manera oficial que " + (nombre || 'la usuaria') + " ha desactivado la alerta S.O.S de forma segura mediante su Llave Maestra judicial verificada.\n\nEl dispositivo y la persona se encuentran a salvo. Nuestra empresa ha sellado la evidencia recolectada y la cadena de custodia ha sido archivada con éxito.\nGracias por formar parte de nuestra red de protección ciudadana.";
+        msg = "✅ SISTEMA C4 - ALERTA DESACTIVADA ✅\nEMPRESA ENERGY 2026 - NI UNA MENOS\n\nEstimado contacto de confianza:\nTe informamos de manera oficial que " + (nombre || 'la usuaria') + " ha desactivado la alerta S.O.S de forma segura mediante su Llave Maestra judicial verificada.\n\nEl dispositivo y la persona se encuentran a salvo. Nuestra empresa ha sellado la evidencia recolectada y el acta pericial ha sido archivada con éxito para cualquier denuncia en la fiscalía.\nGracias por formar parte de nuestra red de protección ciudadana.";
     }
     
     let url = 'https://7107.api.greenapi.com/waInstance' + WA_INSTANCE + '/sendMessage/' + WA_TOKEN;
@@ -1374,13 +1374,13 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo) {
     
     if (tipo === 'alerta') { 
         asunto = '🚨 ALERTA S.O.S C4 - ' + nombre; 
-        msg = "ALERTA DE EMERGENCIA C4\n\nNuestra empresa de protección informa que la usuaria " + (nombre || 'protegida') + " ha disparado la alerta S.O.S.\nEl dispositivo se encuentra en modo recolección forense (capturando audio, foto y GPS de manera silenciosa).\n\nExpediente: " + id + "\nIMEI: " + imeiEnvio + "\n\nNi Una Menos - Energy 2026 está resguardando toda la evidencia en sus servidores privados.";
+        msg = "ALERTA DE EMERGENCIA C4\n\nNuestra empresa de protección informa que la usuaria " + (nombre || 'protegida') + " ha disparado la alerta S.O.S.\nEl dispositivo se encuentra en modo recolección forense (capturando audio, foto y GPS de manera silenciosa para confeccionar el acta pericial).\n\nExpediente: " + id + "\nIMEI: " + imeiEnvio + "\n\nEnergy 2026 - Ni Una Menos está resguardando toda la evidencia en sus servidores privados criptográficos listos para la fiscalía.";
     } else if (tipo === 'gps') { 
         asunto = '📍 GPS RASTREO C4 - ' + nombre; 
         msg = "El sistema C4 ha capturado un punto de ubicación en el rastreo en vivo de " + (nombre || 'la usuaria') + ".\n\nUbicación satelital:\nhttps://maps.google.com/?q=" + la + "," + ln; 
     } else if (tipo === 'seguro') { 
         asunto = '✅ SISTEMA C4 DESACTIVADO - ' + nombre; 
-        msg = "ALERTA C4 CANCELADA\n\nInformamos que " + (nombre || 'la usuaria') + " ha verificado su identidad mediante llave maestra y ha desactivado el sistema de protección de manera segura.\nNuestra empresa ha cerrado y encriptado la evidencia recolectada.\n\nProtección Corporativa - Ni Una Menos Energy 2026."; 
+        msg = "ALERTA C4 CANCELADA\n\nInformamos que " + (nombre || 'la usuaria') + " ha verificado su identidad mediante llave maestra y ha desactivado el sistema de protección de manera segura.\nNuestra empresa ha cerrado y encriptado la evidencia recolectada en un acta pericial.\n\nProtección Corporativa - Energy 2026 - Ni Una Menos."; 
     }
     
     debugLog('Despachando Email corporativo a: ' + email);
@@ -1427,7 +1427,7 @@ function render(a){
         '<h3>V - EVIDENCIA EN VIDEO</h3><div class="galeria" id="gal_vid_' + a.id + '" data-len="0"></div>' +
         '<h3>VI - EVIDENCIA DE AUDIO (MICROFONO)</h3><div class="galeria" id="gal_aud_' + a.id + '" data-len="0"></div>' +
         '<h3>VII - FIRMAS CRIPTOGRAFICAS</h3><div class="mono">ID: ' + a.id + '<br>SHA-256: <span id="sha_' + a.id + '">' + a.sha256 + '</span></div>' +
-        '<div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>EMPRESA C4</div><div>FIRMA PERITO</div></div>';
+        '<div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>EMPRESA ENERGY</div><div>FIRMA PERITO</div></div>';
         
         setTimeout(()=>{
             if(!document.getElementById('m_'+a.id) || mapas[a.id] || a.lat === 'Buscando...' || a.lat === 'Desconocida') return;
