@@ -396,8 +396,9 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 
-const SHAKE_THRESHOLD = 12;
-const SHAKE_COOLDOWN = 3000;
+const SHAKE_THRESHOLD = 2.5; // Antes 12. Ahora un sacudón firme lo activa.
+const SHAKE_COOLDOWN = 4000; // Bloqueo de 4000ms entre sacudones para evitar spam.
+
 let cooldownRobo = false;
 let sensoresActivos = false;
 let gravedad = [0, 0, 0];
