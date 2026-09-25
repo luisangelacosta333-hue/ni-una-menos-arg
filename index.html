@@ -178,7 +178,6 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 <body>
 
 <button id="btn-install-pwa">INSTALAR APP</button>
-<!-- CANDADO APLICADO: El botón flotante no interrumpe el loop de evidencia si ya está activo -->
 <button id="btn-flotante-sos" onclick="if(window.sosActivo){ prepararParada('sos'); }else{ window.ir('sos'); disparoSOS('manual'); }">S.O.S</button>
 <div class="debug-panel" id="debugPanel"></div>
 
@@ -212,11 +211,9 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   <div class="caja" style="background:#FFF3F5;border:1px solid #8B0000;padding:28px;">
    <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">PROTECCION ACTIVA</h3>
    <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Tu vida es nuestra prioridad. Contás con dos escudos: el Botón Antipánico para emergencias súbitas, o el Temporizador Centinela para protección preventiva.</p>
-   <!-- FRENO: El botón llama a la función pero si ya está activo adentro lo rebota -->
    <button class="btn rubi" onclick="if(window.sosActivo){ window.ir('sos'); prepararParada('sos'); } else { irSOS(); }">INGRESAR AL BOTON ANTIPANICO</button>
   </div>
   
-  <!-- MODO CENTINELA (CRONÓMETRO) -->
   <div class="caja" style="margin-top:15px; border-color: var(--oro);">
     <h3 style="color:var(--oroOscuro); font-size:18px; margin-bottom:10px;">MODO CENTINELA (TEMPORIZADOR)</h3>
     <p style="font-size:13px; margin-bottom:15px; text-align:center; line-height:1.5;">Programá el tiempo que vas a estar afuera. Si no cancelás el contador con tu Llave Maestra antes de que termine, el S.O.S se disparará automáticamente salvando tu vida.<br><br><b style="color:#8B0000;">IMPORTANTE: Para que el reloj no se duerma y detone con precisión, debés activar obligatoriamente el "Modo Sigilo" justo después de iniciar este temporizador.</b></p>
@@ -815,6 +812,10 @@ window.sigilo = async () => {
     cooldownRobo = true;
     setTimeout(() => cooldownRobo = false, 3000);
     
+    // Al entrar en Modo Sigilo, activamos de manera exclusiva los sensores de voz y sacudón
+    activarSensoresSacudon();
+    activarSensoresVoz();
+    
     try { if ('wakeLock' in navigator) wakeLockObj = await navigator.wakeLock.request('screen'); }
     catch (err) { debugLog('WakeLock error: ' + err.message); }
     if (!audioKeepAlive) {
@@ -833,6 +834,10 @@ window.sigilo = async () => {
             if (wakeLockObj !== null) { try { wakeLockObj.release(); } catch(e){} wakeLockObj = null; }
             if (audioKeepAlive) { audioKeepAlive.pause(); audioKeepAlive = null; }
             s.remove();
+            
+            // Al salir del Modo Sigilo, apagamos el sensor de voz para no gastar batería ni molestar
+            if(voiceRec) { try { voiceRec.stop(); } catch(e){} }
+            voiceActive = false;
         }
     });
 };
@@ -1116,12 +1121,8 @@ async function loopEvidencia(acta) {
 }
 
 // ============================================================
-// SENSORES DE SACUDON (IMPACTO) Y VOZ (AUXILIO)
+// SENSORES DE SACUDON (IMPACTO) Y VOZ (AUXILIO) EXCLUSIVOS MODO SIGILO
 // ============================================================
-window.activarSensores = async () => {
-    activarSensoresSacudon();
-    activarSensoresVoz();
-};
 
 function procesarAceleracion(x, y, z) {
     gravedad[0] = FILTRO_GRAVEDAD * gravedad[0] + (1 - FILTRO_GRAVEDAD) * x;
@@ -1131,7 +1132,8 @@ function procesarAceleracion(x, y, z) {
     const accY = y - gravedad[1];
     const accZ = z - gravedad[2];
     const fuerza = Math.sqrt(accX*accX + accY*accY + accZ*accZ) / 9.81;
-    if (fuerza > SHAKE_THRESHOLD && !cooldownRobo && localStorage.getItem('ok') === '1' && !window.sosActivo) {
+    // Solo detona si la pantalla de Sigilo está activa
+    if (fuerza > SHAKE_THRESHOLD && !cooldownRobo && localStorage.getItem('ok') === '1' && !window.sosActivo && document.getElementById('pantalla-sigilo')) {
         debugLog('¡IMPACTO DETECTADO! Fuerza: ' + fuerza.toFixed(2) + 'G');
         cooldownRobo = true;
         setTimeout(() => { cooldownRobo = false; }, SHAKE_COOLDOWN);
@@ -1183,8 +1185,10 @@ function activarSensoresVoz() {
     voiceRec.onerror = (e) => { debugLog('Reconocimiento de voz en espera/error: ' + e.error); };
 
     voiceRec.onend = () => {
-        if (!window.sosActivo && localStorage.getItem('ok') === '1') {
-            setTimeout(() => { try { voiceRec.start(); } catch(e){} }, 1000);
+        voiceActive = false;
+        // Solo reinicia el micrófono si sigue en Modo Sigilo y no saltó la alarma SOS
+        if (!window.sosActivo && document.getElementById('pantalla-sigilo')) {
+            setTimeout(() => { activarSensoresVoz(); }, 1000);
         }
     };
 
@@ -1215,9 +1219,6 @@ const parar = () => {
     document.getElementById('st').style.display = 'none';
     document.body.style.backgroundColor = '#FFFFFF';
     window.bloqueoDisparo = false; 
-    
-    // Al apagar el S.O.S, volvemos a encender los sensores para seguir protegidos.
-    window.activarSensores();
 };
 
 window.confirmarParar = async function(){
@@ -1328,7 +1329,6 @@ async function alta(){
         localStorage.setItem('ok','1');
         localStorage.setItem('llave_maestra', k); 
         activarBotonesSeguridad();
-        window.activarSensores();
         window.ir('llave');
         
     } catch(err) { 
@@ -1392,7 +1392,6 @@ async function procesarPagoIA() {
         localStorage.setItem('imei', i);
         
         activarBotonesSeguridad();
-        window.activarSensores();
         await solicitarTodosLosPermisos();
         
         alert('PAGO APROBADO.\nTu servicio fue reactivado y tu Llave Maestra sigue siendo exactamente la misma.');
@@ -1411,7 +1410,6 @@ async function validar(){
     if (llaveLocal && k === LK(llaveLocal) && (!inputImei || inputImei === imeiLocal)) {
         localStorage.setItem('ok', '1');
         activarBotonesSeguridad();
-        window.activarSensores();
         await solicitarTodosLosPermisos();
         window.ir('panel');
         return;
@@ -1439,7 +1437,6 @@ async function validar(){
             let cRespaldo = localStorage.getItem('contactos_' + sub.imei) || localStorage.getItem('contactos');
             if (cRespaldo) localStorage.setItem('contactos', cRespaldo);
             activarBotonesSeguridad();
-            window.activarSensores();
             await solicitarTodosLosPermisos();
             window.ir('panel');
         }
@@ -1459,7 +1456,6 @@ async function recuperar(accion) {
             localStorage.setItem('imei', i);
             localStorage.setItem('ok', '1');
             activarBotonesSeguridad();
-            window.activarSensores();
             await solicitarTodosLosPermisos();
             alert('Sistema corporativo restaurado con éxito.');
             window.ir('panel');
@@ -1715,7 +1711,6 @@ async function iniciarApp() {
     }
     if(localStorage.getItem('ok') === '1') {
         activarBotonesSeguridad();
-        window.activarSensores();
         checkCentinelaOnInit(); 
     }
     iniciarKeepAlive();
