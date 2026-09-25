@@ -801,7 +801,7 @@ const irSOS = () => localStorage.getItem('ok') === '1' ? window.ir('sos') : wind
 
 function leerVoz(){
     speechSynthesis.cancel();
-    const textoMensaje = 'Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis. Plataforma corporativa Ni Una Menos. Nuestra misión es salvar vidas mediante dos herramientas principales: el Botón Antipánico de impacto inmediato, y el nuevo Temporizador Centinela. El Temporizador es tu vigía personal. Si vas a salir, programá el tiempo de tu viaje y bloqueá la pantalla usando el Modo Sigilo. Si no cancelás el cronómetro antes de que termine, el sistema asumirá que estás en peligro y detonará automáticamente la recolección de evidencia. Además, estando en Modo Sigilo, el sistema cuenta con sensores biométricos ocultos: si recibís un sacudón violento o si pegás un grito fuerte de auxilio, se activará inmediatamente la alarma de rescate y recolección de evidencia, sin hacer ningún ruido. El sistema toma fotos, graba videos, graba audios y obtiene la señal de GPS. Toda esta información se compila en un acta pericial, lista para ser descargada y presentarla ante la fiscalía con todas las pruebas para hacer la denuncia. Tu seguridad está en manos de profesionales. Basta de secuestro, basta de violencia, basta de maltrato. Ni una menos, llegó para salvar vidas.';
+    const textoMensaje = 'Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis. Plataforma corporativa Ni Una Menos. Nuestra misión es salvar vidas mediante dos herramientas principales: el Botón Antipánico de impacto inmediato, y el nuevo Temporizador Centinela. El Temporizador es tu vigía personal. Si vas a salir, programá el tiempo de tu viaje y bloqueá la pantalla usando el Modo Sigilo. Si no cancelás el cronómetro antes de que termine, el sistema asumirá que estás en peligro y detonará automáticamente la recolección de evidencia. Además, estando en Modo Sigilo, el sistema cuenta con sensores biométricos ocultos: si recibís un sacudón violento o si pegás un grito fuerte de auxilio, se activará inmediatamente la alarma de rescate y recolección de evidencia, sin hacer ningún ruido. El sistema recaba fotos, videos, audios y señal de GPS, compilando toda la información en un acta pericial. Con tu llave criptográfica podés descargar esta acta, presentarla ante la fiscalía con todas las pruebas y realizar la denuncia correspondiente. Tu seguridad está en manos de profesionales. Basta de secuestro, basta de violencia, basta de maltrato. Ni una menos, llegó para salvar vidas.';
     const u = new SpeechSynthesisUtterance(textoMensaje);
     u.lang = 'es-AR'; u.rate = 0.92; u.pitch = 1; u.volume = 1;
     speechSynthesis.speak(u);
@@ -1060,7 +1060,7 @@ async function loopEvidencia(acta) {
         window.sosActivo = false; parar(); 
         let btn = document.getElementById('btnBigSOS');
         if(btn) { btn.innerText = 'S.O.S'; btn.classList.remove('activo'); }
-        alert("Cierre de seguridad automático corporativo: 24 hours transcurridas.");
+        alert("Cierre de seguridad automático corporativo: 24 horas transcurridas.");
         return; 
     }
     
