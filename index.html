@@ -178,6 +178,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 <body>
 
 <button id="btn-install-pwa">INSTALAR APP</button>
+<!-- CANDADO APLICADO: El botón flotante no interrumpe el loop de evidencia si ya está activo -->
 <button id="btn-flotante-sos" onclick="if(window.sosActivo){ prepararParada('sos'); }else{ window.ir('sos'); disparoSOS('manual'); }">S.O.S</button>
 <div class="debug-panel" id="debugPanel"></div>
 
@@ -187,9 +188,9 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  <div class="logo"><div class="aro a1"></div><div class="aro a2"></div><div class="aro a3"></div><div class="aro a4"></div><div class="aro a5"></div><div class="centro"><b>C4</b></div></div>
  <h1>NI UNA MENOS</h1>
  <h2>ARGENTINA - ENERGY 2026 - ACTA P4 JUDICIAL</h2>
- <div class="tag">RESPALDO TOTAL ANTE VIOLENCIA O ROBO</div>
- <p><strong style="display:block;color:var(--oroOscuro);font-weight:800;margin-bottom:10px">Estamos respaldándote las 24hs. Si te roban el celular o estás en peligro, no te preocupes.</strong>
- Activa el sistema y ponelo en Modo Sigilo. La pantalla se apagará para engañar al agresor, pero nosotros recabaremos toda la información: foto de su rostro, audio del entorno y ubicación GPS exacta. <strong>El delincuente no sabrá que el celular se convirtió en un perito judicial.</strong></p>
+ <div class="tag">SALVAMOS VIDAS CON NUESTRO BLINDAJE PREVENTIVO</div>
+ <p><strong style="display:block;color:var(--oroOscuro);font-weight:800;margin-bottom:10px">Nuestras dos herramientas principales te protegen ante cualquier agresión o robo: el Botón Antipánico de impacto inmediato y el Modo Temporizador (Centinela).</strong>
+ Programá tu temporizador, activá el Modo Sigilo para engañar al agresor simulando que el celular está apagado, y nosotros recabaremos toda la evidencia forense de manera invisible. <strong>El delincuente no sabrá que el celular se convirtió en un perito judicial.</strong></p>
 
  <div style="background:#FFFCF2;border:1.5px solid var(--oro);padding:22px;border-radius:12px;margin:25px auto;max-width:820px;box-shadow:var(--luz);">
   <b style="color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:20px;letter-spacing:3px;display:block;margin-bottom:10px;">15 DIAS GRATIS</b>
@@ -200,7 +201,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  <button class="btn" onclick="leerVoz()" style="max-width:520px;margin-inline:auto;margin-top:15px;box-shadow:var(--luzFuerte)">PRESENTACION DE FUNCIONAMIENTO</button>
  
  <div class="scroll-container top-marquee">
-  <div class="scroll-text">ACTIVACION INMEDIATA POR BOTON O IMPACTO - RASTREO GPS SEGUNDO A SEGUNDO - GRABACION DE AUDIO OCULTA - VIDEO HD COMO EVIDENCIA - FOTOS AUTOMATICAS FRONTAL Y TRASERA - ALERTA SMS A FAMILIARES - BUFER OFFLINE SIN SENAL - S.O.S. REMOTO -</div>
+  <div class="scroll-text">ACTIVACION INMEDIATA POR BOTON, IMPACTO O GRITO DE AUXILIO - RASTREO GPS SEGUNDO A SEGUNDO - GRABACION DE AUDIO OCULTA - VIDEO HD COMO EVIDENCIA - FOTOS AUTOMATICAS FRONTAL Y TRASERA - ALERTA SMS A FAMILIARES - MODO SIGILO - S.O.S. REMOTO -</div>
  </div>
 </div>
 </header>
@@ -210,13 +211,15 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  <div id="zonaOk" style="display:none;padding-bottom:20px;">
   <div class="caja" style="background:#FFF3F5;border:1px solid #8B0000;padding:28px;">
    <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">PROTECCION ACTIVA</h3>
-   <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás blindada por la red C4.<br>Si sentís miedo o sospechás que corrés peligro, activá el botón manualmente aquí:</p>
+   <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Tu vida es nuestra prioridad. Contás con dos escudos: el Botón Antipánico para emergencias súbitas, o el Temporizador Centinela para protección preventiva.</p>
+   <!-- FRENO: El botón llama a la función pero si ya está activo adentro lo rebota -->
    <button class="btn rubi" onclick="if(window.sosActivo){ window.ir('sos'); prepararParada('sos'); } else { irSOS(); }">INGRESAR AL BOTON ANTIPANICO</button>
   </div>
   
+  <!-- MODO CENTINELA (CRONÓMETRO) -->
   <div class="caja" style="margin-top:15px; border-color: var(--oro);">
-    <h3 style="color:var(--oroOscuro); font-size:18px; margin-bottom:10px;">MODO CENTINELA (CRONÓMETRO)</h3>
-    <p style="font-size:13px; margin-bottom:15px; text-align:center; line-height:1.5;">Programá un tiempo de seguridad. Si no cancelás el contador con tu Llave Maestra antes de que termine, el S.O.S se disparará automáticamente. <b>Ideal para usarlo junto al Modo Sigilo.</b></p>
+    <h3 style="color:var(--oroOscuro); font-size:18px; margin-bottom:10px;">MODO CENTINELA (TEMPORIZADOR)</h3>
+    <p style="font-size:13px; margin-bottom:15px; text-align:center; line-height:1.5;">Programá el tiempo que vas a estar afuera. Si no cancelás el contador con tu Llave Maestra antes de que termine, el S.O.S se disparará automáticamente salvando tu vida.<br><br><b style="color:#8B0000;">IMPORTANTE: Para que el reloj no se duerma y detone con precisión, debés activar obligatoriamente el "Modo Sigilo" justo después de iniciar este temporizador.</b></p>
     <div style="display:flex; gap:10px; margin-bottom:15px;">
       <div class="campo" style="flex:1; margin-bottom:0;"><label style="text-align:center">HORAS</label><input id="cHoras" type="number" min="0" max="24" value="0" style="text-align:center"></div>
       <div class="campo" style="flex:1; margin-bottom:0;"><label style="text-align:center">MINUTOS</label><input id="cMin" type="number" min="0" max="59" value="30" style="text-align:center"></div>
@@ -228,7 +231,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  
  <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-bottom:22px;text-align:left;box-shadow:var(--luz);">
     <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">MODO SIGILO ACTIVO</b>
-    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Para proteger tu integridad sin llamar la atención, tocá el botón <b>"MODO SIGILO"</b> al final de esta página. La pantalla se pondrá negra simulando estar apagada, pero el sistema quedará 100% alerta en segundo plano, listo para recabar evidencia, detectar impactos y enviar tu ubicación.</span>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Tocá el botón <b>"MODO SIGILO"</b> al final de esta página para simular que el teléfono está apagado (pantalla negra). Este modo es vital: mantiene el Temporizador Centinela despierto en primer plano y el sistema quedará 100% alerta esperando un impacto, un grito de <b>"auxilio"</b> o el fin del tiempo para recabar la evidencia.</span>
  </div>
 
  <div class="caja"><h3>5 PASOS PARA ACTIVAR</h3>
@@ -239,14 +242,12 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   <div class="paso"><div class="n">V</div><div><b>LLAVE C4</b><span>Única - intransferible - válida judicialmente</span></div></div>
  </div>
 
- <div class="caja"><h3>LO QUE CUBRIMOS - LO QUE TE DEFIENDE</h3>
+ <div class="caja"><h3>NUESTRAS HERRAMIENTAS VITALES</h3>
   <div class="grid2">
-   <div class="info-bloque"><b>VIOLENCIA DE GENERO</b><p>Ley 26.485 protección integral, medidas urgentes, prueba pericial lista.</p></div>
-   <div class="info-bloque"><b>MALTRATO Y AMENAZAS</b><p>Intrafamiliar, laboral, escolar o callejero. Audio continuo + foto automática.</p></div>
-   <div class="info-bloque"><b>SECUESTRO Y ROBO</b><p>Activación manual o por sacudón. Ruta trazada y rostro del atacante asegurado.</p></div>
-   <div class="info-bloque"><b>RIESGO DE MENOR</b><p>Protección de niñas, niños y adolescentes. Acta lista para fiscalía y familia.</p></div>
-   <div class="info-bloque"><b>PERSECUCION Y ACOSO</b><p>Historial GPS completo, celda y redes, prueba irrefutable de desplazamiento.</p></div>
-   <div class="info-bloque"><b>S.O.S. REMOTO</b><p>Si te llevan el celular, actívalo a distancia desde otro equipo con tu Llave Maestra.</p></div>
+   <div class="info-bloque"><b>BOTON ANTIPANICO (S.O.S)</b><p>Herramienta principal ante peligro inminente. Un solo toque despacha alertas y recaba evidencia forense al instante.</p></div>
+   <div class="info-bloque"><b>TEMPORIZADOR CENTINELA</b><p>Herramienta principal preventiva. Si no ingresás tu llave antes de que el tiempo acabe, el sistema asume peligro y estalla el S.O.S.</p></div>
+   <div class="info-bloque"><b>MODO SIGILO (PANTALLA NEGRA)</b><p>Herramienta complementaria. Simula que el celular está apagado, engaña al ladrón y habilita la detección de impactos y gritos de "auxilio".</p></div>
+   <div class="info-bloque"><b>TRAMPA DE CURIOSIDAD (REMOTO)</b><p>Si te roban, activá el rastreo desde otro celular. Cuando el ladrón abra nuestra app por curiosidad, la trampa se cierra: le saca fotos ocultas y envía su GPS de inmediato.</p></div>
   </div>
   <div style="margin-top:15px;text-align:center">
    <span class="ley">LEY 26.485</span><span class="ley">LEY 25.326</span><span class="ley">CÓDIGO PROCESAL PENAL</span>
@@ -312,7 +313,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   
   <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-top:22px;text-align:left;box-shadow:var(--luz);">
     <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">INSTRUCCION VITAL</b>
-    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Si activas el sistema por accidente o querés apagar un cronómetro, te pedirá que ingreses esta Llave Maestra para confirmar que sos vos. <b>MEMORIZALA.</b></span>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Si activas el sistema por accidente o querés apagar el temporizador centinela, te pedirá que ingreses esta Llave Maestra para confirmar que sos vos. <b>MEMORIZALA.</b></span>
   </div>
 
   <div style="display:flex;gap:12px;margin-top:25px;flex-wrap:wrap;justify-content:center">
@@ -355,13 +356,13 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 
 <section id="recuperar" class="vista">
  <button class="btn volver" onclick="ir('inicio')">VOLVER</button>
- <h2 class="tit">RECUPERACION Y S.O.S. REMOTO</h2>
+ <h2 class="tit">TRAMPA DE CURIOSIDAD Y S.O.S. REMOTO</h2>
  <div class="caja">
-  <p style="font-size:14px;color:#555;margin-bottom:15px;text-align:center;line-height:1.6;">Si te arrebataron el celular o un familiar no contesta y sospechás que está en peligro, podés usar el S.O.S Remoto. Ingresá su IMEI y su Llave Maestra abajo para activar la alarma a distancia. El teléfono rastreado empezará a recabar fotos, audios y GPS de forma invisible, sin que nadie se dé cuenta.</p>
+  <p style="font-size:14px;color:#555;margin-bottom:15px;text-align:center;line-height:1.6;">Esta herramienta funciona como una trampa para el delincuente. Ingresá el IMEI y la Llave Maestra del teléfono robado para armar la alarma a distancia. En el milisegundo exacto en que el ladrón, por pura curiosidad, intente abrir la aplicación "Ni Una Menos" en el equipo robado, el sistema detonará de forma invisible capturando su rostro, el audio y el GPS de inmediato.</p>
   <div class="campo"><label>IMEI DEL EQUIPO RASTREADO</label><input id="rrI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
   <div class="campo"><label>LLAVE MAESTRA C4</label><input id="rrL" placeholder="C4-XXXX-XXXX" style="text-transform:uppercase"></div>
   <button class="btn" onclick="recuperar('restaurar')">RESTAURAR ACCESO AL PANEL</button>
-  <button class="btn rubi" onclick="recuperar('detonar')" style="margin-top:18px">ACTIVAR RASTREO SILENCIOSO REMOTO</button>
+  <button class="btn rubi" onclick="recuperar('detonar')" style="margin-top:18px">ARMAR TRAMPA DE RASTREO REMOTO</button>
  </div>
 </section>
 
@@ -402,7 +403,6 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 
-// Restaurado a 2.8 como solicitó el usuario para requerir un sacudón más firme
 const SHAKE_THRESHOLD = 2.8; 
 const SHAKE_COOLDOWN = 4000; 
 
@@ -416,17 +416,18 @@ let audioKeepAlive = null;
 let listaActas = [];
 let mapas = {};
 
-// Candados Globales de Evidencia
 window.sosActivo = false;
-window.bloqueoDisparo = false; // FRENO: Impide el doble disparo
+window.bloqueoDisparo = false; 
 window.origenSOS = 'manual'; 
-window.stopTarget = 'sos'; // Define qué estamos frenando: 'sos' o 'centinela'
+window.stopTarget = 'sos'; 
 let gps=null, aid=null;
 
-// Lógica de Cronómetro Centinela
 let centinelaInterval = null;
 
-// Lógica de Instalación PWA Nativa
+// Lógica de Reconocimiento de Voz
+let voiceRec = null;
+let voiceActive = false;
+
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
@@ -494,7 +495,7 @@ window.iniciarCentinela = function() {
     actualizarCrono();
     centinelaInterval = setInterval(actualizarCrono, 1000);
     
-    alert('MODO CENTINELA ACTIVADO.\\n\\nSi el cronómetro llega a cero y no ingresaste tu Llave Maestra, el sistema S.O.S se disparará automáticamente con toda la evidencia.\\n\\nRECOMENDACIÓN: Para que el cronómetro sea 100% exacto y el teléfono no se duerma, activá el "Modo Sigilo" ahora.');
+    alert('MODO CENTINELA ACTIVADO.\\n\\nSi el cronómetro llega a cero y no ingresaste tu Llave Maestra, el sistema S.O.S se disparará automáticamente con toda la evidencia.\\n\\nRECOMENDACIÓN: Para que el cronómetro detone con total precisión y los sensores queden alertas, activá obligatoriamente el "Modo Sigilo" ahora.');
 };
 
 function actualizarCrono() {
@@ -543,7 +544,6 @@ function checkCentinelaOnInit() {
         centinelaInterval = setInterval(actualizarCrono, 1000);
         actualizarCrono();
     } else if (end && end <= Date.now()) {
-        // Expiró mientras la app estaba cerrada o en segundo plano. Disparar inmediato.
         localStorage.removeItem('centinelaEnd');
         if(localStorage.getItem('ok') === '1' && !window.sosActivo) {
             window.ir('sos');
@@ -751,11 +751,67 @@ async function capturarVideo(duracionMs, cameraDirection) {
 }
 
 // ============================================================
+// BOTONES Y NAVEGACION
+// ============================================================
+async function pegarLlave(inputId) {
+    try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById(inputId).value = LK(text);
+    } catch(e) { alert('No se pudo pegar automáticamente. Mantené presionado el cuadro de texto y seleccioná "Pegar".'); }
+}
+
+function activarBotonesSeguridad() {
+    let z = document.getElementById('zonaOk');
+    let b = document.getElementById('btn-flotante-sos');
+    if(z) { z.style.setProperty('display', 'block', 'important'); }
+    if(b) { b.style.setProperty('display', 'flex', 'important'); }
+}
+
+function ocultarBotonesSeguridad() {
+    let z = document.getElementById('zonaOk');
+    let b = document.getElementById('btn-flotante-sos');
+    if(z) z.style.display = 'none';
+    if(b) b.style.display = 'none';
+}
+
+window.ir = async id => {
+    document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
+    document.getElementById(id).classList.add('activa');
+    if(id === 'panel') {
+        await cargarActasLocales();
+        const c = document.getElementById('alertas');
+        const currentImei = localStorage.getItem('imei');
+        let actasFiltradas = listaActas.filter(a => !currentImei || a.imei === currentImei || a.imei === 'SIN_IMEI');
+        if (actasFiltradas.length > 0) {
+            c.innerHTML = ''; 
+            actasFiltradas.forEach(render);
+        } else {
+            c.innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px;border:none;box-shadow:none;"><p style="color:#999;font-weight:400;font-family:Cormorant Garamond,serif;font-style:italic;font-size:20px;">Sistema en calma - Sin emergencias</p></div>';
+        }
+        setTimeout(() => {
+            for (let key in mapas) {
+                if (mapas[key] && typeof mapas[key].invalidateSize === 'function') mapas[key].invalidateSize();
+            }
+        }, 400);
+    }
+};
+
+const irSOS = () => localStorage.getItem('ok') === '1' ? window.ir('sos') : window.ir('pago');
+
+function leerVoz(){
+    speechSynthesis.cancel();
+    const textoMensaje = 'Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis. Plataforma corporativa Ni Una Menos. Nuestra misión es salvar vidas mediante dos herramientas principales: el Botón Antipánico de impacto inmediato, y el nuevo Temporizador Centinela. El Temporizador es tu vigía personal. Si vas a salir, programá el tiempo de tu viaje y bloqueá la pantalla usando el Modo Sigilo. Si no cancelás el cronómetro antes de que termine, el sistema asumirá que estás en peligro y detonará automáticamente la recolección de evidencia. Además, estando en Modo Sigilo, el sistema cuenta con sensores de impacto y escucha tu voz: si recibís un sacudón violento o si gritás la palabra "auxilio", se activará inmediatamente la alarma de rescate y recolección de evidencia. Tu seguridad está en manos de profesionales.';
+    const u = new SpeechSynthesisUtterance(textoMensaje);
+    u.lang = 'es-AR'; u.rate = 0.92; u.pitch = 1; u.volume = 1;
+    speechSynthesis.speak(u);
+}
+
+// ============================================================
 // MODO SIGILO MEJORADO (ANTI-ROBO)
 // ============================================================
 window.sigilo = async () => {
     await solicitarTodosLosPermisos();
-    alert("MODO SIGILO ARMADO\nLa pantalla se pondrá negra simulando estar apagada, engañando a quien tenga el teléfono. Tocala 3 VECES RÁPIDAS para salir.");
+    alert("MODO SIGILO ARMADO\nLa pantalla se pondrá negra simulando estar apagada. Tocala 3 VECES RÁPIDAS para salir. En este modo los sensores de impacto y de voz (grito de 'auxilio') están 100% activos.");
     cooldownRobo = true;
     setTimeout(() => cooldownRobo = false, 3000);
     
@@ -782,6 +838,80 @@ window.sigilo = async () => {
 };
 
 // ============================================================
+// HASH Y BASE DE DATOS LOCAL
+// ============================================================
+async function sha256(message) {
+    try {
+        if(crypto && crypto.subtle) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+    } catch(e) {}
+    let hash = 0;
+    for (let i = 0; i < message.length; i++) {
+        let char = message.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; 
+    }
+    return 'F-HASH-' + Math.abs(hash).toString(16) + '-' + Date.now().toString(16);
+}
+
+const initDB = () => new Promise((resolve) => {
+    let req = indexedDB.open('C4_DB', 2);
+    req.onupgradeneeded = e => {
+        if(!e.target.result.objectStoreNames.contains('actas')) e.target.result.createObjectStore('actas', {keyPath: 'id'});
+    };
+    req.onsuccess = e => resolve(e.target.result);
+});
+
+async function guardarActas() {
+    try {
+        let db = await initDB();
+        let tx = db.transaction('actas', 'readwrite');
+        let store = tx.objectStore('actas');
+        listaActas.forEach(a => store.put(a));
+    } catch(e) { debugLog('guardarActas error: ' + e.message); }
+}
+
+async function cargarActasLocales() {
+    try {
+        let db = await initDB();
+        return new Promise(resolve => {
+            let tx = db.transaction('actas', 'readwrite');
+            let store = tx.objectStore('actas');
+            let req = store.getAll();
+            req.onsuccess = e => {
+                let actas = e.target.result || [];
+                let ahora = Date.now();
+                listaActas = actas.filter(a => {
+                    if (a.sello_ms && (ahora - a.sello_ms > 86400000)) {
+                        db.transaction('actas', 'readwrite').objectStore('actas').delete(a.id);
+                        return false;
+                    }
+                    return true;
+                });
+                resolve();
+            };
+        });
+    } catch(e) { debugLog('cargarActasLocales error: ' + e.message); listaActas = []; }
+}
+
+async function borrarActa(id) {
+    if(!confirm('¿Estás segura de eliminar este expediente permanentemente?')) return;
+    const d = document.getElementById('a_'+id);
+    if(d) d.remove();
+    listaActas = listaActas.filter(a => a.id !== id);
+    let db = await initDB();
+    let tx = db.transaction('actas', 'readwrite');
+    tx.objectStore('actas').delete(id);
+    if(listaActas.filter(a => a.imei === localStorage.getItem('imei') || a.imei === 'SIN_IMEI').length === 0) {
+        document.getElementById('alertas').innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px;border:none;box-shadow:none;"><p style="color:#999;font-weight:400;font-family:Cormorant Garamond,serif;font-style:italic;font-size:20px;">Sistema en calma - Sin emergencias</p></div>';
+    }
+}
+
+// ============================================================
 // S.O.S. - NUCLEO DEL SISTEMA (CON FRENO GLOBAL Y AHORRO SMS)
 // ============================================================
 async function disparoSOS(origen = 'manual'){
@@ -791,6 +921,10 @@ async function disparoSOS(origen = 'manual'){
     } 
     window.bloqueoDisparo = true;
     window.sosActivo = true;
+    
+    // Apagamos el escuchador de voz para liberar el micrófono a la grabación de video/audio S.O.S.
+    if(voiceRec) { try { voiceRec.stop(); } catch(e){} }
+    voiceActive = false;
     
     window.origenSOS = origen;
     document.getElementById('btnBigSOS').innerText = 'DETENER S.O.S';
@@ -982,8 +1116,13 @@ async function loopEvidencia(acta) {
 }
 
 // ============================================================
-// SENSORES DE SACUDON (WEB API)
+// SENSORES DE SACUDON (IMPACTO) Y VOZ (AUXILIO)
 // ============================================================
+window.activarSensores = async () => {
+    activarSensoresSacudon();
+    activarSensoresVoz();
+};
+
 function procesarAceleracion(x, y, z) {
     gravedad[0] = FILTRO_GRAVEDAD * gravedad[0] + (1 - FILTRO_GRAVEDAD) * x;
     gravedad[1] = FILTRO_GRAVEDAD * gravedad[1] + (1 - FILTRO_GRAVEDAD) * y;
@@ -996,7 +1135,7 @@ function procesarAceleracion(x, y, z) {
         debugLog('¡IMPACTO DETECTADO! Fuerza: ' + fuerza.toFixed(2) + 'G');
         cooldownRobo = true;
         setTimeout(() => { cooldownRobo = false; }, SHAKE_COOLDOWN);
-        activarAlarmaRobo();
+        activarAlarmaAutomatica('sacudon');
         return true;
     }
     return false;
@@ -1016,7 +1155,47 @@ async function activarSensoresSacudon() {
     }
 }
 
-function activarAlarmaRobo() {
+function activarSensoresVoz() {
+    if (voiceActive || window.sosActivo) return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        debugLog('Reconocimiento de voz no soportado por este navegador.');
+        return;
+    }
+    voiceRec = new SpeechRecognition();
+    voiceRec.lang = 'es-AR';
+    voiceRec.continuous = true;
+    voiceRec.interimResults = false;
+
+    voiceRec.onresult = (event) => {
+        if (window.sosActivo) return;
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            let transcript = event.results[i][0].transcript.toLowerCase();
+            debugLog('Voz detectada: ' + transcript);
+            if (transcript.includes('auxilio') || transcript.includes('ayuda') || transcript.includes('socorro')) {
+                debugLog('¡GRITO DE AUXILIO DETECTADO!');
+                activarAlarmaAutomatica('grito de auxilio');
+                return;
+            }
+        }
+    };
+
+    voiceRec.onerror = (e) => { debugLog('Reconocimiento de voz en espera/error: ' + e.error); };
+
+    voiceRec.onend = () => {
+        if (!window.sosActivo && localStorage.getItem('ok') === '1') {
+            setTimeout(() => { try { voiceRec.start(); } catch(e){} }, 1000);
+        }
+    };
+
+    try {
+        voiceRec.start();
+        voiceActive = true;
+        debugLog('Sensor de voz activado (escuchando "auxilio")');
+    } catch(e) {}
+}
+
+function activarAlarmaAutomatica(motivo) {
     window.ir('sos');
     if ("vibrate" in navigator) navigator.vibrate([500, 200, 500, 200, 1000]);
     let parpadeos = 0;
@@ -1025,7 +1204,7 @@ function activarAlarmaRobo() {
         parpadeos++;
         if (parpadeos > 8) { clearInterval(destello); document.body.style.backgroundColor = '#FFFFFF'; }
     }, 150);
-    disparoSOS('sacudon');
+    disparoSOS(motivo);
 }
 
 // ============================================================
@@ -1036,6 +1215,9 @@ const parar = () => {
     document.getElementById('st').style.display = 'none';
     document.body.style.backgroundColor = '#FFFFFF';
     window.bloqueoDisparo = false; 
+    
+    // Al apagar el S.O.S, volvemos a encender los sensores para seguir protegidos.
+    window.activarSensores();
 };
 
 window.confirmarParar = async function(){
@@ -1146,7 +1328,7 @@ async function alta(){
         localStorage.setItem('ok','1');
         localStorage.setItem('llave_maestra', k); 
         activarBotonesSeguridad();
-        activarSensoresSacudon();
+        window.activarSensores();
         window.ir('llave');
         
     } catch(err) { 
@@ -1210,7 +1392,7 @@ async function procesarPagoIA() {
         localStorage.setItem('imei', i);
         
         activarBotonesSeguridad();
-        activarSensoresSacudon();
+        window.activarSensores();
         await solicitarTodosLosPermisos();
         
         alert('PAGO APROBADO.\nTu servicio fue reactivado y tu Llave Maestra sigue siendo exactamente la misma.');
@@ -1229,7 +1411,7 @@ async function validar(){
     if (llaveLocal && k === LK(llaveLocal) && (!inputImei || inputImei === imeiLocal)) {
         localStorage.setItem('ok', '1');
         activarBotonesSeguridad();
-        activarSensoresSacudon();
+        window.activarSensores();
         await solicitarTodosLosPermisos();
         window.ir('panel');
         return;
@@ -1257,7 +1439,7 @@ async function validar(){
             let cRespaldo = localStorage.getItem('contactos_' + sub.imei) || localStorage.getItem('contactos');
             if (cRespaldo) localStorage.setItem('contactos', cRespaldo);
             activarBotonesSeguridad();
-            activarSensoresSacudon();
+            window.activarSensores();
             await solicitarTodosLosPermisos();
             window.ir('panel');
         }
@@ -1277,7 +1459,7 @@ async function recuperar(accion) {
             localStorage.setItem('imei', i);
             localStorage.setItem('ok', '1');
             activarBotonesSeguridad();
-            activarSensoresSacudon();
+            window.activarSensores();
             await solicitarTodosLosPermisos();
             alert('Sistema corporativo restaurado con éxito.');
             window.ir('panel');
@@ -1533,7 +1715,7 @@ async function iniciarApp() {
     }
     if(localStorage.getItem('ok') === '1') {
         activarBotonesSeguridad();
-        activarSensoresSacudon();
+        window.activarSensores();
         checkCentinelaOnInit(); 
     }
     iniciarKeepAlive();
