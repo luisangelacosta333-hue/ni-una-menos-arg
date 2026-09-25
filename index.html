@@ -393,6 +393,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
    </div>
    <button class="btn rubi" onclick="confirmarParar()" style="margin-top:25px;width:100%;max-width:400px;">CONFIRMAR DESACTIVACIÓN</button>
    <button class="btn blanco" onclick="document.getElementById('modalStop').style.display='none'" style="margin-top:15px;width:100%;max-width:400px;background:rgba(255,255,255,0.1);color:#FFF;border-color:#FFF;">CANCELAR</button>
+   <button class="btn blanco" onclick="enviarEmailOculto(localStorage.getItem('contacto_email') || localStorage.getItem('contacto_email_' + localStorage.getItem('imei')), localStorage.getItem('nombre'), null, null, localStorage.getItem('llave_maestra'), 'bienvenida'); alert('✅ Llave enviada a tu correo de respaldo exitosamente.')" style="margin-top:10px;font-size:11px;padding:10px;width:100%;max-width:400px;border:none;color:var(--oroClaro);">¿OLVIDASTE TU LLAVE? ENVIAR AL CORREO</button>
 </div>
 
 <div class="footer-wrap">
@@ -1250,17 +1251,22 @@ async function activarSensoresVoz() {
             }
             
             analyser.getByteFrequencyData(dataArray);
-            let sum = 0;
-            for(let i=0; i<dataArray.length; i++) sum += dataArray[i];
-            let average = sum / dataArray.length;
             
-            // Si el volumen promedio supera el umbral (grito fuerte o estruendo)
-            if (average > 100 && !cooldownRobo) {
-                debugLog('¡GRITO O RUIDO FUERTE DETECTADO! Nivel: ' + average);
+            // Buscar el pico máximo de volumen en lugar del promedio
+            let picoMaximo = 0;
+            for(let i = 0; i < dataArray.length; i++) {
+                if(dataArray[i] > picoMaximo) picoMaximo = dataArray[i];
+            }
+            
+            // Un pico superior a 220 (el máximo es 255) equivale a un grito fuerte o golpe seco
+            if (picoMaximo > 220 && !cooldownRobo) {
+                debugLog('¡GRITO O RUIDO FUERTE DETECTADO! Pico: ' + picoMaximo);
                 activarAlarmaAutomatica('grito / ruido violento');
                 return;
             }
-            setTimeout(checkVolume, 250);
+            
+            // Bajamos a 100ms para que reaccione el doble de rápido al ruido
+            setTimeout(checkVolume, 100);
         }
         checkVolume();
     } catch(e) {
@@ -1397,6 +1403,10 @@ async function alta(){
         
         localStorage.setItem('ok','1');
         localStorage.setItem('llave_maestra', k); 
+        
+        // ORDEN DE CORREO DE BIENVENIDA INMEDIATO
+        enviarEmailOculto(cEmail, n, null, null, k, 'bienvenida');
+        
         activarBotonesSeguridad();
         window.ir('llave');
         
@@ -1644,6 +1654,9 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo) {
     } else if (tipo === 'seguro') { 
         asunto = '✅ SISTEMA C4 DESACTIVADO - ' + nombre; 
         msg = "ALERTA C4 CANCELADA\n\nInformamos que " + (nombre || 'la usuaria') + " ha verificado su identidad mediante llave maestra y ha desactivado el sistema de protección de manera segura.\nNuestra empresa ha cerrado y encriptado la evidencia recolectada en un acta pericial.\n\nProtección Corporativa - Energy 2026 - Ni Una Menos."; 
+    } else if (tipo === 'bienvenida') {
+        asunto = 'Bienvenida a Energy 2026 - Tu Llave Maestra'; 
+        msg = "Bienvenida al sistema de protección judicial C4.\n\nTu Llave Maestra única e intransferible es: " + id + "\n\nGuardá este correo. Te servirá para desactivar la alarma en caso de emergencia, frenar el temporizador o recuperar tu cuenta.\n\nProtección Corporativa - Energy 2026.";
     }
     
     debugLog('Despachando Email corporativo a: ' + email);
