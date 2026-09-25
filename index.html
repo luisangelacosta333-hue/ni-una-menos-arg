@@ -208,6 +208,13 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 
 <main>
 <section id="inicio" class="vista activa">
+  
+ <!-- BANNER CRONÓMETRO DE DÍAS RESTANTES (INTELIGENTE) -->
+ <div id="bannerSuscripcion" style="display:none;background:linear-gradient(135deg,#D4AF37,#A87F0A);color:#fff;padding:15px;border-radius:12px;margin-bottom:20px;text-align:center;box-shadow:var(--luzFuerte);border:2px solid #FFF0A8;">
+   <b style="font-family:'Cinzel',serif;font-size:16px;letter-spacing:2px;display:block;">🛡️ BLINDAJE ACTIVO</b>
+   <span id="diasRestantesText" style="font-size:15px;font-weight:700;margin-top:5px;display:block;">Calculando días restantes...</span>
+ </div>
+
  <div id="zonaOk" style="display:none;padding-bottom:20px;">
   <div class="caja" style="background:#FFF3F5;border:1px solid #8B0000;padding:28px;">
    <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">PROTECCION ACTIVA</h3>
@@ -479,6 +486,61 @@ const IM = i => (i||'').toString().replace(/\D/g,'').slice(0,15);
 
 document.getElementById('lkStop').addEventListener('input', e => e.target.value = LK(e.target.value));
 document.getElementById('lkI').addEventListener('input', e => e.target.value = LK(e.target.value));
+
+// ============================================================
+// VERIFICACIÓN DE SUSCRIPCIÓN Y CRONÓMETRO DE DÍAS
+// ============================================================
+async function verificarSuscripcion() {
+    const imei = localStorage.getItem('imei');
+    const k = localStorage.getItem('llave_maestra');
+    if (!imei || !k || localStorage.getItem('ok') !== '1') return false;
+
+    try {
+        if(!currentJWT) await authTrucha(imei);
+        const res = await supaQuery('GET', 'c4_suscripciones?select=*&imei=eq.' + imei + '&llave_acceso=eq.' + k);
+        
+        if (res && res.length > 0) {
+            const sub = res[0];
+            const venci = new Date(sub.fecha_vencimiento).getTime();
+            const ahora = Date.now();
+            const faltanMs = venci - ahora;
+            const faltanDias = Math.ceil(faltanMs / (1000 * 60 * 60 * 24));
+
+            if (faltanMs <= 0) {
+                // SUCripción Vencida - Bloqueo de sistema
+                localStorage.removeItem('ok');
+                ocultarBotonesSeguridad();
+                alert('TU BLINDAJE JUDICIAL HA VENCIDO.\\nPor favor, renová tu plan para mantener la protección activa.');
+                document.getElementById('pI').value = sub.imei;
+                if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = sub.imei;
+                window.ir('pago');
+                return false;
+            } else {
+                // Suscripción Activa - Mostramos Banner
+                const banner = document.getElementById('bannerSuscripcion');
+                const text = document.getElementById('diasRestantesText');
+                if(banner && text) {
+                    banner.style.display = 'block';
+                    if (faltanDias <= 3) {
+                        banner.style.background = 'linear-gradient(135deg,#8B0000,#4A0008)';
+                        banner.style.borderColor = '#FF8888';
+                        text.innerText = '⚠️ ATENCIÓN: Te quedan ' + faltanDias + ' días de protección.';
+                    } else {
+                        banner.style.background = 'linear-gradient(135deg,#D4AF37,#A87F0A)';
+                        banner.style.borderColor = '#FFF0A8';
+                        text.innerText = 'Te quedan ' + faltanDias + ' días de protección judicial.';
+                    }
+                }
+                return true;
+            }
+        } else {
+            return false;
+        }
+    } catch(e) { 
+        debugLog('Error verificando suscripción: ' + e.message); 
+        return true; 
+    }
+}
 
 // ============================================================
 // MODO CENTINELA (CRONÓMETRO)
@@ -1297,12 +1359,12 @@ async function alta(){
         
         const checkWA = await supaQuery('GET', 'c4_suscripciones?select=*&whatsapp=eq.' + w.replace(/\D/g, ''));
         if(checkWA && checkWA.length > 0) {
-            alert('¡SISTEMA ANTI-PICARO ACTIVADO!\nEste número de celular ya se encuentra registrado en el sistema C4.');
+            alert('¡SISTEMA ANTI-PICARO ACTIVADO!\\nEste número de celular ya se encuentra registrado en el sistema C4.');
             return;
         }
         const checkImei = await supaQuery('GET', 'c4_suscripciones?select=*&imei=eq.' + i);
         if(checkImei && checkImei.length > 0) {
-            alert('SISTEMA CORPORATIVO:\nEste equipo ya agotó los 15 días de prueba.');
+            alert('SISTEMA CORPORATIVO:\\nEste equipo ya agotó los 15 días de prueba.');
             document.getElementById('pI').value = i;
             if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = i;
             localStorage.setItem('imei', i);
@@ -1350,59 +1412,79 @@ async function procesarPagoIA() {
     const i = IM(document.getElementById('pI').value || localStorage.getItem('imei'));
     if(!/^\d{15}$/.test(i)) return alert('IMEI inválido.');
     
-    alert('Nuestra inteligencia artificial está procesando tu comprobante...');
+    alert('Nuestra inteligencia artificial está auditando tu comprobante en el servidor central...');
     const file = fileInput.files[0];
     const reader = new FileReader();
     
     reader.onload = async function(e) {
-        let nuevaFecha = new Date(); 
-        nuevaFecha.setMonth(nuevaFecha.getMonth() + 1); 
-        const emailTrucho = i + '@c4judicial.com.ar';
+        const base64Img = e.target.result;
         
-        const authOk = await authTrucha(i);
-        if(!authOk) return;
-
-        let llaveExistente = null;
         try {
-            const res = await supaQuery('GET', 'c4_suscripciones?select=llave_acceso&imei=eq.' + i);
-            if (res && res.length > 0 && res[0].llave_acceso) {
-                llaveExistente = res[0].llave_acceso;
+            // Llamada al backend blindado en Vercel
+            const res = await fetch('/api/verificar-pago', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ local: true, fotoBase64: base64Img })
+            });
+            
+            const data = await res.json();
+            
+            if (!data.success) {
+                return alert('ERROR EN AUDITORÍA:\\n' + data.msg);
             }
-        } catch(err) {
-            debugLog('Error buscando llave existente: ' + err.message);
-        }
+            
+            // Si Vercel (OpenAI) aprueba el ticket, recién ahí actualizamos base de datos
+            let mesesSumar = data.plan === 'anual' ? 12 : 1;
+            
+            const authOk = await authTrucha(i);
+            if(!authOk) return alert('Error de conexión a la bóveda C4.');
 
-        const k = llaveExistente || ('C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase());
-
-        try {
+            let llaveExistente = null;
+            let fechaActual = new Date();
+            
             const check = await supaQuery('GET', 'c4_suscripciones?imei=eq.' + i);
-            if (check.length > 0) {
+            if (check && check.length > 0) {
+                llaveExistente = check[0].llave_acceso;
+                if (check[0].fecha_vencimiento) {
+                   let venciDB = new Date(check[0].fecha_vencimiento);
+                   // Si todavía tiene días a favor, le sumamos el nuevo pago arriba de esos días
+                   if (venciDB > fechaActual) fechaActual = venciDB; 
+                }
+            }
+
+            fechaActual.setMonth(fechaActual.getMonth() + mesesSumar);
+            const k = llaveExistente || ('C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase());
+
+            if (check && check.length > 0) {
                 await supaQuery('PATCH', 'c4_suscripciones?imei=eq.' + i, { 
-                    tipo_plan: 'aprobado_ia', 
-                    fecha_vencimiento: nuevaFecha.toISOString(), 
+                    tipo_plan: data.plan, 
+                    fecha_vencimiento: fechaActual.toISOString(), 
                     activa: true 
                 });
             } else {
                 await supaQuery('POST', 'c4_suscripciones', { 
-                    email: emailTrucho, imei: i, llave_acceso: k, 
-                    tipo_plan: 'aprobado_ia', fecha_vencimiento: nuevaFecha.toISOString(), 
+                    email: i + '@c4judicial.com.ar', imei: i, llave_acceso: k, 
+                    tipo_plan: data.plan, fecha_vencimiento: fechaActual.toISOString(), 
                     activa: true, alarma_remota: false 
                 });
             }
-        } catch(errUpsert) {
-            debugLog('Error al guardar el pago: ' + errUpsert.message);
-        }
 
-        document.getElementById('lk').textContent = k;
-        localStorage.setItem('llave_maestra', k);
-        localStorage.setItem('ok', '1');
-        localStorage.setItem('imei', i);
-        
-        activarBotonesSeguridad();
-        await solicitarTodosLosPermisos();
-        
-        alert('PAGO APROBADO.\nTu servicio fue reactivado y tu Llave Maestra sigue siendo exactamente la misma.');
-        window.ir('llave');
+            document.getElementById('lk').textContent = k;
+            localStorage.setItem('llave_maestra', k);
+            localStorage.setItem('ok', '1');
+            localStorage.setItem('imei', i);
+            
+            activarBotonesSeguridad();
+            await verificarSuscripcion(); // Actualiza el banner de días en pantalla
+            await solicitarTodosLosPermisos();
+            
+            alert(data.msg + '\\nTu servicio judicial ha sido reactivado exitosamente. Tu Llave Maestra sigue siendo exactamente la misma.');
+            window.ir('llave');
+
+        } catch(errReq) {
+            debugLog('Error Vercel IA: ' + errReq.message);
+            alert('Error conectando con la Inteligencia Artificial C4. Intentá de nuevo.');
+        }
     };
     reader.readAsDataURL(file);
 }
@@ -1417,6 +1499,7 @@ async function validar(){
     if (llaveLocal && k === LK(llaveLocal) && (!inputImei || inputImei === imeiLocal)) {
         localStorage.setItem('ok', '1');
         activarBotonesSeguridad();
+        await verificarSuscripcion();
         await solicitarTodosLosPermisos();
         window.ir('panel');
         return;
@@ -1444,6 +1527,7 @@ async function validar(){
             let cRespaldo = localStorage.getItem('contactos_' + sub.imei) || localStorage.getItem('contactos');
             if (cRespaldo) localStorage.setItem('contactos', cRespaldo);
             activarBotonesSeguridad();
+            await verificarSuscripcion();
             await solicitarTodosLosPermisos();
             window.ir('panel');
         }
@@ -1672,7 +1756,7 @@ function render(a){
     if (audContainer && audContainer.dataset.len != (a.audios ? a.audios.length : 0)) { audContainer.innerHTML = aA; audContainer.dataset.len = a.audios ? a.audios.length : 0; }
 }
 
-const verificar = async () =>{ alert('VERIFICACION CORPORATIVA\nTodas las firmas locales válidas y blindadas.\nLeyes: 26.485 - 25.326'); };
+const verificar = async () =>{ alert('VERIFICACION CORPORATIVA\\nTodas las firmas locales válidas y blindadas.\\nLeyes: 26.485 - 25.326'); };
 
 // ============================================================
 // KEEP-ALIVE - SISTEMA DESPIERTO PWA
@@ -1717,8 +1801,11 @@ async function iniciarApp() {
         if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = savedImei;
     }
     if(localStorage.getItem('ok') === '1') {
-        activarBotonesSeguridad();
-        checkCentinelaOnInit(); 
+        const activo = await verificarSuscripcion();
+        if (activo) {
+            activarBotonesSeguridad();
+            checkCentinelaOnInit(); 
+        }
     }
     iniciarKeepAlive();
     window.ir('inicio');
