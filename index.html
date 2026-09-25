@@ -178,6 +178,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 <body>
 
 <button id="btn-install-pwa">INSTALAR APP</button>
+<!-- CANDADO APLICADO: El botón flotante no interrumpe el loop de evidencia si ya está activo -->
 <button id="btn-flotante-sos" onclick="if(window.sosActivo){ prepararParada('sos'); }else{ window.ir('sos'); disparoSOS('manual'); }">S.O.S</button>
 <div class="debug-panel" id="debugPanel"></div>
 
@@ -211,9 +212,11 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   <div class="caja" style="background:#FFF3F5;border:1px solid #8B0000;padding:28px;">
    <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">PROTECCION ACTIVA</h3>
    <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Tu vida es nuestra prioridad. Contás con dos escudos: el Botón Antipánico para emergencias súbitas, o el Temporizador Centinela para protección preventiva.</p>
+   <!-- FRENO: El botón llama a la función pero si ya está activo adentro lo rebota -->
    <button class="btn rubi" onclick="if(window.sosActivo){ window.ir('sos'); prepararParada('sos'); } else { irSOS(); }">INGRESAR AL BOTON ANTIPANICO</button>
   </div>
   
+  <!-- MODO CENTINELA (CRONÓMETRO) -->
   <div class="caja" style="margin-top:15px; border-color: var(--oro);">
     <h3 style="color:var(--oroOscuro); font-size:18px; margin-bottom:10px;">MODO CENTINELA (TEMPORIZADOR)</h3>
     <p style="font-size:13px; margin-bottom:15px; text-align:center; line-height:1.5;">Programá el tiempo que vas a estar afuera. Si no cancelás el contador con tu Llave Maestra antes de que termine, el S.O.S se disparará automáticamente salvando tu vida.<br><br><b style="color:#8B0000;">IMPORTANTE: Para que el reloj no se duerma y detone con precisión, debés activar obligatoriamente el "Modo Sigilo" justo después de iniciar este temporizador.</b></p>
@@ -228,7 +231,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  
  <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-bottom:22px;text-align:left;box-shadow:var(--luz);">
     <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">MODO SIGILO ACTIVO</b>
-    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Tocá el botón <b>"MODO SIGILO"</b> al final de esta página para simular que el teléfono está apagado (pantalla negra). Este modo es vital: mantiene el Temporizador Centinela despierto en primer plano y el sistema quedará 100% alerta esperando un impacto, un grito de <b>"auxilio"</b> o el fin del tiempo para recabar la evidencia.</span>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Tocá el botón <b>"MODO SIGILO"</b> al final de esta página para simular que el teléfono está apagado (pantalla negra). Este modo es vital: mantiene el Temporizador Centinela despierto en primer plano y el sistema quedará 100% alerta esperando un impacto, o un <b>grito fuerte / ruido violento</b> para recabar la evidencia de manera totalmente silenciosa.</span>
  </div>
 
  <div class="caja"><h3>5 PASOS PARA ACTIVAR</h3>
@@ -243,7 +246,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   <div class="grid2">
    <div class="info-bloque"><b>BOTON ANTIPANICO (S.O.S)</b><p>Herramienta principal ante peligro inminente. Un solo toque despacha alertas y recaba evidencia forense al instante.</p></div>
    <div class="info-bloque"><b>TEMPORIZADOR CENTINELA</b><p>Herramienta principal preventiva. Si no ingresás tu llave antes de que el tiempo acabe, el sistema asume peligro y estalla el S.O.S.</p></div>
-   <div class="info-bloque"><b>MODO SIGILO (PANTALLA NEGRA)</b><p>Herramienta complementaria. Simula que el celular está apagado, engaña al ladrón y habilita la detección de impactos y gritos de "auxilio".</p></div>
+   <div class="info-bloque"><b>MODO SIGILO (PANTALLA NEGRA)</b><p>Herramienta complementaria. Simula que el celular está apagado, engaña al ladrón y habilita la detección acústica silenciosa de gritos fuertes.</p></div>
    <div class="info-bloque"><b>TRAMPA DE CURIOSIDAD (REMOTO)</b><p>Si te roban, activá el rastreo desde otro celular. Cuando el ladrón abra nuestra app por curiosidad, la trampa se cierra: le saca fotos ocultas y envía su GPS de inmediato.</p></div>
   </div>
   <div style="margin-top:15px;text-align:center">
@@ -421,8 +424,9 @@ let gps=null, aid=null;
 
 let centinelaInterval = null;
 
-// Lógica de Reconocimiento de Voz
-let voiceRec = null;
+// Lógica de Reconocimiento Acústico Silencioso
+let audioCtxActivo = null;
+let micStreamSigilo = null;
 let voiceActive = false;
 
 let deferredPrompt;
@@ -797,7 +801,7 @@ const irSOS = () => localStorage.getItem('ok') === '1' ? window.ir('sos') : wind
 
 function leerVoz(){
     speechSynthesis.cancel();
-    const textoMensaje = 'Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis. Plataforma corporativa Ni Una Menos. Nuestra misión es salvar vidas mediante dos herramientas principales: el Botón Antipánico de impacto inmediato, y el nuevo Temporizador Centinela. El Temporizador es tu vigía personal. Si vas a salir, programá el tiempo de tu viaje y bloqueá la pantalla usando el Modo Sigilo. Si no cancelás el cronómetro antes de que termine, el sistema asumirá que estás en peligro y detonará automáticamente la recolección de evidencia. Además, estando en Modo Sigilo, el sistema cuenta con sensores de impacto y escucha tu voz: si recibís un sacudón violento o si gritás la palabra "auxilio", se activará inmediatamente la alarma de rescate y recolección de evidencia. Tu seguridad está en manos de profesionales.';
+    const textoMensaje = 'Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis. Plataforma corporativa Ni Una Menos. Nuestra misión es salvar vidas mediante dos herramientas principales: el Botón Antipánico de impacto inmediato, y el nuevo Temporizador Centinela. El Temporizador es tu vigía personal. Si vas a salir, programá el tiempo de tu viaje y bloqueá la pantalla usando el Modo Sigilo. Si no cancelás el cronómetro antes de que termine, el sistema asumirá que estás en peligro y detonará automáticamente la recolección de evidencia. Además, estando en Modo Sigilo, el sistema cuenta con sensores biométricos ocultos: si recibís un sacudón violento o si pegás un grito fuerte de auxilio, se activará inmediatamente la alarma de rescate y recolección de evidencia, sin hacer ningún ruido. Tu seguridad está en manos de profesionales.';
     const u = new SpeechSynthesisUtterance(textoMensaje);
     u.lang = 'es-AR'; u.rate = 0.92; u.pitch = 1; u.volume = 1;
     speechSynthesis.speak(u);
@@ -808,11 +812,11 @@ function leerVoz(){
 // ============================================================
 window.sigilo = async () => {
     await solicitarTodosLosPermisos();
-    alert("MODO SIGILO ARMADO\nLa pantalla se pondrá negra simulando estar apagada. Tocala 3 VECES RÁPIDAS para salir. En este modo los sensores de impacto y de voz (grito de 'auxilio') están 100% activos.");
+    alert("MODO SIGILO ARMADO\nLa pantalla se pondrá negra simulando estar apagada. Tocala 3 VECES RÁPIDAS para salir. En este modo los sensores de impacto y el micrófono oculto (detector de gritos fuertes) están 100% activos y silenciosos.");
     cooldownRobo = true;
     setTimeout(() => cooldownRobo = false, 3000);
     
-    // Al entrar en Modo Sigilo, activamos de manera exclusiva los sensores de voz y sacudón
+    // Al entrar en Modo Sigilo, activamos los sensores silenciosos
     activarSensoresSacudon();
     activarSensoresVoz();
     
@@ -835,9 +839,10 @@ window.sigilo = async () => {
             if (audioKeepAlive) { audioKeepAlive.pause(); audioKeepAlive = null; }
             s.remove();
             
-            // Al salir del Modo Sigilo, apagamos el sensor de voz para no gastar batería ni molestar
-            if(voiceRec) { try { voiceRec.stop(); } catch(e){} }
+            // Al salir del Modo Sigilo, apagamos el sensor silencioso
             voiceActive = false;
+            if (micStreamSigilo) micStreamSigilo.getTracks().forEach(tr=>tr.stop());
+            if (audioCtxActivo) audioCtxActivo.close();
         }
     });
 };
@@ -927,9 +932,10 @@ async function disparoSOS(origen = 'manual'){
     window.bloqueoDisparo = true;
     window.sosActivo = true;
     
-    // Apagamos el escuchador de voz para liberar el micrófono a la grabación de video/audio S.O.S.
-    if(voiceRec) { try { voiceRec.stop(); } catch(e){} }
+    // Apagamos el escuchador silencioso para liberar el micrófono a la grabación forense principal
     voiceActive = false;
+    if (micStreamSigilo) micStreamSigilo.getTracks().forEach(t=>t.stop());
+    if (audioCtxActivo) audioCtxActivo.close();
     
     window.origenSOS = origen;
     document.getElementById('btnBigSOS').innerText = 'DETENER S.O.S';
@@ -1121,7 +1127,7 @@ async function loopEvidencia(acta) {
 }
 
 // ============================================================
-// SENSORES DE SACUDON (IMPACTO) Y VOZ (AUXILIO) EXCLUSIVOS MODO SIGILO
+// SENSORES DE SACUDON (IMPACTO) Y ACÚSTICO (GRITOS FUERTES) EXCLUSIVOS MODO SIGILO
 // ============================================================
 
 function procesarAceleracion(x, y, z) {
@@ -1157,46 +1163,47 @@ async function activarSensoresSacudon() {
     }
 }
 
-function activarSensoresVoz() {
+async function activarSensoresVoz() {
     if (voiceActive || window.sosActivo) return;
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-        debugLog('Reconocimiento de voz no soportado por este navegador.');
-        return;
-    }
-    voiceRec = new SpeechRecognition();
-    voiceRec.lang = 'es-AR';
-    voiceRec.continuous = true;
-    voiceRec.interimResults = false;
-
-    voiceRec.onresult = (event) => {
-        if (window.sosActivo) return;
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-            let transcript = event.results[i][0].transcript.toLowerCase();
-            debugLog('Voz detectada: ' + transcript);
-            if (transcript.includes('auxilio') || transcript.includes('ayuda') || transcript.includes('socorro')) {
-                debugLog('¡GRITO DE AUXILIO DETECTADO!');
-                activarAlarmaAutomatica('grito de auxilio');
+    try {
+        // Pedimos el micrófono en bruto, sin el reconocedor de palabras de Google, para que no haga beeps.
+        micStreamSigilo = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+        audioCtxActivo = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioCtxActivo.createMediaStreamSource(micStreamSigilo);
+        const analyser = audioCtxActivo.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        
+        voiceActive = true;
+        debugLog('Sensor Acústico de Decibelios activado (0 Beeps)');
+        
+        function checkVolume() {
+            // Si salimos del modo sigilo o la alarma ya estalló, apagamos este sensor silencioso
+            if(!voiceActive || window.sosActivo || !document.getElementById('pantalla-sigilo')) {
+                if (micStreamSigilo) micStreamSigilo.getTracks().forEach(t=>t.stop());
+                if (audioCtxActivo) audioCtxActivo.close();
+                voiceActive = false;
                 return;
             }
+            
+            analyser.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for(let i=0; i<dataArray.length; i++) sum += dataArray[i];
+            let average = sum / dataArray.length;
+            
+            // Si el volumen promedio supera el umbral (grito fuerte o estruendo)
+            if (average > 100 && !cooldownRobo) {
+                debugLog('¡GRITO O RUIDO FUERTE DETECTADO! Nivel: ' + average);
+                activarAlarmaAutomatica('grito / ruido violento');
+                return;
+            }
+            setTimeout(checkVolume, 250);
         }
-    };
-
-    voiceRec.onerror = (e) => { debugLog('Reconocimiento de voz en espera/error: ' + e.error); };
-
-    voiceRec.onend = () => {
-        voiceActive = false;
-        // Solo reinicia el micrófono si sigue en Modo Sigilo y no saltó la alarma SOS
-        if (!window.sosActivo && document.getElementById('pantalla-sigilo')) {
-            setTimeout(() => { activarSensoresVoz(); }, 1000);
-        }
-    };
-
-    try {
-        voiceRec.start();
-        voiceActive = true;
-        debugLog('Sensor de voz activado (escuchando "auxilio")');
-    } catch(e) {}
+        checkVolume();
+    } catch(e) {
+        debugLog('Error en sensor acústico: ' + e.message);
+    }
 }
 
 function activarAlarmaAutomatica(motivo) {
