@@ -365,8 +365,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   <button class="btn blanco" onclick="verificar()" style="flex:1 1 100%;margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
  </div>
  <div id="alertas"><div class="caja" style="text-align:center;padding:50px 12px;border:none;box-shadow:none;"><p style="color:#999;font-weight:400;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;">Sistema en calma - Sin emergencias</p></div></div>
- <button class="btn blanco" onclick="cerrar()" style="margin-top:20px">CERRAR SESION</button>
- <button class="btn volver" onclick="ir('inicio')" style="margin-top:20px;font-weight:bold;">VOLVER AL INICIO</button>
+ <button class="btn blanco" onclick="ir('inicio')" style="margin-top:20px">VOLVER AL INICIO</button>
 </section>
 </main>
 
@@ -1309,14 +1308,6 @@ async function validar(){
         }
     } catch(e) { alert('Error validando la identidad corporativa.'); }
 }
-
-const cerrar = () => {
-    localStorage.removeItem('imei'); 
-    localStorage.setItem('ok', '0');
-    sessionStorage.clear();
-    ocultarBotonesSeguridad();
-    location.reload();
-};
 
 async function recuperar(accion) {
     const i = IM(document.getElementById('rrI').value);
