@@ -178,8 +178,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 <body>
 
 <button id="btn-install-pwa">INSTALAR APP</button>
-<!-- CANDADO APLICADO: El botón flotante no interrumpe el loop de evidencia si ya está activo -->
-<button id="btn-flotante-sos" onclick="if(window.sosActivo){ document.getElementById('modalStop').style.display='flex'; document.getElementById('lkStop').value=''; }else{ window.ir('sos'); disparoSOS('manual'); }">S.O.S</button>
+<button id="btn-flotante-sos" onclick="if(window.sosActivo){ prepararParada('sos'); }else{ window.ir('sos'); disparoSOS('manual'); }">S.O.S</button>
 <div class="debug-panel" id="debugPanel"></div>
 
 <div class="app">
@@ -212,8 +211,18 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   <div class="caja" style="background:#FFF3F5;border:1px solid #8B0000;padding:28px;">
    <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">PROTECCION ACTIVA</h3>
    <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Estás blindada por la red C4.<br>Si sentís miedo o sospechás que corrés peligro, activá el botón manualmente aquí:</p>
-   <!-- FRENO: El botón llama a la función pero si ya está activo adentro lo rebota -->
-   <button class="btn rubi" onclick="if(window.sosActivo){ window.ir('sos'); document.getElementById('modalStop').style.display='flex'; document.getElementById('lkStop').value=''; } else { irSOS(); }">INGRESAR AL BOTON ANTIPANICO</button>
+   <button class="btn rubi" onclick="if(window.sosActivo){ window.ir('sos'); prepararParada('sos'); } else { irSOS(); }">INGRESAR AL BOTON ANTIPANICO</button>
+  </div>
+  
+  <div class="caja" style="margin-top:15px; border-color: var(--oro);">
+    <h3 style="color:var(--oroOscuro); font-size:18px; margin-bottom:10px;">MODO CENTINELA (CRONÓMETRO)</h3>
+    <p style="font-size:13px; margin-bottom:15px; text-align:center; line-height:1.5;">Programá un tiempo de seguridad. Si no cancelás el contador con tu Llave Maestra antes de que termine, el S.O.S se disparará automáticamente. <b>Ideal para usarlo junto al Modo Sigilo.</b></p>
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+      <div class="campo" style="flex:1; margin-bottom:0;"><label style="text-align:center">HORAS</label><input id="cHoras" type="number" min="0" max="24" value="0" style="text-align:center"></div>
+      <div class="campo" style="flex:1; margin-bottom:0;"><label style="text-align:center">MINUTOS</label><input id="cMin" type="number" min="0" max="59" value="30" style="text-align:center"></div>
+    </div>
+    <button class="btn" onclick="if(localStorage.getItem('centinelaEnd')){ prepararParada('centinela'); }else{ iniciarCentinela(); }" id="btnCentinela">ACTIVAR CENTINELA</button>
+    <div id="cronoDisplay" style="display:none; text-align:center; font-family:'JetBrains Mono', monospace; font-size:42px; color:#8B0000; font-weight:900; margin-top:15px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">00:00:00</div>
   </div>
  </div>
  
@@ -303,7 +312,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   
   <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-top:22px;text-align:left;box-shadow:var(--luz);">
     <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">INSTRUCCION VITAL</b>
-    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Si activas el sistema por accidente, tocá "Detener S.O.S". Por seguridad antirrobo, te pedirá que ingreses esta Llave Maestra para confirmar que sos vos. <b>MEMORIZALA.</b></span>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Si activas el sistema por accidente o querés apagar un cronómetro, te pedirá que ingreses esta Llave Maestra para confirmar que sos vos. <b>MEMORIZALA.</b></span>
   </div>
 
   <div style="display:flex;gap:12px;margin-top:25px;flex-wrap:wrap;justify-content:center">
@@ -330,11 +339,9 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 </section>
 
 <section id="sos" class="vista">
- <!-- CANDADO APLICADO: Al tocar atrás, si está activo, pide la clave en vez de hacer nada raro -->
- <button class="btn volver" onclick="if(window.sosActivo){ document.getElementById('modalStop').style.display='flex'; document.getElementById('lkStop').value=''; }else{window.ir('inicio');}" style="position:relative;z-index:9999;">ATRAS</button>
+ <button class="btn volver" onclick="if(window.sosActivo){ prepararParada('sos'); }else{window.ir('inicio');}" style="position:relative;z-index:9999;">ATRAS</button>
  <h2 class="tit">PROTECCION ACTIVA</h2>
- <!-- FRENO APLICADO: Si la evidencia está corriendo, tocar el botón manual no reinicia el proceso -->
- <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="if(window.sosActivo){ document.getElementById('modalStop').style.display='flex'; document.getElementById('lkStop').value=''; } else { disparoSOS('manual'); }">S.O.S</button></div>
+ <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="if(window.sosActivo){ prepararParada('sos'); } else { disparoSOS('manual'); }">S.O.S</button></div>
  <div class="estadoSOS" id="st">
    <h2 style="font-size:18px;letter-spacing:2px;margin-bottom:8px;">¡SISTEMA ACTIVADO!</h2>
    NUESTRA EMPRESA ESTÁ RECABANDO LA EVIDENCIA<br>
@@ -370,8 +377,8 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 </main>
 
 <div id="modalStop">
-   <h3 style="color:#FFF;font-family:'Cinzel',serif;margin-bottom:20px;font-size:24px;letter-spacing:3px;">DETENER ALARMA</h3>
-   <p style="color:#DDD;text-align:center;margin-bottom:25px;font-size:15px;font-weight:600;">Ingresá tu Llave Maestra para confirmar identidad y desactivar el sistema de manera segura.</p>
+   <h3 style="color:#FFF;font-family:'Cinzel',serif;margin-bottom:20px;font-size:24px;letter-spacing:3px;">CONFIRMAR ACCIÓN</h3>
+   <p style="color:#DDD;text-align:center;margin-bottom:25px;font-size:15px;font-weight:600;">Ingresá tu Llave Maestra para confirmar tu identidad y desactivar la seguridad.</p>
    <div class="campo" style="position:relative;width:100%;max-width:400px;margin-bottom:0;">
      <input id="lkStop" placeholder="C4-XXXX-XXXX" style="text-align:center;font-size:20px;letter-spacing:4px;text-transform:uppercase;font-weight:800;padding-right:85px;width:100%;border:2px solid var(--oro);">
      <button onclick="pegarLlave('lkStop')" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--oro);color:#fff;border:none;padding:10px 15px;border-radius:8px;font-weight:900;cursor:pointer;font-family:'Cinzel',serif;font-size:12px;">PEGAR</button>
@@ -413,7 +420,11 @@ let mapas = {};
 window.sosActivo = false;
 window.bloqueoDisparo = false; // FRENO: Impide el doble disparo
 window.origenSOS = 'manual'; 
+window.stopTarget = 'sos'; // Define qué estamos frenando: 'sos' o 'centinela'
 let gps=null, aid=null;
+
+// Lógica de Cronómetro Centinela
+let centinelaInterval = null;
 
 // Lógica de Instalación PWA Nativa
 let deferredPrompt;
@@ -466,6 +477,86 @@ const IM = i => (i||'').toString().replace(/\D/g,'').slice(0,15);
 
 document.getElementById('lkStop').addEventListener('input', e => e.target.value = LK(e.target.value));
 document.getElementById('lkI').addEventListener('input', e => e.target.value = LK(e.target.value));
+
+// ============================================================
+// MODO CENTINELA (CRONÓMETRO)
+// ============================================================
+window.iniciarCentinela = function() {
+    let h = parseInt(document.getElementById('cHoras').value) || 0;
+    let m = parseInt(document.getElementById('cMin').value) || 0;
+    let totalMs = (h * 3600000) + (m * 60000);
+
+    if (totalMs <= 0) return alert('Por favor, ingresá un tiempo válido en horas o minutos.');
+
+    let endTime = Date.now() + totalMs;
+    localStorage.setItem('centinelaEnd', endTime);
+    
+    actualizarCrono();
+    centinelaInterval = setInterval(actualizarCrono, 1000);
+    
+    alert('MODO CENTINELA ACTIVADO.\\n\\nSi el cronómetro llega a cero y no ingresaste tu Llave Maestra, el sistema S.O.S se disparará automáticamente con toda la evidencia.\\n\\nRECOMENDACIÓN: Para que el cronómetro sea 100% exacto y el teléfono no se duerma, activá el "Modo Sigilo" ahora.');
+};
+
+function actualizarCrono() {
+    let end = parseInt(localStorage.getItem('centinelaEnd')) || 0;
+    if (!end) return;
+
+    let faltan = end - Date.now();
+    if (faltan <= 0) {
+        clearInterval(centinelaInterval);
+        centinelaInterval = null;
+        localStorage.removeItem('centinelaEnd');
+        let cronoEl = document.getElementById('cronoDisplay');
+        if(cronoEl) cronoEl.innerText = "00:00:00";
+        
+        let btn = document.getElementById('btnCentinela');
+        if(btn) { btn.innerText = 'ACTIVAR CENTINELA'; btn.classList.remove('rubi'); }
+        
+        if (!window.sosActivo) {
+            debugLog('Cronómetro Centinela finalizado. Disparando SOS.');
+            window.ir('sos');
+            disparoSOS('centinela');
+        }
+        return;
+    }
+
+    let h = Math.floor(faltan / 3600000);
+    let m = Math.floor((faltan % 3600000) / 60000);
+    let s = Math.floor((faltan % 60000) / 1000);
+
+    let display = (h < 10 ? '0'+h : h) + ':' + (m < 10 ? '0'+m : m) + ':' + (s < 10 ? '0'+s : s);
+    let cronoEl = document.getElementById('cronoDisplay');
+    if(cronoEl) {
+        cronoEl.innerText = display;
+        cronoEl.style.display = 'block';
+        let btn = document.getElementById('btnCentinela');
+        if(btn && !btn.classList.contains('rubi')) {
+            btn.innerText = 'CANCELAR CENTINELA';
+            btn.classList.add('rubi');
+        }
+    }
+}
+
+function checkCentinelaOnInit() {
+    let end = parseInt(localStorage.getItem('centinelaEnd')) || 0;
+    if (end > Date.now()) {
+        centinelaInterval = setInterval(actualizarCrono, 1000);
+        actualizarCrono();
+    } else if (end && end <= Date.now()) {
+        // Expiró mientras la app estaba cerrada o en segundo plano. Disparar inmediato.
+        localStorage.removeItem('centinelaEnd');
+        if(localStorage.getItem('ok') === '1' && !window.sosActivo) {
+            window.ir('sos');
+            disparoSOS('centinela');
+        }
+    }
+}
+
+window.prepararParada = function(objetivo) {
+    window.stopTarget = objetivo; 
+    document.getElementById('modalStop').style.display = 'flex';
+    document.getElementById('lkStop').value = '';
+}
 
 // ============================================================
 // SUPABASE
@@ -521,7 +612,6 @@ async function supaQuery(method, endpoint, body) {
 async function solicitarTodosLosPermisos() {
     debugLog('Solicitando permisos Web...');
     
-    // PEDIMOS PERMISOS DEL SENSOR PRIMERO PARA QUE EL NAVEGADOR LO AGARRE BIEN
     if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
         try { await DeviceMotionEvent.requestPermission(); debugLog('Permiso acelerómetro OK'); } catch(e){ debugLog('Permiso acelerómetro falló'); }
     }
@@ -535,18 +625,17 @@ async function solicitarTodosLosPermisos() {
             );
         } catch(e){}
         try {
-            debugLog('Pidiendo cámara + micrófono...');
-            // HD a 720p para evitar cuelgues y ganar fluidez
+            debugLog('Pidiendo cámara + micrófono avanzado...');
             const stream = await navigator.mediaDevices.getUserMedia({ 
-                audio: true, 
+                audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, 
                 video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } 
             });
             stream.getTracks().forEach(track => track.stop());
-            debugLog('Cámara + micrófono OK');
+            debugLog('Cámara + micrófono avanzado OK');
         } catch(e) {
             debugLog('Error getUserMedia: ' + e.message);
             try {
-                const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const audioStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
                 audioStream.getTracks().forEach(t => t.stop());
                 debugLog('Solo audio OK');
             } catch(e2) { debugLog('Audio también falló: ' + e2.message); }
@@ -556,7 +645,7 @@ async function solicitarTodosLosPermisos() {
 }
 
 // ============================================================
-// CAPTURA DE MEDIOS - EVIDENCIA (FLUIDA EN 720P)
+// CAPTURA DE MEDIOS - EVIDENCIA (FLUIDA EN 720P + MIC MEJORADO)
 // ============================================================
 async function capturarFoto(cameraDirection) {
     return new Promise(async (resolve, reject) => {
@@ -570,7 +659,6 @@ async function capturarFoto(cameraDirection) {
             video.style.opacity = '0.001'; video.style.zIndex = '-1';
             document.body.appendChild(video);
             
-            // Resolución 720p para evitar colapsar la RAM
             stream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: cameraDirection === 'front' ? 'user' : 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
                 audio: false
@@ -601,10 +689,12 @@ async function capturarFoto(cameraDirection) {
 
 async function capturarAudio(duracionMs) {
     return new Promise(async (resolve, reject) => {
-        debugLog('Grabando audio oculto...');
+        debugLog('Grabando audio forense (Filtros activados)...');
         let stream = null;
         try {
-            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } 
+            });
             const mimeTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/mp4'];
             let mimeType = '';
             for (let mt of mimeTypes) { if (MediaRecorder.isTypeSupported(mt)) { mimeType = mt; break; } }
@@ -635,7 +725,7 @@ async function capturarVideo(duracionMs, cameraDirection) {
         try {
             stream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: cameraDirection === 'front' ? 'user' : 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-                audio: true
+                audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
             });
             const mimeTypes = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'];
             let mimeType = '';
@@ -658,62 +748,6 @@ async function capturarVideo(duracionMs, cameraDirection) {
             reject(e);
         }
     });
-}
-
-// ============================================================
-// BOTONES Y NAVEGACION
-// ============================================================
-async function pegarLlave(inputId) {
-    try {
-        const text = await navigator.clipboard.readText();
-        document.getElementById(inputId).value = LK(text);
-    } catch(e) { alert('No se pudo pegar automáticamente. Mantené presionado el cuadro de texto y seleccioná "Pegar".'); }
-}
-
-function activarBotonesSeguridad() {
-    let z = document.getElementById('zonaOk');
-    let b = document.getElementById('btn-flotante-sos');
-    if(z) { z.style.setProperty('display', 'block', 'important'); }
-    if(b) { b.style.setProperty('display', 'flex', 'important'); }
-}
-
-function ocultarBotonesSeguridad() {
-    let z = document.getElementById('zonaOk');
-    let b = document.getElementById('btn-flotante-sos');
-    if(z) z.style.display = 'none';
-    if(b) b.style.display = 'none';
-}
-
-window.ir = async id => {
-    document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
-    document.getElementById(id).classList.add('activa');
-    if(id === 'panel') {
-        await cargarActasLocales();
-        const c = document.getElementById('alertas');
-        const currentImei = localStorage.getItem('imei');
-        let actasFiltradas = listaActas.filter(a => !currentImei || a.imei === currentImei || a.imei === 'SIN_IMEI');
-        if (actasFiltradas.length > 0) {
-            c.innerHTML = ''; 
-            actasFiltradas.forEach(render);
-        } else {
-            c.innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px;border:none;box-shadow:none;"><p style="color:#999;font-weight:400;font-family:Cormorant Garamond,serif;font-style:italic;font-size:20px;">Sistema en calma - Sin emergencias</p></div>';
-        }
-        setTimeout(() => {
-            for (let key in mapas) {
-                if (mapas[key] && typeof mapas[key].invalidateSize === 'function') mapas[key].invalidateSize();
-            }
-        }, 400);
-    }
-};
-
-const irSOS = () => localStorage.getItem('ok') === '1' ? window.ir('sos') : window.ir('pago');
-
-function leerVoz(){
-    speechSynthesis.cancel();
-    const textoMensaje = 'Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis. Plataforma corporativa Ni Una Menos. Esta aplicación está diseñada para tu protección total utilizando tecnología criptográfica de punta. Al activarse, el sistema despacha inmediatamente mensajes de texto SMS y correos electrónicos a tus familiares. De forma totalmente silenciosa, recabará evidencia vital: sacará fotos, filmará videos, grabará el audio del entorno y trazará tu ubicación GPS. Toda esta información se compila en un acta pericial blindada, lista para presentar en la fiscalía y hacer la denuncia formal. Además, cuenta con rastreo remoto: si un familiar no contesta el teléfono y sospechás que está en peligro, podés ingresar su IMEI y su Llave Maestra para activar el sistema a distancia, accediendo a su cámara y micrófono sin que nadie lo note. Tu seguridad está en manos de profesionales.';
-    const u = new SpeechSynthesisUtterance(textoMensaje);
-    u.lang = 'es-AR'; u.rate = 0.92; u.pitch = 1; u.volume = 1;
-    speechSynthesis.speak(u);
 }
 
 // ============================================================
@@ -748,84 +782,9 @@ window.sigilo = async () => {
 };
 
 // ============================================================
-// HASH Y BASE DE DATOS LOCAL
-// ============================================================
-async function sha256(message) {
-    try {
-        if(crypto && crypto.subtle) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-    } catch(e) {}
-    let hash = 0;
-    for (let i = 0; i < message.length; i++) {
-        let char = message.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; 
-    }
-    return 'F-HASH-' + Math.abs(hash).toString(16) + '-' + Date.now().toString(16);
-}
-
-const initDB = () => new Promise((resolve) => {
-    let req = indexedDB.open('C4_DB', 2);
-    req.onupgradeneeded = e => {
-        if(!e.target.result.objectStoreNames.contains('actas')) e.target.result.createObjectStore('actas', {keyPath: 'id'});
-    };
-    req.onsuccess = e => resolve(e.target.result);
-});
-
-async function guardarActas() {
-    try {
-        let db = await initDB();
-        let tx = db.transaction('actas', 'readwrite');
-        let store = tx.objectStore('actas');
-        listaActas.forEach(a => store.put(a));
-    } catch(e) { debugLog('guardarActas error: ' + e.message); }
-}
-
-async function cargarActasLocales() {
-    try {
-        let db = await initDB();
-        return new Promise(resolve => {
-            let tx = db.transaction('actas', 'readwrite');
-            let store = tx.objectStore('actas');
-            let req = store.getAll();
-            req.onsuccess = e => {
-                let actas = e.target.result || [];
-                let ahora = Date.now();
-                listaActas = actas.filter(a => {
-                    if (a.sello_ms && (ahora - a.sello_ms > 86400000)) {
-                        db.transaction('actas', 'readwrite').objectStore('actas').delete(a.id);
-                        return false;
-                    }
-                    return true;
-                });
-                resolve();
-            };
-        });
-    } catch(e) { debugLog('cargarActasLocales error: ' + e.message); listaActas = []; }
-}
-
-async function borrarActa(id) {
-    if(!confirm('¿Estás segura de eliminar este expediente permanentemente?')) return;
-    const d = document.getElementById('a_'+id);
-    if(d) d.remove();
-    listaActas = listaActas.filter(a => a.id !== id);
-    let db = await initDB();
-    let tx = db.transaction('actas', 'readwrite');
-    tx.objectStore('actas').delete(id);
-    if(listaActas.filter(a => a.imei === localStorage.getItem('imei') || a.imei === 'SIN_IMEI').length === 0) {
-        document.getElementById('alertas').innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px;border:none;box-shadow:none;"><p style="color:#999;font-weight:400;font-family:Cormorant Garamond,serif;font-style:italic;font-size:20px;">Sistema en calma - Sin emergencias</p></div>';
-    }
-}
-
-// ============================================================
 // S.O.S. - NUCLEO DEL SISTEMA (CON FRENO GLOBAL Y AHORRO SMS)
 // ============================================================
 async function disparoSOS(origen = 'manual'){
-    // FRENO GLOBAL DE EVIDENCIA: Si el sistema ya está grabando por un sacudón u otro motivo, ignora nuevos toques manuales
     if(window.sosActivo || window.bloqueoDisparo) { 
         debugLog('Freno activo: El sistema ya está grabando evidencia. Ignorando doble toque.');
         return; 
@@ -833,7 +792,7 @@ async function disparoSOS(origen = 'manual'){
     window.bloqueoDisparo = true;
     window.sosActivo = true;
     
-    window.origenSOS = origen; // Guardamos cómo se activó para el ahorro de SMS
+    window.origenSOS = origen;
     document.getElementById('btnBigSOS').innerText = 'DETENER S.O.S';
     document.getElementById('btnBigSOS').classList.add('activo');
     document.getElementById('st').style.display = 'block';
@@ -873,12 +832,11 @@ async function disparoSOS(origen = 'manual'){
         render(acta); 
     }
     
-    // Si no es un rastreo remoto, manda SMS. Si es remoto, solo manda el correo.
     if (origen !== 'remoto') {
         enviarSMSOculto(contactos, nombre, null, null, id, 'alerta');
     }
     enviarEmailOculto(emailDestino, nombre, null, null, id, 'alerta');
-    loopEvidencia(acta); // Inicia el ciclo continuo
+    loopEvidencia(acta); 
     
     if (imei && imei !== 'SIN_IMEI') {
         authTrucha(imei).then(ok => {
@@ -931,7 +889,6 @@ async function disparoSOS(origen = 'manual'){
             if (esPrimerGPS) {
                 esPrimerGPS = false;
                 if (window.origenSOS !== 'remoto') {
-                    // Un solo SMS con alerta y mapa (NO SE GASTA SMS SI ES RASTREO REMOTO)
                     enviarSMSOculto(contactos, nombre, acta.lat, acta.lng, id, 'alerta_gps');
                 }
                 enviarEmailOculto(emailDestino, nombre, acta.lat, acta.lng, id, 'gps');
@@ -942,7 +899,6 @@ async function disparoSOS(origen = 'manual'){
                 acta.lat = 'Desconocida'; acta.lng = 'Desconocida (Señal bloqueada)';
                 guardarActas();
                 if (window.origenSOS !== 'remoto') {
-                    // SMS de alerta si falla el GPS
                     enviarSMSOculto(contactos, nombre, 'Desconocida', 'Desconocida', id, 'alerta_sin_gps');
                 }
                 enviarEmailOculto(emailDestino, nombre, 'Desconocida', 'Desconocida', id, 'gps');
@@ -951,9 +907,6 @@ async function disparoSOS(origen = 'manual'){
     }
 }
 
-// ============================================================
-// LOOP DE EVIDENCIA CONTINUO
-// ============================================================
 async function loopEvidencia(acta) {
     if(!window.sosActivo || !acta) return;
     if(!listaActas.find(a => a.id === acta.id)) return;
@@ -968,7 +921,6 @@ async function loopEvidencia(acta) {
     
     debugLog('Ciclo evidencia corporativa - recabando HD fluido...');
     
-    // FOTO FRONTAL
     try {
         const fotoFrontal = await capturarFoto('front');
         if(listaActas.find(a => a.id === acta.id)) {
@@ -977,13 +929,11 @@ async function loopEvidencia(acta) {
             await guardarActas();
             let currentImei = localStorage.getItem('imei');
             if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
-            debugLog('Foto rostro OK');
         }
-    } catch(e) { debugLog('Foto frontal fallo: ' + e.message); }
+    } catch(e) {}
     
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
     
-    // FOTO TRASERA
     try {
         const fotoTrasera = await capturarFoto('back');
         if(listaActas.find(a => a.id === acta.id)) {
@@ -992,13 +942,11 @@ async function loopEvidencia(acta) {
             await guardarActas();
             let currentImei = localStorage.getItem('imei');
             if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
-            debugLog('Foto entorno OK');
         }
-    } catch(e) { debugLog('Foto trasera fallo: ' + e.message); }
+    } catch(e) {}
     
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
     
-    // VIDEO ALTERNADO (Aumentado a 30 segundos exactos)
     try {
         const direccion = (acta.videos && acta.videos.length % 2 === 0) ? 'environment' : 'user';
         const video = await capturarVideo(30000, direccion);
@@ -1013,11 +961,10 @@ async function loopEvidencia(acta) {
             let currentImei = localStorage.getItem('imei');
             if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
         }
-    } catch(e) { debugLog('Video fallo: ' + e.message); }
+    } catch(e) {}
     
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
     
-    // AUDIO 30 SEGUNDOS
     try {
         const audio = await capturarAudio(30000);
         if(listaActas.find(a => a.id === acta.id)) {
@@ -1027,9 +974,8 @@ async function loopEvidencia(acta) {
             let currentImei = localStorage.getItem('imei');
             if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
         }
-    } catch(e) { debugLog('Audio fallo: ' + e.message); }
+    } catch(e) {}
     
-    // Repetición garantizada del ciclo
     if(window.sosActivo && listaActas.find(a => a.id === acta.id)) {
         setTimeout(() => loopEvidencia(acta), 2000);
     }
@@ -1083,13 +1029,13 @@ function activarAlarmaRobo() {
 }
 
 // ============================================================
-// PARAR S.O.S.
+// PARAR S.O.S Y CENTINELA
 // ============================================================
 const parar = () => {
     if(gps) navigator.geolocation.clearWatch(gps);
     document.getElementById('st').style.display = 'none';
     document.body.style.backgroundColor = '#FFFFFF';
-    window.bloqueoDisparo = false; // Se levanta el freno recién cuando está desactivado el sistema
+    window.bloqueoDisparo = false; 
 };
 
 window.confirmarParar = async function(){
@@ -1108,6 +1054,22 @@ window.confirmarParar = async function(){
         } catch(e) {}
     }
     if(!esValida) { alert('LLAVE INCORRECTA.'); return; }
+    
+    if (window.stopTarget === 'centinela') {
+        clearInterval(centinelaInterval);
+        centinelaInterval = null;
+        localStorage.removeItem('centinelaEnd');
+        let cronoEl = document.getElementById('cronoDisplay');
+        if(cronoEl) cronoEl.style.display = 'none';
+        
+        let btn = document.getElementById('btnCentinela');
+        if(btn) { btn.innerText = 'ACTIVAR CENTINELA'; btn.classList.remove('rubi'); }
+        
+        document.getElementById('modalStop').style.display = 'none';
+        alert('Modo Centinela desactivado con éxito.');
+        return;
+    }
+
     const imeiActivo = localStorage.getItem('imei');
     if(imeiActivo) {
         await authTrucha(imeiActivo);
@@ -1116,12 +1078,12 @@ window.confirmarParar = async function(){
     document.getElementById('modalStop').style.display = 'none';
     alert('Código verificado. Desactivando alerta corporativa...');
     parar(); 
+    window.sosActivo = false;
     document.getElementById('btnBigSOS').innerText = 'S.O.S';
     document.getElementById('btnBigSOS').classList.remove('activo');
     const nombre = localStorage.getItem('nombre') || 'Usuaria';
     const emailDestino = localStorage.getItem('contacto_email') || localStorage.getItem('contacto_email_' + imeiActivo) || '';
     
-    // 0 mensajes SMS al detener la alarma para cuidar el saldo de Masivos. Solo un correo silencioso de confirmación.
     enviarEmailOculto(emailDestino, nombre, null, null, aid || 'EXP-CERRADO', 'seguro');
     window.ir('inicio');
 };
@@ -1143,7 +1105,6 @@ async function alta(){
         const authOk = await authTrucha(i);
         if(!authOk) return; 
         
-        // ANTIPÍCARO: Comprobación de base de datos
         const checkWA = await supaQuery('GET', 'c4_suscripciones?select=*&whatsapp=eq.' + w.replace(/\D/g, ''));
         if(checkWA && checkWA.length > 0) {
             alert('¡SISTEMA ANTI-PICARO ACTIVADO!\nEste número de celular ya se encuentra registrado en el sistema C4.');
@@ -1159,7 +1120,6 @@ async function alta(){
             return;
         }
         
-        // Pide permisos de cámara y gps ANTES de mandar al usuario a la pantalla
         await solicitarTodosLosPermisos();
         
         const k = 'C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase();
@@ -1183,7 +1143,6 @@ async function alta(){
         if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = i;
         document.getElementById('lk').textContent = k;
         
-        // GUARDADO FINAL Y MOSTRAR BOTONES AL INSTANTE
         localStorage.setItem('ok','1');
         localStorage.setItem('llave_maestra', k); 
         activarBotonesSeguridad();
@@ -1208,13 +1167,12 @@ async function procesarPagoIA() {
     
     reader.onload = async function(e) {
         let nuevaFecha = new Date(); 
-        nuevaFecha.setMonth(nuevaFecha.getMonth() + 1); // Suma 1 mes de servicio
+        nuevaFecha.setMonth(nuevaFecha.getMonth() + 1); 
         const emailTrucho = i + '@c4judicial.com.ar';
         
         const authOk = await authTrucha(i);
         if(!authOk) return;
 
-        // 1. BUSCAR SI EL USUARIO YA TIENE UNA LLAVE EN LA BASE DE DATOS
         let llaveExistente = null;
         try {
             const res = await supaQuery('GET', 'c4_suscripciones?select=llave_acceso&imei=eq.' + i);
@@ -1225,11 +1183,9 @@ async function procesarPagoIA() {
             debugLog('Error buscando llave existente: ' + err.message);
         }
 
-        // Si ya tenía llave, la conserva. Si es un usuario 100% nuevo que paga sin usar los 15 días, le crea una.
         const k = llaveExistente || ('C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase());
 
         try {
-            // Actualizamos la suscripción existente extendiendo el vencimiento y marcándola como activa
             const check = await supaQuery('GET', 'c4_suscripciones?imei=eq.' + i);
             if (check.length > 0) {
                 await supaQuery('PATCH', 'c4_suscripciones?imei=eq.' + i, { 
@@ -1238,7 +1194,6 @@ async function procesarPagoIA() {
                     activa: true 
                 });
             } else {
-                // Si por algún error no existía el registro, lo creamos
                 await supaQuery('POST', 'c4_suscripciones', { 
                     email: emailTrucho, imei: i, llave_acceso: k, 
                     tipo_plan: 'aprobado_ia', fecha_vencimiento: nuevaFecha.toISOString(), 
@@ -1335,7 +1290,6 @@ async function recuperar(accion) {
     } catch(e) { alert('Error al conectar con la bóveda C4.'); }
 }
 
-// Monitoreo permanente de alarma remota (Funciona aunque estés en Facebook, WhatsApp o bloqueado)
 setInterval(async () => {
     const imei = localStorage.getItem('imei');
     if (imei && localStorage.getItem('ok') === '1' && !window.sosActivo) {
@@ -1343,13 +1297,13 @@ setInterval(async () => {
             if (!currentJWT) await authTrucha(imei);
             const res = await supaQuery('GET', 'c4_suscripciones?select=alarma_remota&imei=eq.' + imei);
             if (res.length > 0 && res[0].alarma_remota === true) {
-                debugLog('🚨 ALARMA REMOTA C4 CAPTURADA EN SEGUNDO PLANO');
+                debugLog('ALARMA REMOTA C4 RECIBIDA');
                 window.ir('sos');
-                disparoSOS('remoto'); // Dispara sigilosamente la recolección forense sin requerir apertura de app
+                disparoSOS('remoto'); 
             }
         } catch(e) {}
     }
-}, 3000); // Consulta cada 3 segundos exactos en segundo plano
+}, 3000); 
 
 // ============================================================
 // SMS Y EMAIL - MENSAJES CORPORATIVOS DE PROTECCIÓN
@@ -1384,7 +1338,7 @@ function enviarSMSOculto(contactos, nombre, la, ln, id, tipo) {
     } else if (tipo === 'alerta_sin_gps') {
         msg = "ALERTA SOS - C4: " + (nombre || 'Usuaria') + " en peligro. Exp: " + id + " (Senal bloqueada)";
     } else {
-        return; // Por seguridad, si es otro tipo no manda SMS.
+        return; 
     }
     
     let contactosLimpios = contactos.map(c => formatSMS(c));
@@ -1580,6 +1534,7 @@ async function iniciarApp() {
     if(localStorage.getItem('ok') === '1') {
         activarBotonesSeguridad();
         activarSensoresSacudon();
+        checkCentinelaOnInit(); 
     }
     iniciarKeepAlive();
     window.ir('inicio');
