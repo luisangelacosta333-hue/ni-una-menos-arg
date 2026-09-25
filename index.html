@@ -752,11 +752,56 @@ async function capturarVideo(duracionMs, cameraDirection) {
 }
 
 // ============================================================
-// FUNCION PRINCIPAL DE LOCUTOR VIRTUAL (TEXTO A VOZ)
+// BOTONES Y NAVEGACION
 // ============================================================
+async function pegarLlave(inputId) {
+    try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById(inputId).value = LK(text);
+    } catch(e) { alert('No se pudo pegar automáticamente. Mantené presionado el cuadro de texto y seleccioná "Pegar".'); }
+}
+
+function activarBotonesSeguridad() {
+    let z = document.getElementById('zonaOk');
+    let b = document.getElementById('btn-flotante-sos');
+    if(z) { z.style.setProperty('display', 'block', 'important'); }
+    if(b) { b.style.setProperty('display', 'flex', 'important'); }
+}
+
+function ocultarBotonesSeguridad() {
+    let z = document.getElementById('zonaOk');
+    let b = document.getElementById('btn-flotante-sos');
+    if(z) z.style.display = 'none';
+    if(b) b.style.display = 'none';
+}
+
+window.ir = async id => {
+    document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
+    document.getElementById(id).classList.add('activa');
+    if(id === 'panel') {
+        await cargarActasLocales();
+        const c = document.getElementById('alertas');
+        const currentImei = localStorage.getItem('imei');
+        let actasFiltradas = listaActas.filter(a => !currentImei || a.imei === currentImei || a.imei === 'SIN_IMEI');
+        if (actasFiltradas.length > 0) {
+            c.innerHTML = ''; 
+            actasFiltradas.forEach(render);
+        } else {
+            c.innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px;border:none;box-shadow:none;"><p style="color:#999;font-weight:400;font-family:Cormorant Garamond,serif;font-style:italic;font-size:20px;">Sistema en calma - Sin emergencias</p></div>';
+        }
+        setTimeout(() => {
+            for (let key in mapas) {
+                if (mapas[key] && typeof mapas[key].invalidateSize === 'function') mapas[key].invalidateSize();
+            }
+        }, 400);
+    }
+};
+
+const irSOS = () => localStorage.getItem('ok') === '1' ? window.ir('sos') : window.ir('pago');
+
 function leerVoz(){
     speechSynthesis.cancel();
-    const textoMensaje = 'Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis, plataforma corporativa Ni Una Menos. Nuestra misión es clara: basta de violencia, basta de maltrato, basta de secuestros. Ni una menos. Al registrarte, obtenés quince días gratis para probar nuestro blindaje preventivo y recibirás una llave maestra criptográfica única. La aplicación cuenta con herramientas vitales como el Modo Sigilo. Al activarlo, la pantalla simula estar apagada engañando al agresor, pero el celular queda totalmente alerta. Estando en este modo, si el dispositivo detecta un sacudón violento, o si gritás la palabra auxilio, el sistema se activa automáticamente recabando evidencia sin hacer ningún ruido. En caso de robo, podés activar el teléfono a distancia desde otro celular. Y si el delincuente, por pura curiosidad, intenta abrir la aplicación, caerá en la trampa: los sensores se desplegarán al instante capturando su rostro, el audio del entorno y la localización GPS exacta. Toda esta información conforma un acta pericial blindada, lista para llevar a la fiscalía y hacer la denuncia con pruebas irrefutables. Tu seguridad está en manos de profesionales.';
+    const textoMensaje = 'Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis. Plataforma corporativa Ni Una Menos. Nuestra misión es salvar vidas mediante dos herramientas principales: el Botón Antipánico de impacto inmediato, y el nuevo Temporizador Centinela. El Temporizador es tu vigía personal. Si vas a salir, programá el tiempo de tu viaje y bloqueá la pantalla usando el Modo Sigilo. Si no cancelás el cronómetro antes de que termine, el sistema asumirá que estás en peligro y detonará automáticamente la recolección de evidencia. Además, estando en Modo Sigilo, el sistema cuenta con sensores biométricos ocultos: si recibís un sacudón violento o si pegás un grito fuerte de auxilio, se activará inmediatamente la alarma de rescate y recolección de evidencia, sin hacer ningún ruido. Tu seguridad está en manos de profesionales.';
     const u = new SpeechSynthesisUtterance(textoMensaje);
     u.lang = 'es-AR'; u.rate = 0.92; u.pitch = 1; u.volume = 1;
     speechSynthesis.speak(u);
@@ -771,6 +816,7 @@ window.sigilo = async () => {
     cooldownRobo = true;
     setTimeout(() => cooldownRobo = false, 3000);
     
+    // Al entrar en Modo Sigilo, activamos los sensores silenciosos
     activarSensoresSacudon();
     activarSensoresVoz();
     
@@ -793,6 +839,7 @@ window.sigilo = async () => {
             if (audioKeepAlive) { audioKeepAlive.pause(); audioKeepAlive = null; }
             s.remove();
             
+            // Al salir del Modo Sigilo, apagamos el sensor silencioso
             voiceActive = false;
             if (micStreamSigilo) micStreamSigilo.getTracks().forEach(tr=>tr.stop());
             if (audioCtxActivo) audioCtxActivo.close();
@@ -885,6 +932,7 @@ async function disparoSOS(origen = 'manual'){
     window.bloqueoDisparo = true;
     window.sosActivo = true;
     
+    // Apagamos el escuchador silencioso para liberar el micrófono a la grabación forense principal
     voiceActive = false;
     if (micStreamSigilo) micStreamSigilo.getTracks().forEach(t=>t.stop());
     if (audioCtxActivo) audioCtxActivo.close();
@@ -1090,6 +1138,7 @@ function procesarAceleracion(x, y, z) {
     const accY = y - gravedad[1];
     const accZ = z - gravedad[2];
     const fuerza = Math.sqrt(accX*accX + accY*accY + accZ*accZ) / 9.81;
+    // Solo detona si la pantalla de Sigilo está activa
     if (fuerza > SHAKE_THRESHOLD && !cooldownRobo && localStorage.getItem('ok') === '1' && !window.sosActivo && document.getElementById('pantalla-sigilo')) {
         debugLog('¡IMPACTO DETECTADO! Fuerza: ' + fuerza.toFixed(2) + 'G');
         cooldownRobo = true;
@@ -1117,6 +1166,7 @@ async function activarSensoresSacudon() {
 async function activarSensoresVoz() {
     if (voiceActive || window.sosActivo) return;
     try {
+        // Pedimos el micrófono en bruto, sin el reconocedor de palabras de Google, para que no haga beeps.
         micStreamSigilo = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
         audioCtxActivo = new (window.AudioContext || window.webkitAudioContext)();
         const source = audioCtxActivo.createMediaStreamSource(micStreamSigilo);
@@ -1129,6 +1179,7 @@ async function activarSensoresVoz() {
         debugLog('Sensor Acústico de Decibelios activado (0 Beeps)');
         
         function checkVolume() {
+            // Si salimos del modo sigilo o la alarma ya estalló, apagamos este sensor silencioso
             if(!voiceActive || window.sosActivo || !document.getElementById('pantalla-sigilo')) {
                 if (micStreamSigilo) micStreamSigilo.getTracks().forEach(t=>t.stop());
                 if (audioCtxActivo) audioCtxActivo.close();
@@ -1141,6 +1192,7 @@ async function activarSensoresVoz() {
             for(let i=0; i<dataArray.length; i++) sum += dataArray[i];
             let average = sum / dataArray.length;
             
+            // Si el volumen promedio supera el umbral (grito fuerte o estruendo)
             if (average > 100 && !cooldownRobo) {
                 debugLog('¡GRITO O RUIDO FUERTE DETECTADO! Nivel: ' + average);
                 activarAlarmaAutomatica('grito / ruido violento');
