@@ -167,7 +167,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 
 #modalStop {display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999999;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
 #pantalla-sigilo {position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999999;display:flex;align-items:center;justify-content:center;}
-.debug-panel {position:fixed;bottom:5px;left:5px;background:rgba(0,0,0,0.85);color:#0f0;font-family:'JetBrains Mono',monospace;font-size:10px;padding:8px;border-radius:6px;z-index:99999999;max-width:200px;max-height:120px;overflow-y:auto;display:none;}
+.debug-panel {display:none !important;} /* Oculto completamente de producción */
     `;
     var s = document.createElement('style');
     s.textContent = css;
@@ -265,7 +265,6 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  <button class="btn blanco" onclick="ir('pago')" style="margin-top:12px;">PAGO / PLANES</button>
  <button class="btn blanco" onclick="ir('recuperar')" style="margin-top:12px;">RECUPERAR - S.O.S. REMOTO</button>
  <button class="btn blanco" onclick="window.sigilo()" style="margin-top:12px;">MODO SIGILO (SIMULAR APAGADO)</button>
- <button class="btn blanco" onclick="toggleDebug()" style="margin-top:12px;font-size:10px;">PANEL DE DIAGNOSTICO</button>
 </section>
 
 <section id="registro" class="vista">
@@ -343,6 +342,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
     <button onclick="pegarLlave('lkI')" style="position:absolute;right:8px;top:36px;background:var(--oro);color:#fff;border:none;padding:10px 15px;border-radius:8px;font-weight:900;cursor:pointer;font-family:'Cinzel',serif;font-size:12px;">PEGAR</button>
   </div>
   <button class="btn" onclick="validar()">INGRESAR AL PANEL</button>
+  <button class="btn blanco" onclick="enviarEmailOculto(localStorage.getItem('contacto_email') || localStorage.getItem('contacto_email_' + localStorage.getItem('imei')), localStorage.getItem('nombre'), null, null, localStorage.getItem('llave_maestra'), 'bienvenida'); alert('✅ Si tenías un correo configurado, la llave se acaba de reenviar exitosamente.')" style="margin-top:18px;font-size:11px;border:none;color:var(--oroOscuro);text-decoration:underline;">¿OLVIDASTE TU LLAVE? ENVIAR A MI CORREO</button>
  </div>
 </section>
 
@@ -454,7 +454,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 // ============================================================
-// PANEL DE DIAGNOSTICO
+// PANEL DE DIAGNOSTICO (OCULTO EN PRODUCCION)
 // ============================================================
 function debugLog(msg) {
     console.log('[C4-DEBUG]', msg);
@@ -465,10 +465,7 @@ function debugLog(msg) {
         panel.innerHTML = panel.innerHTML.split('<br>').slice(0,15).join('<br>');
     }
 }
-function toggleDebug() {
-    const panel = document.getElementById('debugPanel');
-    if(panel) panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-}
+// La función toggleDebug fue eliminada de los botones
 
 // ============================================================
 // UTILIDADES
