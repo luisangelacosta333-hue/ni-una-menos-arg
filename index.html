@@ -1249,15 +1249,20 @@ async function activarSensoresVoz() {
             
             analyser.getByteFrequencyData(dataArray);
             
-            // Buscar el pico máximo de volumen en lugar del promedio
             let picoMaximo = 0;
+            let suma = 0;
+            
             for(let i = 0; i < dataArray.length; i++) {
                 if(dataArray[i] > picoMaximo) picoMaximo = dataArray[i];
+                suma += dataArray[i];
             }
             
-            // Un pico superior a 220 (el máximo es 255) equivale a un grito fuerte o golpe seco
-            if (picoMaximo > 220 && !cooldownRobo) {
-                debugLog('¡GRITO O RUIDO FUERTE DETECTADO! Pico: ' + picoMaximo);
+            // Calculamos el volumen promedio para descartar roces o conversaciones
+            let promedio = suma / dataArray.length;
+            
+            // UMBRAL EXTREMO: Pico casi al máximo (250) Y un promedio alto que confirma el grito (>45)
+            if (picoMaximo >= 250 && promedio > 45 && !cooldownRobo) {
+                debugLog('¡GRITO O RUIDO FUERTE DETECTADO! Pico: ' + picoMaximo + ' / Prom: ' + promedio);
                 activarAlarmaAutomatica('grito / ruido violento');
                 return;
             }
