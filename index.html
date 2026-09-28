@@ -1260,9 +1260,9 @@ async function activarSensoresVoz() {
             // Calculamos el volumen promedio para descartar roces o conversaciones
             let promedio = suma / dataArray.length;
             
-            // UMBRAL EXTREMO NIVEL 2: Pico en saturación total (254) Y promedio triplicado (>120)
-            if (picoMaximo >= 254 && promedio > 120 && !cooldownRobo) {
-                debugLog('¡GRITO DESGARRADOR DETECTADO! Pico: ' + picoMaximo + ' / Prom: ' + promedio);
+            // UMBRAL CALIBRADO: Pico alto (240) y promedio sostenido (>70) para ignorar voz normal pero captar gritos
+            if (picoMaximo >= 240 && promedio > 70 && !cooldownRobo) {
+                debugLog('¡GRITO DETECTADO! Pico: ' + picoMaximo + ' / Prom: ' + promedio);
                 activarAlarmaAutomatica('grito / ruido violento');
                 return;
             }
