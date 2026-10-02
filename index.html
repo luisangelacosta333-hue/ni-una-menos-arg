@@ -342,7 +342,6 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
     <button onclick="pegarLlave('lkI')" style="position:absolute;right:8px;top:36px;background:var(--oro);color:#fff;border:none;padding:10px 15px;border-radius:8px;font-weight:900;cursor:pointer;font-family:'Cinzel',serif;font-size:12px;">PEGAR</button>
   </div>
   <button class="btn" onclick="validar()">INGRESAR AL PANEL</button>
-  <button class="btn blanco" onclick="enviarEmailOculto(localStorage.getItem('contacto_email') || localStorage.getItem('contacto_email_' + localStorage.getItem('imei')), localStorage.getItem('nombre'), null, null, localStorage.getItem('llave_maestra'), 'bienvenida'); alert('✅ Si tenías un correo configurado, la llave se acaba de reenviar exitosamente.')" style="margin-top:18px;font-size:11px;border:none;color:var(--oroOscuro);text-decoration:underline;">¿OLVIDASTE TU LLAVE? ENVIAR A MI CORREO</button>
  </div>
 </section>
 
@@ -393,7 +392,6 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
    </div>
    <button class="btn rubi" onclick="confirmarParar()" style="margin-top:25px;width:100%;max-width:400px;">CONFIRMAR DESACTIVACIÓN</button>
    <button class="btn blanco" onclick="document.getElementById('modalStop').style.display='none'" style="margin-top:15px;width:100%;max-width:400px;background:rgba(255,255,255,0.1);color:#FFF;border-color:#FFF;">CANCELAR</button>
-   <button class="btn blanco" onclick="enviarEmailOculto(localStorage.getItem('contacto_email') || localStorage.getItem('contacto_email_' + localStorage.getItem('imei')), localStorage.getItem('nombre'), null, null, localStorage.getItem('llave_maestra'), 'bienvenida'); alert('✅ Llave enviada a tu correo de respaldo exitosamente.')" style="margin-top:10px;font-size:11px;padding:10px;width:100%;max-width:400px;border:none;color:var(--oroClaro);">¿OLVIDASTE TU LLAVE? ENVIAR AL CORREO</button>
 </div>
 
 <div class="footer-wrap">
