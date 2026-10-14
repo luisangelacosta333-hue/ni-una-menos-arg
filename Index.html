@@ -7,23 +7,13 @@
 <meta name="description" content="NI UNA MENOS ARGENTINA - Acta P4 - Cadena de Custodia Judicial">
 <meta property="og:title" content="NI UNA MENOS ARGENTINA">
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <link rel="manifest" href="manifest.json">
-<title>NI UNA MENOS - ENERGY 2026 | V2</title>
+<title>NI UNA MENOS - ENERGY 2026 | GLAMOUR PREMIUM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script>
-// AUTO-LIMPIEZA DE SERVICE WORKERS VIEJOS QUE RETIENEN LA PANTALLA ANTERIOR
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for(let registration of registrations) {
-            registration.update();
-        }
-    });
-}
 (function(){
     var css = `
 :root{
@@ -155,6 +145,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 .ley{display:inline-block;padding:5px 12px;margin:4px;border-radius:999px;border:1px solid var(--oroMedio);color:var(--oroOscuro);font-family:'Cinzel',serif;font-weight:700;background:#FFFCF2}
 @media(max-width:640px){.grid2{grid-template-columns:1fr}}
 
+/* FORZAMOS LA VISTA DEL BOTÓN FLOTANTE AL REGISTRARSE */
 #btn-install-pwa {display:none;position:fixed;top:15px;right:15px;background:var(--oro);color:#fff;padding:8px 16px;border-radius:50px;font-family:'Cinzel',serif;font-weight:900;font-size:13px;letter-spacing:2px;border:1px solid var(--oroClaro);box-shadow:var(--luzFuerte);cursor:pointer;z-index:9999999;align-items:center;gap:8px;animation:entrar .5s ease both;}
 
 #btn-flotante-sos {display:none;position:fixed;bottom:25px;right:25px;width:75px;height:75px;background:radial-gradient(circle at 30% 22%,#D00000,#8B0000 80%);color:#fff;border-radius:50%;font-family:'Cinzel',serif;font-weight:900;font-size:16px;border:2px solid #FF8888;box-shadow:0 5px 20px rgba(139,0,0,0.6);cursor:pointer;z-index:9999999;align-items:center;justify-content:center;animation:pulsoSOS 2s infinite;}
@@ -177,7 +168,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 #modalStop {display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999999;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
 #modalPresentacion {display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999999;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
 #pantalla-sigilo {position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999999;display:flex;align-items:center;justify-content:center;}
-.debug-panel {display:none !important;}
+.debug-panel {display:none !important;} /* Oculto completamente de producción */
     `;
     var s = document.createElement('style');
     s.textContent = css;
@@ -188,6 +179,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 <body>
 
 <button id="btn-install-pwa">INSTALAR APP</button>
+<!-- CANDADO APLICADO: El botón flotante no interrumpe el loop de evidencia si ya está activo -->
 <button id="btn-flotante-sos" onclick="if(window.sosActivo){ prepararParada('sos'); }else{ window.ir('sos'); disparoSOS('manual'); }">S.O.S</button>
 <div class="debug-panel" id="debugPanel"></div>
 
@@ -197,7 +189,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  <div class="logo"><div class="aro a1"></div><div class="aro a2"></div><div class="aro a3"></div><div class="aro a4"></div><div class="aro a5"></div><div class="centro"><b>C4</b></div></div>
  <h1>NI UNA MENOS</h1>
  <h2>ARGENTINA - ENERGY 2026 - ACTA P4 JUDICIAL</h2>
- <div class="tag">EDICIÓN 15 DÍAS GRATIS - V2 | BLINDAJE PREVENTIVO</div>
+ <div class="tag">SALVAMOS VIDAS CON NUESTRO BLINDAJE PREVENTIVO</div>
  <p><strong style="display:block;color:var(--oroOscuro);font-weight:800;margin-bottom:10px">Nuestras dos herramientas principales te protegen ante cualquier agresión o robo: el Botón Antipánico de impacto inmediato y el Modo Temporizador (Centinela).</strong>
  Programá tu temporizador, activá el Modo Sigilo para engañar al agresor simulando que el celular está apagado, y nosotros recabaremos toda la evidencia forense de manera invisible. <strong>El delincuente no sabrá que el celular se convirtió en un perito judicial.</strong></p>
 
@@ -218,6 +210,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 <main>
 <section id="inicio" class="vista activa">
   
+ <!-- BANNER CRONÓMETRO DE DÍAS RESTANTES (INTELIGENTE) -->
  <div id="bannerSuscripcion" style="display:none;background:linear-gradient(135deg,#D4AF37,#A87F0A);color:#fff;padding:15px;border-radius:12px;margin-bottom:20px;text-align:center;box-shadow:var(--luzFuerte);border:2px solid #FFF0A8;">
    <b style="font-family:'Cinzel',serif;font-size:16px;letter-spacing:2px;display:block;">🛡️ BLINDAJE ACTIVO</b>
    <span id="diasRestantesText" style="font-size:15px;font-weight:700;margin-top:5px;display:block;">Calculando días restantes...</span>
@@ -227,6 +220,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   <div class="caja" style="background:#FFF3F5;border:1px solid #8B0000;padding:28px;">
    <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">PROTECCION ACTIVA</h3>
    <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Tu vida es nuestra prioridad. Contás con dos escudos: el Botón Antipánico para emergencias súbitas, o el Temporizador Centinela para protección preventiva.</p>
+   <!-- FRENO: El botón llama a la función pero si ya está activo adentro lo rebota -->
    <button class="btn rubi" onclick="if(window.sosActivo){ window.ir('sos'); prepararParada('sos'); } else { irSOS(); }">INGRESAR AL BOTON ANTIPANICO</button>
   </div>
 
@@ -240,6 +234,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
     <button class="btn" onclick="guardarImeiReal()">VINCULAR IMEI AL ACTA JUDICIAL</button>
   </div>
   
+  <!-- MODO CENTINELA (CRONÓMETRO) -->
   <div class="caja" style="margin-top:15px; border-color: var(--oro);">
     <h3 style="color:var(--oroOscuro); font-size:18px; margin-bottom:10px;">MODO CENTINELA (TEMPORIZADOR)</h3>
     <p style="font-size:13px; margin-bottom:15px; text-align:center; line-height:1.5;">Programá el tiempo que vas a estar afuera. Si no cancelás el contador con tu Llave Maestra antes de que termine, el S.O.S se disparará automáticamente salvando tu vida.<br><br><b style="color:#8B0000;">IMPORTANTE: Para que el reloj no se duerma y detone con precisión, debés activar obligatoriamente el "Modo Sigilo" justo después de iniciar este temporizador.</b></p>
@@ -257,7 +252,6 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
     <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Tocá el botón <b>"MODO SIGILO"</b> al final de esta página para simular que el teléfono está apagado (pantalla negra). Este modo es vital: mantiene el Temporizador Centinela despierto en primer plano y el sistema quedará 100% alerta esperando un impacto, o un <b>grito fuerte / ruido violento</b> para recabar la evidencia de manera totalmente silenciosa.</span>
  </div>
 
- <!-- SECCIÓN 5 PASOS ACTUALIZADA (SIN IMEI Y SIN PAGO) -->
  <div class="caja"><h3>5 PASOS PARA ACTIVAR</h3>
   <div class="paso"><div class="n">I</div><div><b>NOMBRE Y APELLIDO</b><span>Datos de la persona a proteger</span></div></div>
   <div class="paso"><div class="n">II</div><div><b>VALIDACIÓN RÁPIDA</b><span>Tu número de celular para registro único</span></div></div>
@@ -284,13 +278,13 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  <button class="btn blanco" onclick="window.sigilo()" style="margin-top:12px;">MODO SIGILO (SIMULAR APAGADO)</button>
 </section>
 
-<!-- REGISTRO ACTUALIZADO (SIN CAMPO VISIBLE DE IMEI) -->
 <section id="registro" class="vista">
  <button class="btn volver" onclick="ir('inicio')">VOLVER</button>
  <h2 class="tit">ACTIVACIÓN GRATUITA</h2>
  <div class="caja">
   <div class="campo"><label>NOMBRE Y APELLIDO</label><input id="rN" placeholder="Nombre de la persona protegida"></div>
-  <input type="hidden" id="rI" value="">
+  <!-- Campo IMEI oculto en el registro inicial para no espantar al usuario de Facebook -->
+  <div class="campo" style="display:none;"><label>IMEI 15 DIGITOS</label><input id="rI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
   <div class="campo"><label>TU NUMERO DE CELULAR</label><input id="rW" inputmode="tel" placeholder="Para validar tus 15 días gratis"></div>
   <div class="campo"><label>CONTACTO FAMILIAR 1 (SMS)</label><input id="cF1" inputmode="tel" placeholder="Celular para recibir alerta SMS"></div>
   <div class="campo"><label>CONTACTO FAMILIAR 2 (EMAIL)</label><input id="cE1" type="email" placeholder="Email de respaldo para emergencia"></div>
@@ -401,6 +395,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 </section>
 </main>
 
+<!-- MODAL PRESENTACION PARA COMPATIBILIDAD TOTAL CON FACEBOOK WEBVIEW -->
 <div id="modalPresentacion">
    <div class="caja" style="max-width:540px;width:100%;background:#FFFFFF;border:2px solid var(--oro);padding:25px;max-height:85vh;overflow-y:auto;text-align:center;">
      <h3 style="margin-bottom:12px;">PRESENTACIÓN DEL SISTEMA</h3>
@@ -435,6 +430,10 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+// ============================================================
+// SISTEMA C4 OPTIMIZADO COMO APLICACIÓN WEB PROGRESIVA (PWA)
+// ============================================================
+
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 
@@ -459,6 +458,7 @@ let gps=null, aid=null;
 
 let centinelaInterval = null;
 
+// Lógica de Reconocimiento Acústico Silencioso
 let audioCtxActivo = null;
 let micStreamSigilo = null;
 let voiceActive = false;
@@ -479,6 +479,9 @@ window.addEventListener('beforeinstallprompt', (e) => {
   });
 });
 
+// ============================================================
+// PANEL DE DIAGNOSTICO (OCULTO EN PRODUCCION)
+// ============================================================
 function debugLog(msg) {
     console.log('[C4-DEBUG]', msg);
     const panel = document.getElementById('debugPanel');
@@ -489,6 +492,9 @@ function debugLog(msg) {
     }
 }
 
+// ============================================================
+// UTILIDADES
+// ============================================================
 const LK = k => {
     let str = (k || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (str.startsWith('C4')) {
@@ -504,6 +510,9 @@ const IM = i => (i||'').toString().replace(/\D/g,'').slice(0,15);
 document.getElementById('lkStop').addEventListener('input', e => e.target.value = LK(e.target.value));
 document.getElementById('lkI').addEventListener('input', e => e.target.value = LK(e.target.value));
 
+// ============================================================
+// VERIFICACIÓN DE SUSCRIPCIÓN Y CRONÓMETRO DE DÍAS
+// ============================================================
 async function verificarSuscripcion() {
     const imei = localStorage.getItem('imei');
     const k = localStorage.getItem('llave_maestra');
@@ -554,6 +563,9 @@ async function verificarSuscripcion() {
     }
 }
 
+// ============================================================
+// MODO CENTINELA (CRONÓMETRO)
+// ============================================================
 window.iniciarCentinela = function() {
     let h = parseInt(document.getElementById('cHoras').value) || 0;
     let m = parseInt(document.getElementById('cMin').value) || 0;
@@ -630,6 +642,9 @@ window.prepararParada = function(objetivo) {
     document.getElementById('lkStop').value = '';
 }
 
+// ============================================================
+// SUPABASE
+// ============================================================
 async function authTrucha(imei) {
     if (!imei) return false;
     const email = imei + '@c4judicial.com.ar';
@@ -675,6 +690,9 @@ async function supaQuery(method, endpoint, body) {
     return res.json();
 }
 
+// ============================================================
+// PERMISOS - WEB API PURA
+// ============================================================
 async function solicitarTodosLosPermisos() {
     debugLog('Solicitando permisos Web...');
     
@@ -710,6 +728,9 @@ async function solicitarTodosLosPermisos() {
     });
 }
 
+// ============================================================
+// CAPTURA DE MEDIOS - EVIDENCIA (FLUIDA EN 720P + MIC MEJORADO)
+// ============================================================
 async function capturarFoto(cameraDirection) {
     return new Promise(async (resolve, reject) => {
         debugLog('Capturando foto: ' + cameraDirection);
@@ -813,6 +834,9 @@ async function capturarVideo(duracionMs, cameraDirection) {
     });
 }
 
+// ============================================================
+// BOTONES Y NAVEGACION
+// ============================================================
 async function pegarLlave(inputId) {
     try {
         const text = await navigator.clipboard.readText();
@@ -896,6 +920,9 @@ window.ir = async id => {
 
 const irSOS = () => localStorage.getItem('ok') === '1' ? window.ir('sos') : window.ir('pago');
 
+// ============================================================
+// PRESENTACIÓN COMPATIBLE CON NAVEGADOR DE FACEBOOK / INSTAGRAM
+// ============================================================
 let audioPresentacionFallback = null;
 
 function cerrarPresentacion() {
@@ -910,6 +937,7 @@ function cerrarPresentacion() {
 function leerVoz(){
     const textoMensaje = 'Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis. Plataforma corporativa Ni Una Menos. Nuestra misión es salvar vidas mediante dos herramientas principales: el Botón Antipánico de impacto inmediato, y el nuevo Temporizador Centinela. El Temporizador es tu vigía personal. Si vas a salir, programá el tiempo de tu viaje y bloqueá la pantalla usando el Modo Sigilo. Si no cancelás el cronómetro antes de que termine, el sistema asumirá que estás en peligro y detonará automáticamente la recolección de evidencia. Además, estando en Modo Sigilo, el sistema cuenta con sensores biométricos ocultos: si recibís un sacudón violento o si pegás un grito fuerte de auxilio, se activará inmediatamente la alarma de rescate y recolección de evidencia, sin hacer ningún ruido. El sistema recaba fotos, videos, audios y señal de GPS, compilando toda la información en un acta pericial. Con tu llave criptográfica podés descargar esta acta, presentarla ante la fiscalía con todas las pruebas y realizar la denuncia correspondiente. Tu seguridad está en manos de profesionales. Basta de secuestro, basta de violencia, basta de maltrato. Ni una menos, llegó para salvar vidas.';
 
+    // Mostramos siempre la tarjeta visual interactiva por si el usuario está en el navegador de Facebook sin sonido
     document.getElementById('modalPresentacion').style.display = 'flex';
 
     let habloNativo = false;
@@ -923,6 +951,7 @@ function leerVoz(){
         }
     } catch(e) {}
 
+    // Si en 600ms el WebView de Facebook bloqueó speechSynthesis, disparamos audio MP3 en vivo
     setTimeout(() => {
         if (!habloNativo && (!window.speechSynthesis || !window.speechSynthesis.speaking)) {
             try {
@@ -934,6 +963,9 @@ function leerVoz(){
     }, 600);
 }
 
+// ============================================================
+// MODO SIGILO MEJORADO (ANTI-ROBO)
+// ============================================================
 window.sigilo = async () => {
     await solicitarTodosLosPermisos();
     alert("MODO SIGILO ARMADO\nLa pantalla se pondrá negra simulando estar apagada. Tocala 3 VECES RÁPIDAS para salir. En este modo los sensores de impacto y el micrófono oculto (detector de gritos fuertes) están 100% activos y silenciosos.");
@@ -969,6 +1001,9 @@ window.sigilo = async () => {
     });
 };
 
+// ============================================================
+// HASH Y BASE DE DATOS LOCAL
+// ============================================================
 async function sha256(message) {
     try {
         if(crypto && crypto.subtle) {
@@ -1040,6 +1075,9 @@ async function borrarActa(id) {
     }
 }
 
+// ============================================================
+// S.O.S. - NUCLEO DEL SISTEMA (CON FRENO GLOBAL Y AHORRO SMS)
+// ============================================================
 async function disparoSOS(origen = 'manual'){
     if(window.sosActivo || window.bloqueoDisparo) { 
         debugLog('Freno activo: El sistema ya está grabando evidencia. Ignorando doble toque.');
@@ -1241,6 +1279,10 @@ async function loopEvidencia(acta) {
     }
 }
 
+// ============================================================
+// SENSORES DE SACUDON (IMPACTO) Y ACÚSTICO (GRITOS FUERTES) EXCLUSIVOS MODO SIGILO
+// ============================================================
+
 function procesarAceleracion(x, y, z) {
     gravedad[0] = FILTRO_GRAVEDAD * gravedad[0] + (1 - FILTRO_GRAVEDAD) * x;
     gravedad[1] = FILTRO_GRAVEDAD * gravedad[1] + (1 - FILTRO_GRAVEDAD) * y;
@@ -1333,6 +1375,9 @@ function activarAlarmaAutomatica(motivo) {
     disparoSOS(motivo);
 }
 
+// ============================================================
+// PARAR S.O.S Y CENTINELA
+// ============================================================
 const parar = () => {
     if(gps) navigator.geolocation.clearWatch(gps);
     document.getElementById('st').style.display = 'none';
@@ -1390,6 +1435,9 @@ window.confirmarParar = async function(){
     window.ir('inicio');
 };
 
+// ============================================================
+// ALTA, PAGO, VALIDACION
+// ============================================================
 async function alta(){
     const n = document.getElementById('rN').value.trim();
     let i = IM(document.getElementById('rI').value);
@@ -1400,6 +1448,8 @@ async function alta(){
     
     if(!n || !w) return alert('Por favor, ingresá tu Nombre completo y tu número de celular.');
     
+    // Si el campo IMEI está oculto o vacío, generamos un ID técnico de 15 dígitos basado en su celular
+    // para que Supabase funcione sin errores y le pedimos el IMEI real adentro del panel.
     let imeiPendiente = false;
     if (!/^\d{15}$/.test(i)) {
         let digitosTel = w.replace(/\D/g, '');
@@ -1633,6 +1683,10 @@ setInterval(async () => {
     }
 }, 3000); 
 
+// ============================================================
+// SMS Y EMAIL - MENSAJES CORPORATIVOS DE PROTECCIÓN
+// ============================================================
+
 function formatSMS(num) {
     let c = String(num).replace(/\D/g, '');
     if (c.startsWith('549')) c = c.substring(3);
@@ -1717,6 +1771,9 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo) {
     .catch(err => debugLog('❌ Error crítico en el servidor de Email: ' + err.message));
 }
 
+// ============================================================
+// RENDERIZADO DE ACTAS
+// ============================================================
 function render(a){
     const c = document.getElementById('alertas');
     let d = document.getElementById('a_'+a.id);
@@ -1813,6 +1870,9 @@ function render(a){
 
 const verificar = async () =>{ alert('VERIFICACION CORPORATIVA\\nTodas las firmas locales válidas y blindadas.\\nLeyes: 26.485 - 25.326'); };
 
+// ============================================================
+// KEEP-ALIVE - SISTEMA DESPIERTO PWA
+// ============================================================
 function iniciarKeepAlive() {
     debugLog('Iniciando keep-alive PWA...');
     setInterval(() => {
@@ -1837,6 +1897,9 @@ function iniciarKeepAlive() {
     debugLog('Keep-alive activo');
 }
 
+// ============================================================
+// INICIALIZACION PRINCIPAL
+// ============================================================
 document.addEventListener('DOMContentLoaded', async () => {
     debugLog('=== SISTEMA C4 PWA INICIADO ===');
     await iniciarApp();
