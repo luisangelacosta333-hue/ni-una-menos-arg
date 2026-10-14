@@ -283,7 +283,6 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  <h2 class="tit">ACTIVACIÓN GRATUITA</h2>
  <div class="caja">
   <div class="campo"><label>NOMBRE Y APELLIDO</label><input id="rN" placeholder="Nombre de la persona protegida"></div>
-  <!-- Campo IMEI oculto en el registro inicial para no espantar al usuario de Facebook -->
   <div class="campo" style="display:none;"><label>IMEI 15 DIGITOS</label><input id="rI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
   <div class="campo"><label>TU NUMERO DE CELULAR</label><input id="rW" inputmode="tel" placeholder="Para validar tus 15 días gratis"></div>
   <div class="campo"><label>CONTACTO FAMILIAR 1 (SMS)</label><input id="cF1" inputmode="tel" placeholder="Celular para recibir alerta SMS"></div>
@@ -305,10 +304,9 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
        <b style="color:var(--oroOscuro);display:block;margin-bottom:5px;font-size:18px;">ALIAS: noir.elite.ceo</b>
        <span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:#555;">CBU: 0110257630025717844115</span>
    </div>
-   <p style="text-align:center;font-size:14px;margin-bottom:20px;">1. Seleccioná un plan y transferí al Alias.</p>
+   <p style="text-align:center;font-size:14px;margin-bottom:20px;">1. Seleccioná el plan mensual y transferí al Alias.</p>
    
    <div class="plan" onclick="alert('Transferí $5.900 al Alias: noir.elite.ceo y luego subí el comprobante abajo.')"><div class="n">PLAN MENSUAL</div><div class="p">$ 5.900</div></div>
-   <div class="plan diamante" onclick="alert('Transferí $39.900 al Alias: noir.elite.ceo y luego subí el comprobante abajo.')"><div class="etiqueta">ENERGY 2026</div><div class="n">PLAN ANUAL PRO</div><div class="p">$ 39.900</div></div>
    
    <div class="campo" style="margin-top:20px;">
      <label>2. SUBIR COMPROBANTE DE PAGO (IA)</label>
@@ -395,7 +393,6 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 </section>
 </main>
 
-<!-- MODAL PRESENTACION PARA COMPATIBILIDAD TOTAL CON FACEBOOK WEBVIEW -->
 <div id="modalPresentacion">
    <div class="caja" style="max-width:540px;width:100%;background:#FFFFFF;border:2px solid var(--oro);padding:25px;max-height:85vh;overflow-y:auto;text-align:center;">
      <h3 style="margin-bottom:12px;">PRESENTACIÓN DEL SISTEMA</h3>
@@ -430,10 +427,6 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ============================================================
-// SISTEMA C4 OPTIMIZADO COMO APLICACIÓN WEB PROGRESIVA (PWA)
-// ============================================================
-
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 
@@ -458,7 +451,6 @@ let gps=null, aid=null;
 
 let centinelaInterval = null;
 
-// Lógica de Reconocimiento Acústico Silencioso
 let audioCtxActivo = null;
 let micStreamSigilo = null;
 let voiceActive = false;
@@ -479,9 +471,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
   });
 });
 
-// ============================================================
-// PANEL DE DIAGNOSTICO (OCULTO EN PRODUCCION)
-// ============================================================
 function debugLog(msg) {
     console.log('[C4-DEBUG]', msg);
     const panel = document.getElementById('debugPanel');
@@ -492,9 +481,6 @@ function debugLog(msg) {
     }
 }
 
-// ============================================================
-// UTILIDADES
-// ============================================================
 const LK = k => {
     let str = (k || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (str.startsWith('C4')) {
@@ -510,9 +496,6 @@ const IM = i => (i||'').toString().replace(/\D/g,'').slice(0,15);
 document.getElementById('lkStop').addEventListener('input', e => e.target.value = LK(e.target.value));
 document.getElementById('lkI').addEventListener('input', e => e.target.value = LK(e.target.value));
 
-// ============================================================
-// VERIFICACIÓN DE SUSCRIPCIÓN Y CRONÓMETRO DE DÍAS
-// ============================================================
 async function verificarSuscripcion() {
     const imei = localStorage.getItem('imei');
     const k = localStorage.getItem('llave_maestra');
@@ -563,9 +546,6 @@ async function verificarSuscripcion() {
     }
 }
 
-// ============================================================
-// MODO CENTINELA (CRONÓMETRO)
-// ============================================================
 window.iniciarCentinela = function() {
     let h = parseInt(document.getElementById('cHoras').value) || 0;
     let m = parseInt(document.getElementById('cMin').value) || 0;
@@ -642,9 +622,6 @@ window.prepararParada = function(objetivo) {
     document.getElementById('lkStop').value = '';
 }
 
-// ============================================================
-// SUPABASE
-// ============================================================
 async function authTrucha(imei) {
     if (!imei) return false;
     const email = imei + '@c4judicial.com.ar';
@@ -690,9 +667,6 @@ async function supaQuery(method, endpoint, body) {
     return res.json();
 }
 
-// ============================================================
-// PERMISOS - WEB API PURA
-// ============================================================
 async function solicitarTodosLosPermisos() {
     debugLog('Solicitando permisos Web...');
     
@@ -728,9 +702,6 @@ async function solicitarTodosLosPermisos() {
     });
 }
 
-// ============================================================
-// CAPTURA DE MEDIOS - EVIDENCIA (FLUIDA EN 720P + MIC MEJORADO)
-// ============================================================
 async function capturarFoto(cameraDirection) {
     return new Promise(async (resolve, reject) => {
         debugLog('Capturando foto: ' + cameraDirection);
@@ -834,9 +805,6 @@ async function capturarVideo(duracionMs, cameraDirection) {
     });
 }
 
-// ============================================================
-// BOTONES Y NAVEGACION
-// ============================================================
 async function pegarLlave(inputId) {
     try {
         const text = await navigator.clipboard.readText();
@@ -920,9 +888,6 @@ window.ir = async id => {
 
 const irSOS = () => localStorage.getItem('ok') === '1' ? window.ir('sos') : window.ir('pago');
 
-// ============================================================
-// PRESENTACIÓN COMPATIBLE CON NAVEGADOR DE FACEBOOK / INSTAGRAM
-// ============================================================
 let audioPresentacionFallback = null;
 
 function cerrarPresentacion() {
@@ -937,7 +902,6 @@ function cerrarPresentacion() {
 function leerVoz(){
     const textoMensaje = 'Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis. Plataforma corporativa Ni Una Menos. Nuestra misión es salvar vidas mediante dos herramientas principales: el Botón Antipánico de impacto inmediato, y el nuevo Temporizador Centinela. El Temporizador es tu vigía personal. Si vas a salir, programá el tiempo de tu viaje y bloqueá la pantalla usando el Modo Sigilo. Si no cancelás el cronómetro antes de que termine, el sistema asumirá que estás en peligro y detonará automáticamente la recolección de evidencia. Además, estando en Modo Sigilo, el sistema cuenta con sensores biométricos ocultos: si recibís un sacudón violento o si pegás un grito fuerte de auxilio, se activará inmediatamente la alarma de rescate y recolección de evidencia, sin hacer ningún ruido. El sistema recaba fotos, videos, audios y señal de GPS, compilando toda la información en un acta pericial. Con tu llave criptográfica podés descargar esta acta, presentarla ante la fiscalía con todas las pruebas y realizar la denuncia correspondiente. Tu seguridad está en manos de profesionales. Basta de secuestro, basta de violencia, basta de maltrato. Ni una menos, llegó para salvar vidas.';
 
-    // Mostramos siempre la tarjeta visual interactiva por si el usuario está en el navegador de Facebook sin sonido
     document.getElementById('modalPresentacion').style.display = 'flex';
 
     let habloNativo = false;
@@ -951,7 +915,6 @@ function leerVoz(){
         }
     } catch(e) {}
 
-    // Si en 600ms el WebView de Facebook bloqueó speechSynthesis, disparamos audio MP3 en vivo
     setTimeout(() => {
         if (!habloNativo && (!window.speechSynthesis || !window.speechSynthesis.speaking)) {
             try {
@@ -963,9 +926,6 @@ function leerVoz(){
     }, 600);
 }
 
-// ============================================================
-// MODO SIGILO MEJORADO (ANTI-ROBO)
-// ============================================================
 window.sigilo = async () => {
     await solicitarTodosLosPermisos();
     alert("MODO SIGILO ARMADO\nLa pantalla se pondrá negra simulando estar apagada. Tocala 3 VECES RÁPIDAS para salir. En este modo los sensores de impacto y el micrófono oculto (detector de gritos fuertes) están 100% activos y silenciosos.");
@@ -1001,9 +961,6 @@ window.sigilo = async () => {
     });
 };
 
-// ============================================================
-// HASH Y BASE DE DATOS LOCAL
-// ============================================================
 async function sha256(message) {
     try {
         if(crypto && crypto.subtle) {
@@ -1075,9 +1032,6 @@ async function borrarActa(id) {
     }
 }
 
-// ============================================================
-// S.O.S. - NUCLEO DEL SISTEMA (CON FRENO GLOBAL Y AHORRO SMS)
-// ============================================================
 async function disparoSOS(origen = 'manual'){
     if(window.sosActivo || window.bloqueoDisparo) { 
         debugLog('Freno activo: El sistema ya está grabando evidencia. Ignorando doble toque.');
@@ -1279,10 +1233,6 @@ async function loopEvidencia(acta) {
     }
 }
 
-// ============================================================
-// SENSORES DE SACUDON (IMPACTO) Y ACÚSTICO (GRITOS FUERTES) EXCLUSIVOS MODO SIGILO
-// ============================================================
-
 function procesarAceleracion(x, y, z) {
     gravedad[0] = FILTRO_GRAVEDAD * gravedad[0] + (1 - FILTRO_GRAVEDAD) * x;
     gravedad[1] = FILTRO_GRAVEDAD * gravedad[1] + (1 - FILTRO_GRAVEDAD) * y;
@@ -1375,9 +1325,6 @@ function activarAlarmaAutomatica(motivo) {
     disparoSOS(motivo);
 }
 
-// ============================================================
-// PARAR S.O.S Y CENTINELA
-// ============================================================
 const parar = () => {
     if(gps) navigator.geolocation.clearWatch(gps);
     document.getElementById('st').style.display = 'none';
@@ -1435,9 +1382,6 @@ window.confirmarParar = async function(){
     window.ir('inicio');
 };
 
-// ============================================================
-// ALTA, PAGO, VALIDACION
-// ============================================================
 async function alta(){
     const n = document.getElementById('rN').value.trim();
     let i = IM(document.getElementById('rI').value);
@@ -1448,8 +1392,6 @@ async function alta(){
     
     if(!n || !w) return alert('Por favor, ingresá tu Nombre completo y tu número de celular.');
     
-    // Si el campo IMEI está oculto o vacío, generamos un ID técnico de 15 dígitos basado en su celular
-    // para que Supabase funcione sin errores y le pedimos el IMEI real adentro del panel.
     let imeiPendiente = false;
     if (!/^\d{15}$/.test(i)) {
         let digitosTel = w.replace(/\D/g, '');
@@ -1544,7 +1486,7 @@ async function procesarPagoIA() {
                 return alert('ERROR EN AUDITORÍA:\\n' + data.msg);
             }
             
-            let mesesSumar = data.plan === 'anual' ? 12 : 1;
+            let mesesSumar = 1; // Solo plan mensual
             
             const authOk = await authTrucha(i);
             if(!authOk) return alert('Error de conexión a la bóveda C4.');
@@ -1566,14 +1508,14 @@ async function procesarPagoIA() {
 
             if (check && check.length > 0) {
                 await supaQuery('PATCH', 'c4_suscripciones?imei=eq.' + i, { 
-                    tipo_plan: data.plan, 
+                    tipo_plan: 'mensual', 
                     fecha_vencimiento: fechaActual.toISOString(), 
                     activa: true 
                 });
             } else {
                 await supaQuery('POST', 'c4_suscripciones', { 
                     email: i + '@c4judicial.com.ar', imei: i, llave_acceso: k, 
-                    tipo_plan: data.plan, fecha_vencimiento: fechaActual.toISOString(), 
+                    tipo_plan: 'mensual', fecha_vencimiento: fechaActual.toISOString(), 
                     activa: true, alarma_remota: false 
                 });
             }
@@ -1683,10 +1625,6 @@ setInterval(async () => {
     }
 }, 3000); 
 
-// ============================================================
-// SMS Y EMAIL - MENSAJES CORPORATIVOS DE PROTECCIÓN
-// ============================================================
-
 function formatSMS(num) {
     let c = String(num).replace(/\D/g, '');
     if (c.startsWith('549')) c = c.substring(3);
@@ -1771,9 +1709,6 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo) {
     .catch(err => debugLog('❌ Error crítico en el servidor de Email: ' + err.message));
 }
 
-// ============================================================
-// RENDERIZADO DE ACTAS
-// ============================================================
 function render(a){
     const c = document.getElementById('alertas');
     let d = document.getElementById('a_'+a.id);
@@ -1870,9 +1805,6 @@ function render(a){
 
 const verificar = async () =>{ alert('VERIFICACION CORPORATIVA\\nTodas las firmas locales válidas y blindadas.\\nLeyes: 26.485 - 25.326'); };
 
-// ============================================================
-// KEEP-ALIVE - SISTEMA DESPIERTO PWA
-// ============================================================
 function iniciarKeepAlive() {
     debugLog('Iniciando keep-alive PWA...');
     setInterval(() => {
@@ -1897,9 +1829,6 @@ function iniciarKeepAlive() {
     debugLog('Keep-alive activo');
 }
 
-// ============================================================
-// INICIALIZACION PRINCIPAL
-// ============================================================
 document.addEventListener('DOMContentLoaded', async () => {
     debugLog('=== SISTEMA C4 PWA INICIADO ===');
     await iniciarApp();
