@@ -363,8 +363,8 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  <button class="btn volver" onclick="ir('inicio')">VOLVER</button>
  <h2 class="tit">ACCESO JUDICIAL</h2>
  <div class="caja">
-  <p style="text-align:center;font-size:14px;margin-bottom:15px;color:#555;font-weight:600;">Ingresá tu Llave Maestra para acceder a tus actas.</p>
-  <div class="campo"><label>IMEI / ID DEL EQUIPO (OPCIONAL EN ESTE CELULAR)</label><input id="lkImei" inputmode="numeric" maxlength="15" placeholder="Dejar vacío si es este celular"></div>
+  <p style="text-align:center;font-size:14px;margin-bottom:15px;color:#555;font-weight:600;">Ingresá tu Llave Maestra C4 para activar tu protección y acceder a tus actas.</p>
+  <div class="campo" style="display:none;"><label>IMEI / ID DEL EQUIPO (OPCIONAL)</label><input id="lkImei" inputmode="numeric" maxlength="15" placeholder="Dejar vacío"></div>
   <div class="campo" style="position:relative;">
     <label>LLAVE MAESTRA C4</label>
     <input id="lkI" placeholder="C4-XXXX-XXXX" style="text-align:center;font-size:20px;letter-spacing:4px;text-transform:uppercase;font-weight:800;padding-right:85px;">
@@ -393,10 +393,14 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  <button class="btn volver" onclick="ir('inicio')">VOLVER</button>
  <h2 class="tit">TRAMPA DE CURIOSIDAD Y S.O.S. REMOTO</h2>
  <div class="caja">
-  <p style="font-size:14px;color:#555;margin-bottom:15px;text-align:center;line-height:1.6;">Esta herramienta funciona como una trampa para el delincuente. Ingresá el IMEI/ID y la Llave Maestra del teléfono robado para armar la alarma a distancia. En el milisegundo exacto en que el ladrón, por pura curiosidad, intente abrir la aplicación "Ni Una Menos" en el equipo robado, el sistema detonará de forma invisible capturando su rostro, el audio y el GPS de inmediato.</p>
-  <div class="campo"><label>IMEI / ID DEL EQUIPO RASTREADO</label><input id="rrI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
-  <div class="campo"><label>LLAVE MAESTRA C4</label><input id="rrL" placeholder="C4-XXXX-XXXX" style="text-transform:uppercase"></div>
-  <button class="btn" onclick="recuperar('restaurar')">RESTAURAR ACCESO AL PANEL</button>
+  <p style="font-size:14px;color:#555;margin-bottom:15px;text-align:center;line-height:1.6;">Ingresá únicamente tu <b>Llave Maestra C4</b> para recuperar tu protección y volver a habilitar tu Botón S.O.S., o para armar la alarma a distancia en tu teléfono robado (cuando el delincuente intente abrir la app por curiosidad, el sistema detonará de forma invisible capturando su rostro, audio y GPS).</p>
+  <div class="campo" style="display:none;"><label>IMEI / ID DEL EQUIPO RASTREADO (OPCIONAL)</label><input id="rrI" inputmode="numeric" maxlength="15" placeholder="Opcional"></div>
+  <div class="campo" style="position:relative;">
+    <label>LLAVE MAESTRA C4</label>
+    <input id="rrL" placeholder="C4-XXXX-XXXX" style="text-align:center;font-size:20px;letter-spacing:4px;text-transform:uppercase;font-weight:800;padding-right:85px;">
+    <button onclick="pegarLlave('rrL')" style="position:absolute;right:8px;top:36px;background:var(--oro);color:#fff;border:none;padding:10px 15px;border-radius:8px;font-weight:900;cursor:pointer;font-family:'Cinzel',serif;font-size:12px;">PEGAR</button>
+  </div>
+  <button class="btn" onclick="recuperar('restaurar')">RESTAURAR MI CUENTA Y BOTÓN S.O.S</button>
   <button class="btn rubi" onclick="recuperar('detonar')" style="margin-top:18px">ARMAR TRAMPA DE RASTREO REMOTO</button>
  </div>
 </section>
@@ -514,18 +518,24 @@ const IM = i => (i||'').toString().replace(/\D/g,'').slice(0,15);
 
 document.getElementById('lkStop').addEventListener('input', e => e.target.value = LK(e.target.value));
 document.getElementById('lkI').addEventListener('input', e => e.target.value = LK(e.target.value));
+if(document.getElementById('rrL')) {
+    document.getElementById('rrL').addEventListener('input', e => e.target.value = LK(e.target.value));
+}
 
 async function verificarSuscripcion() {
     const imei = localStorage.getItem('imei');
     const k = localStorage.getItem('llave_maestra');
-    if (!imei || !k || localStorage.getItem('ok') !== '1') return false;
+    if (!k || localStorage.getItem('ok') !== '1') return false;
 
     try {
-        if(!currentJWT) await authTrucha(imei);
-        const res = await supaQuery('GET', 'c4_suscripciones?select=*&imei=eq.' + imei + '&llave_acceso=eq.' + k);
+        if(!currentJWT && imei) await authTrucha(imei);
+        const res = await supaQuery('GET', 'c4_suscripciones?select=*&llave_acceso=eq.' + LK(k));
         
         if (res && res.length > 0) {
             const sub = res[0];
+            if (sub.imei && sub.imei !== imei) {
+                localStorage.setItem('imei', sub.imei);
+            }
             const venci = new Date(sub.fecha_vencimiento).getTime();
             const ahora = Date.now();
             const faltanMs = venci - ahora;
@@ -1363,13 +1373,17 @@ window.confirmarParar = async function(){
     const llaveLimpia = LK(k);
     const llaveLocal = localStorage.getItem('llave_maestra');
     let esValida = false;
+    let imeiDetectado = localStorage.getItem('imei');
+    
     if(llaveLocal && llaveLimpia === LK(llaveLocal)) esValida = true;
     if(!esValida) {
         try {
-            const imeiActivo = localStorage.getItem('imei');
-            if (imeiActivo) await authTrucha(imeiActivo);
+            currentJWT = null;
             const res = await supaQuery('GET', 'c4_suscripciones?select=*&llave_acceso=eq.' + llaveLimpia + '&activa=eq.true');
-            if(res && res.length > 0) esValida = true;
+            if(res && res.length > 0) {
+                esValida = true;
+                imeiDetectado = res[0].imei;
+            }
         } catch(e) {}
     }
     if(!esValida) { alert('LLAVE INCORRECTA.'); return; }
@@ -1389,10 +1403,9 @@ window.confirmarParar = async function(){
         return;
     }
 
-    const imeiActivo = localStorage.getItem('imei');
-    if(imeiActivo) {
-        await authTrucha(imeiActivo);
-        supaQuery('PATCH', 'c4_suscripciones?imei=eq.' + imeiActivo, { alarma_remota: false }).catch(()=>{});
+    if(imeiDetectado) {
+        await authTrucha(imeiDetectado);
+        supaQuery('PATCH', 'c4_suscripciones?llave_acceso=eq.' + llaveLimpia, { alarma_remota: false }).catch(()=>{});
     }
     document.getElementById('modalStop').style.display = 'none';
     alert('Código verificado. Desactivando alerta corporativa...');
@@ -1401,7 +1414,7 @@ window.confirmarParar = async function(){
     document.getElementById('btnBigSOS').innerText = 'S.O.S';
     document.getElementById('btnBigSOS').classList.remove('activo');
     const nombre = localStorage.getItem('nombre') || 'Usuaria';
-    const emailDestino = localStorage.getItem('contacto_email') || localStorage.getItem('contacto_email_' + imeiActivo) || '';
+    const emailDestino = localStorage.getItem('contacto_email') || localStorage.getItem('contacto_email_' + imeiDetectado) || '';
     
     enviarEmailOculto(emailDestino, nombre, null, null, aid || 'EXP-CERRADO', 'seguro');
     window.ir('inicio');
@@ -1581,14 +1594,13 @@ async function procesarPagoIA() {
     reader.readAsDataURL(file);
 }
 
+// VALIDAR (ACCESO JUDICIAL): Busca directo por Llave Criptográfica sin exigir IMEI
 async function validar(){
     const k = LK(document.getElementById('lkI').value);
-    const inputImei = IM(document.getElementById('lkImei').value);
-    if(!k) return;
+    if(!k) return alert('Por favor, ingresá tu Llave Maestra C4.');
     await cargarActasLocales(); 
     const llaveLocal = localStorage.getItem('llave_maestra');
-    const imeiLocal = localStorage.getItem('imei');
-    if (llaveLocal && k === LK(llaveLocal) && (!inputImei || inputImei === imeiLocal)) {
+    if (llaveLocal && k === LK(llaveLocal)) {
         localStorage.setItem('ok', '1');
         activarBotonesSeguridad();
         await verificarSuscripcion();
@@ -1596,15 +1608,14 @@ async function validar(){
         window.ir('panel');
         return;
     }
-    const storedImei = inputImei || imeiLocal;
-    if(!storedImei || storedImei.length < 15) return alert('Por tu seguridad, ingresá el IMEI / ID de 15 dígitos.');
     try {
-        await authTrucha(storedImei);
-        const res = await supaQuery('GET', 'c4_suscripciones?select=*&llave_acceso=eq.' + k + '&imei=eq.' + storedImei);
-        if(res.length === 0) return alert('Acceso Denegado por el servidor C4.');
+        currentJWT = null;
+        const res = await supaQuery('GET', 'c4_suscripciones?select=*&llave_acceso=eq.' + k);
+        if(!res || res.length === 0) return alert('Llave Maestra no encontrada en la bóveda C4.');
         const sub = res[0];
+        await authTrucha(sub.imei);
         if(new Date() > new Date(sub.fecha_vencimiento)) {
-            await supaQuery('PATCH', 'c4_suscripciones?id=eq.' + sub.id, { activa: false });
+            await supaQuery('PATCH', 'c4_suscripciones?id=eq.' + sub.id, { activa: false }).catch(()=>{});
             alert('TU LLAVE SE ENCUENTRA VENCIDA.');
             document.getElementById('pI').value = sub.imei;
             if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = sub.imei;
@@ -1614,6 +1625,8 @@ async function validar(){
             localStorage.setItem('imei', sub.imei);
             localStorage.setItem('llave_maestra', sub.llave_acceso); 
             localStorage.setItem('ok', '1');
+            document.getElementById('pI').value = sub.imei;
+            if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = sub.imei;
             listaActas.forEach(a => { if(a.imei === 'SIN_IMEI') a.imei = sub.imei; });
             await guardarActas();
             let cRespaldo = localStorage.getItem('contactos_' + sub.imei) || localStorage.getItem('contactos');
@@ -1623,40 +1636,54 @@ async function validar(){
             await solicitarTodosLosPermisos();
             window.ir('panel');
         }
-    } catch(e) { alert('Error validando la identidad corporativa.'); }
+    } catch(e) { alert('Error validando la Llave Maestra en el servidor C4.'); }
 }
 
+// RECUPERAR Y S.O.S. REMOTO: Lee la Llave Criptográfica directo en Supabase y rehabilita el S.O.S. sin pedir IMEI
 async function recuperar(accion) {
-    const i = IM(document.getElementById('rrI').value);
     const l = LK(document.getElementById('rrL').value);
-    if(!/^\d{15}$/.test(i) || !l) return alert('Por favor ingresá un IMEI / ID válido y tu Llave Maestra.');
+    if(!l || l.length < 6) return alert('Por favor, ingresá tu Llave Maestra C4.');
     try {
-        const authOk = await authTrucha(i);
-        if(!authOk) return;
-        const res = await supaQuery('GET', 'c4_suscripciones?select=*&imei=eq.' + i + '&llave_acceso=eq.' + l + '&activa=eq.true');
-        if(res.length === 0) return alert('DATOS JUDICIALES INCORRECTOS.');
+        currentJWT = null;
+        const res = await supaQuery('GET', 'c4_suscripciones?select=*&llave_acceso=eq.' + l + '&activa=eq.true');
+        if(!res || res.length === 0) return alert('LLAVE CRIPTOGRÁFICA INCORRECTA O VENCIDA.');
+        
+        const sub = res[0];
+        const imeiReal = sub.imei;
+        await authTrucha(imeiReal);
+
         if(accion === 'restaurar') {
-            localStorage.setItem('imei', i);
+            localStorage.setItem('imei', imeiReal);
+            localStorage.setItem('llave_maestra', sub.llave_acceso);
             localStorage.setItem('ok', '1');
+            document.getElementById('pI').value = imeiReal;
+            if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = imeiReal;
+            
             activarBotonesSeguridad();
+            await verificarSuscripcion();
             await solicitarTodosLosPermisos();
-            alert('Sistema corporativo restaurado con éxito.');
-            window.ir('panel');
+            alert('✅ Llave Criptográfica verificada con éxito.\\nTu Botón Antipánico S.O.S. y el Temporizador Centinela ya están nuevamente activos en este celular.');
+            window.ir('inicio');
         } else if(accion === 'detonar') {
-            if(confirm('¿Activar protocolo S.O.S. a distancia para cazar al teléfono?')) {
-                await supaQuery('PATCH', 'c4_suscripciones?imei=eq.' + i, { alarma_remota: true });
-                alert('ORDEN REMOTA EJECUTADA. El sistema empezará a enviar evidencias ocultas.');
+            if(confirm('¿Activar protocolo S.O.S. a distancia para cazar al teléfono robado?')) {
+                await supaQuery('PATCH', 'c4_suscripciones?llave_acceso=eq.' + l, { alarma_remota: true });
+                alert('🚨 ORDEN REMOTA EJECUTADA CON ÉXITO.\\nEn cuanto el delincuente abra la aplicación en el celular robado, el sistema detonará en silencio capturando fotos, audio y GPS.');
             }
         }
-    } catch(e) { alert('Error al conectar con la bóveda C4.'); }
+    } catch(e) { 
+        debugLog('Error recuperar: ' + e.message);
+        alert('Error al conectar con la bóveda C4. Verificá tu conexión.'); 
+    }
 }
 
 setInterval(async () => {
     const imei = localStorage.getItem('imei');
-    if (imei && localStorage.getItem('ok') === '1' && !window.sosActivo) {
+    const k = localStorage.getItem('llave_maestra');
+    if ((imei || k) && localStorage.getItem('ok') === '1' && !window.sosActivo) {
         try {
-            if (!currentJWT) await authTrucha(imei);
-            const res = await supaQuery('GET', 'c4_suscripciones?select=alarma_remota&imei=eq.' + imei);
+            if (!currentJWT && imei) await authTrucha(imei);
+            const filtro = k ? ('llave_acceso=eq.' + LK(k)) : ('imei=eq.' + imei);
+            const res = await supaQuery('GET', 'c4_suscripciones?select=alarma_remota&' + filtro);
             if (res.length > 0 && res[0].alarma_remota === true) {
                 debugLog('ALARMA REMOTA C4 RECIBIDA');
                 window.ir('sos');
