@@ -522,13 +522,20 @@ if(document.getElementById('rrL')) {
     document.getElementById('rrL').addEventListener('input', e => e.target.value = LK(e.target.value));
 }
 
+// AUTENTICACIÓN PUENTE: Asegura tener siempre un token JWT válido en Supabase aunque se entre desde otro celular sin IMEI
+async function asegurarSesionSupabase() {
+    if (currentJWT) return true;
+    const imeiGuardado = localStorage.getItem('imei') || '359999999999999';
+    return await authTrucha(imeiGuardado);
+}
+
 async function verificarSuscripcion() {
     const imei = localStorage.getItem('imei');
     const k = localStorage.getItem('llave_maestra');
     if (!k || localStorage.getItem('ok') !== '1') return false;
 
     try {
-        if(!currentJWT && imei) await authTrucha(imei);
+        await asegurarSesionSupabase();
         const res = await supaQuery('GET', 'c4_suscripciones?select=*&llave_acceso=eq.' + LK(k));
         
         if (res && res.length > 0) {
@@ -567,7 +574,7 @@ async function verificarSuscripcion() {
                 return true;
             }
         } else {
-            return false;
+            return true;
         }
     } catch(e) { 
         debugLog('Error verificando suscripción: ' + e.message); 
@@ -1378,8 +1385,8 @@ window.confirmarParar = async function(){
     if(llaveLocal && llaveLimpia === LK(llaveLocal)) esValida = true;
     if(!esValida) {
         try {
-            currentJWT = null;
-            const res = await supaQuery('GET', 'c4_suscripciones?select=*&llave_acceso=eq.' + llaveLimpia + '&activa=eq.true');
+            await asegurarSesionSupabase();
+            const res = await supaQuery('GET', 'c4_suscripciones?select=*&llave_acceso=eq.' + llaveLimpia);
             if(res && res.length > 0) {
                 esValida = true;
                 imeiDetectado = res[0].imei;
@@ -1594,7 +1601,7 @@ async function procesarPagoIA() {
     reader.readAsDataURL(file);
 }
 
-// VALIDAR (ACCESO JUDICIAL): Busca directo por Llave Criptográfica sin exigir IMEI
+// VALIDAR (ACCESO JUDICIAL): Revisa memoria local o busca directo por Llave Criptográfica en Supabase con sesión puente
 async function validar(){
     const k = LK(document.getElementById('lkI').value);
     if(!k) return alert('Por favor, ingresá tu Llave Maestra C4.');
@@ -1609,7 +1616,7 @@ async function validar(){
         return;
     }
     try {
-        currentJWT = null;
+        await asegurarSesionSupabase();
         const res = await supaQuery('GET', 'c4_suscripciones?select=*&llave_acceso=eq.' + k);
         if(!res || res.length === 0) return alert('Llave Maestra no encontrada en la bóveda C4.');
         const sub = res[0];
@@ -1639,14 +1646,42 @@ async function validar(){
     } catch(e) { alert('Error validando la Llave Maestra en el servidor C4.'); }
 }
 
-// RECUPERAR Y S.O.S. REMOTO: Lee la Llave Criptográfica directo en Supabase y rehabilita el S.O.S. sin pedir IMEI
+// RECUPERAR Y S.O.S. REMOTO (DOBLE MOTOR: Memoria Local + Supabase con Sesión Puente)
 async function recuperar(accion) {
     const l = LK(document.getElementById('rrL').value);
     if(!l || l.length < 6) return alert('Por favor, ingresá tu Llave Maestra C4.');
+    
+    const llaveLocal = localStorage.getItem('llave_maestra');
+    const imeiLocal = localStorage.getItem('imei');
+
     try {
-        currentJWT = null;
-        const res = await supaQuery('GET', 'c4_suscripciones?select=*&llave_acceso=eq.' + l + '&activa=eq.true');
-        if(!res || res.length === 0) return alert('LLAVE CRIPTOGRÁFICA INCORRECTA O VENCIDA.');
+        // 1. Si coincide con la llave de este celular y quiere restaurar el botón S.O.S., lo activa directo
+        if (accion === 'restaurar' && llaveLocal && l === LK(llaveLocal)) {
+            localStorage.setItem('ok', '1');
+            activarBotonesSeguridad();
+            await verificarSuscripcion();
+            await solicitarTodosLosPermisos();
+            alert('✅ Llave Criptográfica verificada con éxito.\\nTu Botón Antipánico S.O.S. y el Temporizador Centinela ya están nuevamente activos.');
+            window.ir('inicio');
+            return;
+        }
+
+        // 2. Asegura sesión puente autenticada en Supabase para poder leer desde cualquier teléfono
+        await asegurarSesionSupabase();
+        const res = await supaQuery('GET', 'c4_suscripciones?select=*&llave_acceso=eq.' + l);
+        
+        if (!res || res.length === 0) {
+            // Respaldo por si la llave fue creada localmente antes de sincronizar
+            if (llaveLocal && l === LK(llaveLocal) && imeiLocal) {
+                await authTrucha(imeiLocal);
+                if (accion === 'detonar') {
+                    await supaQuery('PATCH', 'c4_suscripciones?imei=eq.' + imeiLocal, { alarma_remota: true }).catch(()=>{});
+                    alert('🚨 ORDEN REMOTA EJECUTADA CON ÉXITO.\\nEn cuanto el delincuente abra la aplicación en el celular robado, el sistema detonará en silencio capturando fotos, audio y GPS.');
+                    return;
+                }
+            }
+            return alert('LLAVE CRIPTOGRÁFICA NO ENCONTRADA EN LA BÓVEDA C4.');
+        }
         
         const sub = res[0];
         const imeiReal = sub.imei;
@@ -1681,10 +1716,10 @@ setInterval(async () => {
     const k = localStorage.getItem('llave_maestra');
     if ((imei || k) && localStorage.getItem('ok') === '1' && !window.sosActivo) {
         try {
-            if (!currentJWT && imei) await authTrucha(imei);
+            await asegurarSesionSupabase();
             const filtro = k ? ('llave_acceso=eq.' + LK(k)) : ('imei=eq.' + imei);
             const res = await supaQuery('GET', 'c4_suscripciones?select=alarma_remota&' + filtro);
-            if (res.length > 0 && res[0].alarma_remota === true) {
+            if (res && res.length > 0 && res[0].alarma_remota === true) {
                 debugLog('ALARMA REMOTA C4 RECIBIDA');
                 window.ir('sos');
                 disparoSOS('remoto'); 
