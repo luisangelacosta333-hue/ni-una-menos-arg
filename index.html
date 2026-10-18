@@ -818,7 +818,7 @@ async function solicitarTodosLosPermisos() {
             debugLog('Pidiendo cámara + micrófono avanzado...');
             const stream = await navigator.mediaDevices.getUserMedia({ 
                 audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, 
-                video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } 
+                video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 360 } } 
             });
             stream.getTracks().forEach(track => track.stop());
             debugLog('Cámara + micrófono avanzado OK');
@@ -834,6 +834,7 @@ async function solicitarTodosLosPermisos() {
     });
 }
 
+// FOTO ULTRALIVIANA DE ALTA NITIDEZ (960x540 al 72% ~ 50KB por foto)
 async function capturarFoto(cameraDirection) {
     return new Promise(async (resolve, reject) => {
         debugLog('Capturando foto: ' + cameraDirection);
@@ -847,7 +848,7 @@ async function capturarFoto(cameraDirection) {
             document.body.appendChild(video);
             
             stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: cameraDirection === 'front' ? 'user' : 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+                video: { facingMode: (cameraDirection === 'front' || cameraDirection === 'user') ? 'user' : 'environment', width: { ideal: 960 }, height: { ideal: 540 } },
                 audio: false
             });
             video.srcObject = stream;
@@ -855,16 +856,16 @@ async function capturarFoto(cameraDirection) {
             await new Promise(r => setTimeout(r, 800));
             
             const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 1280;
-            canvas.height = video.videoHeight || 720;
+            canvas.width = video.videoWidth || 960;
+            canvas.height = video.videoHeight || 540;
             const ctx = canvas.getContext('2d');
-            if (cameraDirection === 'front') { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
+            if (cameraDirection === 'front' || cameraDirection === 'user') { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.8); 
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.72); 
             
             stream.getTracks().forEach(t => t.stop());
             document.body.removeChild(video);
-            debugLog('Foto capturada: ' + (dataUrl.length / 1024).toFixed(0) + 'KB');
+            debugLog('Foto optimizada: ' + (dataUrl.length / 1024).toFixed(0) + 'KB');
             resolve(dataUrl);
         } catch(e) {
             debugLog('Error de foto: ' + e.message);
@@ -874,29 +875,30 @@ async function capturarFoto(cameraDirection) {
     });
 }
 
+// AUDIO FORENSE ULTRALIVIANO (32 kbps ~ 60KB por clip)
 async function capturarAudio(duracionMs) {
     return new Promise(async (resolve, reject) => {
-        debugLog('Grabando audio forense (Filtros activados)...');
+        debugLog('Grabando audio forense ultraliviano...');
         let stream = null;
         try {
             stream = await navigator.mediaDevices.getUserMedia({ 
                 audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } 
             });
-            const mimeTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/mp4'];
+            const mimeTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'];
             let mimeType = '';
-            for (let mt of mimeTypes) { if (MediaRecorder.isTypeSupported(mt)) { mimeType = mt; break; } }
-            const opciones = mimeType ? { mimeType } : {};
+            for (let mt of mimeTypes) { if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(mt)) { mimeType = mt; break; } }
+            const opciones = mimeType ? { mimeType, audioBitsPerSecond: 32000 } : { audioBitsPerSecond: 32000 };
             const recorder = new MediaRecorder(stream, opciones);
             const chunks = [];
-            recorder.ondataavailable = e => chunks.push(e.data);
+            recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
             recorder.onstop = () => {
-                const blob = new Blob(chunks, { type: mimeType || 'audio/webm' });
+                const blob = new Blob(chunks, { type: recorder.mimeType || mimeType || 'audio/webm' });
                 stream.getTracks().forEach(t => t.stop());
                 debugLog('Audio OK: ' + (blob.size / 1024).toFixed(0) + 'KB');
                 resolve(blob);
             };
-            recorder.start();
-            setTimeout(() => recorder.stop(), duracionMs);
+            recorder.start(1000);
+            setTimeout(() => { if (recorder.state === 'recording') recorder.stop(); }, duracionMs);
         } catch(e) {
             debugLog('Audio error: ' + e.message);
             if(stream) stream.getTracks().forEach(t => t.stop());
@@ -905,33 +907,86 @@ async function capturarAudio(duracionMs) {
     });
 }
 
+// VIDEO NÍTIDO ULTRALIVIANO (640x360 a 15fps / 250kbps ~ 400KB por clip para subir rápido a Supabase)
 async function capturarVideo(duracionMs, cameraDirection) {
     return new Promise(async (resolve, reject) => {
-        debugLog('Grabando video HD: ' + cameraDirection);
+        const modoCamara = (cameraDirection === 'front' || cameraDirection === 'user') ? 'user' : 'environment';
+        debugLog('Grabando video optimizado: ' + modoCamara);
         let stream = null;
+        let videoPreview = null;
         try {
-            stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: cameraDirection === 'front' ? 'user' : 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-                audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
-            });
-            const mimeTypes = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'];
+            const videoConstraints = {
+                facingMode: modoCamara,
+                width: { ideal: 640 },
+                height: { ideal: 360 },
+                frameRate: { ideal: 15, max: 20 }
+            };
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: videoConstraints,
+                    audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+                });
+            } catch (errAudioVideo) {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: videoConstraints,
+                    audio: false
+                });
+            }
+
+            videoPreview = document.createElement('video');
+            videoPreview.muted = true;
+            videoPreview.playsInline = true;
+            videoPreview.setAttribute('playsinline', '');
+            videoPreview.style.position = 'fixed';
+            videoPreview.style.top = '0';
+            videoPreview.style.left = '0';
+            videoPreview.style.width = '1px';
+            videoPreview.style.height = '1px';
+            videoPreview.style.opacity = '0.001';
+            videoPreview.style.zIndex = '-1';
+            document.body.appendChild(videoPreview);
+            videoPreview.srcObject = stream;
+            await videoPreview.play().catch(()=>{});
+            await new Promise(r => setTimeout(r, 400));
+
+            const mimeTypes = [
+                'video/webm;codecs=vp8,opus',
+                'video/webm;codecs=vp8',
+                'video/mp4',
+                'video/webm;codecs=h264',
+                'video/webm'
+            ];
             let mimeType = '';
-            for (let mt of mimeTypes) { if (MediaRecorder.isTypeSupported(mt)) { mimeType = mt; break; } }
-            const opciones = mimeType ? { mimeType } : {};
+            for (let mt of mimeTypes) {
+                if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(mt)) {
+                    mimeType = mt;
+                    break;
+                }
+            }
+            const opciones = mimeType 
+                ? { mimeType, videoBitsPerSecond: 250000, audioBitsPerSecond: 32000 } 
+                : { videoBitsPerSecond: 250000, audioBitsPerSecond: 32000 };
             const recorder = new MediaRecorder(stream, opciones);
             const chunks = [];
-            recorder.ondataavailable = e => chunks.push(e.data);
+            recorder.ondataavailable = e => {
+                if (e.data && e.data.size > 0) chunks.push(e.data);
+            };
             recorder.onstop = () => {
-                const blob = new Blob(chunks, { type: mimeType || 'video/webm' });
+                const finalType = recorder.mimeType || mimeType || 'video/webm';
+                const blob = new Blob(chunks, { type: finalType });
                 stream.getTracks().forEach(t => t.stop());
-                debugLog('Video HD OK: ' + (blob.size / 1024).toFixed(0) + 'KB');
+                if (videoPreview && videoPreview.parentNode) videoPreview.parentNode.removeChild(videoPreview);
+                debugLog('Video optimizado OK: ' + (blob.size / 1024).toFixed(0) + 'KB');
                 resolve(blob);
             };
-            recorder.start();
-            setTimeout(() => recorder.stop(), duracionMs);
+            recorder.start(1000);
+            setTimeout(() => {
+                if (recorder.state === 'recording') recorder.stop();
+            }, duracionMs);
         } catch(e) {
             debugLog('Video error: ' + e.message);
             if(stream) stream.getTracks().forEach(t => t.stop());
+            if(videoPreview && videoPreview.parentNode) videoPreview.parentNode.removeChild(videoPreview);
             reject(e);
         }
     });
@@ -1330,6 +1385,7 @@ async function disparoSOS(origen = 'manual'){
     }
 }
 
+// CICLO INTENSIVO DE EVIDENCIA PARA FISCALÍA: En cada vuelta toma Fotos (Frontal + Trasera), Videos (Trasera + Frontal) y Audio
 async function loopEvidencia(acta) {
     if(!window.sosActivo || !acta) return;
     if(!listaActas.find(a => a.id === acta.id)) return;
@@ -1343,8 +1399,9 @@ async function loopEvidencia(acta) {
         return; 
     }
     
-    debugLog('Ciclo evidencia corporativa - recabando HD fluido...');
+    debugLog('Ciclo evidencia intensivo - recabando fotos, videos y audios...');
     
+    // 1. Foto Frontal
     try {
         const fotoFrontal = await capturarFoto('front');
         if(listaActas.find(a => a.id === acta.id)) {
@@ -1359,6 +1416,7 @@ async function loopEvidencia(acta) {
     
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
     
+    // 2. Foto Trasera
     try {
         const fotoTrasera = await capturarFoto('back');
         if(listaActas.find(a => a.id === acta.id)) {
@@ -1373,16 +1431,36 @@ async function loopEvidencia(acta) {
     
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
     
+    // 3. Video Cámara Trasera (15s ultraliviano y nítido)
     try {
-        const direccion = (acta.videos && acta.videos.length % 2 === 0) ? 'environment' : 'user';
-        const video = await capturarVideo(30000, direccion);
+        const videoTrasero = await capturarVideo(15000, 'environment');
         if(listaActas.find(a => a.id === acta.id)) {
             if(!acta.videos) acta.videos = [];
-            if (video instanceof Blob) {
-                const dataUrlVid = await blobToDataURL(video);
-                acta.videos.push({url: dataUrlVid, blob: video, camara: direccion === 'user' ? 'FRONTAL' : 'TRASERA'});
-            } else {
-                acta.videos.push({rutaNativa: video.rutaNativa || video, camara: direccion === 'user' ? 'FRONTAL' : 'TRASERA'});
+            if (videoTrasero instanceof Blob && videoTrasero.size > 0) {
+                const dataUrlVid = await blobToDataURL(videoTrasero);
+                acta.videos.push({url: dataUrlVid, blob: videoTrasero, camara: 'TRASERA'});
+            } else if (videoTrasero && videoTrasero.rutaNativa) {
+                acta.videos.push({rutaNativa: videoTrasero.rutaNativa, camara: 'TRASERA'});
+            }
+            await guardarActas();
+            sincronizarActaEnNube(acta);
+            let currentImei = localStorage.getItem('imei');
+            if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
+        }
+    } catch(e) {}
+
+    if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
+
+    // 4. Video Cámara Frontal (15s ultraliviano y nítido)
+    try {
+        const videoFrontal = await capturarVideo(15000, 'user');
+        if(listaActas.find(a => a.id === acta.id)) {
+            if(!acta.videos) acta.videos = [];
+            if (videoFrontal instanceof Blob && videoFrontal.size > 0) {
+                const dataUrlVidF = await blobToDataURL(videoFrontal);
+                acta.videos.push({url: dataUrlVidF, blob: videoFrontal, camara: 'FRONTAL'});
+            } else if (videoFrontal && videoFrontal.rutaNativa) {
+                acta.videos.push({rutaNativa: videoFrontal.rutaNativa, camara: 'FRONTAL'});
             }
             await guardarActas();
             sincronizarActaEnNube(acta);
@@ -1393,14 +1471,15 @@ async function loopEvidencia(acta) {
     
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
     
+    // 5. Audio de Entorno (15s ultraliviano con filtros de voz)
     try {
-        const audio = await capturarAudio(30000);
+        const audio = await capturarAudio(15000);
         if(listaActas.find(a => a.id === acta.id)) {
             if(!acta.audios) acta.audios = [];
-            if (audio instanceof Blob) {
+            if (audio instanceof Blob && audio.size > 0) {
                 const dataUrlAud = await blobToDataURL(audio);
                 acta.audios.push({url: dataUrlAud, blob: audio});
-            } else {
+            } else if (audio) {
                 acta.audios.push(audio);
             }
             await guardarActas();
@@ -1411,7 +1490,7 @@ async function loopEvidencia(acta) {
     } catch(e) {}
     
     if(window.sosActivo && listaActas.find(a => a.id === acta.id)) {
-        setTimeout(() => loopEvidencia(acta), 2000);
+        setTimeout(() => loopEvidencia(acta), 1000);
     }
 }
 
@@ -2030,20 +2109,21 @@ function render(a){
     
     const vV = a.videos && a.videos.length ? a.videos.map((vid,i) => {
         let url = ''; let cam = 'TRASERA';
-        if (vid && vid.url) { url = vid.url; cam = vid.camara || 'TRASERA'; }
+        if (vid && vid.blob instanceof Blob) { url = URL.createObjectURL(vid.blob); cam = vid.camara || 'TRASERA'; }
+        else if (vid && vid.url) { url = vid.url; cam = vid.camara || 'TRASERA'; }
         else if (vid && vid.rutaNativa) { url = vid.rutaNativa; cam = vid.camara || 'TRASERA'; }
-        else if (vid && vid.blob instanceof Blob) { url = URL.createObjectURL(vid.blob); cam = vid.camara || 'TRASERA'; }
         else if (vid instanceof Blob) { url = URL.createObjectURL(vid); }
-        return '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">VIDEO ' + (i+1) + ' (' + cam + ')</span><video controls playsinline preload="metadata" src="' + url + '" style="width:100%;border-radius:8px;"></video><a class="btn-descarga-evidencia noimp" href="' + url + '" download="VIDEO_' + a.id + '_' + (i+1) + '.webm">⬇️ DESCARGAR VIDEO ' + (i+1) + '</a></div>';
+        const ext = (url && url.includes('video/mp4')) ? 'mp4' : 'webm';
+        return '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">VIDEO ' + (i+1) + ' (' + cam + ')</span><video controls playsinline preload="auto" src="' + url + '" style="width:100%;border-radius:8px;background:#000;"></video><a class="btn-descarga-evidencia noimp" href="' + url + '" download="VIDEO_' + a.id + '_' + (i+1) + '.' + ext + '">⬇️ DESCARGAR VIDEO ' + (i+1) + '</a></div>';
     }).join('') : '';
     
     const aA = a.audios && a.audios.length ? a.audios.map((aud,i) => {
         let url = '';
-        if (aud && aud.url) url = aud.url;
+        if (aud && aud.blob instanceof Blob) url = URL.createObjectURL(aud.blob);
+        else if (aud && aud.url) url = aud.url;
         else if (aud && aud.rutaNativa) url = aud.rutaNativa;
-        else if (aud && aud.blob instanceof Blob) url = URL.createObjectURL(aud.blob);
         else if (aud instanceof Blob) url = URL.createObjectURL(aud);
-        return '<div style="background:#FAFAFA;border:1px solid #EEE;padding:15px;border-radius:8px;margin-bottom:10px;text-align:center;"><p style="font-size:12px;font-weight:800;color:#8B0000;margin-bottom:8px;">AUDIO DE ENTORNO ' + (i+1) + '</p><audio controls src="' + url + '" style="width:100%;"></audio><a class="btn-descarga-evidencia noimp" href="' + url + '" download="AUDIO_' + a.id + '_' + (i+1) + '.webm">⬇️ DESCARGAR AUDIO ' + (i+1) + '</a></div>';
+        return '<div style="background:#FAFAFA;border:1px solid #EEE;padding:15px;border-radius:8px;margin-bottom:10px;text-align:center;"><p style="font-size:12px;font-weight:800;color:#8B0000;margin-bottom:8px;">AUDIO DE ENTORNO ' + (i+1) + '</p><audio controls preload="auto" src="' + url + '" style="width:100%;"></audio><a class="btn-descarga-evidencia noimp" href="' + url + '" download="AUDIO_' + a.id + '_' + (i+1) + '.webm">⬇️ DESCARGAR AUDIO ' + (i+1) + '</a></div>';
     }).join('') : '';
     
     let imgContainer = document.getElementById('gal_img_' + a.id);
