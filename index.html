@@ -125,6 +125,7 @@ body{background:#FFFFFF;background-image:radial-gradient(circle at 50% 0%,rgba(2
 .galeria{display:flex;flex-direction:column;gap:20px;position:relative;z-index:3;width:100%;}
 .foto{background:#FAFAFA;border:1px solid #EEE;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#999;font-family:'Cinzel',serif;font-size:10px;overflow:hidden;position:relative;width:100%;padding:15px;border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,0.05);}
 .foto img,.foto video{width:100%;height:auto;object-fit:contain;border-radius:8px;}
+.btn-descarga-evidencia{display:inline-block;margin-top:10px;padding:10px 18px;background:var(--bordeOro);color:#FFF;font-family:'Cinzel',serif;font-weight:900;font-size:12px;letter-spacing:2px;border-radius:999px;text-decoration:none;box-shadow:var(--luz);text-align:center;width:100%;max-width:320px;}
 
 .scroll-container{width:100%;overflow:hidden;mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent)}
 .scroll-text{display:inline-block;white-space:nowrap;font-family:'Cinzel',serif;font-weight:800;}
@@ -155,7 +156,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 @media print {
   @page { size: A4; margin: 10mm; }
   body { background: #fff !important; color: #000 !important; }
-  .btn, .footer-wrap, .noimp, .vista:not(.activa), header, .scroll-container, #btn-install-pwa, #btn-flotante-sos { display: none !important; }
+  .btn, .footer-wrap, .noimp, .btn-descarga-evidencia, .vista:not(.activa), header, .scroll-container, #btn-install-pwa, #btn-flotante-sos { display: none !important; }
   .vista { padding: 0 !important; max-width: 100% !important; display: block !important; }
   #panel { display: block !important; }
   #alertas { display: block !important; width: 100%; }
@@ -459,6 +460,20 @@ let centinelaInterval = null;
 let audioCtxActivo = null;
 let micStreamSigilo = null;
 let voiceActive = false;
+
+// Conversor universal a Base64 para que los videos y audios nunca se pierdan al cerrar la app y siempre se puedan descargar
+function blobToDataURL(blob) {
+    return new Promise((resolve) => {
+        if (!blob || !(blob instanceof Blob)) {
+            resolve(null);
+            return;
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(blob);
+    });
+}
 
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -1103,6 +1118,7 @@ async function cargarActasLocales() {
 
 async function borrarActa(id) {
     if(!confirm('¿Estás segura de eliminar este expediente permanentemente?')) return;
+    if(mapas[id]) { try { mapas[id].remove(); } catch(e){} delete mapas[id]; }
     const d = document.getElementById('a_'+id);
     if(d) d.remove();
     listaActas = listaActas.filter(a => a.id !== id);
@@ -1287,7 +1303,8 @@ async function loopEvidencia(acta) {
         if(listaActas.find(a => a.id === acta.id)) {
             if(!acta.videos) acta.videos = [];
             if (video instanceof Blob) {
-                acta.videos.push({blob: video, camara: direccion === 'user' ? 'FRONTAL' : 'TRASERA'});
+                const dataUrlVid = await blobToDataURL(video);
+                acta.videos.push({url: dataUrlVid, blob: video, camara: direccion === 'user' ? 'FRONTAL' : 'TRASERA'});
             } else {
                 acta.videos.push({rutaNativa: video.rutaNativa || video, camara: direccion === 'user' ? 'FRONTAL' : 'TRASERA'});
             }
@@ -1303,7 +1320,12 @@ async function loopEvidencia(acta) {
         const audio = await capturarAudio(30000);
         if(listaActas.find(a => a.id === acta.id)) {
             if(!acta.audios) acta.audios = [];
-            acta.audios.push(audio);
+            if (audio instanceof Blob) {
+                const dataUrlAud = await blobToDataURL(audio);
+                acta.audios.push({url: dataUrlAud, blob: audio});
+            } else {
+                acta.audios.push(audio);
+            }
             await guardarActas();
             let currentImei = localStorage.getItem('imei');
             if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
@@ -1910,24 +1932,26 @@ function render(a){
         if(mapLink) mapLink.innerHTML = '<a href="https://maps.google.com/?q=' + a.lat + ',' + a.lng + '" target="_blank" style="display:block;background:var(--oro);color:#fff;text-align:center;padding:15px;border-radius:8px;font-weight:900;font-family:Cinzel,serif;text-decoration:none;margin-top:15px;margin-bottom:15px;box-shadow:0 4px 10px rgba(0,0,0,0.3);font-size:16px;">ABRIR UBICACION EN GOOGLE MAPS</a>';
     }
     
-    const fT = a.imagenes && a.imagenes.length ? a.imagenes.map(i => 
-        '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">CAMARA ' + (i.camara || 'desconocida').toUpperCase() + ' (RECONOCIMIENTO)</span><img src="' + i.url + '" style="width:100%;height:auto;border-radius:8px;" onerror="this.src=\'\'"></div>'
+    const fT = a.imagenes && a.imagenes.length ? a.imagenes.map((i, idx) => 
+        '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">CAMARA ' + (i.camara || 'desconocida').toUpperCase() + ' (RECONOCIMIENTO)</span><img src="' + i.url + '" style="width:100%;height:auto;border-radius:8px;" onerror="this.src=\'\'"><a class="btn-descarga-evidencia noimp" href="' + i.url + '" download="FOTO_' + a.id + '_' + (idx+1) + '.jpg">⬇️ DESCARGAR FOTO ' + (idx+1) + '</a></div>'
     ).join('') : '';
     
     const vV = a.videos && a.videos.length ? a.videos.map((vid,i) => {
         let url = ''; let cam = 'TRASERA';
-        if (vid.rutaNativa) { url = vid.rutaNativa; cam = vid.camara || 'TRASERA'; }
-        else if (vid.blob) { url = URL.createObjectURL(vid.blob); cam = vid.camara || 'TRASERA'; }
+        if (vid && vid.url) { url = vid.url; cam = vid.camara || 'TRASERA'; }
+        else if (vid && vid.rutaNativa) { url = vid.rutaNativa; cam = vid.camara || 'TRASERA'; }
+        else if (vid && vid.blob instanceof Blob) { url = URL.createObjectURL(vid.blob); cam = vid.camara || 'TRASERA'; }
         else if (vid instanceof Blob) { url = URL.createObjectURL(vid); }
-        return '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">VIDEO ' + (i+1) + ' (' + cam + ')</span><video controls playsinline preload="metadata" src="' + url + '" style="width:100%;border-radius:8px;"></video></div>';
+        return '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">VIDEO ' + (i+1) + ' (' + cam + ')</span><video controls playsinline preload="metadata" src="' + url + '" style="width:100%;border-radius:8px;"></video><a class="btn-descarga-evidencia noimp" href="' + url + '" download="VIDEO_' + a.id + '_' + (i+1) + '.webm">⬇️ DESCARGAR VIDEO ' + (i+1) + '</a></div>';
     }).join('') : '';
     
-    const aA = a.audios && a.audios.length ? a.audios.map((blob,i) => {
+    const aA = a.audios && a.audios.length ? a.audios.map((aud,i) => {
         let url = '';
-        if (blob && blob.rutaNativa) url = blob.rutaNativa;
-        else if (blob instanceof Blob) url = URL.createObjectURL(blob);
-        else if (blob && blob.url) url = blob.url;
-        return '<div style="background:#FAFAFA;border:1px solid #EEE;padding:15px;border-radius:8px;margin-bottom:10px;"><p style="font-size:12px;font-weight:800;color:#8B0000;margin-bottom:8px;">AUDIO DE ENTORNO ' + (i+1) + '</p><audio controls src="' + url + '" style="width:100%;"></audio></div>';
+        if (aud && aud.url) url = aud.url;
+        else if (aud && aud.rutaNativa) url = aud.rutaNativa;
+        else if (aud && aud.blob instanceof Blob) url = URL.createObjectURL(aud.blob);
+        else if (aud instanceof Blob) url = URL.createObjectURL(aud);
+        return '<div style="background:#FAFAFA;border:1px solid #EEE;padding:15px;border-radius:8px;margin-bottom:10px;text-align:center;"><p style="font-size:12px;font-weight:800;color:#8B0000;margin-bottom:8px;">AUDIO DE ENTORNO ' + (i+1) + '</p><audio controls src="' + url + '" style="width:100%;"></audio><a class="btn-descarga-evidencia noimp" href="' + url + '" download="AUDIO_' + a.id + '_' + (i+1) + '.webm">⬇️ DESCARGAR AUDIO ' + (i+1) + '</a></div>';
     }).join('') : '';
     
     let imgContainer = document.getElementById('gal_img_' + a.id);
