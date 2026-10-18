@@ -194,9 +194,9 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  <p><strong style="display:block;color:var(--oroOscuro);font-weight:800;margin-bottom:10px">Nuestras dos herramientas principales te protegen ante cualquier agresión o robo: el Botón Antipánico de impacto inmediato y el Modo Temporizador (Centinela).</strong>
  Programá tu temporizador, activá el Modo Sigilo para engañar al agresor simulando que el celular está apagado, y nosotros recabaremos toda la evidencia forense de manera invisible. <strong>El delincuente no sabrá que el celular se convirtió en un perito judicial.</strong></p>
 
- <div style="background:#FFFCF2;border:1.5px solid var(--oro);padding:22px;border-radius:12px;margin:25px auto;max-width:820px;box-shadow:var(--luz);">
-  <b style="color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:20px;letter-spacing:3px;display:block;margin-bottom:10px;">15 DIAS GRATIS</b>
-  <span style="font-size:16px;color:#333;font-weight:600;line-height:1.5;display:block;">Descargá y registrate hoy mismo. Comprobá cómo funciona nuestro blindaje pericial corporativo sin costo.</span>
+ <div id="cajaHeaderDias" style="background:#FFFCF2;border:1.5px solid var(--oro);padding:22px;border-radius:12px;margin:25px auto;max-width:820px;box-shadow:var(--luz);transition:.3s;">
+  <b id="tituloHeaderDias" style="color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:20px;letter-spacing:3px;display:block;margin-bottom:10px;">15 DIAS GRATIS</b>
+  <span id="subtituloHeaderDias" style="font-size:16px;color:#333;font-weight:600;line-height:1.5;display:block;">Descargá y registrate hoy mismo. Comprobá cómo funciona nuestro blindaje pericial corporativo sin costo.</span>
  </div>
 
  <button class="btn blanco" onclick="ir('login')" style="max-width:520px;margin-inline:auto;margin-top:15px;box-shadow:var(--luz)">CONSULTAR ACTAS / CENTRO JUDICIAL</button>
@@ -511,56 +511,115 @@ async function asegurarSesionSupabase() {
     return await authTrucha(imeiGuardado);
 }
 
+// FUNCIÓN CENTRAL QUE ACTUALIZA LOS DOS CARTELES EN LA PÁGINA PRINCIPAL DÍA A DÍA
+function pintarDiasEnPantalla(fechaIso, imeiSub) {
+    if (!fechaIso) return true;
+    localStorage.setItem('fecha_vencimiento', fechaIso);
+    const venci = new Date(fechaIso).getTime();
+    const ahora = Date.now();
+    const faltanMs = venci - ahora;
+    const faltanDias = Math.ceil(faltanMs / (1000 * 60 * 60 * 24));
+
+    const banner = document.getElementById('bannerSuscripcion');
+    const text = document.getElementById('diasRestantesText');
+    const cajaHeader = document.getElementById('cajaHeaderDias');
+    const tituloHeader = document.getElementById('tituloHeaderDias');
+    const subHeader = document.getElementById('subtituloHeaderDias');
+
+    if (faltanMs <= 0) {
+        localStorage.removeItem('ok');
+        ocultarBotonesSeguridad();
+        if (banner) banner.style.display = 'none';
+        if (tituloHeader) {
+            tituloHeader.innerText = '⚠️ BLINDAJE VENCIDO (0 DÍAS)';
+            tituloHeader.style.color = '#8B0000';
+        }
+        if (subHeader) {
+            subHeader.innerText = 'Tu período de protección ha finalizado. Renová tu plan mensual para reactivar el sistema.';
+        }
+        alert('TU BLINDAJE JUDICIAL HA VENCIDO.\\nPor favor, renová tu plan para mantener la protección activa.');
+        const imeiFinal = imeiSub || localStorage.getItem('imei') || '';
+        if (imeiFinal) {
+            document.getElementById('pI').value = imeiFinal;
+            if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = imeiFinal;
+        }
+        window.ir('pago');
+        return false;
+    }
+
+    const palabraDia = faltanDias === 1 ? 'DÍA' : 'DÍAS';
+    const palabraRestante = faltanDias === 1 ? 'RESTANTE' : 'RESTANTES';
+
+    // 1. Actualiza el recuadro principal de arriba (el que se ve apenas abrís la pantalla)
+    if (cajaHeader && tituloHeader && subHeader) {
+        if (faltanDias <= 3) {
+            cajaHeader.style.background = '#FFF3F5';
+            cajaHeader.style.borderColor = '#8B0000';
+            tituloHeader.style.color = '#8B0000';
+            tituloHeader.innerText = '⚠️ TE QUEDAN ' + faltanDias + ' ' + palabraDia + ' GRATIS';
+            subHeader.innerText = 'Tu blindaje pericial vence pronto. Recordá renovar tu plan para no perder la cobertura.';
+        } else {
+            cajaHeader.style.background = '#FFFCF2';
+            cajaHeader.style.borderColor = 'var(--oro)';
+            tituloHeader.style.color = 'var(--oroOscuro)';
+            tituloHeader.innerText = '🛡️ ' + faltanDias + ' ' + palabraDia + ' ' + palabraRestante;
+            subHeader.innerText = 'Blindaje judicial activo. El contador descuenta automáticamente día por día.';
+        }
+    }
+
+    // 2. Actualiza el banner dorado/rojo de la sección de inicio
+    if (banner && text) {
+        banner.style.display = 'block';
+        if (faltanDias <= 3) {
+            banner.style.background = 'linear-gradient(135deg,#8B0000,#4A0008)';
+            banner.style.borderColor = '#FF8888';
+            text.innerText = '⚠️ ATENCIÓN: Te quedan ' + faltanDias + ' ' + palabraDia.toLowerCase() + ' de protección.';
+        } else {
+            banner.style.background = 'linear-gradient(135deg,#D4AF37,#A87F0A)';
+            banner.style.borderColor = '#FFF0A8';
+            text.innerText = 'Te quedan ' + faltanDias + ' ' + palabraDia.toLowerCase() + ' de protección judicial.';
+        }
+    }
+    return true;
+}
+
 async function verificarSuscripcion() {
     const imei = localStorage.getItem('imei');
     const k = localStorage.getItem('llave_maestra');
-    if (!k || localStorage.getItem('ok') !== '1') return false;
+    if (localStorage.getItem('ok') !== '1') return false;
 
+    // Si ya estaba registrado en el teléfono pero aún no tenía guardada la fecha local, le asegura el respaldo de 15 días
+    let fechaLocal = localStorage.getItem('fecha_vencimiento');
+    if (!fechaLocal) {
+        let f = new Date();
+        f.setDate(f.getDate() + 15);
+        fechaLocal = f.toISOString();
+        localStorage.setItem('fecha_vencimiento', fechaLocal);
+    }
+
+    // Primero muestra el descuento inmediatamente con la memoria local
+    let sigueActivo = pintarDiasEnPantalla(fechaLocal, imei);
+    if (!sigueActivo) return false;
+
+    // Luego sincroniza con Supabase para traer la fecha oficial exacta de la base de datos
     try {
         await asegurarSesionSupabase();
-        const res = await supaQuery('GET', 'c4_suscripciones?select=*&llave_acceso=eq.' + LK(k));
+        const filtro = k ? ('llave_acceso=eq.' + LK(k)) : ('imei=eq.' + imei);
+        const res = await supaQuery('GET', 'c4_suscripciones?select=*&' + filtro);
         
         if (res && res.length > 0) {
             const sub = res[0];
             if (sub.imei && sub.imei !== imei) {
                 localStorage.setItem('imei', sub.imei);
             }
-            const venci = new Date(sub.fecha_vencimiento).getTime();
-            const ahora = Date.now();
-            const faltanMs = venci - ahora;
-            const faltanDias = Math.ceil(faltanMs / (1000 * 60 * 60 * 24));
-
-            if (faltanMs <= 0) {
-                localStorage.removeItem('ok');
-                ocultarBotonesSeguridad();
-                alert('TU BLINDAJE JUDICIAL HA VENCIDO.\\nPor favor, renová tu plan para mantener la protección activa.');
-                document.getElementById('pI').value = sub.imei;
-                if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = sub.imei;
-                window.ir('pago');
-                return false;
-            } else {
-                const banner = document.getElementById('bannerSuscripcion');
-                const text = document.getElementById('diasRestantesText');
-                if(banner && text) {
-                    banner.style.display = 'block';
-                    if (faltanDias <= 3) {
-                        banner.style.background = 'linear-gradient(135deg,#8B0000,#4A0008)';
-                        banner.style.borderColor = '#FF8888';
-                        text.innerText = '⚠️ ATENCIÓN: Te quedan ' + faltanDias + ' días de protección.';
-                    } else {
-                        banner.style.background = 'linear-gradient(135deg,#D4AF37,#A87F0A)';
-                        banner.style.borderColor = '#FFF0A8';
-                        text.innerText = 'Te quedan ' + faltanDias + ' días de protección judicial.';
-                    }
-                }
-                return true;
+            if (sub.fecha_vencimiento) {
+                return pintarDiasEnPantalla(sub.fecha_vencimiento, sub.imei);
             }
-        } else {
-            return true;
         }
+        return true;
     } catch(e) { 
         debugLog('Error verificando suscripción: ' + e.message); 
-        return true; 
+        return pintarDiasEnPantalla(fechaLocal, imei); 
     }
 }
 
@@ -885,6 +944,10 @@ function ocultarBotonesSeguridad() {
 window.ir = async id => {
     document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
     document.getElementById(id).classList.add('activa');
+
+    if(id === 'inicio' && localStorage.getItem('ok') === '1') {
+        verificarSuscripcion();
+    }
 
     if(id === 'panel') {
         await cargarActasLocales();
@@ -1446,13 +1509,16 @@ async function alta(){
         const k = 'C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase();
         let fechaVencimiento = new Date();
         fechaVencimiento.setDate(fechaVencimiento.getDate() + 15);
+        const fechaIso = fechaVencimiento.toISOString();
+
         await supaQuery('POST', 'c4_suscripciones', { 
             email: i + '@c4judicial.com.ar', imei: i, whatsapp: w.replace(/\D/g, ''), llave_acceso: k, 
-            tipo_plan: 'prueba_15', fecha_vencimiento: fechaVencimiento.toISOString(), 
+            tipo_plan: 'prueba_15', fecha_vencimiento: fechaIso, 
             activa: true, alarma_remota: false 
         });
 
         localStorage.setItem('imei', i); 
+        localStorage.setItem('fecha_vencimiento', fechaIso);
         if (imeiPendiente) localStorage.setItem('imei_pendiente', '1');
         else localStorage.removeItem('imei_pendiente');
 
@@ -1527,24 +1593,26 @@ async function procesarPagoIA() {
             }
 
             fechaActual.setMonth(fechaActual.getMonth() + mesesSumar);
+            const fechaIso = fechaActual.toISOString();
             const k = llaveExistente || ('C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase());
 
             if (check && check.length > 0) {
                 await supaQuery('PATCH', 'c4_suscripciones?imei=eq.' + i, { 
                     tipo_plan: 'mensual', 
-                    fecha_vencimiento: fechaActual.toISOString(), 
+                    fecha_vencimiento: fechaIso, 
                     activa: true 
                 });
             } else {
                 await supaQuery('POST', 'c4_suscripciones', { 
                     email: i + '@c4judicial.com.ar', imei: i, llave_acceso: k, 
-                    tipo_plan: 'mensual', fecha_vencimiento: fechaActual.toISOString(), 
+                    tipo_plan: 'mensual', fecha_vencimiento: fechaIso, 
                     activa: true, alarma_remota: false 
                 });
             }
 
             document.getElementById('lk').textContent = k;
             localStorage.setItem('llave_maestra', k);
+            localStorage.setItem('fecha_vencimiento', fechaIso);
             localStorage.setItem('ok', '1');
             localStorage.setItem('imei', i);
             
@@ -1593,6 +1661,7 @@ async function validar(){
             sessionStorage.setItem('k', k);
             localStorage.setItem('imei', sub.imei);
             localStorage.setItem('llave_maestra', sub.llave_acceso); 
+            localStorage.setItem('fecha_vencimiento', sub.fecha_vencimiento);
             localStorage.setItem('ok', '1');
             document.getElementById('pI').value = sub.imei;
             if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = sub.imei;
@@ -1652,6 +1721,7 @@ async function recuperar(accion) {
         if(accion === 'restaurar') {
             localStorage.setItem('imei', imeiReal);
             localStorage.setItem('llave_maestra', sub.llave_acceso);
+            if (sub.fecha_vencimiento) localStorage.setItem('fecha_vencimiento', sub.fecha_vencimiento);
             localStorage.setItem('ok', '1');
             document.getElementById('pI').value = imeiReal;
             if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = imeiReal;
