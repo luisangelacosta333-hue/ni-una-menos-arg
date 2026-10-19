@@ -390,11 +390,14 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
    <input id="bRelato" placeholder="Describí qué pasó, testigos o detalles clave">
   </div>
   <div class="campo">
-   <label>ADJUNTAR ARCHIVOS ORIGINALES (FOTOS, CAPTURAS, AUDIO O VIDEO)</label>
+   <label>ADJUNTAR ARCHIVOS ORIGINALES (FOTOS, CAPTURAS, AUDIO, VIDEO O PDF)</label>
+   <div style="font-size:11.5px;color:#8B0000;font-weight:700;margin-bottom:8px;line-height:1.5;text-align:center;">💡 Podés ir sumando archivos de a varios: seleccioná, tocá de nuevo y agregá más. Todos se guardan juntos al presionar "GUARDAR EN CRONOLOGÍA".</div>
    <div class="file-upload-wrapper">
-    <div class="file-upload-text" id="bFileName">TOCÁ AQUÍ PARA SUBIR ARCHIVOS<br>(CAPTURAS, FOTOS, AUDIOS O VIDEOS)</div>
-    <input type="file" id="bArchivos" multiple accept="image/*,video/*,audio/*" onchange="document.getElementById('bFileName').innerText = this.files.length + ' ARCHIVO(S) LISTO(S)'">
+    <div class="file-upload-text" id="bFileName">TOCÁ AQUÍ PARA SUBIR ARCHIVOS<br>(CAPTURAS, FOTOS, AUDIOS, VIDEOS O PDF)</div>
+    <input type="file" id="bArchivos" multiple accept="image/*,video/*,audio/*,application/pdf,.pdf" onchange="agregarArchivosBitacora(this.files); this.value='';">
    </div>
+   <div id="bListaPendientes"></div>
+   <button type="button" class="btn blanco noimp" onclick="limpiarArchivosBitacora()" style="margin-top:10px;padding:10px;font-size:11px;">LIMPIAR ARCHIVOS SELECCIONADOS</button>
   </div>
   <button class="btn" id="btnGuardarBitacora" onclick="guardarIncidente()">GUARDAR EN CRONOLOGÍA</button>
  </div>
@@ -429,7 +432,9 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  <h2 class="tit" style="text-align:left;border-bottom:1px solid var(--oro);padding-bottom:10px;letter-spacing:5px">CENTRO JUDICIAL P4</h2>
  <div class="noimp" style="display:flex;gap:12px;flex-wrap:wrap">
   <button class="btn" onclick="window.print()" style="flex:1 1 100%">IMPRIMIR ACTA JUDICIAL (PDF)</button>
-  <button class="btn blanco" onclick="verificar()" style="flex:1 1 100%;margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
+  <button class="btn blanco noimp" onclick="verificar()" style="flex:1 1 100%;margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
+  <button class="btn noimp" onclick="abrirActaAcumulativa()" style="flex:1 1 100%;margin-top:10px;background:linear-gradient(135deg,#8B0000,#C70020,#8B0000);">📂 ABRIR ACTA PERICIAL ACUMULATIVA (TODA LA EVIDENCIA JUNTA)</button>
+  <div class="noimp" style="font-size:11.5px;color:#8B0000;font-weight:700;text-align:center;line-height:1.6;background:#FFF3F5;border:1px solid #8B0000;border-radius:10px;padding:12px;">💡 En cada acta podés AGREGAR EVIDENCIA MANUAL (fotos, capturas, audios, videos o PDFs). Todo se acumula con sello SHA-256 y cadena de custodia: no se pisa ni se borra al cargar un archivo nuevo.</div>
  </div>
  <div id="alertas"><div class="caja" style="text-align:center;padding:50px 12px;border:none;box-shadow:none;"><p style="color:#999;font-weight:400;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;">Sistema en calma - Sin emergencias</p></div></div>
  <button class="btn blanco noimp" onclick="ir('inicio')" style="margin-top:20px">VOLVER AL INICIO</button>
@@ -486,6 +491,7 @@ let currentJWT = null;
 let wakeLockObj = null;
 let audioKeepAlive = null;
 let listaActas = [];
+let archivosPendientesBitacora = [];
 let mapas = {};
 
 window.sosActivo = false;
@@ -594,6 +600,7 @@ async function limpiarArchivosBucketActa(acta) {
         if (acta.imagenes) acta.imagenes.forEach(i => { if(i.url) urls.push(i.url); });
         if (acta.videos) acta.videos.forEach(v => { if(v.url) urls.push(v.url); });
         if (acta.audios) acta.audios.forEach(a => { if(a.url) urls.push(a.url); });
+        if (acta.documentos) acta.documentos.forEach(d => { if(d.url) urls.push(d.url); });
 
         const prefijo = `/storage/v1/object/public/${SUPA_BUCKET}/`;
         for (const u of urls) {
@@ -907,6 +914,9 @@ async function sincronizarActaEnNube(acta) {
         }
         if (copiaNube.audios) {
             copiaNube.audios = copiaNube.audios.map(a => ({ url: a.url || a.rutaNativa || '' }));
+        }
+        if (copiaNube.documentos) {
+            copiaNube.documentos = copiaNube.documentos.map(d => ({ url: d.url || '', nombre: d.nombre || '', agregado: d.agregado || '' }));
         }
         const payloadStr = JSON.stringify(copiaNube);
         const k = localStorage.getItem('llave_maestra');
@@ -1387,12 +1397,31 @@ async function borrarActa(id) {
     }
 }
 
+function agregarArchivosBitacora(fileList) {
+    for (let i = 0; i < fileList.length; i++) archivosPendientesBitacora.push(fileList[i]);
+    const txt = document.getElementById('bFileName');
+    const lista = document.getElementById('bListaPendientes');
+    if (txt) txt.innerHTML = archivosPendientesBitacora.length + ' ARCHIVO(S) ACUMULADO(S) — TOCÁ DE NUEVO PARA SUMAR MÁS';
+    if (lista) {
+        let html = '<div style="font-size:11px;color:#555;margin-top:8px;text-align:left;max-height:140px;overflow-y:auto;background:#fff;border:1px solid #EEE;border-radius:8px;padding:10px;line-height:1.6;">';
+        archivosPendientesBitacora.forEach((f, i) => { html += '• ' + f.name + ' (' + Math.round(f.size / 1024) + ' KB)<br>'; });
+        html += '</div>';
+        lista.innerHTML = html;
+    }
+}
+function limpiarArchivosBitacora() {
+    archivosPendientesBitacora = [];
+    const txt = document.getElementById('bFileName');
+    if (txt) txt.innerHTML = 'TOCÁ AQUÍ PARA SUBIR ARCHIVOS<br>(CAPTURAS, FOTOS, AUDIOS, VIDEOS O PDF)';
+    const lista = document.getElementById('bListaPendientes');
+    if (lista) lista.innerHTML = '';
+}
 async function guardarIncidente() {
     const tipo = document.getElementById('bTipo').value.trim();
     const fecha = document.getElementById('bFecha').value || new Date().toLocaleString('es-AR');
     const lugar = document.getElementById('bLugar').value.trim() || 'No especificado';
     const relato = document.getElementById('bRelato').value.trim();
-    const files = document.getElementById('bArchivos').files;
+    const files = archivosPendientesBitacora;
     const imei = localStorage.getItem('imei') || 'SIN_IMEI';
     const llave = localStorage.getItem('llave_maestra') || '';
 
@@ -1429,7 +1458,10 @@ async function guardarIncidente() {
         document.getElementById('bLugar').value = '';
         document.getElementById('bRelato').value = '';
         document.getElementById('bArchivos').value = '';
-        document.getElementById('bFileName').innerHTML = 'TOCÁ AQUÍ PARA SUBIR ARCHIVOS<br>(CAPTURAS, FOTOS, AUDIOS O VIDEOS)';
+        archivosPendientesBitacora = [];
+        document.getElementById('bFileName').innerHTML = 'TOCÁ AQUÍ PARA SUBIR ARCHIVOS<br>(CAPTURAS, FOTOS, AUDIOS, VIDEOS O PDF)';
+        const bLista = document.getElementById('bListaPendientes');
+        if (bLista) bLista.innerHTML = '';
         
         alert('✅ Incidente y archivos originales resguardados en tu cronología.');
         cargarBitacora();
@@ -2335,6 +2367,92 @@ function enviarEmailOculto(email, nombre, la, ln, id, tipo) {
     .catch(err => debugLog('❌ Error crítico en el servidor de Email: ' + err.message));
 }
 
+function actualizarListaPendienteEv(actaId) {
+    const input = document.getElementById('evFile_' + actaId);
+    const lista = document.getElementById('evLista_' + actaId);
+    if (!input || !lista) return;
+    if (!input.files || input.files.length === 0) { lista.innerHTML = ''; return; }
+    let html = '<div style="font-size:11px;color:#555;margin-top:8px;text-align:left;max-height:120px;overflow-y:auto;background:#fff;border:1px solid #EEE;border-radius:8px;padding:10px;line-height:1.6;">';
+    for (let i = 0; i < input.files.length; i++) { html += '• ' + input.files[i].name + ' (' + Math.round(input.files[i].size / 1024) + ' KB)<br>'; }
+    html += '</div>';
+    lista.innerHTML = html;
+}
+async function agregarEvidenciaActa(actaId) {
+    const acta = listaActas.find(a => a.id === actaId);
+    if (!acta) return alert('Acta no encontrada.');
+    const input = document.getElementById('evFile_' + actaId);
+    const descEl = document.getElementById('evDesc_' + actaId);
+    const desc = descEl ? descEl.value.trim() : '';
+    if (!input || !input.files || input.files.length === 0) return alert('Seleccioná al menos un archivo de evidencia (foto, video, audio o PDF).');
+    const btn = document.getElementById('evBtn_' + actaId);
+    const txtOriginal = btn ? btn.innerText : '';
+    if (btn) { btn.innerText = 'SUBIENDO EVIDENCIA A LA BÓVEDA C4...'; btn.disabled = true; }
+    try {
+        await asegurarSesionSupabase();
+        if (!acta.imagenes) acta.imagenes = [];
+        if (!acta.videos) acta.videos = [];
+        if (!acta.audios) acta.audios = [];
+        if (!acta.documentos) acta.documentos = [];
+        const momento = new Date().toLocaleString('es-AR');
+        let agregados = 0;
+        for (let i = 0; i < input.files.length; i++) {
+            const f = input.files[i];
+            const ext = (f.name.split('.').pop() || 'bin').toLowerCase();
+            const mime = f.type || '';
+            const urlSubida = await subirArchivoBucket(f, actaId, 'manual_' + Date.now() + '_' + i, ext, mime || 'application/octet-stream');
+            if (!urlSubida) continue;
+            const sello = await sha256(f.name + '_' + f.size + '_' + Date.now() + '_' + i);
+            const registro = { url: urlSubida, nombre: f.name, tipo: mime, tamano: f.size, origen: 'MANUAL', agregado: momento, descripcion: desc, sha256: sello };
+            if (mime.startsWith('image/')) { registro.camara = 'MANUAL'; acta.imagenes.push(registro); }
+            else if (mime.startsWith('video/')) { registro.camara = 'MANUAL'; acta.videos.push(registro); }
+            else if (mime.startsWith('audio/')) { acta.audios.push(registro); }
+            else { acta.documentos.push(registro); }
+            agregados++;
+        }
+        acta.sha256 = await sha256(JSON.stringify({ img: acta.imagenes.length, vid: acta.videos.length, aud: acta.audios.length, doc: acta.documentos.length, ts: Date.now() }));
+        await guardarActas();
+        await sincronizarActaEnNube(acta);
+        input.value = '';
+        if (descEl) descEl.value = '';
+        const txtEv = document.getElementById('evTxt_' + actaId);
+        if (txtEv) txtEv.innerHTML = 'TOCÁ AQUÍ PARA SELECCIONAR<br>ARCHIVOS DE EVIDENCIA';
+        actualizarListaPendienteEv(actaId);
+        render(acta);
+        alert('✅ ' + agregados + ' archivo(s) de evidencia agregados correctamente al acta pericial y resguardados con sello SHA-256 en la bóveda C4. Se acumulan, no se pisan.');
+    } catch (e) {
+        alert('Error al subir la evidencia: ' + e.message);
+    } finally {
+        if (btn) { btn.innerText = txtOriginal || 'CONFIRMAR Y AGREGAR AL ACTA'; btn.disabled = false; }
+    }
+}
+async function abrirActaAcumulativa() {
+    const imei = localStorage.getItem('imei') || 'SIN_IMEI';
+    const idAcum = 'ACUM_' + imei;
+    let acta = listaActas.find(a => a.id === idAcum);
+    if (!acta) {
+        const ahora = new Date();
+        const nombreGuardado = localStorage.getItem('nombre_usuario') || localStorage.getItem('nombre') || 'USUARIA PROTEGIDA';
+        acta = {
+            id: idAcum,
+            acumulativa: true,
+            numero_acta: 'P4-ACUM-' + Date.now().toString(36).toUpperCase(),
+            fecha: ahora.toLocaleDateString('es-AR'),
+            hora: ahora.toLocaleTimeString('es-AR'),
+            nombre: nombreGuardado,
+            imei: imei,
+            userAgent: navigator.userAgent,
+            red: '—', bateria: '—', lat: '—', lng: '—', precision: '—', ruta: [],
+            imagenes: [], videos: [], audios: [], documentos: [],
+            sha256: await sha256(idAcum + '_' + Date.now())
+        };
+        listaActas.push(acta);
+        await guardarActas();
+        await sincronizarActaEnNube(acta);
+        alert('✅ Acta Pericial Acumulativa creada. A partir de ahora toda la evidencia que sumes se guarda en ESTE MISMO expediente, sin vencimiento y sin pisarse.');
+    }
+    await window.ir('panel');
+    setTimeout(() => { const el = document.getElementById('a_' + idAcum); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 350);
+}
 function render(a){
     const c = document.getElementById('alertas');
     let d = document.getElementById('a_'+a.id);
@@ -2362,8 +2480,20 @@ function render(a){
         '<h3>IV - EVIDENCIA FOTOGRAFICA OCULTA</h3><div class="galeria" id="gal_img_' + a.id + '" data-len="0"></div>' +
         '<h3>V - EVIDENCIA EN VIDEO</h3><div class="galeria" id="gal_vid_' + a.id + '" data-len="0"></div>' +
         '<h3>VI - EVIDENCIA DE AUDIO (MICROFONO)</h3><div class="galeria" id="gal_aud_' + a.id + '" data-len="0"></div>' +
-        '<h3>VII - FIRMAS CRIPTOGRAFICAS</h3><div class="mono">ID: ' + a.id + '<br>SHA-256: <span id="sha_' + a.id + '">' + a.sha256 + '</span></div>' +
-        '<div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>EMPRESA ENERGY</div><div>FIRMA PERITO</div></div>';
+        '<h3>VII - EVIDENCIA DOCUMENTAL ADICIONAL (PDF / CAPTURAS / ADJUNTOS MANUALES)</h3><div class="galeria" id="gal_doc_' + a.id + '" data-len="0"></div>' +
+        '<h3>VIII - FIRMAS CRIPTOGRAFICAS</h3><div class="mono">ID: ' + a.id + '<br>SHA-256: <span id="sha_' + a.id + '">' + a.sha256 + '</span></div>' +
+        '<div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>EMPRESA ENERGY</div><div>FIRMA PERITO</div></div>' +
+        '<div class="noimp" style="margin-top:22px;border:2px dashed var(--oro);border-radius:12px;padding:18px;background:#FFFCF2;position:relative;z-index:3;">' +
+        '<div style="font-family:Cinzel,serif;font-weight:900;letter-spacing:3px;font-size:13px;color:var(--oroOscuro);text-align:center;margin-bottom:6px;">➕ AGREGAR EVIDENCIA MANUAL A ESTE ACTA</div>' +
+        '<div style="font-size:11px;color:#666;text-align:center;margin-bottom:12px;line-height:1.5;">Fotos, capturas de pantalla, audios, videos o PDFs. Se acumulan con sello SHA-256 y cadena de custodia (no se pisan).</div>' +
+        '<div class="file-upload-wrapper" style="height:80px;margin-top:0;">' +
+        '<div class="file-upload-text" id="evTxt_' + a.id + '" style="font-size:12px;">TOCÁ AQUÍ PARA SELECCIONAR<br>ARCHIVOS DE EVIDENCIA</div>' +
+        '<input type="file" id="evFile_' + a.id + '" multiple accept="image/*,video/*,audio/*,application/pdf,.pdf" onchange="document.getElementById(\'evTxt_' + a.id + '\').innerText=this.files.length+\' ARCHIVO(S) SELECCIONADO(S)\';actualizarListaPendienteEv(\'' + a.id + '\')">' +
+        '</div>' +
+        '<div id="evLista_' + a.id + '"></div>' +
+        '<div class="campo" style="margin-top:12px;margin-bottom:10px;"><label style="font-size:10px;">DESCRIPCIÓN DE LA PRUEBA (OPCIONAL)</label><input id="evDesc_' + a.id + '" placeholder="Ej: Captura de amenazas de WhatsApp del 12/10" style="padding:12px;font-size:14px;"></div>' +
+        '<button type="button" class="btn" id="evBtn_' + a.id + '" onclick="agregarEvidenciaActa(\'' + a.id + '\')" style="padding:14px;font-size:11px;">CONFIRMAR Y AGREGAR AL ACTA</button>' +
+        '</div>';
         
         setTimeout(()=>{
             if(!document.getElementById('m_'+a.id) || mapas[a.id] || a.lat === 'Buscando...' || a.lat === 'Desconocida') return;
@@ -2402,7 +2532,7 @@ function render(a){
     }
     
     const fT = a.imagenes && a.imagenes.length ? a.imagenes.map((i, idx) => 
-        '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">CAMARA ' + (i.camara || 'desconocida').toUpperCase() + ' (RECONOCIMIENTO)</span><img src="' + i.url + '" style="width:100%;height:auto;border-radius:8px;" onerror="this.src=\'\'"><button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + i.url + '\', \'FOTO_' + a.id + '_' + (idx+1) + '.jpg\')">⬇️ DESCARGAR FOTO ' + (idx+1) + '</button></div>'
+        '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">' + (i.origen === 'MANUAL' ? 'EVIDENCIA MANUAL — ' + (i.nombre || 'foto') + (i.agregado ? ' (' + i.agregado + ')' : '') : 'CAMARA ' + (i.camara || 'desconocida').toUpperCase() + ' (RECONOCIMIENTO)') + '</span><img src="' + i.url + '" style="width:100%;height:auto;border-radius:8px;" onerror="this.src=\'\'"><button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + i.url + '\', \'FOTO_' + a.id + '_' + (idx+1) + '.jpg\')">⬇️ DESCARGAR FOTO ' + (idx+1) + '</button></div>'
     ).join('') : '';
     
     const vV = a.videos && a.videos.length ? a.videos.map((vid,i) => {
@@ -2412,7 +2542,7 @@ function render(a){
         else if (vid && vid.rutaNativa) { url = vid.rutaNativa; cam = vid.camara || 'TRASERA'; }
         else if (vid instanceof Blob) { url = URL.createObjectURL(vid); }
         const ext = (url && url.includes('.mp4')) || (url && url.includes('video/mp4')) ? 'mp4' : 'webm';
-        return '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">VIDEO ' + (i+1) + ' (' + cam + ')</span><video controls playsinline preload="auto" src="' + url + '" style="width:100%;border-radius:8px;background:#000;"></video><button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + url + '\', \'VIDEO_' + a.id + '_' + (i+1) + '.' + ext + '\')">⬇️ DESCARGAR VIDEO ' + (i+1) + '</button></div>';
+        return '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">' + (vid && vid.origen === 'MANUAL' ? 'EVIDENCIA MANUAL — ' + (vid.nombre || 'video') + (vid.agregado ? ' (' + vid.agregado + ')' : '') : 'VIDEO ' + (i+1) + ' (' + cam + ')') + '</span><video controls playsinline preload="auto" src="' + url + '" style="width:100%;border-radius:8px;background:#000;"></video><button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + url + '\', \'VIDEO_' + a.id + '_' + (i+1) + '.' + ext + '\')">⬇️ DESCARGAR VIDEO ' + (i+1) + '</button></div>';
     }).join('') : '';
     
     const aA = a.audios && a.audios.length ? a.audios.map((aud,i) => {
@@ -2430,6 +2560,18 @@ function render(a){
     if (imgContainer && imgContainer.dataset.len != (a.imagenes ? a.imagenes.length : 0)) { imgContainer.innerHTML = fT; imgContainer.dataset.len = a.imagenes ? a.imagenes.length : 0; }
     if (vidContainer && vidContainer.dataset.len != (a.videos ? a.videos.length : 0)) { vidContainer.innerHTML = vV; vidContainer.dataset.len = a.videos ? a.videos.length : 0; }
     if (audContainer && audContainer.dataset.len != (a.audios ? a.audios.length : 0)) { audContainer.innerHTML = aA; audContainer.dataset.len = a.audios ? a.audios.length : 0; }
+
+    const dD = a.documentos && a.documentos.length ? a.documentos.map((doc, i) => {
+        let url = doc && doc.url ? doc.url : '';
+        const nombreSeguro = (doc.nombre || ('DOCUMENTO_' + (i + 1))).replace(/['"]/g, '');
+        return '<div style="background:#FAFAFA;border:1px solid #EEE;padding:15px;border-radius:8px;margin-bottom:10px;text-align:left;position:relative;z-index:3;">' +
+            '<p style="font-size:12px;font-weight:800;color:#8B0000;margin-bottom:4px;">📄 DOCUMENTO ' + (i + 1) + ': ' + (doc.nombre || 'adjunto') + '</p>' +
+            '<p style="font-size:11px;color:#666;margin-bottom:8px;line-height:1.5;">Cargado: ' + (doc.agregado || '—') + (doc.descripcion ? ' | Descripción: ' + doc.descripcion : '') + '</p>' +
+            '<button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + url + '\', \'' + nombreSeguro + '\')">⬇️ DESCARGAR DOCUMENTO ' + (i + 1) + '</button>' +
+            '<div class="mono" style="margin-top:8px;font-size:9px;">SHA-256: ' + (doc.sha256 || '—') + '</div></div>';
+    }).join('') : '';
+    let docContainer = document.getElementById('gal_doc_' + a.id);
+    if (docContainer && docContainer.dataset.len != (a.documentos ? a.documentos.length : 0)) { docContainer.innerHTML = dD; docContainer.dataset.len = a.documentos ? a.documentos.length : 0; }
 }
 
 const verificar = async () =>{ alert('VERIFICACION CORPORATIVA\\nTodas las firmas locales válidas y blindadas.\\nLeyes: 26.485 - 25.326'); };
@@ -2484,4 +2626,3 @@ async function iniciarApp() {
 </script>
 </body>
 </html>
-
