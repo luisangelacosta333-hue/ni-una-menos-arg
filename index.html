@@ -126,6 +126,7 @@ body{background:#FFFFFF;background-image:radial-gradient(circle at 50% 0%,rgba(2
 .foto{background:#FAFAFA;border:1px solid #EEE;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#999;font-family:'Cinzel',serif;font-size:10px;overflow:hidden;position:relative;width:100%;padding:15px;border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,0.05);}
 .foto img,.foto video{width:100%;height:auto;object-fit:contain;border-radius:8px;}
 .btn-descarga-evidencia{display:inline-block;margin-top:10px;padding:10px 18px;background:var(--bordeOro);color:#FFF;font-family:'Cinzel',serif;font-weight:900;font-size:12px;letter-spacing:2px;border-radius:999px;text-decoration:none;box-shadow:var(--luz);text-align:center;width:100%;max-width:320px;border:none;cursor:pointer;}
+.solo-impresion{display:none}
 
 .scroll-container{width:100%;overflow:hidden;mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent)}
 .scroll-text{display:inline-block;white-space:nowrap;font-family:'Cinzel',serif;font-weight:800;}
@@ -158,7 +159,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   .btn, .footer-wrap, .noimp, .btn-descarga-evidencia, .vista:not(.activa), header, .scroll-container, #btn-install-pwa, #btn-flotante-sos { display: none !important; }
   .vista.activa { padding: 0 !important; max-width: 100% !important; display: block !important; }
   #alertas, #listaBitacora { display: block !important; width: 100%; }
-  .acta { position: relative !important; left: auto !important; top: auto !important; width: 100% !important; border: 1px solid #ccc !important; box-shadow: none !important; page-break-inside: avoid; page-break-after: auto; margin: 0 0 20px 0 !important; }
+  .acta { position: relative !important; left: auto !important; top: auto !important; width: 100% !important; border: 1px solid #ccc !important; box-shadow: none !important; page-break-inside: avoid; page-break-after: auto; margin: 0 0 20px 0 !important; .solo-impresion{display:block !important;} .no-imprimir-media{display:none !important;} }
 }
 
 .file-upload-wrapper {position:relative;width:100%;height:120px;border:2px dashed var(--oro);border-radius:12px;background:#FFFCF2;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;overflow:hidden;margin-top:10px;}
@@ -432,6 +433,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  <h2 class="tit" style="text-align:left;border-bottom:1px solid var(--oro);padding-bottom:10px;letter-spacing:5px">CENTRO JUDICIAL P4</h2>
  <div class="noimp" style="display:flex;gap:12px;flex-wrap:wrap">
   <button class="btn" onclick="window.print()" style="flex:1 1 100%">IMPRIMIR ACTA JUDICIAL (PDF)</button>
+  <button class="btn noimp" onclick="descargarPaqueteTodas(this)" style="flex:1 1 100%;margin-top:10px;background:linear-gradient(135deg,#1a5c1a,#2e7d32,#1a5c1a);">📦 DESCARGAR PAQUETE GENERAL (TODAS LAS ACTAS + EVIDENCIA)</button>
   <button class="btn blanco noimp" onclick="verificar()" style="flex:1 1 100%;margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
   <button class="btn noimp" onclick="abrirActaAcumulativa()" style="flex:1 1 100%;margin-top:10px;background:linear-gradient(135deg,#8B0000,#C70020,#8B0000);">📂 ABRIR ACTA PERICIAL ACUMULATIVA (TODA LA EVIDENCIA JUNTA)</button>
   <div class="noimp" style="font-size:11.5px;color:#8B0000;font-weight:700;text-align:center;line-height:1.6;background:#FFF3F5;border:1px solid #8B0000;border-radius:10px;padding:12px;">💡 En cada acta podés AGREGAR EVIDENCIA MANUAL (fotos, capturas, audios, videos o PDFs). Todo se acumula con sello SHA-256 y cadena de custodia: no se pisa ni se borra al cargar un archivo nuevo.</div>
@@ -474,6 +476,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
@@ -2453,6 +2456,110 @@ async function abrirActaAcumulativa() {
     await window.ir('panel');
     setTimeout(() => { const el = document.getElementById('a_' + idAcum); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 350);
 }
+async function agregarActaAZip(zip, acta, prefijoCarpeta) {
+    const carpeta = zip.folder(prefijoCarpeta || ('ACTA_' + (acta.numero_acta || acta.id)));
+    let indice = 'ACTA PERICIAL P4 - NI UNA MENOS ARGENTINA\n';
+    indice += '========================================\n';
+    indice += 'Expediente: ' + (acta.numero_acta || '—') + '\n';
+    indice += 'Fecha/Hora: ' + (acta.fecha || '—') + ' ' + (acta.hora || '—') + '\n';
+    indice += 'Nombre: ' + (acta.nombre || '—') + '\n';
+    indice += 'IMEI/ID: ' + (acta.imei || '—') + '\n';
+    indice += 'Ubicacion: ' + (acta.lat || '—') + ' , ' + (acta.lng || '—') + '\n';
+    indice += 'SHA-256 del acta: ' + (acta.sha256 || '—') + '\n\n';
+    indice += '=== INDICE DE EVIDENCIAS (archivos adjuntos en este ZIP) ===\n\n';
+    let n = 1;
+    const todas = [];
+    (acta.imagenes || []).forEach(i => todas.push(Object.assign({ cat: 'FOTO' }, i)));
+    (acta.videos || []).forEach(v => todas.push(Object.assign({ cat: 'VIDEO' }, v)));
+    (acta.audios || []).forEach(a => todas.push(Object.assign({ cat: 'AUDIO' }, a)));
+    (acta.documentos || []).forEach(d => todas.push(Object.assign({ cat: 'DOCUMENTO' }, d)));
+    if (todas.length === 0) indice += '(Sin archivos de evidencia adjuntos a esta acta).\n';
+    for (const ev of todas) {
+        if (!ev.url) { indice += n + '. [SIN ARCHIVO] ' + ev.cat + '\n'; n++; continue; }
+        let blob = null;
+        try { const res = await fetch(ev.url); if (res.ok) blob = await res.blob(); } catch(e) {}
+        if (!blob && typeof ev.url === 'string' && ev.url.startsWith('data:')) blob = dataURLtoBlob(ev.url);
+        const nombreBase = (ev.nombre || ('evidencia_' + n)).replace(/[^a-zA-Z0-9._-]/g, '_');
+        const nombreArchivo = String(n).padStart(3, '0') + '_' + ev.cat + '_' + nombreBase;
+        if (blob) { carpeta.file(nombreArchivo, blob); indice += n + '. ' + nombreArchivo + ' (' + Math.round(blob.size / 1024) + ' KB)'; }
+        else { indice += n + '. [NO SE PUDO DESCARGAR] ' + nombreArchivo; }
+        indice += ' | SHA-256: ' + (ev.sha256 || '—') + ' | Cargado: ' + (ev.agregado || '—') + (ev.descripcion ? ' | ' + ev.descripcion : '') + '\n';
+        n++;
+    }
+    carpeta.file('ACTA_RESUMEN_Y_HASHES.txt', indice);
+    return { total: todas.length };
+}
+async function descargarPaqueteActa(actaId, btn) {
+    const acta = listaActas.find(a => a.id === actaId);
+    if (!acta) return alert('Acta no encontrada.');
+    if (typeof JSZip === 'undefined') return alert('La librería de compresión no se pudo cargar. Verificá tu conexión a internet e intentá de nuevo.');
+    const txtOriginal = btn ? btn.innerText : '';
+    if (btn) { btn.innerText = 'ARMANDO PAQUETE CON TODA LA EVIDENCIA...'; btn.disabled = true; }
+    try {
+        const zip = new JSZip();
+        await agregarActaAZip(zip, acta, 'ACTA_' + (acta.numero_acta || acta.id));
+        const contenido = await zip.generateAsync({ type: 'blob' });
+        const nombreZip = 'ACTA_C4_' + (acta.numero_acta || acta.id) + '.zip';
+        const archivo = new File([contenido], nombreZip, { type: 'application/zip' });
+        let compartido = false;
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [archivo] })) {
+            try {
+                await navigator.share({ files: [archivo], title: 'Acta Pericial C4 ' + (acta.numero_acta || ''), text: 'Te envío el acta pericial C4 (expediente ' + (acta.numero_acta || acta.id) + ') con TODA la evidencia: fotos, videos, audios y documentos en un solo ZIP.' });
+                compartido = true;
+            } catch(e) {}
+        }
+        if (!compartido) {
+            const zipUrl = URL.createObjectURL(contenido);
+            const a = document.createElement('a');
+            a.href = zipUrl; a.download = nombreZip;
+            document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(() => URL.revokeObjectURL(zipUrl), 5000);
+            if (confirm('✅ Paquete con toda la evidencia descargado. ¿Abrir WhatsApp para enviarlo? (Adjuntá el .zip desde el chat)')) {
+                window.open('https://wa.me/?text=' + encodeURIComponent('Te envío el acta pericial C4 (expediente ' + (acta.numero_acta || acta.id) + ') con toda la evidencia en un solo ZIP.'), '_blank');
+            }
+        }
+    } catch(e) {
+        alert('Error al armar el paquete: ' + e.message);
+    } finally {
+        if (btn) { btn.innerText = txtOriginal || '📦 DESCARGAR / COMPARTIR TODA LA EVIDENCIA (ZIP)'; btn.disabled = false; }
+    }
+}
+async function descargarPaqueteTodas(btn) {
+    if (typeof JSZip === 'undefined') return alert('La librería de compresión no se pudo cargar. Verificá tu conexión.');
+    const currentImei = localStorage.getItem('imei');
+    const actas = listaActas.filter(a => !currentImei || a.imei === currentImei || a.imei === 'SIN_IMEI');
+    if (actas.length === 0) return alert('No hay actas para descargar.');
+    const txtOriginal = btn ? btn.innerText : '';
+    if (btn) { btn.innerText = 'ARMANDO PAQUETE GENERAL...'; btn.disabled = true; }
+    try {
+        const zip = new JSZip();
+        for (const acta of actas) { await agregarActaAZip(zip, acta, 'ACTA_' + (acta.numero_acta || acta.id)); }
+        const contenido = await zip.generateAsync({ type: 'blob' });
+        const nombreZip = 'PAQUETE_GENERAL_C4_' + Date.now() + '.zip';
+        const archivo = new File([contenido], nombreZip, { type: 'application/zip' });
+        let compartido = false;
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [archivo] })) {
+            try {
+                await navigator.share({ files: [archivo], title: 'Paquete General de Actas C4', text: 'Te envío TODAS mis actas periciales C4 con la evidencia completa en un solo ZIP.' });
+                compartido = true;
+            } catch(e) {}
+        }
+        if (!compartido) {
+            const zipUrl = URL.createObjectURL(contenido);
+            const a = document.createElement('a');
+            a.href = zipUrl; a.download = nombreZip;
+            document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(() => URL.revokeObjectURL(zipUrl), 5000);
+            if (confirm('✅ Paquete general descargado. ¿Abrir WhatsApp para enviarlo?')) {
+                window.open('https://wa.me/?text=' + encodeURIComponent('Te envío todas mis actas periciales C4 con la evidencia completa en un ZIP.'), '_blank');
+            }
+        }
+    } catch(e) {
+        alert('Error: ' + e.message);
+    } finally {
+        if (btn) { btn.innerText = txtOriginal || '📦 DESCARGAR PAQUETE GENERAL'; btn.disabled = false; }
+    }
+}
 function render(a){
     const c = document.getElementById('alertas');
     let d = document.getElementById('a_'+a.id);
@@ -2493,6 +2600,7 @@ function render(a){
         '<div id="evLista_' + a.id + '"></div>' +
         '<div class="campo" style="margin-top:12px;margin-bottom:10px;"><label style="font-size:10px;">DESCRIPCIÓN DE LA PRUEBA (OPCIONAL)</label><input id="evDesc_' + a.id + '" placeholder="Ej: Captura de amenazas de WhatsApp del 12/10" style="padding:12px;font-size:14px;"></div>' +
         '<button type="button" class="btn" id="evBtn_' + a.id + '" onclick="agregarEvidenciaActa(\'' + a.id + '\')" style="padding:14px;font-size:11px;">CONFIRMAR Y AGREGAR AL ACTA</button>' +
+        '<button type="button" class="btn noimp" onclick="descargarPaqueteActa(\'' + a.id + '\', this)" style="padding:14px;font-size:11px;margin-top:10px;background:linear-gradient(135deg,#1a5c1a,#2e7d32,#1a5c1a);">📦 DESCARGAR / COMPARTIR TODA LA EVIDENCIA (ZIP)</button>' +
         '</div>';
         
         setTimeout(()=>{
@@ -2542,7 +2650,7 @@ function render(a){
         else if (vid && vid.rutaNativa) { url = vid.rutaNativa; cam = vid.camara || 'TRASERA'; }
         else if (vid instanceof Blob) { url = URL.createObjectURL(vid); }
         const ext = (url && url.includes('.mp4')) || (url && url.includes('video/mp4')) ? 'mp4' : 'webm';
-        return '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">' + (vid && vid.origen === 'MANUAL' ? 'EVIDENCIA MANUAL — ' + (vid.nombre || 'video') + (vid.agregado ? ' (' + vid.agregado + ')' : '') : 'VIDEO ' + (i+1) + ' (' + cam + ')') + '</span><video controls playsinline preload="auto" src="' + url + '" style="width:100%;border-radius:8px;background:#000;"></video><button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + url + '\', \'VIDEO_' + a.id + '_' + (i+1) + '.' + ext + '\')">⬇️ DESCARGAR VIDEO ' + (i+1) + '</button></div>';
+        return '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">' + (vid && vid.origen === 'MANUAL' ? 'EVIDENCIA MANUAL — ' + (vid.nombre || 'video') + (vid.agregado ? ' (' + vid.agregado + ')' : '') : 'VIDEO ' + (i+1) + ' (' + cam + ')') + '</span><video class="no-imprimir-media" controls playsinline preload="auto" src="' + url + '" style="width:100%;border-radius:8px;background:#000;"></video><div class="solo-impresion" style="font-size:11px;color:#333;line-height:1.5;border:1px solid #CCC;padding:8px;margin-top:6px;">[VIDEO] ' + (vid && vid.nombre ? vid.nombre : ('VIDEO_' + (i+1))) + ' | Cámara: ' + cam + (vid && vid.agregado ? ' | Cargado: ' + vid.agregado : '') + (vid && vid.descripcion ? ' | ' + vid.descripcion : '') + '<br>SHA-256: ' + ((vid && vid.sha256) || '—') + '<br>Archivo original incluido en el paquete ZIP de esta acta.</div><button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + url + '\', \'VIDEO_' + a.id + '_' + (i+1) + '.' + ext + '\')">⬇️ DESCARGAR VIDEO ' + (i+1) + '</button></div>';
     }).join('') : '';
     
     const aA = a.audios && a.audios.length ? a.audios.map((aud,i) => {
@@ -2551,7 +2659,7 @@ function render(a){
         else if (aud && aud.blob instanceof Blob) url = URL.createObjectURL(aud.blob);
         else if (aud && aud.rutaNativa) url = aud.rutaNativa;
         else if (aud instanceof Blob) url = URL.createObjectURL(aud);
-        return '<div style="background:#FAFAFA;border:1px solid #EEE;padding:15px;border-radius:8px;margin-bottom:10px;text-align:center;"><p style="font-size:12px;font-weight:800;color:#8B0000;margin-bottom:8px;">AUDIO DE ENTORNO ' + (i+1) + '</p><audio controls preload="auto" src="' + url + '" style="width:100%;"></audio><button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + url + '\', \'AUDIO_' + a.id + '_' + (i+1) + '.webm\')">⬇️ DESCARGAR AUDIO ' + (i+1) + '</button></div>';
+        return '<div style="background:#FAFAFA;border:1px solid #EEE;padding:15px;border-radius:8px;margin-bottom:10px;text-align:center;"><p style="font-size:12px;font-weight:800;color:#8B0000;margin-bottom:8px;">AUDIO DE ENTORNO ' + (i+1) + '</p><audio class="no-imprimir-media" controls preload="auto" src="' + url + '" style="width:100%;"></audio><div class="solo-impresion" style="font-size:11px;color:#333;line-height:1.5;border:1px solid #CCC;padding:8px;margin-top:6px;">[AUDIO] ' + (aud && aud.nombre ? aud.nombre : ('AUDIO_' + (i+1))) + (aud && aud.agregado ? ' | Cargado: ' + aud.agregado : '') + (aud && aud.descripcion ? ' | ' + aud.descripcion : '') + '<br>SHA-256: ' + ((aud && aud.sha256) || '—') + '<br>Archivo original incluido en el paquete ZIP de esta acta.</div><button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + url + '\', \'AUDIO_' + a.id + '_' + (i+1) + '.webm\')">⬇️ DESCARGAR AUDIO ' + (i+1) + '</button></div>';
     }).join('') : '';
     
     let imgContainer = document.getElementById('gal_img_' + a.id);
