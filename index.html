@@ -159,7 +159,10 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   body { background: #fff !important; color: #000 !important; }
   .btn, .footer-wrap, .noimp, .btn-descarga-evidencia, .vista:not(.activa), header, .scroll-container, #btn-install-pwa, #btn-flotante-sos { display: none !important; }
   .vista.activa { padding: 0 !important; max-width: 100% !important; display: block !important; }
-  #alertas, #listaBitacora { display: block !important; width: 100%; }
+  #alertas, #listaBitacora { display: block !important; width: 100% !important; visibility: visible !important; }
+  .acta, .galeria, .foto { display: block !important; width: 100% !important; visibility: visible !important; page-break-inside: avoid; }
+  .acta img { display: block !important; max-width: 100% !important; height: auto !important; visibility: visible !important; }
+  .noimp, .btn, .btn-descarga-evidencia, .file-upload-wrapper, input, textarea { display: none !important; }
   .acta { position: relative !important; left: auto !important; top: auto !important; width: 100% !important; border: 1px solid #ccc !important; box-shadow: none !important; page-break-inside: avoid; page-break-after: auto; margin: 0 0 20px 0 !important; .solo-impresion{display:block !important;} .no-imprimir-media{display:none !important;} .ficha-impresa{display:block !important;} }
 }
 
@@ -406,7 +409,8 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 
  <div class="caja">
   <h3>CRONOLOGÍA EXPORTABLE</h3>
-  <button class="btn blanco noimp" onclick="window.print()" style="margin-bottom:18px;">🖨️ EXPORTAR / IMPRIMIR INFORME (PDF)</button>
+  <button class="btn blanco noimp" onclick="window.print()" style="margin-bottom:10px;">🖨️ EXPORTAR / IMPRIMIR INFORME (PDF)</button>
+  <button class="btn noimp" onclick="descargarBitacoraZip(this)" style="margin-bottom:18px;background:linear-gradient(135deg,#1a4d2e,#2e7d32,#1a4d2e);">📦 DESCARGAR TODA LA BITÁCORA + EVIDENCIA (ZIP)</button>
   <div id="listaBitacora"></div>
   <p style="font-size:11px;color:#777;text-align:center;margin-top:15px;line-height:1.4;">
    Nota legal: Se conservan los archivos digitales originales con sello SHA-256 como respaldo documental para consulta jurídica o autoridad competente.
@@ -1543,6 +1547,72 @@ async function cargarBitacora() {
     } catch (e) {}
 }
 
+async function descargarBitacoraZip(btn) {
+    const textoOriginal = btn ? btn.innerText : '';
+    if (btn) { btn.innerText = '⏳ DESCARGANDO BITÁCORA...'; btn.disabled = true; }
+    try {
+        if (typeof JSZip === 'undefined') {
+            alert('Sin conexión para la librería ZIP. Se abrirá la impresión PDF.');
+            setTimeout(() => { try { window.print(); } catch(e) {} }, 800);
+            return;
+        }
+        await asegurarSesionSupabase();
+        const imei = localStorage.getItem('imei');
+        const llave = localStorage.getItem('llave_maestra');
+        if (!imei && !llave) { alert('Ingresá con tu Llave Maestra primero (Centro Judicial).'); return; }
+        const filtro = llave ? ('llave_acceso=eq.' + LK(llave)) : ('imei=eq.' + imei);
+        const res = await supaQuery('GET', 'c4_bitacora?select=*&' + filtro + '&order=creado_en.desc');
+        if (!res || res.length === 0) { alert('No hay incidentes cargados en la bitácora para descargar.'); return; }
+        const zip = new JSZip();
+        let indice = 'DIARIO DE INCIDENTES - NI UNA MENOS ARGENTINA\n';
+        indice += '========================================\n';
+        indice += 'Total de incidentes: ' + res.length + '\n\n';
+        let n = 1;
+        for (let idx = 0; idx < res.length; idx++) {
+            const item = res[idx];
+            const carpeta = zip.folder('INCIDENTE_' + String(idx + 1).padStart(3, '0'));
+            indice += '--- INCIDENTE ' + (idx + 1) + ' ---\n';
+            indice += 'Tipo: ' + (item.tipo_incidente || '') + '\n';
+            indice += 'Fecha: ' + (item.fecha_suceso || '') + '\n';
+            indice += 'Lugar: ' + (item.lugar || '') + '\n';
+            indice += 'Relato: ' + (item.relato || '') + '\n';
+            indice += 'SHA-256: ' + (item.hash_integridad || '') + '\n';
+            carpeta.file('DATOS_INCIDENTE.txt', 'Tipo: ' + (item.tipo_incidente || '') + '\nFecha: ' + (item.fecha_suceso || '') + '\nLugar: ' + (item.lugar || '') + '\nRelato: ' + (item.relato || '') + '\nSHA-256: ' + (item.hash_integridad || '') + '\n');
+            const archivos = item.archivos_urls || [];
+            for (let ai = 0; ai < archivos.length; ai++) {
+                const a = archivos[ai];
+                if (!a || !a.url) continue;
+                if (btn) btn.innerText = '⏳ DESCARGANDO ARCHIVO ' + n + '...';
+                const blob = await urlToBlob(a.url);
+                const nombreBase = (a.nombre || ('evidencia_' + (ai + 1))).replace(/[^a-zA-Z0-9._-]/g, '_');
+                if (blob) { carpeta.file(String(ai + 1).padStart(3, '0') + '_' + nombreBase, blob); indice += '  Archivo ' + (ai + 1) + ': ' + nombreBase + ' (' + Math.round(blob.size / 1024) + ' KB)\n'; }
+                else indice += '  Archivo ' + (ai + 1) + ': ' + nombreBase + ' [NO SE PUDO DESCARGAR]\n';
+                n++;
+            }
+            indice += '\n';
+        }
+        zip.file('00_INDICE_BITACORA.txt', indice);
+        if (btn) btn.innerText = '⏳ COMPRIMIENDO...';
+        const contenido = await zip.generateAsync({ type: 'blob' });
+        const nombreZip = 'BITACORA_C4_' + Date.now() + '.zip';
+        const archivo = new File([contenido], nombreZip, { type: 'application/zip' });
+        let compartido = false;
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [archivo] })) {
+            try { await navigator.share({ files: [archivo], title: 'Bitácora C4', text: 'Te envío mi diario de incidentes con toda la evidencia.' }); compartido = true; } catch(e) {}
+        }
+        if (!compartido) {
+            const url = URL.createObjectURL(contenido);
+            const a = document.createElement('a');
+            a.href = url; a.download = nombreZip; document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 4000);
+            alert('✅ Bitácora completa descargada (' + res.length + ' incidentes, ' + (n - 1) + ' archivos de evidencia). Adjuntalo por WhatsApp o email.');
+        }
+    } catch(e) {
+        alert('Error al descargar la bitácora: ' + e.message);
+    } finally {
+        if (btn) { btn.innerText = textoOriginal; btn.disabled = false; }
+    }
+}
 async function disparoSOS(origen = 'manual'){
     if(window.sosActivo || window.bloqueoDisparo) { 
         debugLog('Freno activo: El sistema ya está grabando evidencia. Ignorando doble toque.');
