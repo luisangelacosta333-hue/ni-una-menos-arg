@@ -126,6 +126,7 @@ body{background:#FFFFFF;background-image:radial-gradient(circle at 50% 0%,rgba(2
 .foto{background:#FAFAFA;border:1px solid #EEE;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#999;font-family:'Cinzel',serif;font-size:10px;overflow:hidden;position:relative;width:100%;padding:15px;border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,0.05);}
 .foto img,.foto video{width:100%;height:auto;object-fit:contain;border-radius:8px;}
 .btn-descarga-evidencia{display:inline-block;margin-top:10px;padding:10px 18px;background:var(--bordeOro);color:#FFF;font-family:'Cinzel',serif;font-weight:900;font-size:12px;letter-spacing:2px;border-radius:999px;text-decoration:none;box-shadow:var(--luz);text-align:center;width:100%;max-width:320px;border:none;cursor:pointer;}
+.ficha-impresa{display:none}
 .solo-impresion{display:none}
 
 .scroll-container{width:100%;overflow:hidden;mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent)}
@@ -159,7 +160,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   .btn, .footer-wrap, .noimp, .btn-descarga-evidencia, .vista:not(.activa), header, .scroll-container, #btn-install-pwa, #btn-flotante-sos { display: none !important; }
   .vista.activa { padding: 0 !important; max-width: 100% !important; display: block !important; }
   #alertas, #listaBitacora { display: block !important; width: 100%; }
-  .acta { position: relative !important; left: auto !important; top: auto !important; width: 100% !important; border: 1px solid #ccc !important; box-shadow: none !important; page-break-inside: avoid; page-break-after: auto; margin: 0 0 20px 0 !important; .solo-impresion{display:block !important;} .no-imprimir-media{display:none !important;} }
+  .acta { position: relative !important; left: auto !important; top: auto !important; width: 100% !important; border: 1px solid #ccc !important; box-shadow: none !important; page-break-inside: avoid; page-break-after: auto; margin: 0 0 20px 0 !important; .solo-impresion{display:block !important;} .no-imprimir-media{display:none !important;} .ficha-impresa{display:block !important;} }
 }
 
 .file-upload-wrapper {position:relative;width:100%;height:120px;border:2px dashed var(--oro);border-radius:12px;background:#FFFCF2;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;overflow:hidden;margin-top:10px;}
@@ -435,6 +436,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   <button class="btn" onclick="window.print()" style="flex:1 1 100%">IMPRIMIR ACTA JUDICIAL (PDF)</button>
   <button class="btn noimp" onclick="descargarPaqueteTodas(this)" style="flex:1 1 100%;margin-top:10px;background:linear-gradient(135deg,#1a5c1a,#2e7d32,#1a5c1a);">📦 DESCARGAR PAQUETE GENERAL (TODAS LAS ACTAS + EVIDENCIA)</button>
   <button class="btn blanco noimp" onclick="verificar()" style="flex:1 1 100%;margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
+  <button class="btn noimp" onclick="descargarPaqueteGeneral()" style="flex:1 1 100%;margin-top:10px;background:linear-gradient(135deg,#1a4d2e,#2e7d32,#1a4d2e);">📦 DESCARGAR PAQUETE GENERAL (TODAS LAS ACTAS + EVIDENCIA)</button>
   <button class="btn noimp" onclick="abrirActaAcumulativa()" style="flex:1 1 100%;margin-top:10px;background:linear-gradient(135deg,#8B0000,#C70020,#8B0000);">📂 ABRIR ACTA PERICIAL ACUMULATIVA (TODA LA EVIDENCIA JUNTA)</button>
   <div class="noimp" style="font-size:11.5px;color:#8B0000;font-weight:700;text-align:center;line-height:1.6;background:#FFF3F5;border:1px solid #8B0000;border-radius:10px;padding:12px;">💡 En cada acta podés AGREGAR EVIDENCIA MANUAL (fotos, capturas, audios, videos o PDFs). Todo se acumula con sello SHA-256 y cadena de custodia: no se pisa ni se borra al cargar un archivo nuevo.</div>
  </div>
@@ -476,6 +478,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
@@ -2560,6 +2563,143 @@ async function descargarPaqueteTodas(btn) {
         if (btn) { btn.innerText = txtOriginal || '📦 DESCARGAR PAQUETE GENERAL'; btn.disabled = false; }
     }
 }
+async function urlToBlob(url) {
+    try {
+        if (!url) return null;
+        if (typeof url === 'string' && url.startsWith('data:')) return dataURLtoBlob(url);
+        const res = await fetch(url);
+        if (res.ok) return await res.blob();
+        return null;
+    } catch(e) { return null; }
+}
+function extensionDeMime(tipo, nombre) {
+    if (nombre && nombre.includes('.')) return nombre.split('.').pop().toLowerCase();
+    if (!tipo) return 'bin';
+    if (tipo.includes('jpeg') || tipo.includes('jpg')) return 'jpg';
+    if (tipo.includes('png')) return 'png';
+    if (tipo.includes('webp')) return 'webp';
+    if (tipo.includes('mp4')) return 'mp4';
+    if (tipo.includes('webm')) return 'webm';
+    if (tipo.includes('mpeg') || tipo.includes('mp3')) return 'mp3';
+    if (tipo.includes('ogg')) return 'ogg';
+    if (tipo.includes('wav')) return 'wav';
+    if (tipo.includes('pdf')) return 'pdf';
+    return 'bin';
+}
+async function agregarEvidenciasAZip(zip, acta, carpeta) {
+    let indice = 'ACTA PERICIAL P4 - CADENA DE CUSTODIA\n';
+    indice += '==================================\n';
+    indice += 'EXPEDIENTE: ' + (acta.numero_acta || acta.id) + '\n';
+    indice += 'FECHA: ' + (acta.fecha || '') + ' ' + (acta.hora || '') + '\n';
+    indice += 'NOMBRE: ' + (acta.nombre || '') + '\n';
+    indice += 'IMEI/ID: ' + (acta.imei || '') + '\n';
+    indice += 'SHA-256 DEL ACTA: ' + (acta.sha256 || '') + '\n';
+    indice += '==================================\n\n';
+    indice += 'INDICE DE EVIDENCIAS INCLUIDAS:\n\n';
+    let n = 1;
+    const cats = [['IMAGEN', acta.imagenes], ['VIDEO', acta.videos], ['AUDIO', acta.audios], ['DOCUMENTO', acta.documentos]];
+    for (const [cat, arr] of cats) {
+        if (!arr || !arr.length) continue;
+        for (let i = 0; i < arr.length; i++) {
+            const ev = arr[i];
+            const url = ev.url || ev.rutaNativa || null;
+            const ext = extensionDeMime(ev.tipo || '', ev.nombre || '');
+            const nombreArchivo = String(n).padStart(3, '0') + '_' + cat + '_' + (i + 1) + '.' + ext;
+            indice += n + '. [' + cat + '] ' + nombreArchivo;
+            if (ev.nombre) indice += '  (origen: ' + ev.nombre + ')';
+            if (ev.camara) indice += '  camara: ' + ev.camara;
+            if (ev.agregado) indice += '  cargado: ' + ev.agregado;
+            if (ev.descripcion) indice += '  desc: ' + ev.descripcion;
+            if (ev.sha256) indice += '  SHA-256: ' + ev.sha256;
+            indice += '\n';
+            if (url) {
+                const blob = await urlToBlob(url);
+                if (blob) carpeta.file(nombreArchivo, blob);
+                else indice += '   ⚠️ No se pudo descargar el archivo original (URL expirada o local).\n';
+            } else {
+                indice += '   ⚠️ Sin URL de archivo.\n';
+            }
+            n++;
+        }
+    }
+    if (n === 1) indice += '(Sin evidencias adjuntas a esta acta).\n';
+    carpeta.file('00_INDICE_Y_HASHES.txt', indice);
+    const elActa = document.getElementById('a_' + acta.id);
+    if (elActa) carpeta.file('ACTA_IMPRESA.html', elActa.outerHTML);
+    return n - 1;
+}
+async function descargarPaqueteActa(actaId) {
+    if (typeof JSZip === 'undefined') return alert('La librería de compresión no se pudo cargar. Verificá tu conexión a internet.');
+    const acta = listaActas.find(a => a.id === actaId);
+    if (!acta) return alert('Acta no encontrada.');
+    try {
+        const zip = new JSZip();
+        const carpeta = zip.folder('ACTA_' + (acta.numero_acta || acta.id));
+        const cant = await agregarEvidenciasAZip(zip, acta, carpeta);
+        const contenido = await zip.generateAsync({ type: 'blob' });
+        const nombreZip = 'ACTA_C4_' + (acta.numero_acta || acta.id) + '.zip';
+        const archivo = new File([contenido], nombreZip, { type: 'application/zip' });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [archivo] })) {
+            try {
+                await navigator.share({ files: [archivo], title: 'Acta Pericial C4 ' + (acta.numero_acta || ''), text: 'Te envío el acta pericial con toda la evidencia (' + cant + ' archivos).' });
+                return;
+            } catch(e) { /* el usuario canceló o no hay app, cae a descarga */ }
+        }
+        const url = URL.createObjectURL(contenido);
+        const a = document.createElement('a');
+        a.href = url; a.download = nombreZip;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+        alert('✅ Paquete descargado (' + cant + ' evidencia(s)). Incluye el acta impresa, todos los archivos originales y el índice con SHA-256. Adjuntalo por WhatsApp o email.');
+    } catch(e) {
+        alert('Error al armar el paquete: ' + e.message);
+    }
+}
+async function descargarPaqueteGeneral() {
+    if (typeof JSZip === 'undefined') return alert('La librería de compresión no se pudo cargar. Verificá tu conexión.');
+    const currentImei = localStorage.getItem('imei');
+    const actas = listaActas.filter(a => !currentImei || a.imei === currentImei || a.imei === 'SIN_IMEI');
+    if (!actas.length) return alert('No hay actas para descargar.');
+    try {
+        const zip = new JSZip();
+        let total = 0;
+        for (const acta of actas) {
+            const carpeta = zip.folder('ACTA_' + (acta.numero_acta || acta.id));
+            total += await agregarEvidenciasAZip(zip, acta, carpeta);
+        }
+        const contenido = await zip.generateAsync({ type: 'blob' });
+        const nombreZip = 'PAQUETE_GENERAL_C4_' + Date.now() + '.zip';
+        const archivo = new File([contenido], nombreZip, { type: 'application/zip' });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [archivo] })) {
+            try {
+                await navigator.share({ files: [archivo], title: 'Paquete General de Actas C4', text: 'Te envío todas mis actas periciales con la evidencia completa.' });
+                return;
+            } catch(e) {}
+        }
+        const url = URL.createObjectURL(contenido);
+        const a = document.createElement('a');
+        a.href = url; a.download = nombreZip;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+        alert('✅ Paquete general descargado (' + actas.length + ' actas, ' + total + ' evidencias).');
+    } catch(e) {
+        alert('Error: ' + e.message);
+    }
+}
+function compartirWhatsApp(actaId) {
+    const acta = listaActas.find(a => a.id === actaId);
+    if (!acta) return alert('Acta no encontrada.');
+    let msg = '*ACTA PERICIAL P4 - NI UNA MENOS ARGENTINA*%0A';
+    msg += 'Expediente: ' + (acta.numero_acta || acta.id) + '%0A';
+    msg += 'Fecha: ' + (acta.fecha || '') + ' ' + (acta.hora || '') + '%0A';
+    msg += 'Nombre: ' + (acta.nombre || '') + '%0A';
+    msg += 'IMEI/ID: ' + (acta.imei || '') + '%0A';
+    msg += 'SHA-256: ' + (acta.sha256 || '') + '%0A';
+    const totalEv = (acta.imagenes ? acta.imagenes.length : 0) + (acta.videos ? acta.videos.length : 0) + (acta.audios ? acta.audios.length : 0) + (acta.documentos ? acta.documentos.length : 0);
+    msg += 'Evidencias resguardadas: ' + totalEv + ' (fotos, videos, audios y documentos)%0A';
+    msg += '%0ALa evidencia completa (archivos originales con hash SHA-256) se envía adjunta en el paquete ZIP. Usá el botón "📦 DESCARGAR ACTA + TODA LA EVIDENCIA" para obtenerlo y adjuntarlo en este chat.';
+    window.open('https://wa.me/?text=' + msg, '_blank');
+}
 function render(a){
     const c = document.getElementById('alertas');
     let d = document.getElementById('a_'+a.id);
@@ -2600,6 +2740,8 @@ function render(a){
         '<div id="evLista_' + a.id + '"></div>' +
         '<div class="campo" style="margin-top:12px;margin-bottom:10px;"><label style="font-size:10px;">DESCRIPCIÓN DE LA PRUEBA (OPCIONAL)</label><input id="evDesc_' + a.id + '" placeholder="Ej: Captura de amenazas de WhatsApp del 12/10" style="padding:12px;font-size:14px;"></div>' +
         '<button type="button" class="btn" id="evBtn_' + a.id + '" onclick="agregarEvidenciaActa(\'' + a.id + '\')" style="padding:14px;font-size:11px;">CONFIRMAR Y AGREGAR AL ACTA</button>' +
+        '<button type="button" class="btn noimp" onclick="descargarPaqueteActa(\'' + a.id + '\')" style="padding:14px;font-size:11px;margin-top:10px;background:linear-gradient(135deg,#1a4d2e,#2e7d32,#1a4d2e);">📦 DESCARGAR ACTA + TODA LA EVIDENCIA (ZIP)</button>' +
+        '<button type="button" class="btn blanco noimp" onclick="compartirWhatsApp(\'' + a.id + '\')" style="padding:14px;font-size:11px;margin-top:10px;">💬 COMPARTIR RESUMEN POR WHATSAPP</button>' +
         '<button type="button" class="btn noimp" onclick="descargarPaqueteActa(\'' + a.id + '\', this)" style="padding:14px;font-size:11px;margin-top:10px;background:linear-gradient(135deg,#1a5c1a,#2e7d32,#1a5c1a);">📦 DESCARGAR / COMPARTIR TODA LA EVIDENCIA (ZIP)</button>' +
         '</div>';
         
