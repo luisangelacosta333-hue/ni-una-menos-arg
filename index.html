@@ -125,7 +125,7 @@ body{background:#FFFFFF;background-image:radial-gradient(circle at 50% 0%,rgba(2
 .galeria{display:flex;flex-direction:column;gap:20px;position:relative;z-index:3;width:100%;}
 .foto{background:#FAFAFA;border:1px solid #EEE;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#999;font-family:'Cinzel',serif;font-size:10px;overflow:hidden;position:relative;width:100%;padding:15px;border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,0.05);}
 .foto img,.foto video{width:100%;height:auto;object-fit:contain;border-radius:8px;}
-.btn-descarga-evidencia{display:inline-block;margin-top:10px;padding:10px 18px;background:var(--bordeOro);color:#FFF;font-family:'Cinzel',serif;font-weight:900;font-size:12px;letter-spacing:2px;border-radius:999px;text-decoration:none;box-shadow:var(--luz);text-align:center;width:100%;max-width:320px;}
+.btn-descarga-evidencia{display:inline-block;margin-top:10px;padding:10px 18px;background:var(--bordeOro);color:#FFF;font-family:'Cinzel',serif;font-weight:900;font-size:12px;letter-spacing:2px;border-radius:999px;text-decoration:none;box-shadow:var(--luz);text-align:center;width:100%;max-width:320px;border:none;cursor:pointer;}
 
 .scroll-container{width:100%;overflow:hidden;mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent)}
 .scroll-text{display:inline-block;white-space:nowrap;font-family:'Cinzel',serif;font-weight:800;}
@@ -156,10 +156,9 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   @page { size: A4; margin: 10mm; }
   body { background: #fff !important; color: #000 !important; }
   .btn, .footer-wrap, .noimp, .btn-descarga-evidencia, .vista:not(.activa), header, .scroll-container, #btn-install-pwa, #btn-flotante-sos { display: none !important; }
-  .vista { padding: 0 !important; max-width: 100% !important; display: block !important; }
-  #panel { display: block !important; }
-  #alertas { display: block !important; width: 100%; }
-  .acta { position: relative !important; left: auto !important; top: auto !important; width: 100% !important; border: none !important; box-shadow: none !important; page-break-inside: avoid; page-break-after: always; margin: 0 0 20px 0 !important; }
+  .vista.activa { padding: 0 !important; max-width: 100% !important; display: block !important; }
+  #alertas, #listaBitacora { display: block !important; width: 100%; }
+  .acta { position: relative !important; left: auto !important; top: auto !important; width: 100% !important; border: 1px solid #ccc !important; box-shadow: none !important; page-break-inside: avoid; page-break-after: auto; margin: 0 0 20px 0 !important; }
 }
 
 .file-upload-wrapper {position:relative;width:100%;height:120px;border:2px dashed var(--oro);border-radius:12px;background:#FFFCF2;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;overflow:hidden;margin-top:10px;}
@@ -368,9 +367,9 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 </section>
 
 <section id="bitacora" class="vista">
- <button class="btn volver" onclick="ir('inicio')">VOLVER</button>
+ <button class="btn volver noimp" onclick="ir('inicio')">VOLVER</button>
  <h2 class="tit">DIARIO DE INCIDENTES</h2>
- <div class="caja">
+ <div class="caja noimp">
   <p style="font-size:13.5px;color:#444;margin-bottom:15px;text-align:center;line-height:1.5;">
    Registrá amenazas, agresiones, acoso, capturas de mensajes, fotos, audios o videos en orden cronológico para exportar tu informe documental y presentarlo ante tu abogado o fiscalía.
   </p>
@@ -428,12 +427,12 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 
 <section id="panel" class="vista">
  <h2 class="tit" style="text-align:left;border-bottom:1px solid var(--oro);padding-bottom:10px;letter-spacing:5px">CENTRO JUDICIAL P4</h2>
- <div style="display:flex;gap:12px;flex-wrap:wrap">
+ <div class="noimp" style="display:flex;gap:12px;flex-wrap:wrap">
   <button class="btn" onclick="window.print()" style="flex:1 1 100%">IMPRIMIR ACTA JUDICIAL (PDF)</button>
   <button class="btn blanco" onclick="verificar()" style="flex:1 1 100%;margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
  </div>
  <div id="alertas"><div class="caja" style="text-align:center;padding:50px 12px;border:none;box-shadow:none;"><p style="color:#999;font-weight:400;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;">Sistema en calma - Sin emergencias</p></div></div>
- <button class="btn blanco" onclick="ir('inicio')" style="margin-top:20px">VOLVER AL INICIO</button>
+ <button class="btn blanco noimp" onclick="ir('inicio')" style="margin-top:20px">VOLVER AL INICIO</button>
 </section>
 </main>
 
@@ -521,6 +520,30 @@ function dataURLtoBlob(dataurl) {
         while(n--){ u8arr[n] = bstr.charCodeAt(n); }
         return new Blob([u8arr], {type:mime});
     } catch(e) { return null; }
+}
+
+async function forzarDescargaArchivo(url, nombreArchivo) {
+    try {
+        if (!url) return;
+        const nombreFinal = (nombreArchivo || 'evidencia_c4').replace(/[^a-zA-Z0-9._-]/g, '_');
+        if (url.includes('/storage/v1/object/public/')) {
+            const sep = url.includes('?') ? '&' : '?';
+            window.location.href = url + sep + 'download=' + encodeURIComponent(nombreFinal);
+            return;
+        }
+        const res = await fetch(url);
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = nombreFinal;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 4000);
+    } catch (e) {
+        window.open(url, '_blank');
+    }
 }
 
 async function subirArchivoBucket(blobOrDataUrl, actaId, carpeta, ext, contentType) {
@@ -1418,6 +1441,35 @@ async function guardarIncidente() {
     }
 }
 
+async function borrarIncidente(idIncidente) {
+    if (!confirm('¿Estás segura de eliminar este incidente y sus archivos adjuntos de la cronología?')) return;
+    try {
+        await asegurarSesionSupabase();
+        const token = currentJWT ? currentJWT : SUPA_KEY;
+        const res = await supaQuery('GET', 'c4_bitacora?select=archivos_urls&id=eq.' + idIncidente);
+        if (res && res.length > 0 && Array.isArray(res[0].archivos_urls)) {
+            const prefijo = `/storage/v1/object/public/${SUPA_BUCKET}/`;
+            for (const a of res[0].archivos_urls) {
+                if (a && typeof a.url === 'string' && a.url.includes(prefijo)) {
+                    const filePath = a.url.split(prefijo)[1];
+                    if (filePath) {
+                        fetch(`${SUPA_URL}/storage/v1/object/${SUPA_BUCKET}/${filePath}`, {
+                            method: 'DELETE',
+                            headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + token }
+                        }).catch(()=>{});
+                    }
+                }
+            }
+        }
+        await supaQuery('DELETE', 'c4_bitacora?id=eq.' + idIncidente);
+        const card = document.getElementById('inc_' + idIncidente);
+        if (card) card.remove();
+        cargarBitacora();
+    } catch (e) {
+        alert('Error al eliminar el incidente: ' + e.message);
+    }
+}
+
 async function cargarBitacora() {
     const cont = document.getElementById('listaBitacora');
     if (!cont) return;
@@ -1434,10 +1486,14 @@ async function cargarBitacora() {
             return;
         }
         cont.innerHTML = res.map((item, idx) => {
-            const links = (item.archivos_urls || []).map((a, i) => 
-                `<a class="btn-descarga-evidencia noimp" target="_blank" href="${a.url}" download="${a.nombre || ('EVIDENCIA_'+(i+1))}" style="margin:4px;font-size:11px;padding:8px 14px;">📎 DESCARGAR ORIGINAL ${i+1}</a>`
-            ).join('');
-            return `<div class="acta" style="margin-bottom:15px;padding:18px;">
+            const links = (item.archivos_urls || []).map((a, i) => {
+                const nombreSeguro = (a.nombre || ('EVIDENCIA_' + (i + 1))).replace(/['"]/g, '');
+                return `<button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo('${a.url}', '${nombreSeguro}')" style="margin:4px;font-size:11px;padding:8px 14px;">📎 DESCARGAR ORIGINAL ${i+1} (${nombreSeguro})</button>`;
+            }).join('');
+            return `<div class="acta" id="inc_${item.id}" style="margin-bottom:15px;padding:18px;padding-right:52px;">
+                <div class="noimp" style="position:absolute;top:12px;right:12px;z-index:4">
+                    <button onclick="borrarIncidente('${item.id}')" title="Eliminar incidente" style="width:34px;height:34px;border-radius:6px;border:none;background:#B00020;color:#fff;font-family:Cinzel,serif;font-weight:bold;font-size:16px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.25);">X</button>
+                </div>
                 <div class="nroExpediente">INCIDENTE #${res.length - idx} — ${item.tipo_incidente.toUpperCase()}</div>
                 <div style="font-size:13px;color:#8B0000;font-weight:800;margin-bottom:8px;">FECHA: ${item.fecha_suceso} | LUGAR: ${item.lugar}</div>
                 <p style="font-family:Montserrat,sans-serif;font-size:14px;color:#222;line-height:1.6;margin-bottom:10px;">${item.relato}</p>
@@ -2346,7 +2402,7 @@ function render(a){
     }
     
     const fT = a.imagenes && a.imagenes.length ? a.imagenes.map((i, idx) => 
-        '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">CAMARA ' + (i.camara || 'desconocida').toUpperCase() + ' (RECONOCIMIENTO)</span><img src="' + i.url + '" style="width:100%;height:auto;border-radius:8px;" onerror="this.src=\'\'"><a class="btn-descarga-evidencia noimp" target="_blank" href="' + i.url + '" download="FOTO_' + a.id + '_' + (idx+1) + '.jpg">⬇️ DESCARGAR FOTO ' + (idx+1) + '</a></div>'
+        '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">CAMARA ' + (i.camara || 'desconocida').toUpperCase() + ' (RECONOCIMIENTO)</span><img src="' + i.url + '" style="width:100%;height:auto;border-radius:8px;" onerror="this.src=\'\'"><button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + i.url + '\', \'FOTO_' + a.id + '_' + (idx+1) + '.jpg\')">⬇️ DESCARGAR FOTO ' + (idx+1) + '</button></div>'
     ).join('') : '';
     
     const vV = a.videos && a.videos.length ? a.videos.map((vid,i) => {
@@ -2356,7 +2412,7 @@ function render(a){
         else if (vid && vid.rutaNativa) { url = vid.rutaNativa; cam = vid.camara || 'TRASERA'; }
         else if (vid instanceof Blob) { url = URL.createObjectURL(vid); }
         const ext = (url && url.includes('.mp4')) || (url && url.includes('video/mp4')) ? 'mp4' : 'webm';
-        return '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">VIDEO ' + (i+1) + ' (' + cam + ')</span><video controls playsinline preload="auto" src="' + url + '" style="width:100%;border-radius:8px;background:#000;"></video><a class="btn-descarga-evidencia noimp" target="_blank" href="' + url + '" download="VIDEO_' + a.id + '_' + (i+1) + '.' + ext + '">⬇️ DESCARGAR VIDEO ' + (i+1) + '</a></div>';
+        return '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">VIDEO ' + (i+1) + ' (' + cam + ')</span><video controls playsinline preload="auto" src="' + url + '" style="width:100%;border-radius:8px;background:#000;"></video><button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + url + '\', \'VIDEO_' + a.id + '_' + (i+1) + '.' + ext + '\')">⬇️ DESCARGAR VIDEO ' + (i+1) + '</button></div>';
     }).join('') : '';
     
     const aA = a.audios && a.audios.length ? a.audios.map((aud,i) => {
@@ -2365,7 +2421,7 @@ function render(a){
         else if (aud && aud.blob instanceof Blob) url = URL.createObjectURL(aud.blob);
         else if (aud && aud.rutaNativa) url = aud.rutaNativa;
         else if (aud instanceof Blob) url = URL.createObjectURL(aud);
-        return '<div style="background:#FAFAFA;border:1px solid #EEE;padding:15px;border-radius:8px;margin-bottom:10px;text-align:center;"><p style="font-size:12px;font-weight:800;color:#8B0000;margin-bottom:8px;">AUDIO DE ENTORNO ' + (i+1) + '</p><audio controls preload="auto" src="' + url + '" style="width:100%;"></audio><a class="btn-descarga-evidencia noimp" target="_blank" href="' + url + '" download="AUDIO_' + a.id + '_' + (i+1) + '.webm">⬇️ DESCARGAR AUDIO ' + (i+1) + '</a></div>';
+        return '<div style="background:#FAFAFA;border:1px solid #EEE;padding:15px;border-radius:8px;margin-bottom:10px;text-align:center;"><p style="font-size:12px;font-weight:800;color:#8B0000;margin-bottom:8px;">AUDIO DE ENTORNO ' + (i+1) + '</p><audio controls preload="auto" src="' + url + '" style="width:100%;"></audio><button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + url + '\', \'AUDIO_' + a.id + '_' + (i+1) + '.webm\')">⬇️ DESCARGAR AUDIO ' + (i+1) + '</button></div>';
     }).join('') : '';
     
     let imgContainer = document.getElementById('gal_img_' + a.id);
