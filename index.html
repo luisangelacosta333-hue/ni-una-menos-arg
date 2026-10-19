@@ -147,7 +147,6 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 .ley{display:inline-block;padding:5px 12px;margin:4px;border-radius:999px;border:1px solid var(--oroMedio);color:var(--oroOscuro);font-family:'Cinzel',serif;font-weight:700;background:#FFFCF2}
 @media(max-width:640px){.grid2{grid-template-columns:1fr}}
 
-/* FORZAMOS LA VISTA DEL BOTÓN FLOTANTE AL REGISTRARSE */
 #btn-install-pwa {display:none;position:fixed;top:15px;right:15px;background:var(--oro);color:#fff;padding:8px 16px;border-radius:50px;font-family:'Cinzel',serif;font-weight:900;font-size:13px;letter-spacing:2px;border:1px solid var(--oroClaro);box-shadow:var(--luzFuerte);cursor:pointer;z-index:9999999;align-items:center;gap:8px;animation:entrar .5s ease both;}
 
 #btn-flotante-sos {display:none;position:fixed;bottom:25px;right:25px;width:75px;height:75px;background:radial-gradient(circle at 30% 22%,#D00000,#8B0000 80%);color:#fff;border-radius:50%;font-family:'Cinzel',serif;font-weight:900;font-size:16px;border:2px solid #FF8888;box-shadow:0 5px 20px rgba(139,0,0,0.6);cursor:pointer;z-index:9999999;align-items:center;justify-content:center;animation:pulsoSOS 2s infinite;}
@@ -170,7 +169,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 #modalStop {display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999999;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
 #modalPresentacion {display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999999;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
 #pantalla-sigilo {position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999999;display:flex;align-items:center;justify-content:center;}
-.debug-panel {display:none !important;} /* Oculto completamente de producción */
+.debug-panel {display:none !important;}
     `;
     var s = document.createElement('style');
     s.textContent = css;
@@ -181,7 +180,6 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 <body>
 
 <button id="btn-install-pwa">INSTALAR APP</button>
-<!-- CANDADO APLICADO: El botón flotante no interrumpe el loop de evidencia si ya está activo -->
 <button id="btn-flotante-sos" onclick="if(window.sosActivo){ prepararParada('sos'); }else{ window.ir('sos'); disparoSOS('manual'); }">S.O.S</button>
 <div class="debug-panel" id="debugPanel"></div>
 
@@ -212,7 +210,6 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 <main>
 <section id="inicio" class="vista activa">
   
- <!-- BANNER CRONÓMETRO DE DÍAS RESTANTES (INTELIGENTE) -->
  <div id="bannerSuscripcion" style="display:none;background:linear-gradient(135deg,#D4AF37,#A87F0A);color:#fff;padding:15px;border-radius:12px;margin-bottom:20px;text-align:center;box-shadow:var(--luzFuerte);border:2px solid #FFF0A8;">
    <b style="font-family:'Cinzel',serif;font-size:16px;letter-spacing:2px;display:block;">🛡️ BLINDAJE ACTIVO</b>
    <span id="diasRestantesText" style="font-size:15px;font-weight:700;margin-top:5px;display:block;">Calculando días restantes...</span>
@@ -222,11 +219,9 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
   <div class="caja" style="background:#FFF3F5;border:1px solid #8B0000;padding:28px;">
    <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">PROTECCION ACTIVA</h3>
    <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Tu vida es nuestra prioridad. Contás con dos escudos: el Botón Antipánico para emergencias súbitas, o el Temporizador Centinela para protección preventiva.</p>
-   <!-- FRENO: El botón llama a la función pero si ya está activo adentro lo rebota -->
    <button class="btn rubi" onclick="if(window.sosActivo){ window.ir('sos'); prepararParada('sos'); } else { irSOS(); }">INGRESAR AL BOTON ANTIPANICO</button>
   </div>
 
-  <!-- AVISO PARA COMPLETAR IMEI UNA VEZ ADENTRO DEL SISTEMA -->
   <div id="cajaCompletarImei" class="caja" style="display:none; margin-top:15px; background:#FFFCF2; border:2px dashed var(--oro);">
     <h3 style="color:var(--oroOscuro); font-size:16px; margin-bottom:8px;">⚖️ VALIDACIÓN PERICIAL DEL EQUIPO (OPCIONAL)</h3>
     <p style="font-size:13.5px; color:#444; margin-bottom:14px; text-align:center; line-height:1.5;">Tu protección de 15 días ya está 100% activa. Para que el <b>Acta Pericial Judicial</b> incluya la identidad física de tu teléfono, podés vincular tu IMEI marcando <b>*#06#</b> en tu teclado de llamadas.</p>
@@ -236,7 +231,6 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
     <button class="btn" onclick="guardarImeiReal()">VINCULAR IMEI AL ACTA JUDICIAL</button>
   </div>
   
-  <!-- MODO CENTINELA (CRONÓMETRO) -->
   <div class="caja" style="margin-top:15px; border-color: var(--oro);">
     <h3 style="color:var(--oroOscuro); font-size:18px; margin-bottom:10px;">MODO CENTINELA (TEMPORIZADOR)</h3>
     <p style="font-size:13px; margin-bottom:15px; text-align:center; line-height:1.5;">Programá el tiempo que vas a estar afuera. Si no cancelás el contador con tu Llave Maestra antes de que termine, el S.O.S se disparará automáticamente salvando tu vida.<br><br><b style="color:#8B0000;">IMPORTANTE: Para que el reloj no se duerma y detone con precisión, debés activar obligatoriamente el "Modo Sigilo" justo después de iniciar este temporizador.</b></p>
@@ -363,7 +357,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
  <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="if(window.sosActivo){ prepararParada('sos'); } else { disparoSOS('manual'); }">S.O.S</button></div>
  <div class="estadoSOS" id="st">
    <h2 style="font-size:18px;letter-spacing:2px;margin-bottom:8px;">¡SISTEMA ACTIVADO!</h2>
-   NUESTRA EMPRESA ESTÁ RECABANDO LA EVIDENCIA<br>
+   NUESTRA EMPRESA ESTÁ RECABANDO LA EVIDENCIA EN SUPABASE STORAGE<br>
    GPS SEGUNDO A SEGUNDO - AUDIO CONTINUO - FOTOS DEL ENTORNO - CELDA Y WIFI<br><br>
    <span style="font-size:12px;color:#888;font-weight:400;">(Las alertas de emergencia ya fueron despachadas a tu círculo)</span><br><br>
    <div style="background:#FFE79B;color:#5A3E00;padding:10px;border-radius:8px;font-weight:700;margin-top:12px;font-size:12px;line-height:1.4;">
@@ -435,6 +429,7 @@ footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);
 <script>
 const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
+const SUPA_BUCKET = 'evidencias_c4'; // Nombre del Bucket en Supabase Storage
 
 const SHAKE_THRESHOLD = 2.8; 
 const SHAKE_COOLDOWN = 4000; 
@@ -462,7 +457,7 @@ let audioCtxActivo = null;
 let micStreamSigilo = null;
 let voiceActive = false;
 
-// Conversor universal a Base64 para respaldo absoluto en Supabase
+// Conversor Base64 como respaldo automático si falla el Bucket
 function blobToDataURL(blob) {
     return new Promise((resolve) => {
         if (!blob || !(blob instanceof Blob)) {
@@ -474,6 +469,82 @@ function blobToDataURL(blob) {
         reader.onerror = () => resolve(null);
         reader.readAsDataURL(blob);
     });
+}
+
+// Conversor de DataURL a Blob binario para subir fotos a Supabase Storage
+function dataURLtoBlob(dataurl) {
+    try {
+        let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){ u8arr[n] = bstr.charCodeAt(n); }
+        return new Blob([u8arr], {type:mime});
+    } catch(e) { return null; }
+}
+
+// MOTOR DE SUBIDA DIRECTA A SUPABASE STORAGE BUCKET (Con fallback automático a Base64)
+async function subirArchivoBucket(blobOrDataUrl, actaId, carpeta, ext, contentType) {
+    try {
+        await asegurarSesionSupabase();
+        let blob = blobOrDataUrl;
+        if (typeof blobOrDataUrl === 'string' && blobOrDataUrl.startsWith('data:')) {
+            blob = dataURLtoBlob(blobOrDataUrl);
+        }
+        if (!blob) return (typeof blobOrDataUrl === 'string') ? blobOrDataUrl : null;
+
+        const fileName = `${actaId}/${carpeta}_${Date.now()}_${Math.random().toString(36).slice(2,7)}.${ext}`;
+        const token = currentJWT ? currentJWT : SUPA_KEY;
+
+        const res = await fetch(`${SUPA_URL}/storage/v1/object/${SUPA_BUCKET}/${fileName}`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPA_KEY,
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': contentType,
+                'x-upsert': 'true'
+            },
+            body: blob
+        });
+
+        if (res.ok) {
+            const publicUrl = `${SUPA_URL}/storage/v1/object/public/${SUPA_BUCKET}/${fileName}`;
+            debugLog('☁️ Subido al Bucket: ' + fileName);
+            return publicUrl;
+        } else {
+            debugLog('⚠️ Bucket sin permiso o no creado aún, usando respaldo Base64.');
+            if (typeof blobOrDataUrl === 'string') return blobOrDataUrl;
+            return await blobToDataURL(blob);
+        }
+    } catch(e) {
+        debugLog('Error Bucket Storage: ' + e.message);
+        if (typeof blobOrDataUrl === 'string') return blobOrDataUrl;
+        return await blobToDataURL(blobOrDataUrl);
+    }
+}
+
+// Purga archivos físicos dentro del Bucket de Supabase cuando se borra o vence un acta (24h)
+async function limpiarArchivosBucketActa(acta) {
+    if (!acta) return;
+    try {
+        await asegurarSesionSupabase();
+        const token = currentJWT ? currentJWT : SUPA_KEY;
+        const urls = [];
+        if (acta.imagenes) acta.imagenes.forEach(i => { if(i.url) urls.push(i.url); });
+        if (acta.videos) acta.videos.forEach(v => { if(v.url) urls.push(v.url); });
+        if (acta.audios) acta.audios.forEach(a => { if(a.url) urls.push(a.url); });
+
+        const prefijo = `/storage/v1/object/public/${SUPA_BUCKET}/`;
+        for (const u of urls) {
+            if (typeof u === 'string' && u.includes(prefijo)) {
+                const filePath = u.split(prefijo)[1];
+                if (filePath) {
+                    fetch(`${SUPA_URL}/storage/v1/object/${SUPA_BUCKET}/${filePath}`, {
+                        method: 'DELETE',
+                        headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + token }
+                    }).catch(()=>{});
+                }
+            }
+        }
+    } catch(e) {}
 }
 
 let deferredPrompt;
@@ -621,11 +692,11 @@ async function verificarSuscripcion() {
             if (sub.imei && sub.imei !== imei) {
                 localStorage.setItem('imei', sub.imei);
             }
-            // AUTODESTRUCCIÓN EN SUPABASE A LAS 24 HORAS PARA NO SATURAR LA MEMORIA
             if (sub.datos_acta) {
                 try {
                     const actaRemota = JSON.parse(sub.datos_acta);
                     if (actaRemota && actaRemota.sello_ms && (Date.now() - actaRemota.sello_ms > EXPIRACION_ACTA_MS)) {
+                        await limpiarArchivosBucketActa(actaRemota);
                         await purgarActaVencidaEnSupabase(sub.imei, sub.llave_acceso);
                     }
                 } catch(ePurga) {}
@@ -764,7 +835,7 @@ async function supaQuery(method, endpoint, body) {
     return text ? JSON.parse(text) : [];
 }
 
-// Sube el acta pericial completa en tiempo real a Supabase (Respaldo en la Nube)
+// Sincroniza el acta liviana (con links del Bucket) en la tabla c4_suscripciones
 async function sincronizarActaEnNube(acta) {
     try {
         await asegurarSesionSupabase();
@@ -785,7 +856,6 @@ async function sincronizarActaEnNube(acta) {
     }
 }
 
-// AUTODESTRUCCIÓN EN SUPABASE: Vacía datos_acta y limpia c4_emergencias pasadas las 24 horas
 async function purgarActaVencidaEnSupabase(imeiPurga, llavePurga) {
     try {
         await asegurarSesionSupabase();
@@ -818,7 +888,7 @@ async function solicitarTodosLosPermisos() {
             debugLog('Pidiendo cámara + micrófono avanzado...');
             const stream = await navigator.mediaDevices.getUserMedia({ 
                 audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, 
-                video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } 
+                video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } } 
             });
             stream.getTracks().forEach(track => track.stop());
             debugLog('Cámara + micrófono avanzado OK');
@@ -834,10 +904,10 @@ async function solicitarTodosLosPermisos() {
     });
 }
 
-// FOTO ALTA DEFINICIÓN FORENSE MEJORADA (1600x900 al 90% de calidad para máxima nitidez en zoom judicial)
+// FOTO SUPER HD CRISTALINA (1920x1080 al 92% de calidad para máxima nitidez forense)
 async function capturarFoto(cameraDirection) {
     return new Promise(async (resolve, reject) => {
-        debugLog('Capturando foto Super HD: ' + cameraDirection);
+        debugLog('Capturando foto Super HD 1920x1080: ' + cameraDirection);
         let stream = null;
         try {
             const video = document.createElement('video');
@@ -848,7 +918,7 @@ async function capturarFoto(cameraDirection) {
             document.body.appendChild(video);
             
             stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: (cameraDirection === 'front' || cameraDirection === 'user') ? 'user' : 'environment', width: { ideal: 1600 }, height: { ideal: 900 } },
+                video: { facingMode: (cameraDirection === 'front' || cameraDirection === 'user') ? 'user' : 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
                 audio: false
             });
             video.srcObject = stream;
@@ -856,12 +926,12 @@ async function capturarFoto(cameraDirection) {
             await new Promise(r => setTimeout(r, 800));
             
             const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 1600;
-            canvas.height = video.videoHeight || 900;
+            canvas.width = video.videoWidth || 1920;
+            canvas.height = video.videoHeight || 1080;
             const ctx = canvas.getContext('2d');
             if (cameraDirection === 'front' || cameraDirection === 'user') { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.90); 
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.92); 
             
             stream.getTracks().forEach(t => t.stop());
             document.body.removeChild(video);
@@ -875,7 +945,7 @@ async function capturarFoto(cameraDirection) {
     });
 }
 
-// AUDIO FORENSE DE ALTA FIDELIDAD (128 kbps para captar voces y murmullos lejanos con máxima claridad)
+// AUDIO FORENSE DE ALTA FIDELIDAD (128 kbps)
 async function capturarAudio(duracionMs) {
     return new Promise(async (resolve, reject) => {
         debugLog('Grabando audio forense HQ (128kbps)...');
@@ -907,7 +977,7 @@ async function capturarAudio(duracionMs) {
     });
 }
 
-// VIDEO HD 720p DE 15 SEGUNDOS ULTRA NÍTIDO EN MOVIMIENTO (1280x720 a 30fps / 950kbps + audio 128kbps)
+// VIDEO HD 720p DE 15 SEGUNDOS FLUIDO (.mp4 / .webm)
 async function capturarVideo(duracionMs, cameraDirection) {
     return new Promise(async (resolve, reject) => {
         const modoCamara = (cameraDirection === 'front' || cameraDirection === 'user') ? 'user' : 'environment';
@@ -964,8 +1034,8 @@ async function capturarVideo(duracionMs, cameraDirection) {
                 }
             }
             const opciones = mimeType 
-                ? { mimeType, videoBitsPerSecond: 950000, audioBitsPerSecond: 128000 } 
-                : { videoBitsPerSecond: 950000, audioBitsPerSecond: 128000 };
+                ? { mimeType, videoBitsPerSecond: 1200000, audioBitsPerSecond: 128000 } 
+                : { videoBitsPerSecond: 1200000, audioBitsPerSecond: 128000 };
             const recorder = new MediaRecorder(stream, opciones);
             const chunks = [];
             recorder.ondataavailable = e => {
@@ -1065,7 +1135,6 @@ window.ir = async id => {
         const currentImei = localStorage.getItem('imei');
         const currentLlave = localStorage.getItem('llave_maestra');
         
-        // Revisa el respaldo en Supabase: si tiene menos de 24h lo recupera; si pasó las 24h lo autodestruye de la nube
         if (currentImei || currentLlave) {
             try {
                 await asegurarSesionSupabase();
@@ -1074,6 +1143,7 @@ window.ir = async id => {
                 if (resNube && resNube.length > 0 && resNube[0].datos_acta) {
                     const actaNube = JSON.parse(resNube[0].datos_acta);
                     if (actaNube && actaNube.sello_ms && (Date.now() - actaNube.sello_ms > EXPIRACION_ACTA_MS)) {
+                        await limpiarArchivosBucketActa(actaNube);
                         await purgarActaVencidaEnSupabase(resNube[0].imei, resNube[0].llave_acceso);
                     } else if (actaNube && actaNube.id && !listaActas.find(x => x.id === actaNube.id)) {
                         listaActas.push(actaNube);
@@ -1221,6 +1291,7 @@ async function cargarActasLocales() {
                 let huboExpiradas = false;
                 listaActas = actas.filter(a => {
                     if (a.sello_ms && (ahora - a.sello_ms > EXPIRACION_ACTA_MS)) {
+                        limpiarArchivosBucketActa(a);
                         db.transaction('actas', 'readwrite').objectStore('actas').delete(a.id);
                         huboExpiradas = true;
                         return false;
@@ -1238,6 +1309,8 @@ async function cargarActasLocales() {
 
 async function borrarActa(id) {
     if(!confirm('¿Estás segura de eliminar este expediente permanentemente?')) return;
+    const actaABorrar = listaActas.find(a => a.id === id);
+    if (actaABorrar) await limpiarArchivosBucketActa(actaABorrar);
     if(mapas[id]) { try { mapas[id].remove(); } catch(e){} delete mapas[id]; }
     const d = document.getElementById('a_'+id);
     if(d) d.remove();
@@ -1245,7 +1318,6 @@ async function borrarActa(id) {
     let db = await initDB();
     let tx = db.transaction('actas', 'readwrite');
     tx.objectStore('actas').delete(id);
-    // Limpia también el respaldo en Supabase para liberar memoria inmediatamente
     purgarActaVencidaEnSupabase(localStorage.getItem('imei'), localStorage.getItem('llave_maestra'));
     if(listaActas.filter(a => a.imei === localStorage.getItem('imei') || a.imei === 'SIN_IMEI').length === 0) {
         document.getElementById('alertas').innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px;border:none;box-shadow:none;"><p style="color:#999;font-weight:400;font-family:Cormorant Garamond,serif;font-style:italic;font-size:20px;">Sistema en calma - Sin emergencias</p></div>';
@@ -1309,7 +1381,7 @@ async function disparoSOS(origen = 'manual'){
     }
     enviarEmailOculto(emailDestino, nombre, null, null, id, 'alerta');
     
-    // INICIA LOS DOS MOTORES EN PARALELO: Evidencia visual/mixta + Grabador continuo ininterrumpido de Audios
+    // INICIA LOS DOS MOTORES EN PARALELO CON SUBIDA A SUPABASE STORAGE BUCKET
     loopEvidencia(acta); 
     loopAudioContinuo(acta);
     
@@ -1388,13 +1460,15 @@ async function disparoSOS(origen = 'manual'){
     }
 }
 
-// Auxiliar para guardar cada nuevo audio de inmediato en el Acta y en Supabase
+// Subida de cada clip de audio directamente al Bucket de Supabase Storage
 async function guardarNuevoAudio(acta, audio) {
     if(!listaActas.find(a => a.id === acta.id)) return;
     if(!acta.audios) acta.audios = [];
     if (audio instanceof Blob && audio.size > 0) {
-        const dataUrlAud = await blobToDataURL(audio);
-        acta.audios.push({url: dataUrlAud, blob: audio});
+        const mime = audio.type || 'audio/webm';
+        const ext = mime.includes('mp4') ? 'mp4' : (mime.includes('ogg') ? 'ogg' : 'webm');
+        const urlRemota = await subirArchivoBucket(audio, acta.id, 'audio', ext, mime);
+        acta.audios.push({url: urlRemota, blob: audio});
     } else if (audio) {
         acta.audios.push(audio);
     }
@@ -1404,7 +1478,7 @@ async function guardarNuevoAudio(acta, audio) {
     if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
 }
 
-// MOTOR PARALELO EXCLUSIVO DE AUDIO CONTINUO: Graba audios de 15s uno tras otro sin parar durante toda la emergencia
+// MOTOR PARALELO EXCLUSIVO DE AUDIO CONTINUO (15s ininterrumpidos)
 async function loopAudioContinuo(acta) {
     if(!window.sosActivo || !acta) return;
     if(!listaActas.find(a => a.id === acta.id)) return;
@@ -1422,7 +1496,7 @@ async function loopAudioContinuo(acta) {
     }
 }
 
-// CICLO INTENSIVO MULTI-EVIDENCIA HD (Videos de 15s en 720p + Fotos Super HD + Audios intercalados de 15s)
+// CICLO INTENSIVO MULTI-EVIDENCIA HD CON SUPABASE STORAGE BUCKET
 async function loopEvidencia(acta) {
     if(!window.sosActivo || !acta) return;
     if(!listaActas.find(a => a.id === acta.id)) return;
@@ -1431,19 +1505,21 @@ async function loopEvidencia(acta) {
         window.sosActivo = false; parar(); 
         let btn = document.getElementById('btnBigSOS');
         if(btn) { btn.innerText = 'S.O.S'; btn.classList.remove('activo'); }
+        await limpiarArchivosBucketActa(acta);
         await purgarActaVencidaEnSupabase(acta.imei, localStorage.getItem('llave_maestra'));
         alert("Cierre de seguridad automático corporativo: 24 horas transcurridas.");
         return; 
     }
     
-    debugLog('Ciclo ráfaga HD 15s - fotos, audios y videos...');
+    debugLog('Ciclo ráfaga HD 15s hacia Supabase Bucket...');
     
-    // 1. Tanda 1 de Fotos Super HD (Frontal + Trasera)
+    // 1. Tanda 1 de Fotos Super HD (Frontal + Trasera) -> Bucket
     try {
         const fotoFrontal = await capturarFoto('front');
         if(listaActas.find(a => a.id === acta.id)) {
             if(!acta.imagenes) acta.imagenes = [];
-            acta.imagenes.push({url: fotoFrontal, camara: 'frontal', sha256: 'HASH-'+Date.now()});
+            const urlFotoF = await subirArchivoBucket(fotoFrontal, acta.id, 'foto_frontal', 'jpg', 'image/jpeg');
+            acta.imagenes.push({url: urlFotoF, camara: 'frontal', sha256: 'HASH-'+Date.now()});
             await guardarActas();
             sincronizarActaEnNube(acta);
             let currentImei = localStorage.getItem('imei');
@@ -1457,7 +1533,8 @@ async function loopEvidencia(acta) {
         const fotoTrasera = await capturarFoto('back');
         if(listaActas.find(a => a.id === acta.id)) {
             if(!acta.imagenes) acta.imagenes = [];
-            acta.imagenes.push({url: fotoTrasera, camara: 'trasera', sha256: 'HASH-'+Date.now()});
+            const urlFotoT = await subirArchivoBucket(fotoTrasera, acta.id, 'foto_trasera', 'jpg', 'image/jpeg');
+            acta.imagenes.push({url: urlFotoT, camara: 'trasera', sha256: 'HASH-'+Date.now()});
             await guardarActas();
             sincronizarActaEnNube(acta);
             let currentImei = localStorage.getItem('imei');
@@ -1467,14 +1544,16 @@ async function loopEvidencia(acta) {
     
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
     
-    // 2. Video Cámara Trasera HD 720p Fluido (15 segundos)
+    // 2. Video Cámara Trasera HD 720p Fluido (15 segundos) -> Bucket
     try {
         const videoTrasero = await capturarVideo(15000, 'environment');
         if(listaActas.find(a => a.id === acta.id)) {
             if(!acta.videos) acta.videos = [];
             if (videoTrasero instanceof Blob && videoTrasero.size > 0) {
-                const dataUrlVid = await blobToDataURL(videoTrasero);
-                acta.videos.push({url: dataUrlVid, blob: videoTrasero, camara: 'TRASERA'});
+                const mimeV = videoTrasero.type || 'video/webm';
+                const extV = mimeV.includes('mp4') ? 'mp4' : 'webm';
+                const urlVidT = await subirArchivoBucket(videoTrasero, acta.id, 'video_trasera', extV, mimeV);
+                acta.videos.push({url: urlVidT, blob: videoTrasero, camara: 'TRASERA'});
             } else if (videoTrasero && videoTrasero.rutaNativa) {
                 acta.videos.push({rutaNativa: videoTrasero.rutaNativa, camara: 'TRASERA'});
             }
@@ -1487,12 +1566,13 @@ async function loopEvidencia(acta) {
 
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
 
-    // 3. Tanda 2 de Fotos Super HD (Frontal + Trasera)
+    // 3. Tanda 2 de Fotos Super HD (Frontal + Trasera) -> Bucket
     try {
         const fotoFrontal2 = await capturarFoto('front');
         if(listaActas.find(a => a.id === acta.id)) {
             if(!acta.imagenes) acta.imagenes = [];
-            acta.imagenes.push({url: fotoFrontal2, camara: 'frontal', sha256: 'HASH-'+Date.now()});
+            const urlFotoF2 = await subirArchivoBucket(fotoFrontal2, acta.id, 'foto_frontal', 'jpg', 'image/jpeg');
+            acta.imagenes.push({url: urlFotoF2, camara: 'frontal', sha256: 'HASH-'+Date.now()});
             await guardarActas();
             sincronizarActaEnNube(acta);
             let currentImei = localStorage.getItem('imei');
@@ -1506,7 +1586,8 @@ async function loopEvidencia(acta) {
         const fotoTrasera2 = await capturarFoto('back');
         if(listaActas.find(a => a.id === acta.id)) {
             if(!acta.imagenes) acta.imagenes = [];
-            acta.imagenes.push({url: fotoTrasera2, camara: 'trasera', sha256: 'HASH-'+Date.now()});
+            const urlFotoT2 = await subirArchivoBucket(fotoTrasera2, acta.id, 'foto_trasera', 'jpg', 'image/jpeg');
+            acta.imagenes.push({url: urlFotoT2, camara: 'trasera', sha256: 'HASH-'+Date.now()});
             await guardarActas();
             sincronizarActaEnNube(acta);
             let currentImei = localStorage.getItem('imei');
@@ -1516,14 +1597,16 @@ async function loopEvidencia(acta) {
 
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
 
-    // 4. Video Cámara Frontal HD 720p Fluido (15 segundos)
+    // 4. Video Cámara Frontal HD 720p Fluido (15 segundos) -> Bucket
     try {
         const videoFrontal = await capturarVideo(15000, 'user');
         if(listaActas.find(a => a.id === acta.id)) {
             if(!acta.videos) acta.videos = [];
             if (videoFrontal instanceof Blob && videoFrontal.size > 0) {
-                const dataUrlVidF = await blobToDataURL(videoFrontal);
-                acta.videos.push({url: dataUrlVidF, blob: videoFrontal, camara: 'FRONTAL'});
+                const mimeVF = videoFrontal.type || 'video/webm';
+                const extVF = mimeVF.includes('mp4') ? 'mp4' : 'webm';
+                const urlVidF = await subirArchivoBucket(videoFrontal, acta.id, 'video_frontal', extVF, mimeVF);
+                acta.videos.push({url: urlVidF, blob: videoFrontal, camara: 'FRONTAL'});
             } else if (videoFrontal && videoFrontal.rutaNativa) {
                 acta.videos.push({rutaNativa: videoFrontal.rutaNativa, camara: 'FRONTAL'});
             }
@@ -1536,13 +1619,12 @@ async function loopEvidencia(acta) {
     
     if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
     
-    // 5. Audio de refuerzo adicional de 15 segundos
+    // 5. Audio de refuerzo adicional de 15 segundos -> Bucket
     try {
         const audioExtra = await capturarAudio(15000);
         await guardarNuevoAudio(acta, audioExtra);
     } catch(e) {}
     
-    // Reinicia el ciclo inmediatamente cada medio segundo mientras el S.O.S siga activo
     if(window.sosActivo && listaActas.find(a => a.id === acta.id)) {
         setTimeout(() => loopEvidencia(acta), 500);
     }
@@ -1808,7 +1890,7 @@ async function procesarPagoIA() {
                 return alert('ERROR EN AUDITORÍA:\\n' + data.msg);
             }
             
-            let mesesSumar = 1; // Solo plan mensual
+            let mesesSumar = 1;
             
             const authOk = await authTrucha(i);
             if(!authOk) return alert('Error de conexión a la bóveda C4.');
@@ -1864,7 +1946,6 @@ async function procesarPagoIA() {
     reader.readAsDataURL(file);
 }
 
-// VALIDAR (ACCESO JUDICIAL): Revisa memoria local o descarga el respaldo de Supabase con la Llave Maestra (y purga si tiene >24h)
 async function validar(){
     const k = LK(document.getElementById('lkI').value);
     if(!k) return alert('Por favor, ingresá tu Llave Maestra C4.');
@@ -1901,11 +1982,11 @@ async function validar(){
             document.getElementById('pI').value = sub.imei;
             if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = sub.imei;
             
-            // Si hay un acta respaldada en Supabase, verifica las 24 horas: si venció la destruye, si está vigente la descarga
             if (sub.datos_acta) {
                 try {
                     const actaNube = JSON.parse(sub.datos_acta);
                     if (actaNube && actaNube.sello_ms && (Date.now() - actaNube.sello_ms > EXPIRACION_ACTA_MS)) {
+                        await limpiarArchivosBucketActa(actaNube);
                         await purgarActaVencidaEnSupabase(sub.imei, sub.llave_acceso);
                     } else if (actaNube && actaNube.id) {
                         const idxExistente = listaActas.findIndex(x => x.id === actaNube.id);
@@ -1927,7 +2008,6 @@ async function validar(){
     } catch(e) { alert('Error validando la Llave Maestra en el servidor C4.'); }
 }
 
-// RECUPERAR Y S.O.S. REMOTO (DOBLE MOTOR: Memoria Local + Supabase con Sesión Puente)
 async function recuperar(accion) {
     const l = LK(document.getElementById('rrL').value);
     if(!l || l.length < 6) return alert('Por favor, ingresá tu Llave Maestra C4.');
@@ -2158,26 +2238,26 @@ function render(a){
     }
     
     const fT = a.imagenes && a.imagenes.length ? a.imagenes.map((i, idx) => 
-        '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">CAMARA ' + (i.camara || 'desconocida').toUpperCase() + ' (RECONOCIMIENTO)</span><img src="' + i.url + '" style="width:100%;height:auto;border-radius:8px;" onerror="this.src=\'\'"><a class="btn-descarga-evidencia noimp" href="' + i.url + '" download="FOTO_' + a.id + '_' + (idx+1) + '.jpg">⬇️ DESCARGAR FOTO ' + (idx+1) + '</a></div>'
+        '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">CAMARA ' + (i.camara || 'desconocida').toUpperCase() + ' (RECONOCIMIENTO)</span><img src="' + i.url + '" style="width:100%;height:auto;border-radius:8px;" onerror="this.src=\'\'"><a class="btn-descarga-evidencia noimp" target="_blank" href="' + i.url + '" download="FOTO_' + a.id + '_' + (idx+1) + '.jpg">⬇️ DESCARGAR FOTO ' + (idx+1) + '</a></div>'
     ).join('') : '';
     
     const vV = a.videos && a.videos.length ? a.videos.map((vid,i) => {
         let url = ''; let cam = 'TRASERA';
-        if (vid && vid.blob instanceof Blob) { url = URL.createObjectURL(vid.blob); cam = vid.camara || 'TRASERA'; }
-        else if (vid && vid.url) { url = vid.url; cam = vid.camara || 'TRASERA'; }
+        if (vid && vid.url) { url = vid.url; cam = vid.camara || 'TRASERA'; }
+        else if (vid && vid.blob instanceof Blob) { url = URL.createObjectURL(vid.blob); cam = vid.camara || 'TRASERA'; }
         else if (vid && vid.rutaNativa) { url = vid.rutaNativa; cam = vid.camara || 'TRASERA'; }
         else if (vid instanceof Blob) { url = URL.createObjectURL(vid); }
-        const ext = (url && url.includes('video/mp4')) ? 'mp4' : 'webm';
-        return '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">VIDEO ' + (i+1) + ' (' + cam + ')</span><video controls playsinline preload="auto" src="' + url + '" style="width:100%;border-radius:8px;background:#000;"></video><a class="btn-descarga-evidencia noimp" href="' + url + '" download="VIDEO_' + a.id + '_' + (i+1) + '.' + ext + '">⬇️ DESCARGAR VIDEO ' + (i+1) + '</a></div>';
+        const ext = (url && url.includes('.mp4')) || (url && url.includes('video/mp4')) ? 'mp4' : 'webm';
+        return '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">VIDEO ' + (i+1) + ' (' + cam + ')</span><video controls playsinline preload="auto" src="' + url + '" style="width:100%;border-radius:8px;background:#000;"></video><a class="btn-descarga-evidencia noimp" target="_blank" href="' + url + '" download="VIDEO_' + a.id + '_' + (i+1) + '.' + ext + '">⬇️ DESCARGAR VIDEO ' + (i+1) + '</a></div>';
     }).join('') : '';
     
     const aA = a.audios && a.audios.length ? a.audios.map((aud,i) => {
         let url = '';
-        if (aud && aud.blob instanceof Blob) url = URL.createObjectURL(aud.blob);
-        else if (aud && aud.url) url = aud.url;
+        if (aud && aud.url) url = aud.url;
+        else if (aud && aud.blob instanceof Blob) url = URL.createObjectURL(aud.blob);
         else if (aud && aud.rutaNativa) url = aud.rutaNativa;
         else if (aud instanceof Blob) url = URL.createObjectURL(aud);
-        return '<div style="background:#FAFAFA;border:1px solid #EEE;padding:15px;border-radius:8px;margin-bottom:10px;text-align:center;"><p style="font-size:12px;font-weight:800;color:#8B0000;margin-bottom:8px;">AUDIO DE ENTORNO ' + (i+1) + '</p><audio controls preload="auto" src="' + url + '" style="width:100%;"></audio><a class="btn-descarga-evidencia noimp" href="' + url + '" download="AUDIO_' + a.id + '_' + (i+1) + '.webm">⬇️ DESCARGAR AUDIO ' + (i+1) + '</a></div>';
+        return '<div style="background:#FAFAFA;border:1px solid #EEE;padding:15px;border-radius:8px;margin-bottom:10px;text-align:center;"><p style="font-size:12px;font-weight:800;color:#8B0000;margin-bottom:8px;">AUDIO DE ENTORNO ' + (i+1) + '</p><audio controls preload="auto" src="' + url + '" style="width:100%;"></audio><a class="btn-descarga-evidencia noimp" target="_blank" href="' + url + '" download="AUDIO_' + a.id + '_' + (i+1) + '.webm">⬇️ DESCARGAR AUDIO ' + (i+1) + '</a></div>';
     }).join('') : '';
     
     let imgContainer = document.getElementById('gal_img_' + a.id);
